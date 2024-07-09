@@ -1,0 +1,74 @@
+{
+  "groups": [
+    {
+      "name": "",
+      "type": "com.mindslab.web.properties.MidsLabCustomProperties",
+      "sourceType": "com.mindslab.web.properties.MidsLabCustomProperties"
+    },
+    {
+      "name": "custom",
+      "type": "com.mindslab.web.properties.MidsLabCustomProperties$Custom",
+      "sourceType": "com.mindslab.web.properties.MidsLabCustomProperties"
+    },
+    {
+      "name": "mindslab.config",
+      "type": "com.mindslab.web.properties.MindsLabProperties",
+      "sourceType": "com.mindslab.web.properties.MindsLabProperties"
+    },
+    {
+      "name": "spring.maria.datasource",
+      "type": "javax.sql.DataSource",
+      "sourceType": "com.mindslab.web.config.MybatisMariaConfig",
+      "sourceMethod": "mariaSessionFactoryDataSource()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "custom.name",
+      "type": "java.lang.String",
+      "sourceType": "com.mindslab.web.properties.MidsLabCustomProperties$Custom"
+    },
+    {
+      "name": "mindslab.config.bpr-image-path",
+      "type": "java.lang.String",
+      "sourceType": "com.mindslab.web.properties.MindsLabProperties"
+    },
+    {
+      "name": "mindslab.config.bpr-server-ip",
+      "type": "java.lang.String",
+      "sourceType": "com.mindslab.web.properties.MindsLabProperties"
+    },
+    {
+      "name": "mindslab.config.bpr-server-port",
+      "type": "java.lang.Integer",
+      "sourceType": "com.mindslab.web.properties.MindsLabProperties",
+      "defaultValue": 0
+    },
+    {
+      "name": "mindslab.config.learn-excel-path",
+      "type": "java.lang.String",
+      "sourceType": "com.mindslab.web.properties.MindsLabProperties"
+    },
+    {
+      "name": "mindslab.config.minds-lab-api-url",
+      "type": "java.lang.String",
+      "sourceType": "com.mindslab.web.properties.MindsLabProperties"
+    },
+    {
+      "name": "mindslab.config.testvalue",
+      "type": "java.lang.String",
+      "sourceType": "com.mindslab.web.properties.MindsLabProperties"
+    },
+    {
+      "name": "name",
+      "type": "java.lang.String",
+      "sourceType": "com.mindslab.web.properties.MidsLabCustomProperties"
+    },
+    {
+      "name": "spring.config.activate.profile",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.config.activate.profile'"
+    }
+  ],
+  "hints": []
+}
