@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mindslab.web.mapper.maria.MariaMemberMapper">
+
+    <resultMap type="com.mindslab.web.vo.MemberVO" id="memberMap">
+        <id property="memSeq" column="MEM_SEQ"/>
+        <result property="deptId" column="DEPT_ID" />
+        <result property="memId" column="MEM_ID" />
+        <result property="memName" column="MEM_NAME" />
+        <result property="memType" column="MEM_TYPE" />
+        <result property="memStat" column="MEM_STAT" />
+        <result property="memBefoPwd" column="MEM_BEFO_PWD" />
+        <result property="memPwd" column="MEM_PWD" />
+        <result property="memGender" column="MEM_GENDER" />
+        <result property="memBirthday" column="MEM_BIRTHDAY" />
+        <result property="memPhone" column="MEM_PHOME" />
+        <result property="memEmail" column="MEM_EMAIL" />
+        <result property="memRegId" column="MEM_REG_ID" />
+        <result property="memRegDt" column="MEM_REG_DT" />
+        <result property="memModId" column="MEM_MOD_ID" />
+        <result property="memModDt" column="MEM_MOD_DT" />
+        <result property="memLstDt" column="MEM_LST_DT" />
+        <result property="memFailCnt" column="MEM_FAIL_CNT" />
+        <result property="memFailDt" column="MEM_FAIL_DT" />
+		<result property="memColumn1" column="MEM_COLUMN1" />
+		<result property="memColumn2" column="MEM_COLUMN2" />
+		<result property="memColumn3" column="MEM_COLUMN3" />
+		<result property="memColumn4" column="MEM_COLUMN4" />
+		<result property="memColumn5" column="MEM_COLUMN5" />   
+        <collection property="roleList" resultMap="roleMap"/>
+    </resultMap>
+    <resultMap type="com.mindslab.web.vo.RoleVO" id="roleMap">
+        <id property="roleSeq" column="ROLE_SEQ" />
+        <result property="roleId" column="ROLE_ID" />
+        <result property="roleType" column="ROLE_TYPE" />
+        <result property="roleName" column="ROLE_NAME" />
+        <result property="roleUseYn" column="ROLE_USE_YN" />
+        <result property="roleRegId" column="ROLE_REG_ID" />
+        <result property="roleRegDt" column="ROLE_REG_DT" />
+        <result property="roleModId" column="ROLE_MOD_ID" />
+        <result property="roleModDt" column="ROLE_MOD_DT" />
+		<result property="roleColumn1" column="ROLE_COLUMN1" />
+		<result property="roleColumn2" column="ROLE_COLUMN2" />
+		<result property="roleColumn3" column="ROLE_COLUMN3" />
+		<result property="roleColumn4" column="ROLE_COLUMN4" />
+		<result property="roleColumn5" column="ROLE_COLUMN5" />        
+    </resultMap>
+
+    <select id="getAuthInfo" parameterType="String" resultMap="memberMap">
+        SELECT  
+            <include refid="hc_member_columns"><property name="alias" value="hm."/></include>
+            ,<include refid="hc_role_columns"><property name="alias" value="hr."/></include>
+        FROM 
+        	HC_MEMBER hm 
+        	INNER JOIN HC_MEMBER_ROLE hmr 
+        	on hm.MEM_ID = hmr.MEM_ID
+        	INNER JOIN HC_ROLE hr 
+        	on hmr.ROLE_ID = hr.ROLE_ID
+        WHERE 
+        	1=1
+        	AND (hm.MEM_STAT != 'delete' AND hm.MEM_STAT != 'unused')
+        	AND hr.ROLE_TYPE = 'login'
+        	AND hm.MEM_ID = #{userId}
+    </select>
+
+    <select id="getUserInfo" parameterType="String" resultMap="memberMap">
+        SELECT  
+            <include refid="hc_member_columns"><property name="alias" value="hm."/></include>
+        FROM
+        	HC_MEMBER hm 
+        WHERE 
+        	1=1
+	        AND hm.MEM_STAT != 'delete'
+	        AND hm.MEM_ID = #{userId} 
+    </select>
+    
+    <update id="setUserPassword" parameterType="com.mindslab.web.vo.MemberVO">
+    	UPDATE 
+    		HC_MEMBER
+    	SET	
+    		MEM_BEFO_PWD = #{memBefoPwd}
+    		, MEM_PWD = #{memPwd}
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_ID = #{memId}
+    </update>
+    
+    <select id="getPasswordFailCnt" parameterType="com.mindslab.web.vo.MemberVO" resultType="long">
+    	SELECT 
+    		MEM_FAIL_CNT
+    	FROM
+			HC_MEMBER
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_ID = #{memId}
+    </select>
+    
+    <update id="resetPasswordFailCnt" parameterType="com.mindslab.web.vo.MemberVO">
+    	UPDATE 
+    		HC_MEMBER
+    	SET	
+			MEM_FAIL_CNT = 0
+			, MEM_FAIL_DT = SYSDATE() 
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_ID = #{memId}
+    </update>
+    
+    <update id="addPasswordFailCnt" parameterType="com.mindslab.web.vo.MemberVO">
+    	UPDATE 
+    		HC_MEMBER
+    	SET	
+			MEM_FAIL_CNT = IFNULL(MEM_FAIL_CNT, 0) + 1
+			, MEM_FAIL_DT = SYSDATE() 
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_ID = #{memId}
+    </update>
+
+    <sql id="hc_member_columns">
+		${alias}MEM_SEQ
+		, ${alias}DEPT_ID
+		, ${alias}MEM_ID
+		, ${alias}MEM_NAME
+		, ${alias}MEM_TYPE
+		, ${alias}MEM_STAT
+		, ${alias}MEM_BEFO_PWD
+		, ${alias}MEM_PWD
+		, ${alias}MEM_GENDER
+		, ${alias}MEM_BIRTHDAY
+		, ${alias}MEM_PHONE
+		, ${alias}MEM_RANK
+		, ${alias}MEM_ZIPCODE
+		, ${alias}MEM_ADDR
+		, ${alias}MEM_ADDR_DETAIL
+		, ${alias}MEM_EMAIL
+		, ${alias}MEM_REG_ID
+		, ${alias}MEM_REG_DT
+		, ${alias}MEM_MOD_ID
+		, ${alias}MEM_MOD_DT
+		, ${alias}MEM_LST_DT
+		, ${alias}MEM_FAIL_CNT
+		, ${alias}MEM_FAIL_DT
+		, ${alias}MEM_COLUMN1
+		, ${alias}MEM_COLUMN2
+		, ${alias}MEM_COLUMN3
+		, ${alias}MEM_COLUMN4
+		, ${alias}MEM_COLUMN5
+    </sql>
+    <sql id="hc_role_columns">
+		${alias}ROLE_SEQ
+		, ${alias}ROLE_ID
+		, ${alias}ROLE_TYPE
+		, ${alias}ROLE_NAME
+		, ${alias}ROLE_USE_YN
+		, ${alias}ROLE_REG_ID
+		, ${alias}ROLE_REG_DT
+		, ${alias}ROLE_MOD_ID
+		, ${alias}ROLE_MOD_DT
+		, ${alias}ROLE_COLUMN1
+		, ${alias}ROLE_COLUMN2
+		, ${alias}ROLE_COLUMN3
+		, ${alias}ROLE_COLUMN4
+		, ${alias}ROLE_COLUMN5
+    </sql>
+</mapper>
+
+
+	
+

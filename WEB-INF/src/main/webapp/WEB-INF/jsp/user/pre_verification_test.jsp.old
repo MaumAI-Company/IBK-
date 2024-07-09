@@ -1,0 +1,146 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> 
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <%@ include file="/WEB-INF/jsp/include/header.jspf" %>
+    <title>사전검증 결과 조회(사전검증 내역 조회) || maum XDC</title>
+</head>
+<body>
+<!-- #wrap -->
+<div id="wrap">
+    <!-- #container -->
+    <div id="container">
+        <!-- #snb -->
+        <%@ include file="/WEB-INF/jsp/include/submenu.jspf" %>
+        <!-- //#snb -->
+
+        <!-- #contents -->
+        <div id="contents">
+            <!-- .content -->
+            <div class="content admin_dptmt menu_set">
+                <%@ include file="/WEB-INF/jsp/include/etcArea.jspf" %>
+
+                <div class="titArea">
+                    <h3>사전검증 결과 조회<span>사전검증 테스트</span></h3>
+                </div>
+                
+                <!-- 메시지내용 -->
+                <div>
+                <div class="fl">
+                    <div class="list_box_inp">
+                        <div class="tit">메시지 내용</div>
+                        <div class="list_view_wrap">
+                          <textarea class="textarea" placeholder="메시지 내용을 입력하세요" id="msgArea"></textarea>
+                        </div>
+                    </div>
+                    <div class="btnBox">
+                        <button type="buttn" class="btn_test" onclick="javascript:ajaxClassifyMsg();">검증하기</button>
+                    </div>
+                </div>
+                <!-- 검증결과 -->
+                <div class="fr_inp">
+                     <div class="list_box_inp">
+                        <div class="tit">검증 결과</div>
+                        <div class="list_view_wrap_fr" id="testTxt">
+                        <%--
+                       		안녕하세요. 이순신 고객님 IBK 기업은행입니다 . 고객님께서 보유 중이신 적금의만기일이 2021 년 9 월 30 일입니다 .지금사용 계획 없으시다면 이번에 새로 출시된 IBK 적금 가입은 어떠실까요
+                         	<span class="highlight">1년 가입 기준 최고 연 2.30% 금리 제공하는 상품입니다 </span>
+                         	희망하실 경우 방문 또는 비대면으로 업무 진행가능하며 , IBK 기업은행 대리 김대리 (02 000 0000) 으로 연락주세요
+                       	 --%>
+                        </div>
+                        <div class="list_view_wrap_fr02 " id="testLabel"><%-- 일반마케팅광고 --%></div>
+                    </div>
+                </div>
+            </div>
+            <!-- //.content -->
+        </div> 
+        <!-- //#contents -->
+    </div>
+    <!-- //#container -->
+</div>
+<!-- //#wrap -->
+<!---------------------- layer popup ---------------------->
+<!-- 로딩  -->
+<div id="wrap-loading" class="lyr_bg lyrWrap" style="display:none;">
+    <img src="/images/loading.gif" alt="Loading..." style="border:0; position:absolute; left:50%; top:50%;" />
+</div>
+<iframe width=0 height=0 frameborder=0 scrolling=no name="hide_frame" id="hide_frame" style="margin:0"></iframe>
+<!-- //로딩  -->
+<!-- Local Script -->
+<script type="text/javascript">
+jQuery.event.add(window,"load",function(){
+    $(document).ready(function(){
+        // submenu active
+        $("#sub_ID00001").addClass("active");//상위 메뉴
+        $("#sub_ID00006").addClass("active");//하위 메뉴
+        
+    });
+});
+
+// 사용자 이미지 GET
+function ajaxClassifyMsg(){
+	var apiUrl = '<c:out value="${apiUrl}"/>' + '/msg/classify_msg';
+	var labelStart = '<span class="highlight">';
+	var labelEnd = '</span>';
+	var msg = $('#msgArea').val();
+	
+	var params = {
+	  "msg_list": [
+		  {
+		  "seq": 0,
+		  "channel": "admin",
+		  "title": "사전검증 테스트",
+		  "text": msg,
+		  "brcd": "admin",
+		  "emn": "admin",
+		  "select_label": "테스트"
+		  }
+	  ]
+ 	}
+	
+	$.ajax({
+		url : apiUrl,
+		type : "post",
+		async : true,
+		data : JSON.stringify(params),
+		dataType: "json",
+	    contentType: "application/json",
+	    timeout: 60000,// timeout : 30초간 서버와의 통신기다리는 시간.
+	    cache: false,
+		success : function(resp) {
+			console.log(resp);
+			var data = resp.msg_results;
+			var jsonData = JSON.parse(JSON.stringify(data[0]));
+			
+			var label = jsonData.label;
+			var text = jsonData.text;
+			var keyStart = jsonData.key_info.start;
+			var keyEnd = jsonData.key_info.end + labelStart.length;
+
+			var output = ''
+				output = [text.slice(0, keyStart), labelStart, text.slice(keyStart)].join('');
+				output = [output.slice(0, keyEnd), labelEnd, output.slice(keyEnd)].join('');
+			$('#testTxt').html(output);
+			$('#testLabel').html(label);
+		},
+		beforeSend: function() { //로딩이미지 보여주기
+		    $("#wrap-loading").show();
+		},
+		complete: function() { //로딩이미지 숨기기
+		    $("#wrap-loading").hide();
+		},
+		error : function(jqXHR, textStatus) {
+	        if(textStatus === 'timeout'){     
+	             console.log('timeout : 60 sec');
+	             //alert("");
+	        } else {
+				console.log("error");
+				//modalOpenClose("detect_result_detail", "close");
+	        }
+		}
+	});
+}
+
+</script>
+</body>
+</html>
