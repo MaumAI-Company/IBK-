@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mindslab.web.mapper.maria.MariaStatisticMapper">
+   
+    <select id="getStatisticListExcelDown" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT 
+			tb1.DATE
+			, IFNULL(tb2.REAL, 0) AS 'REAL'
+			, IFNULL(tb2.PAPER, 0) AS PAPER
+			, IFNULL(tb2.MONITOR, 0) AS MONITOR
+		FROM
+		    ( 
+		        WITH RECURSIVE CTE AS (
+		            SELECT 
+		                1 AS ORD
+		                , DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d') AS DATE  
+		            UNION ALL
+		            SELECT 
+		                c.ORD + 1
+		                , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE
+		            FROM 
+		            	CTE c
+		            WHERE 
+		            	1=1
+	                    <![CDATA[ 
+		            	AND c.ORD < ${mDiff} + 1
+		            	]]>
+		        ) 
+		        SELECT
+		            DATE_FORMAT(DATE, '%Y-%m') AS DATE
+		        FROM 
+		            CTE
+		    ) AS tb1 
+		    LEFT OUTER JOIN 
+		    (
+		        SELECT
+		                T.DATE
+		                , MAX(CASE WHEN DETECT_RESULT = 'REAL' THEN cnt END) AS 'REAL'
+		                , MAX(CASE WHEN DETECT_RESULT = 'PAPER' THEN cnt END) AS PAPER
+		                , MAX(CASE WHEN DETECT_RESULT = 'MONITOR' THEN cnt END) AS MONITOR
+		            FROM ( 
+		                SELECT 
+		                    sr.DETECT_RESULT
+		                    <choose>
+		                        <when test="searchType != null and searchType != ''">
+		                            <choose>
+		                                <when test="'month'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </when>
+		                                <when test="'day'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') AS DATE  
+		                                </when>
+		                                <otherwise>
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </otherwise>
+		                            </choose>
+		                        </when>
+		                        <otherwise>
+		                            , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                        </otherwise>
+		                    </choose>
+		                    , count(1) AS CNT
+		                FROM 
+		                    SCAN_RESULT AS sr
+		                WHERE 
+		                    1=1
+		                    <![CDATA[ 
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') >= DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d')
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') <= DATE_FORMAT(#{searchEndDate}, '%Y-%m-%d')
+		                    ]]>
+		                GROUP BY DATE, sr.DETECT_RESULT 
+		                ORDER BY DATE ASC
+		                ) T
+		            WHERE 
+		                1=1
+		            GROUP BY T.DATE
+		    ) AS tb2
+		    ON tb1.DATE = tb2.DATE
+		WHERE
+		    1=1
+		ORDER BY DATE ASC
+    </select>
+    
+    <select id="getStatisticDate" parameterType="java.util.HashMap" resultType="cMap">
+		SELECT 
+			tb1.DATE
+			, IFNULL(tb2.REAL, 0) AS 'REAL'
+			, IFNULL(tb2.PAPER, 0) AS PAPER
+			, IFNULL(tb2.MONITOR, 0) AS MONITOR
+		FROM
+		    ( 
+		        WITH RECURSIVE CTE AS (
+		            SELECT 
+		                1 AS ORD
+		                , DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d') AS DATE  
+		            UNION ALL
+		            SELECT 
+		                c.ORD + 1
+		                , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE
+		            FROM 
+		            	CTE c
+		            WHERE 
+		            	1=1
+	                    <![CDATA[ 
+		            	AND c.ORD < ${mDiff} + 1
+		            	]]>
+		        ) 
+		        SELECT
+		            DATE_FORMAT(DATE, '%Y-%m') AS DATE
+		        FROM 
+		            CTE
+		    ) AS tb1 
+		    LEFT OUTER JOIN 
+		    (
+		        SELECT
+		                T.DATE
+		                , MAX(CASE WHEN DETECT_RESULT = 'REAL' THEN cnt END) AS 'REAL'
+		                , MAX(CASE WHEN DETECT_RESULT = 'PAPER' THEN cnt END) AS PAPER
+		                , MAX(CASE WHEN DETECT_RESULT = 'MONITOR' THEN cnt END) AS MONITOR
+		            FROM ( 
+		                SELECT 
+		                    sr.DETECT_RESULT
+		                    <choose>
+		                        <when test="searchType != null and searchType != ''">
+		                            <choose>
+		                                <when test="'month'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </when>
+		                                <when test="'day'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') AS DATE  
+		                                </when>
+		                                <otherwise>
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </otherwise>
+		                            </choose>
+		                        </when>
+		                        <otherwise>
+		                            , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                        </otherwise>
+		                    </choose>
+		                    , count(1) AS CNT
+		                FROM 
+		                    SCAN_RESULT AS sr
+		                WHERE 
+		                    1=1
+		                    <![CDATA[ 
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') >= DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d')
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') <= DATE_FORMAT(#{searchEndDate}, '%Y-%m-%d')
+		                    ]]>
+		                GROUP BY DATE, sr.DETECT_RESULT 
+		                ORDER BY DATE ASC
+		                ) T
+		            WHERE 
+		                1=1
+		            GROUP BY T.DATE
+		    ) AS tb2
+		    ON tb1.DATE = tb2.DATE
+		WHERE
+		    1=1
+		ORDER BY DATE ASC
+    </select>
+</mapper>
+
+
+	
+
