@@ -1,3 +1,0 @@
-  MindsLab Work Place
-
-  ${application.title} ${application.version} by Spring Boot ${spring-boot.version}
