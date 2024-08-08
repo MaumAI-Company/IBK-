@@ -1,0 +1,66 @@
+
+<div class="pagination clearfix" xmlns:th="http://www.thymeleaf.org" th:fragment="pagingbody(list, link, formId)"
+     th:with="start=${T(java.lang.Math).floor(list.number/10)*10 + 1}, last=(${start + 9 < list.totalPages ? start + 9 : (list.totalPages == 0 ? 1 : list.totalPages)})">
+    <!--    <a href="javascript:;" th:onclick="'fnPage(1)'" class="page_nav first"><span class="blind">처음</span></a>-->
+    <!--<a href="javascript:;" th:if="${list.number > 9}" th:onclick="'fnPage(1)'" class="page_nav first"><span class="">처음</span></a>-->
+    <button type="button" th:onclick="'fnPage('+${!list.first ? list.number : list.number + 1}+')'"
+            class="page_nav prev" th:classappend="${list.first ? 'disabled' : ''}" th:disabled="${list.first}">
+        <!--TODO 이전/다음 이동 될 수 없을 시 클래스 disabled 추가-->
+        <span class="blind">이전</span>
+    </button>
+    <!--<li class="pager__item" th:if="${list.totalPages > 4}">
+        <a class="pager__link" href="javascript:;" th:onclick="'fnPage('+${!list.first ? list.number : list.number + 1}+')'">...</a>
+    </li>-->
+    <th:block th:each="page: ${#numbers.sequence(start, last)}">
+        <a th:text="${page}" href="javascript:;" th:onclick="'fnPage('+${page}+')'"
+           th:class="${page == (list.number + 1)} ? 'active'"></a>
+    </th:block>
+    <!--<li class="pager__item" th:if="${list.totalPages > 4}">
+        <a class="pager__link" href="javascript:;" th:onclick="'fnPage('+${(!list.last ? list.number + 2 : list.number + 1)}+')'">...</a>
+    </li>-->
+    <!--TODO 5개 이후 클릭시 노출-->
+    <!--<a href="javascript:;" th:onclick="'fnPage('+${(!list.last ? list.number + 2 : list.number + 1)}+')'"
+       class="page_nav next">
+        &lt;!&ndash;TODO 이전/다음 이동 될 수 없을 시 클래스 disabled 추가&ndash;&gt;
+        <span class="blind">다음</span>
+    </a>-->
+    <button th:onclick="'fnPage('+${(!list.last ? list.number + 2 : list.number + 1)}+')'"
+            class="page_nav next" th:classappend="${list.last ? 'disabled' : ''}" th:disabled="${list.last}">
+        <!--TODO 이전/다음 이동 될 수 없을 시 클래스 disabled 추가-->
+        <span class="blind">다음</span>
+    </button>
+    <!--    <a href="javascript:;" th:onclick="'fnPage('+${list.totalPages}+')'" class="page_nav last"><span class="blind">마지막</span></a>-->
+    <!--<a href="javascript:;" th:onclick="'fnPage('+${list.totalPages}+')'" class="page_nav last"><span class="">마지막</span></a>-->
+    <script type="text/javascript" th:inline="javascript">
+        function fnPage(page, size) {
+            let link = /*[[ ${link} ]]*/;
+            let formId = /*[[ ${formId} ]]*/;
+
+            let frm = document.forms[formId];
+            let input;
+            if (page && page > 0) {
+                input = document.createElement('input');
+                input.type   = 'hidden';
+                input.name  = 'page';
+                input.value  = page;
+                frm.appendChild(input);
+                input = document.createElement('input');
+                input.type   = 'hidden';
+                input.name  = 'size';
+                input.value  = $('#pageSize').val();
+                frm.appendChild(input);
+            } else {
+                if (size && size > 0) {
+                    input = document.createElement('input');
+                    input.type   = 'hidden';
+                    input.name  = 'size';
+                    input.value  = size;
+                    frm.appendChild(input);
+                }
+            }
+
+            frm.action = link;
+            frm.submit();
+        }
+    </script>
+</div>
