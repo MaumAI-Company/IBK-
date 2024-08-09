@@ -1,15 +1,27 @@
-header{position:fixed;top:40px;left:40px}
-#loginWrap{height:100vh;min-width:1400px;background-color:#fff;display:flex}
-#loginWrap > div,#loginWrap > form  {width: 50%}
-/*.bg_area {background: url("/ClientUI/images/common/bg_login.png") no-repeat 50% 50%/cover}*/
-.login_container{margin:291px auto 0;max-width:373px}
-.login_box{width:360px;text-align: center}
-.login_box > p{margin:20px 0;font-size:20px;line-height:150%}
-.login_form{margin: 20px 0 40px;max-width:360px}
-.login_form > .input input{padding:12px 19px;width:360px;height:48px;border-color:#959595}
-.login_form > .input:nth-child(2){margin-top:12px}
-.chk_area {display:flex;justify-content:space-between;align-items:center;width:360px;margin:0 auto}
-.chk_area .checkbox label{color:#333}
-.chk_area > a{color:#767676;font-size:14px;line-height:1}
-.btn_login{margin-top:12px;padding:0 12px;width:360px;height:48px;color:#fff;font-size:16px;font-weight:500;line-height:1;font-family:'Pretendard';background:#000}
-.btn_login:hover{color:#fff;background-color:#0080ff}
+@charset "UTF-8";
+
+#wrap{min-width:1250px;background-color:#fff}
+#container{display:flex;min-height:760px}
+.left_cont{flex-shrink:0;position:relative;width:35.5%;max-width:680px;min-height:100vh;background:linear-gradient(164deg, #30b4f2 3.81%, #005dbf 94.68%)}
+.left_cont:after{content:'';position:absolute;bottom:80px;left:0;width:100%;height:357px;background:url(../images/contents/bg_login.png) no-repeat 50% 100% / 70.588%}
+.right_cont{flex:1;display:flex;align-items:center;justify-content:center;padding-bottom:170px}
+
+.intro_txt{padding-top:160px;padding-left:14.7%;color:#fff;font-size:32px}
+
+.login_form{width:360px;text-align:center}
+.login_form .login_txt{margin-top:32px;padding-bottom:20px;color:#252729;font-size:18px;line-height:1}
+.login_form .input{margin-top:12px}
+.login_form .input input{height:52px;padding:0 15px;font-size:16px}
+.login_form .btn_login{width:100%;height:52px;margin-top:24px;color:#fff;font-size:16px;font-weight:600;border:0;background-color:#004c9d}
+.login_form .chk_area{display:flex;justify-content:space-between;margin-top:20px}
+
+@media screen and (max-width:1920px) {
+    .intro_txt{font-size:1.6667vw}
+
+    @media screen and (max-width:1250px) {
+        .intro_txt{font-size:20px}
+    }
+}
+@media screen and (max-height:960px) {
+    .intro_txt{padding-top:16.6667vh}
+}

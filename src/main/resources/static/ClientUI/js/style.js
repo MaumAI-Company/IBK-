@@ -1,35 +1,41 @@
 $(document).ready(function(){
 	//aside toggle
-	$(window).on('resize',function(){
-		if($('body').hasClass('aside_hide')){
-			$('#myTabbar').css('width', '100%');
-		}else{
-			$('#myTabbar').css('width', '100%');
-		}
-	});
 	$('.btn_toggle_aside').on('click', function(){
 		$('body').toggleClass('aside_hide');
-
-		try {
-			let s = $('body').hasClass('aside_hide');
-			let width = $('#myTabbar').css('width');
-			width = width.replace('px', '') * 1;
-			width = s ? width + 180 : width - 180; // 기본 lnb width - 접혔을 때 lnb width
-			$('#myTabbar').css('width', width + 'px');
-			myTabbar.setSizes();
-		} catch (e) {
-			console.log(e);
-		}
 	});
-	$('#aside').mouseenter(function () {
+	$('#aside nav').mouseenter(function () {
 		$(this).addClass('hover');
 	}).mouseleave(function () {
 		$(this).removeClass('hover');
 	});
-	$('#aside').focusin(function () {
+	$('#aside nav').focusin(function () {
 		$(this).addClass('hover');
 	}).focusout(function () {
 		$(this).removeClass('hover');
+	});
+
+	//lnb
+	$('#aside .nav li').each(function(){
+		if($(this).hasClass('active')){
+			$(this).children('ul').show();
+		}
+
+		$(this).children('a').on('click', function(){
+			if($(this).not(':only-child')){
+				$(this).next('ul').stop().slideToggle().parent('li').toggleClass('active').siblings().removeClass('active').children('ul').stop().slideUp();
+			}
+		});
+	});
+
+	//필터 선택
+	$('.btn_filter').on('click', function(){
+		$(this).toggleClass('active');
+	});
+	//필터 영역 제외하고 클릭 시 필터 영역 닫힘
+	$(document).on('click', function (e) {
+		if(!$(e.target).parents('div').hasClass('filter_area')){
+			$('.btn_filter').removeClass('active');
+		}
 	});
 
 	//상단으로 스크롤
@@ -90,7 +96,7 @@ $(document).ready(function(){
 	});
 
 	//Jquery Scrollbar
-	$('.jq_scrollbar, #aside nav, textarea, body > .contents, .contents .tbl_scrollbar, .pop_window .pop_cont, .pop_layer .pop_cont').each(function(){
+	$('.jq_scrollbar, textarea, body > .contents, .contents .tbl_scrollbar, .pop_window .pop_cont, .pop_layer .pop_cont').each(function(){
 		if(!$(this).hasClass('noscroll')){
 			$(this).scrollbar();
 		}
@@ -316,16 +322,17 @@ function fn_setDatePicker(selector, option) {
 		option = {};
 	}
 	option.timepicker = false;
-	option.format = 'Y-m-d';
+	option.format = 'Y.m.d';
 	option.scrollMonth = false;
 	option.scrollInput = false;
 	$(selector).datetimepicker(option);
+	console.log('test')
 }
 function fn_setDateTimePicker(selector, option) {
 	if (!option) {
 		option = {};
 	}
-	option.format = 'Y-m-d H:i';
+	option.format = 'Y.m.d H:i';
 	option.scrollMonth = false;
 	$(selector).datetimepicker(option);
 }
