@@ -1,241 +1,78 @@
 <aside id="aside">
-    <h1 class="logo">
-        <a href="/soulGod/main">
-            <img src="/ClientUI/images/common/logo.svg" alt="IBK"/>
-            <img src="/ClientUI/images/common/logo_icon.svg" alt="IBK" class="icon"/>
-        </a>
-    </h1>
     <nav>
         <ul class="nav">
+            <li class="ico_chart" th:classappend="${mc == 'report' ? 'active' : ''}">
+                <a href="javascript:void(0);">지급결의 AI 적용 결과 조회</a>
+                <ul class="depth">
+                    <li th:classappend="${pageTitle == 'BC카드 지급결의 내역 조회' ? 'active' : ''}">
+                        <a href="/soulGod/report/card">BC카드 지급결의 내역 조회</a>
+                    </li>
+                    <li th:classappend="${pageTitle == '세금계산서 지급결의 내역 조회' ? 'active' : ''}">
+                        <a href="/soulGod/report/taxInvoice">세금계산서 지급결의 내역 조회</a>
+                    </li>
+                    <li th:classappend="${pageTitle == '기간별 통계' ? 'active' : ''}">
+                        <a href="/soulGod/report/statistic">기간별 통계</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="ico_database" th:classappend="${mc == 'learn' ? 'active' : ''}">
+                <a href="javascript:void(0);">학습 관리</a>
+                <ul class="depth">
+                    <li th:classappend="${pageTitle == '데이터 관리' ? 'active' : ''}">
+                        <a href="/soulGod/learn/dataManage">데이터 관리</a>
+                    </li>
+                    <li th:classappend="${pageTitle == '모델 관리' ? 'active' : ''}">
+                        <a href="/soulGod/learn/modelManage">모델 관리</a>
+                    </li>
+                    <li th:classappend="${pageTitle == '배포 관리' ? 'active' : ''}">
+                        <a href="/soulGod/learn/deployManage">배포 관리</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="ico_dns" th:classappend="${mc == 'system' ? 'active' : ''}">
+                <a href="javascript:void(0);">시스템 상태</a>
+                <ul class="depth">
+                    <li th:classappend="${pageTitle == '모니터링' ? 'active' : ''}">
+                        <a href="/soulGod/system/monitoring">모니터링</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="ico_manage" th:classappend="${mc == 'admin' ? 'active' : ''}">
+                <a href="javascript:void(0);">Admin</a>
+                <ul class="depth">
+                    <li th:classappend="${pageTitle == '부서 관리' || pageTitle == '사용자 관리' ? 'active' : ''}">
+                        <a href="javascript:void(0);">조직 관리</a>
+                        <ul>
+                            <li th:classappend="${pageTitle == '부서 관리' ? 'active' : ''}">
+                                <a href="/soulGod/admin/department">부서 관리</a>
+                            </li>
+                            <li th:classappend="${pageTitle == '사용자 관리' ? 'active' : ''}">
+                                <a href="/soulGod/admin/user">사용자 관리</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li th:classappend="${pageTitle == '권한 관리' ? 'active' : ''}">
+                        <a href="/soulGod/admin/auth">권한 관리</a>
+                    </li>
+                    <li th:classappend="${pageTitle == '메뉴 관리' ? 'active' : ''}">
+                        <a href="/soulGod/admin/menu">메뉴 관리</a>
+                    </li>
+                    <li th:classappend="${pageTitle == '검증 수준(Threshold) 설정' ? 'active' : ''}">
+                        <a href="javascript:void(0);">검증 설정</a>
+                        <ul>
+                            <li th:classappend="${pageTitle == '검증 수준(Threshold) 설정' ? 'active' : ''}">
+                                <a href="/soulGod/admin/fakeCheck">검증 수준(Threshold) 설정</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li th:classappend="${pageTitle == '공통코드 관리' ? 'active' : ''}">
+                        <a href="/soulGod/admin/commonCode">공통코드 관리</a>
+                    </li>
+                </ul>
+            </li>
         </ul>
     </nav>
+    <a href="javascript:;" class="btn_toggle_aside">
+        <span class="blind">메뉴 접기</span>
+    </a>
 </aside>
-<a href="javascript:;" class="btn_toggle_aside">
-    <span class="blind">메뉴 접기</span>
-</a>
-
-<script type="text/javascript">
-    var myTabbar;
-    var menuArr = [];
-
-    $(function () {
-        doOnLoad();
-        fn_makeMenu();
-    });
-
-    function doOnLoad() {
-        var urls = location.hostname;
-        // document.domain = urls;
-        window.dhx4.transDetect = function(){
-            this.transData = {
-                transProp: false,
-                transEv : null
-            };
-            return this.transData;
-        };
-        myTabbar = new dhtmlXTabBar("myTabbar");
-        myTabbar.enableAutoReSize(true);
-        myTabbar.setArrowsMode('auto');
-        myTabbar.attachEvent("onTabClick", function (id, lastId) {
-        });
-        fn_addTap("home", "home", "/soulGod/home")
-    }
-
-    function convertCookieToObject(cookies) {
-        const cookieItems = cookies.split(';');
-
-        const obj = {};
-        cookieItems.forEach((item) => {
-            // '='으로 분리
-            const elem = item.split('=');
-            // 키 가져오기
-            const key = elem[0].trim();
-            // 값 가져오기
-            const val = decodeURIComponent(elem[1]);
-            // 저장
-            obj[key] = val;
-        });
-        return obj;
-    }
-
-    function getCookie(name) {
-        let matches = document.cookie.match(new RegExp(
-            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-        ));
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-    }
-
-
-    function fn_addTap(id, name, url, newwinAt) {
-        $.ajax({
-            type: 'post',
-            url: '/api/v1/sessionAccountCheck',
-            contentType: 'application/json;charset=utf-8',
-            success: function (data) {
-                if (data) {
-                    if (myTabbar) {
-                        $("nav li[id^=menu]").removeClass("active");
-                        let menu = $("#" + id).addClass("active");
-                        if ('Y' !== newwinAt) {
-                            if (myTabbar.getAllTabs().includes(id)) {
-                                myTabbar.tabs(id).setActive();
-                                myTabbar.tabs(id).show();
-                                //let menuUl = $("#menu_" + id).parent("ul").show().parents("li");
-                            } else {
-                                myTabbar.addTab(id, name, null, null, true, id !== 'home');
-                                if (!url) {
-                                    url = '/404';
-                                }
-                                myTabbar.tabs(id).attachURL(url);
-                            }
-
-                            $.each($('.depth3'), function () {
-                                if (!$("#" + id).parents('ul').hasClass('depth3')) {
-                                    $(this).hide().parent('li').removeClass('active');
-                                }
-                            });
-                        } else { // 새창열림
-                            let menuId = id.split('_');
-                            window.open(`/soulGod/main?menuId=${menuId[1]}`, '_blank');
-                        }
-                        /*myTabbar.tabs(id).hide();
-
-                        setTimeout(() => {
-                            myTabbar.tabs(id).show();
-                        }, 5000);*/
-                    }
-                } else {
-                    location.reload();
-                }
-            },
-            error: function (error) {
-                alert('error::' + error.statusText);
-            }
-        });
-
-    }
-
-
-    function fn_makeMenu() {
-        let jsonData = {};
-        $.ajax({
-            type: 'post',
-            url: '/api/v1/s/system/managerMenu/tree',
-            contentType: 'application/json;charset=utf-8',
-            data: JSON.stringify(jsonData),
-            dataType: 'json',
-            success: function (data) {
-                let gnbHtml = '';
-
-                /*메뉴 추가 시 아래 조건문 추가 필요*/
-                for (let i = 0; i < data.length; i++) {
-                    let menuIconClass = 'ico_member';
-                    if (data[i].menuNm === '상품관리'){
-                        menuIconClass = 'ico_product';
-                    } else if (data[i].menuNm === '주문관리'){
-                        menuIconClass = 'ico_order';
-                    } else if (data[i].menuNm === 'QR맵핑내역'){
-                        menuIconClass = 'ico_qr';
-                    } else if (data[i].menuNm === '알림톡관리'){
-                        menuIconClass = 'ico_talk';
-                    } else if (data[i].menuNm === '시스템관리'){
-                        menuIconClass = 'ico_setting';
-                    }
-
-                    gnbHtml += `<li>`;
-                    gnbHtml += `<a href="javascript:;" class="${menuIconClass}">${data[i].menuNm}</a>`;
-
-                    if (data[i].subMenu && data[i].subMenu.length > 0) {
-                        gnbHtml += `<ul class="depth" style="display:none">`;
-                        for (let j = 0; j < data[i].subMenu.length; j++) {
-                            let smenu = data[i].subMenu[j];
-                            menuArr[smenu.menuPid] = smenu;
-                            gnbHtml += `<li>`;
-                            if (smenu.subMenu && smenu.subMenu.length > 0) {
-                                gnbHtml += `<a href="javascript:;">${smenu.menuNm}</a>`;
-                                gnbHtml += `<ul class="depth" style="display:none">`;
-                                for (let k = 0; k < smenu.subMenu.length; k++) {
-                                    let ssmenu = smenu.subMenu[k];
-                                    menuArr[ssmenu.menuPid] = ssmenu;
-                                    gnbHtml += `<li>`;
-                                    if (ssmenu.menuUrl) {
-                                        gnbHtml += `<a href="javascript:fn_addTap('menu_${ssmenu.menuPid}','${ssmenu.menuNm}','${ssmenu.menuUrl}','${ssmenu.newwinAt}')">${ssmenu.menuNm}</a>`;
-                                    } else {
-                                        gnbHtml += `<a href="javascript:;">${ssmenu.menuNm}</a>`;
-                                    }
-                                    gnbHtml += `</li>`;
-                                }
-                                gnbHtml += `</ul>`;
-                            } else {
-                                if (smenu.menuUrl) {
-                                    gnbHtml += `<a href="javascript:fn_addTap('menu_${smenu.menuPid}','${smenu.menuNm}','${smenu.menuUrl}','${smenu.newwinAt}')">${smenu.menuNm}</a>`;
-                                } else {
-                                    gnbHtml += `<a href="javascript:;">${smenu.menuNm}</a>`;
-                                }
-                            }
-                            gnbHtml += `</li>`;
-                        }
-                        gnbHtml += `</ul>`;
-                    }
-                    gnbHtml += `</li>`;
-                }
-
-                $('.nav').append(gnbHtml);
-
-                fn_lnb_init();
-                fn_newTab(); // 새창열림 여부 확인
-            },
-            error: function (error) {
-                alert('error::' + error.statusText);
-            }
-        });
-    }
-
-    function fn_lnb_init(){
-        //nav
-        $('.nav li').each(function(){
-            var li = $(this);
-            li.children('a').on('click', function(e){
-                $('.logo').removeClass('bg');
-                $('.nav>li.active').removeClass('bg02')
-                if($(this).attr('href') == '#'){
-                    e.preventDefault();
-                }
-                li.toggleClass('active').children('.depth').stop().slideToggle();
-                li.siblings().removeClass('active').children('.depth').stop().slideUp();
-
-                //1depth 1번째 li 활성화 시 배경 이미지 추가
-                if($('.nav > li:first-child').hasClass('active')){
-                    $('.logo').addClass('bg');
-                }
-                if($('.nav > li.active > ul > li:last-child').hasClass('active')){
-                    $('.nav>li.active').addClass('bg02')
-                }
-            });
-            if(li.hasClass('active')){
-                li.children('.depth').show();
-            }else{
-                li.children('.depth').hide();
-            }
-            //1depth 1번째 li 활성화 시 배경 이미지 추가
-            if($('.nav > li:first-child').hasClass('active')){
-                $('.logo').addClass('bg');
-            }
-
-            if($('.nav > li.active > ul > li:last-child').hasClass('active')){
-                $('.nav>li.active').addClass('bg02')
-            }
-        });
-    }
-
-    function fn_newTab() {
-        let param = new URLSearchParams(location.search);
-        let menuId = param.get('menuId');
-        if (menuId) {
-            let obj = menuArr[menuId];
-            if (obj) {
-                fn_addTap('menu_' + menuId, obj.menuNm, obj.menuUrl, "N");
-            }
-        }
-    }
-</script>
