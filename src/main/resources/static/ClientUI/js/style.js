@@ -29,12 +29,25 @@ $(document).ready(function(){
 
 	//필터 선택
 	$('.btn_filter').on('click', function(){
-		$(this).toggleClass('active');
+		var btnFilter = $(this),
+			filterArea = btnFilter.parent('.filter_area');
+		filterArea.toggleClass('active');
+		if(filterArea.hasClass('active')){
+			btnFilter.addClass('active');
+		}else{
+			if($('.selected_filter').length === 0 || $('.selected_filter').children().length === 0){
+				btnFilter.removeClass('active');
+			}
+		}
 	});
 	//필터 영역 제외하고 클릭 시 필터 영역 닫힘
 	$(document).on('click', function (e) {
 		if(!$(e.target).parents('div').hasClass('filter_area')){
-			$('.btn_filter').removeClass('active');
+			$('.filter_area').removeClass('active');
+
+			if($('.selected_filter').length === 0 || $('.selected_filter').children().length === 0){
+				$('.btn_filter').removeClass('active');
+			}
 		}
 	});
 
@@ -96,7 +109,7 @@ $(document).ready(function(){
 	});
 
 	//Jquery Scrollbar
-	$('.jq_scrollbar, textarea, body > .contents, .contents .tbl_scrollbar, .pop_window .pop_cont, .pop_layer .pop_cont').each(function(){
+	$('textarea, .pop_layer .pop_cont').each(function(){
 		if(!$(this).hasClass('noscroll')){
 			$(this).scrollbar();
 		}
@@ -195,15 +208,11 @@ function niceSelect(){
 			}
 		}));
 	});
-
-	$('.contents .nice-select').each(function () {
-		$(this).children('.list').scrollbar();
-	});
 }
 
 //input
 function inputActive(){
-	$('.input').each(function () {
+	$('.input, .search').each(function () {
 		var divInp = $(this),
 			inp = divInp.find('input');
 
@@ -326,7 +335,6 @@ function fn_setDatePicker(selector, option) {
 	option.scrollMonth = false;
 	option.scrollInput = false;
 	$(selector).datetimepicker(option);
-	console.log('test')
 }
 function fn_setDateTimePicker(selector, option) {
 	if (!option) {
@@ -379,9 +387,6 @@ function layerShow(ele,obj){
 		if(!$(this).hasClass('noscroll')){
 			$(this).scrollbar();
 		}
-	});
-	popCont.find('.nice-select').each(function () {
-		$(this).children('.list').scrollbar();
 	});
 }
 //레이어 팝업 닫기
