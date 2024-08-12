@@ -45,6 +45,8 @@ public class MainController {
                        @CurrentUser Account account){
 //        model.addAttribute("mngrNm", account.getMngrNm());
 //        model.addAttribute("loginDtm", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd(E) HH:mm:ss")));
+        model.addAttribute("pageTitle", "대시보드");
+        
         return "/soulGod/main";
     }
 }

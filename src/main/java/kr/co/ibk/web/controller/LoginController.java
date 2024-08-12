@@ -23,6 +23,7 @@ public class LoginController extends BaseCont {
 
     @GetMapping("/login")
     public String Login(Model model) {
+        model.addAttribute("pageTitle", "로그인");
         return "/login";
     }
 
