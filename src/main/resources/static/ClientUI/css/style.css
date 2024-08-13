@@ -80,6 +80,7 @@
 .board_top .sel_board.sel_sorting .current:before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%239aa1a6' d='M3 18v-2h6v2zm0-5v-2h12v2zm0-5V6h18v2z'/%3E%3C/svg%3E")}
 .board_top .sel_board.sel_sorting:hover .current:before,
 .board_top .sel_board.sel_sorting.open .current:before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%230092d7' d='M3 18v-2h6v2zm0-5v-2h12v2zm0-5V6h18v2z'/%3E%3C/svg%3E")}
+.search_form + .board_top{margin-top:16px}
 .total_num{position:relative;padding-left:28px;color:#6d7175;line-height:24px}
 .total_num:before{content:'';position:absolute;top:0;left:0;width:24px;height:24px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%239aa1a6' d='M7 9V7h14v2zm0 4v-2h14v2zm0 4v-2h14v2zM4 9q-.425 0-.712-.288T3 8t.288-.712T4 7t.713.288T5 8t-.288.713T4 9m0 4q-.425 0-.712-.288T3 12t.288-.712T4 11t.713.288T5 12t-.288.713T4 13m0 4q-.425 0-.712-.288T3 16t.288-.712T4 15t.713.288T5 16t-.288.713T4 17'/%3E%3C/svg%3E") no-repeat 0 50%}
 
@@ -94,9 +95,26 @@
 .filter .btn_area .btn.fill{flex:1}
 .filter_area.active .filter{display:block}
 .filter_area.active .btn_filter{}
-.selected_filter{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px; }
+.selected_filter{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px}
 .selected_filter:not(:empty){padding-bottom:12px}
 
+/*** box ***/
+.area{display:flex;flex-wrap:wrap;gap:20px}
+.area .box{flex:1;align-content:flex-start}
+.box{display:flex;flex-wrap:wrap;align-items:center;column-gap:12px;padding:20px;border-radius:8px;background-color:#fff;box-shadow:0 0 15px 0 rgba(0, 0, 0, 0.06)}
+.box > div{display:flex;align-items:center;column-gap:12px}
+.box .btn_area{margin-left:auto;padding-top:0}
+.box table ~ .btn_area{padding-top:16px}
+.box .nice-select,
+.box .input{width:200px}
+.box > .sub_tit{width:100%}
+.box .sub_tit{margin-bottom:14px;font-size:16px;font-weight:500}
+.box .tit_area{width:100%;margin-bottom:18px}
+.box .tit_area .sub_tit{margin-bottom:0}
+
 /*** graph ***/
-.graph_area{padding:31px 39px;border:1px solid #ebeff2;border-radius:8px;background-color:#fff}
+.graph_area{display:flex;flex-wrap:wrap;gap:20px}
 .graph_area:not(:last-child){margin-bottom:20px}
+.graph_area:last-child{margin-top:20px}
+.graph_area .graph{flex:1;min-width:calc(50% - 10px)}
+.graph{padding:31px 39px;border:1px solid #ebeff2;border-radius:8px;background-color:#fff}

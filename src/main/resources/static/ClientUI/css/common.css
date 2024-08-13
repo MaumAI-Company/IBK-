@@ -444,13 +444,25 @@ body{color:#252729;font-size:14px;font-family:'Pretendard',Malgun Gothic,'맑은
 .tbl_list > tbody > tr:last-child > td{border-bottom:0}
 .tbl_list > tbody > tr:hover > td{background-color:#f9f9f9}
 .tbl_list > tbody > tr:hover > td [class="badge"]{background-color:#fff}
+.tbl_list02{border-top:2px solid #0092d7}
+.tbl_list02 > thead > tr > th{height:43px;padding-bottom:2px;padding-left:16px;color:#6D7175;font-size:12px;font-weight:600;vertical-align:middle;text-align:left;border-bottom:1px solid #ebeff2}
+.tbl_list02 > tbody > tr > td{height:52px;padding-left:16px;vertical-align:middle;border-bottom:1px solid #ebeff2}
 /* write */
 .tbl_write{border-top:2px solid #0092d7}
 .tbl_write > tbody > tr > th{height:52px;padding:14px 16px;font-weight:400;text-align:left;vertical-align:top;border-bottom:1px solid #ebeff2;background-color:#f9f9f9}
-.tbl_write > tbody > tr > th .aster{color:#004c9d;font-weight:700}
+.tbl_write > tbody > tr > th .aster{display:inline-block;width:4px;height:4px;margin-left:1px;vertical-align:middle;border-radius:50%;background-color:#0092d7}
 .tbl_write > tbody > tr > th[rowspan]{border-right:1px solid #ebeff2}
 .tbl_write > tbody > tr > td{height:52px;padding:8px 16px;text-align:left;vertical-align:middle;border-bottom:1px solid #ebeff2;background-color:#fff}
 .tbl_write > tbody > tr > td .nice-select{width:240px}
+.tbl_write > tbody > tr > td .input{width:100%}
+.tbl_write > tbody > tr > td .df{flex-wrap:wrap;align-items:center;gap:12px}
+.tbl_write > tbody > tr > td .df:not(:first-child){margin-top:4px}
+.tbl_write > tbody > tr > td .df:has(> .input){column-gap:4px}
+.tbl_write > tbody > tr > td .df .input{flex:1}
+.tbl_write > tbody > tr > td .df .input + .btn{flex-shrink:0}
+.tbl_write > tbody > tr > td .location,
+.tbl_write > tbody > tr > td .location > div{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.tbl_write > tbody > tr > td .location > div:not(:last-child):after{content:'';width:16px;height:16px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%236d7175' d='M12.6 12L8 7.4L9.4 6l6 6l-6 6L8 16.6z'/%3E%3C/svg%3E") no-repeat 0 0}
 .div_write .tr + .tr{margin-top:28px}
 .div_write .tr .th{display:flex;align-items:center;column-gap:4px}
 .div_write .tr .th strong{font-size:12px;font-weight:600}
@@ -536,18 +548,20 @@ body{color:#252729;font-size:14px;font-family:'Pretendard',Malgun Gothic,'맑은
 /* 검색폼 */
 .search{display:flex;position:relative;width:100%}
 .search input{width:100%}
-.search input ~ .btn_search{padding-right:33px}
-.search .btn_search{position:absolute;top:0;right:0;bottom:0;width:33px;background:url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"%3E%3Cpath fill="%236d7175" d="M21.71 20.29L18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 7-7a7 7 0 0 1-7 7Z"%2F%3E%3C%2Fsvg%3E') no-repeat 50% 50% / 20px}
+.search input:has( ~ .btn_search){padding-right:33px !important}
+.search .btn_search{position:absolute;top:0;right:0;bottom:0;width:33px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%239AA1A6' d='m19.6 21l-6.3-6.3q-.75.6-1.725.95T9.5 16q-2.725 0-4.612-1.888T3 9.5t1.888-4.612T9.5 3t4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l6.3 6.3zM9.5 14q1.875 0 3.188-1.312T14 9.5t-1.312-3.187T9.5 5T6.313 6.313T5 9.5t1.313 3.188T9.5 14'/%3E%3C/svg%3E") no-repeat 50% 50% / 20px}
 .search .btn_del{display:none;position:absolute;top:0;right:0;bottom:0;width:30px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%236d7175' d='m8.4 17l3.6-3.6l3.6 3.6l1.4-1.4l-3.6-3.6L17 8.4L15.6 7L12 10.6L8.4 7L7 8.4l3.6 3.6L7 15.6zm3.6 5q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22'/%3E%3C/svg%3E") no-repeat 50% 50% / 16px}
+.search .btn_del:has(~ .btn_search){right:33px}
 .search.active input{padding-right:30px !important}
+.search.active input:has( ~ .btn_search){padding-right:63px !important}
 .search.active .btn_del{display:block}
 .search input[readonly] ~ .btn_search,
 .search input[disabled] ~ .btn_search{background-image:url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"%3E%3Cpath fill="%23ccd4d8" d="M21.71 20.29L18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 7-7a7 7 0 0 1-7 7Z"%2F%3E%3C%2Fsvg%3E')}
-.search_form{overflow:hidden;display:flex;position:relative;border:1px solid #ebeff2;border-radius:4px}
+.search_form{display:flex;position:relative;border:1px solid #ebeff2;border-radius:4px}
 .search_form .nice-select{flex-shrink:0;width:115px !important}
 .search_form .nice-select .current{border:0}
 .search_form .search{flex:1}
-.search_form .search input{padding:0 15px;border:0;border-radius:0}
+.search_form .search input{padding:0 15px;border:0;border-radius:0;background-color:transparent}
 .search_form:has(> .search.active){border-color:#252729}
 /*** pagination ***/
 .pagination{display:flex;justify-content:center;align-items:center;column-gap:20px;padding-top:32px;color:#6d7175;text-align:center}
@@ -567,7 +581,7 @@ body{color:#252729;font-size:14px;font-family:'Pretendard',Malgun Gothic,'맑은
 .nodata{padding:40px;text-align:center;border-radius:8px;background-color:#fff;box-shadow:0 0 15px 0 rgba(0, 0, 0, 0.06)}
 .nodata p:before{content:'';display:block;width:52px;height:52px;margin:0 auto 12px;background:url(../images/contents/bg_nodata.svg) no-repeat 0 0}
 /***** tree *****/
-.tree_area{border:1px solid #ebeff2;border-radius:5px}
+.tree_area{overflow-y:auto;width:100%;border:1px solid #ebeff2;border-radius:4px;background-color:#fff}
 /***** popup *****/
 .popup{position:relative;border-radius:16px;background-color:#fff;box-shadow:5px 5px 25px rgba(0,0,0,0.25)}
 .popup .pop_tit{display:block}

@@ -4,6 +4,20 @@
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <script type="text/javascript">
         $(function(){
+            fn_setDatePicker('#stDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        maxDate: $('#edDt').val() ? $('#edDt').val() : false
+                    })
+                }
+            });
+            fn_setDatePicker('#edDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        minDate: $('#stDt').val() ? $('#stDt').val() : false
+                    })
+                }
+            });
         });
     </script>
 </head>
@@ -13,7 +27,367 @@
 
     <div id="container">
         <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">학습 관리</h2>
+                    <h3 class="page_tit">배포 관리</h3>
+                </div>
+                <div class="btn_area">
+                    <button type="button" class="btn line_cool_grey30" onclick="layerShow('alert')">
+                        <span>배포</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="board_top">
+                <div>
+                    <div class="total_num"><b>346</b> 개의 글이 있습니다.</div>
+                </div>
+                <div class="mla">
+                    <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
+                    <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility">
+                        <option value="10" selected>10개</option>
+                        <option value="20">20개</option>
+                        <option value="30">30개</option>
+                        <option value="40">40개</option>
+                        <option value="50">50개</option>
+                    </select>
+                    <label for="sorting" class="blind">정렬조건</label>
+                    <select name="sorting" id="sorting" class="sel_board sel_sorting">
+                        <option value="asc">오름차순</option>
+                        <option value="desc" selected>내림차순</option>
+                    </select>
+                    <div class="filter_area">
+                        <button type="button" class="btn btn_text btn_filter">
+                            <i class="ico_filter"></i>
+                            <span>필터</span>
+                        </button>
+
+                        <div class="filter">
+                            <div class="inner">
+                                <dl>
+                                    <dt>조회기간</dt>
+                                    <dd>
+                                        <div class="term_form">
+                                            <label for="stDt" class="blind">조회 시작 날짜</label>
+                                            <input type="text" id="stDt" class="datepicker" value="2024.08.01" readonly>
+                                            <div class="swung"></div>
+                                            <label for="edDt" class="blind">조회 종료 날짜</label>
+                                            <input type="text" id="edDt" class="datepicker" value="2024.08.31" readonly>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        <label for="condition">조회조건</label>
+                                    </dt>
+                                    <dd>
+                                        <select name="condition" id="condition">
+                                            <option value="" selected>전체</option>
+                                            <option value="">제목</option>
+                                            <option value="">상태</option>
+                                            <option value="">학습 가능</option>
+                                            <option value="">학습 불가</option>
+                                        </select>
+                                    </dd>
+                                </dl>
+                                <div class="btn_area">
+                                    <button type="button" class="btn line_cool_grey30">
+                                        <span>초기화</span>
+                                    </button>
+                                    <button type="button" class="btn fill">
+                                        <span>검색</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="selected_filter">
+            </div>
+
+            <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
+            <!--<div class="nodata">
+				<p>검색 결과가 없습니다.</p>
+			</div>-->
+            <!--데이터가 없을 때 : e-->
+
+            <table class="tbl_list">
+                <caption>배포 관리 : No, 학습 모델 명, 등록자, 상태, 배포 여부, 배포일시, 등록일시로 구성</caption>
+                <colgroup>
+                    <col style="width: 3.5%;min-width: 44px;">
+                    <col style="width: 3.5%;min-width: 44px;">
+                    <col style="width: auto;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;min-width: 106px;">
+                    <col style="width: 11%;min-width: 106px;">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="allChk" class="all_chk">
+                            <label for="allChk">
+                                <span class="blind">전체선택</span>
+                            </label>
+                        </div>
+                    </th>
+                    <th scope="col">No</th>
+                    <th scope="col">학습 모델 명</th>
+                    <th scope="col">등록자</th>
+                    <th scope="col">상태</th>
+                    <th scope="col">배포 여부</th>
+                    <th scope="col">배포일시</th>
+                    <th scope="col">등록일시</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk10">
+                            <label for="chk10">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>10</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_blue_green">사용</div>
+                    </td>
+                    <td>성공</td>
+                    <td>2022.06.30</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk9">
+                            <label for="chk9">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>9</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_error10">중지</div>
+                    </td>
+                    <td>실패</td>
+                    <td>2022.06.30</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk8">
+                            <label for="chk8">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>8</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_blue_green">사용</div>
+                    </td>
+                    <td>-</td>
+                    <td>2022.06.30</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk7">
+                            <label for="chk7">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>7</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_error10">중지</div>
+                    </td>
+                    <td>-</td>
+                    <td>2022.06.30</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk6">
+                            <label for="chk6">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>6</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_error10">중지</div>
+                    </td>
+                    <td>실패</td>
+                    <td>2022.06.30</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk5">
+                            <label for="chk5">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>5</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_blue_green">사용</div>
+                    </td>
+                    <td>-</td>
+                    <td>2022.06.30</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk4">
+                            <label for="chk4">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>4</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_error10">중지</div>
+                    </td>
+                    <td>-</td>
+                    <td>2022.06.30</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk3">
+                            <label for="chk3">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>3</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_error10">중지</div>
+                    </td>
+                    <td>실패</td>
+                    <td>2022.06.30</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk2">
+                            <label for="chk2">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>2</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_blue_green">사용</div>
+                    </td>
+                    <td>-</td>
+                    <td>2022.06.30</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk1">
+                            <label for="chk1">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>1</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_error10">중지</div>
+                    </td>
+                    <td>-</td>
+                    <td>2022.06.30</td>
+                    <td>2022.06.30</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
+        </div>
     </div>
 </div>
+
+
+<!--얼럿 : s-->
+<div id="alert" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_message"></i>
+            <strong class="pop_tit">모델 배포(Deploy)</strong>
+            <p class="pop_txt">
+                모델을 배포(Deploy) 하시겠습니까?
+            </p>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('alert')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill" onclick="layerHide('alert');layerShow('alertComplete')">
+                <span>확인</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--얼럿 : e-->
+
+<!--얼럿 : s-->
+<div id="alertComplete" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_complete"></i>
+            <strong class="pop_tit">모델 배포(Deploy)</strong>
+            <p class="pop_txt">
+                모델을 배포(Deploy)가 완료 되었습니다.
+            </p>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn fill" onclick="layerHide('alertComplete')">
+                <span>확인</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--얼럿 : e-->
 </body>
 </html>
