@@ -91,6 +91,7 @@
 .filter dl + dl{margin-top:24px}
 .filter dl dt{font-size:12px;font-weight:600;line-height:1}
 .filter dl dd{margin-top:8px}
+.filter dl dd .df{column-gap:16px}
 .filter .nice-select{width:100%}
 .filter .btn_area .btn.fill{flex:1}
 .filter_area.active .filter{display:block}
@@ -109,6 +110,7 @@
 .box .input{width:200px}
 .box > .sub_tit{width:100%}
 .box .sub_tit{margin-bottom:14px;font-size:16px;font-weight:500}
+.box .sub_tit:not(:first-child){margin-top:20px;}
 .box .tit_area{width:100%;margin-bottom:18px}
 .box .tit_area .sub_tit{margin-bottom:0}
 

@@ -108,13 +108,6 @@ $(document).ready(function(){
 		});
 	});
 
-	//Jquery Scrollbar
-	$('textarea, .pop_layer .pop_cont').each(function(){
-		if(!$(this).hasClass('noscroll')){
-			$(this).scrollbar();
-		}
-	});
-
 	//Snackbar 닫기
 	$('.snackbar').each(function () {
 		var snackbar = $(this);
