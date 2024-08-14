@@ -4,6 +4,20 @@
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <script type="text/javascript">
         $(function(){
+            fn_setDatePicker('#stDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        maxDate: $('#edDt').val() ? $('#edDt').val() : false
+                    })
+                }
+            });
+            fn_setDatePicker('#edDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        minDate: $('#stDt').val() ? $('#stDt').val() : false
+                    })
+                }
+            });
         });
     </script>
 </head>
@@ -13,6 +27,177 @@
 
     <div id="container">
         <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">지급결의 AI 적용 결과 조회</h2>
+                    <h3 class="page_tit">기간별 통계</h3>
+                </div>
+                <div class="btn_area">
+                    <button type="button" class="btn line_cool_grey30">
+                        <span>통계정보 다운로드</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="board_top">
+                <div class="mla">
+                    <div class="filter_area">
+                        <button type="button" class="btn btn_text btn_filter">
+                            <i class="ico_filter"></i>
+                            <span>필터</span>
+                        </button>
+
+                        <div class="filter">
+                            <div class="inner">
+                                <dl>
+                                    <dt>조회기간</dt>
+                                    <dd>
+                                        <div class="term_form">
+                                            <label for="stDt" class="blind">조회 시작 날짜</label>
+                                            <input type="text" id="stDt" class="datepicker" value="2024.08.01" readonly>
+                                            <div class="swung"></div>
+                                            <label for="edDt" class="blind">조회 종료 날짜</label>
+                                            <input type="text" id="edDt" class="datepicker" value="2024.08.31" readonly>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        <label for="cycle">주기</label>
+                                    </dt>
+                                    <dd>
+                                        <select name="cycle" id="cycle">
+                                            <option value="" selected>월별</option>
+                                            <option value="">일별</option>
+                                        </select>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        <label for="condition">실행조건</label>
+                                    </dt>
+                                    <dd>
+                                        <select name="condition" id="condition">
+                                            <option value="" selected>전체</option>
+                                            <option value="">기간</option>
+                                            <option value="">부점</option>
+                                            <option value="">비목명</option>
+                                        </select>
+                                    </dd>
+                                </dl>
+                                <div class="btn_area">
+                                    <button type="button" class="btn line_cool_grey30">
+                                        <span>초기화</span>
+                                    </button>
+                                    <button type="button" class="btn fill">
+                                        <span>검색</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="selected_filter"></div>
+
+            <div class="graph_area">
+                <div class="graph" style="height:430px"> <!--TODO : 임의 높이값-->
+
+                </div>
+            </div>
+
+            <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
+            <!--<div class="nodata">
+				<p>검색 결과가 없습니다.</p>
+			</div>-->
+            <!--데이터가 없을 때 : e-->
+
+            <table class="tbl_list">
+                <caption>기간별 통계 : 전체, 본부, 지역본부, 영업점으로 구성</caption>
+                <colgroup>
+                    <col style="width:8%;min-width:125px">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                </colgroup>
+                <thead>
+                <tr class="th_fc_cool_grey_50">
+                    <th scope="col"></th>
+                    <th scope="col">2024년 <span class="dib">01월</span></th>
+                    <th scope="col">2024년 <span class="dib">02월</span></th>
+                    <th scope="col">2024년 <span class="dib">03월</span></th>
+                    <th scope="col">2024년 <span class="dib">04월</span></th>
+                    <th scope="col">2024년 <span class="dib">05월</span></th>
+                    <th scope="col">2024년 <span class="dib">06월</span></th>
+                    <th scope="col">2024년 <span class="dib">07월</span></th>
+                    <th scope="col">2024년 <span class="dib">08월</span></th>
+                    <th scope="col">2024년 <span class="dib">09월</span></th>
+                    <th scope="col">2024년 <span class="dib">10월</span></th>
+                    <th scope="col">2024년 <span class="dib">11월</span></th>
+                    <th scope="col">2024년 <span class="dib">12월</span></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">전체</th>
+                    <td>256</td>
+                    <td>303</td>
+                    <td>310</td>
+                    <td>339</td>
+                    <td>405</td>
+                    <td>423</td>
+                    <td>385</td>
+                    <td>337</td>
+                    <td>310</td>
+                    <td>321</td>
+                    <td>298</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <th scope="row">본부, 지역본부</th>
+                    <td>243</td>
+                    <td>288</td>
+                    <td>298</td>
+                    <td>316</td>
+                    <td>376</td>
+                    <td>407</td>
+                    <td>376</td>
+                    <td>407</td>
+                    <td>289</td>
+                    <td>312</td>
+                    <td>284</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <th scope="row" class="fc_primary">영업점</th>
+                    <td>13</td>
+                    <td>15</td>
+                    <td>12</td>
+                    <td>23</td>
+                    <td>29</td>
+                    <td>16</td>
+                    <td>11</td>
+                    <td>12</td>
+                    <td>21</td>
+                    <td>9</td>
+                    <td>14</td>
+                    <td>-</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 </body>
