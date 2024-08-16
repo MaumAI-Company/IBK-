@@ -18,6 +18,18 @@
                     })
                 }
             });
+            
+            //학습 팝업 도움말
+            $('.btn_help').each(function(){
+                $(this).on('click', function(){
+                    $(this).parent('.th_help_area').toggleClass('active').parents('.tr').siblings('.tr').find('.th_help_area').removeClass('active');
+                });
+            });
+            $(document).on('click', function (e) {
+                if(!$(e.target).parents('div').hasClass('th_help_area')){
+                    $('.th_help_area').removeClass('active');
+                }
+            });
         });
     </script>
 </head>
@@ -38,13 +50,13 @@
                     <button type="button" class="btn line_cool_grey30">
                         <span>템플릿 다운로드</span>
                     </button>
-                    <button type="button" class="btn line_cool_grey30">
+                    <button type="button" class="btn line_cool_grey30" onclick="layerShow('popRegister')">
                         <span>등록</span>
                     </button>
                     <button type="button" class="btn line_cool_grey30" onclick="layerShow('alertWarning')">
                         <span>삭제</span>
                     </button>
-                    <button type="button" class="btn line_cool_grey30">
+                    <button type="button" class="btn line_cool_grey30" onclick="layerShow('popLearn')">
                         <span>학습</span>
                     </button>
                 </div>
@@ -130,11 +142,11 @@
                 <colgroup>
                     <col style="width: 3.5%;min-width: 44px;">
                     <col style="width: 3.5%;min-width: 44px;">
+                    <col style="width: 19%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
                     <col style="width: auto;">
-                    <col style="width: 11%;">
-                    <col style="width: 11%;">
-                    <col style="width: 11%;">
-                    <col style="width: 11%;min-width: 106px;">
                 </colgroup>
                 <thead>
                 <tr>
@@ -168,9 +180,173 @@
                     <td>카드지급결의 통합모델_A</td>
                     <td>홍길녀</td>
                     <td>
-                        <div class="badge fill_blue">등록완료</div>
+                        <div class="badge fill_blue_green">등록완료</div>
                     </td>
                     <td>가능</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk9">
+                            <label for="chk9">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>9</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_progress10">등록중</div>
+                    </td>
+                    <td>가능</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk8">
+                            <label for="chk8">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>8</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_error10">오류</div>
+                    </td>
+                    <td>불가</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk7">
+                            <label for="chk7">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>7</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_bg20">완료</div>
+                    </td>
+                    <td>-</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk6">
+                            <label for="chk6">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>6</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <button type="button" class="badge fill_caution10" onclick="layerShow('popLearnDetail')">
+                            학습중
+                        </button>
+                    </td>
+                    <td>가능</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk5">
+                            <label for="chk5">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>5</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_progress10">등록중</div>
+                    </td>
+                    <td>가능</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk4">
+                            <label for="chk4">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>4</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_error10">오류</div>
+                    </td>
+                    <td>불가</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk3">
+                            <label for="chk3">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>3</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_blue_green">등록완료</div>
+                    </td>
+                    <td>가능</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk2">
+                            <label for="chk2">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>2</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_progress10">등록중</div>
+                    </td>
+                    <td>가능</td>
+                    <td>2022.06.30</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk1">
+                            <label for="chk1">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>1</td>
+                    <td>카드지급결의 통합모델_A</td>
+                    <td>홍길녀</td>
+                    <td>
+                        <div class="badge fill_error10">오류</div>
+                    </td>
+                    <td>불가</td>
                     <td>2022.06.30</td>
                 </tr>
                 </tbody>
@@ -181,60 +357,169 @@
     </div>
 </div>
 
-<!--상세 팝업 : s-->
-<div id="popDetail" class="pop_layer">
+<!--등록 팝업 : s-->
+<div id="popRegister" class="pop_layer">
     <div class="dim"></div>
     <div class="popup">
         <div class="pop_head">
-            <strong class="pop_tit">지급결의 AI적용 결과</strong>
-            <button type="button" class="btn_close" onclick="layerHide('popDetail')">
+            <strong class="pop_tit">등록</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popRegister')">
                 <span class="blind">닫기</span>
             </button>
         </div>
         <div class="pop_cont">
-            <table class="tbl_write">
-                <caption>지급결의 AI적용 결과 : 부점, 예산관리비목관리번호, 예산(세부)사업ID, 예산집행사유코드, 예산집행사유내용으로 구성</caption>
-                <colgroup>
-                    <col style="width:160px">
-                    <col style="width:auto">
-                </colgroup>
-                <tbody>
-                <tr>
-                    <th scope="row">부점</th>
-                    <td>본부</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산관리비목관리번호</th>
-                    <td>201002</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산(세부)사업ID</th>
-                    <td>2053-1</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산집행사유코드</th>
-                    <td>201002-002</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산집행사유내용</th>
-                    <td>기업성장 목표배정 야식대</td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="file_form lg">
+                <input type="file" id="attechedFile01" class="input_file" accept=".xls,.xlsx">
+                <div class="file_tip">
+                    <p>
+                        파일을 선택하거나, Drag &amp; Drop 하세요.
+                    </p>
+                </div>
+                <label for="attechedFile01" class="btn_file">
+                    <span class="blind">파일 선택</span>
+                </label>
+                <div class="drop_zone">
+                    <div class="area"></div>
+                </div>
+            </div>
         </div>
         <div class="pop_foot">
-            <button type="button" class="btn btn_icon line_cool_grey30" disabled>
-                <i class="ico_prev"></i>
-                <span class="blind">이전글</span>
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popRegister')">
+                <span>취소</span>
             </button>
-            <button type="button" class="btn btn_icon line_cool_grey30">
-                <i class="ico_next"></i>
-                <span class="blind">다음글</span>
+            <button type="button" class="btn fill">
+                <span>저장</span>
             </button>
         </div>
     </div>
 </div>
-<!--상세 팝업 : e-->
+<!--등록 팝업 : e-->
+
+<!--학습 팝업 : s-->
+<div id="popLearn" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_head">
+            <strong class="pop_tit">파라미터 설정</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popLearn')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <div class="div_write">
+                <div class="tr">
+                    <div class="th">
+                        <strong>
+                            <label for="epoch">Epoch</label>
+                        </strong>
+                        <div class="th_help_area">
+                            <button type="button" class="btn_help">
+                                <span class="blind">안내</span>
+                            </button>
+                            <div class="th_help">학습 데이셋을 학습하는 회수</div>
+                        </div>
+                    </div>
+                    <div class="td">
+                        <div class="input">
+                            <input type="text" id="epoch" placeholder="Epoch를 입력하세요." value="20(default)">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        <strong>
+                            <label for="learningRate">Learning Rate</label>
+                        </strong>
+                        <div class="th_help_area">
+                            <button type="button" class="btn_help">
+                                <span class="blind">안내</span>
+                            </button>
+                            <div class="th_help">학습률, 최적 값을 찾기 위한 기울기의 이동 정도</div>
+                        </div>
+                    </div>
+                    <div class="td">
+                        <div class="input">
+                            <input type="text" id="learningRate" placeholder="Learning Rate를 입력하세요." value="0.02(default)">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        <strong>
+                            <label for="batchSize">Batch Size</label>
+                        </strong>
+                        <div class="th_help_area">
+                            <button type="button" class="btn_help">
+                                <span class="blind">안내</span>
+                            </button>
+                            <div class="th_help">학습 데이터셋 중, 몇 개의 데이터를 묶어서 가중치 값을 갱신할 지 지정하는 단위</div>
+                        </div>
+                    </div>
+                    <div class="td">
+                        <div class="input">
+                            <input type="text" id="batchSize" placeholder="Batch Size를 입력하세요." value="128(default)">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        <strong>정답셋</strong>
+                    </div>
+                    <div class="td">
+                        <div class="file_form">
+                            <input type="file" id="attechedFile02" class="input_file" accept=".xls,.xlsx">
+                            <div class="file_tip">
+                                <p>
+                                    파일을 선택하거나, Drag &amp; Drop 하세요.
+                                </p>
+                            </div>
+                            <label for="attechedFile02" class="btn_file">
+                                <span class="blind">파일 선택</span>
+                            </label>
+                            <div class="drop_zone">
+                                <div class="area"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearn')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill">
+                <span>학습실행</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--학습 팝업 : e-->
+
+<!--학습중 팝업 : s-->
+<div id="popLearnDetail" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup lg">
+        <div class="pop_head">
+            <strong class="pop_tit">학습중</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popLearnDetail')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+        </div>
+    </div>
+</div>
+<!--학습중 팝업 : e-->
 
 <!--얼럿 : s-->
 <div id="alertWarning" class="system_alert">

@@ -48,12 +48,12 @@
 #aside .nav > li.ico_manage:hover > a,
 #aside .nav > li.ico_manage.active > a{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%23004c9d' d='M10 12q-1.65 0-2.825-1.175T6 8t1.175-2.825T10 4t2.825 1.175T14 8t-1.175 2.825T10 12m-8 8v-2.8q0-.825.425-1.55t1.175-1.1q1.275-.65 2.875-1.1T10 13h.35q.15 0 .3.05q-.2.45-.337.938T10.1 15H10q-1.775 0-3.187.45t-2.313.9q-.225.125-.363.35T4 17.2v.8h6.3q.15.525.4 1.038t.55.962zm14 1l-.3-1.5q-.3-.125-.562-.262T14.6 18.9l-1.45.45l-1-1.7l1.15-1q-.05-.35-.05-.65t.05-.65l-1.15-1l1-1.7l1.45.45q.275-.2.538-.337t.562-.263L16 11h2l.3 1.5q.3.125.563.275t.537.375l1.45-.5l1 1.75l-1.15 1q.05.3.05.625t-.05.625l1.15 1l-1 1.7l-1.45-.45q-.275.2-.537.338t-.563.262L18 21zm1-3q.825 0 1.413-.587T19 16t-.587-1.412T17 14t-1.412.588T15 16t.588 1.413T17 18m-7-8q.825 0 1.413-.587T12 8t-.587-1.412T10 6t-1.412.588T8 8t.588 1.413T10 10m.3 8'/%3E%3C/svg%3E")}
 #aside .btn_toggle_aside{position:absolute;right:-19px;bottom:20px;width:38px;height:38px;border-radius:50%;background:#0092d7 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M4 18H2V6h2zm8 0l-6-6l6-6l1.4 1.4L9.825 11H22v2H9.825l3.6 3.6z'/%3E%3C/svg%3E") no-repeat 50% 50%;box-shadow:0 0 5px 0 rgba(0, 0, 0, 0.07), 5px 5px 10px 0 rgba(0, 0, 0, 0.06)}
-.aside_hide #aside nav:not(:hover){width:52px}
-.aside_hide #aside nav:not(:hover) .nav > li a{padding-left:36px;color:transparent}
-.aside_hide #aside nav:not(:hover) .nav > li > a:not(:only-child){padding-right:0}
-.aside_hide #aside nav:not(:hover) .nav > li > a:after{display:none}
-.aside_hide #aside nav:not(:hover) .nav > li ul{display:none !important}
-.aside_hide #aside nav:not(:hover) .btn_toggle_aside{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M20 18V6h2v12zm-8 0l-1.425-1.4l3.6-3.6H2v-2h12.175L10.6 7.4L12 6l6 6z'/%3E%3C/svg%3E")}
+.aside_hide #aside nav{width:52px}
+.aside_hide #aside nav .nav > li a{padding-left:36px;color:transparent}
+.aside_hide #aside nav .nav > li > a:not(:only-child){padding-right:0}
+.aside_hide #aside nav .nav > li > a:after{display:none}
+.aside_hide #aside nav .nav > li ul{display:none !important}
+.aside_hide #aside nav .btn_toggle_aside{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M20 18V6h2v12zm-8 0l-1.425-1.4l3.6-3.6H2v-2h12.175L10.6 7.4L12 6l6 6z'/%3E%3C/svg%3E")}
 .aside_hide #container{padding-left:52px}
 #container{position:relative;min-height:calc(100vh - 52px);padding-left:260px;transition:padding linear .3s}
 #container .contents{padding:40px}
@@ -110,7 +110,7 @@
 .box .input{width:200px}
 .box > .sub_tit{width:100%}
 .box .sub_tit{margin-bottom:14px;font-size:16px;font-weight:500}
-.box .sub_tit:not(:first-child){margin-top:20px;}
+.box .sub_tit:not(:first-child){margin-top:20px}
 .box .tit_area{width:100%;margin-bottom:18px}
 .box .tit_area .sub_tit{margin-bottom:0}
 
