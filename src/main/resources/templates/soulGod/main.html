@@ -18,5 +18,50 @@
             </div>
         </div>
     </div>
+
+    <!--로딩중 : s-->
+    <div class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
+        <div class="loading">
+            <p>Loading</p>
+            <div class="loading_circle_rotate">
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+            </div>
+        </div>
+    </div>
+    <!--로딩중 : e-->
+
+    <!--snackbar : s-->
+    <div class="system_msg_area">
+        <div id="snackbarCaution" class="snackbar caution"> <!--노출 원할 시 클래스 active 추가-->
+            <strong class="tit">정보를 확인해 주세요.</strong>
+            <button type="button" class="btn_close">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div id="snackbarError" class="snackbar error">
+            <strong class="tit">등록하지 못하였습니다.</strong>
+            <button type="button" class="btn_close">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div id="snackbarSuccess" class="snackbar">
+            <strong class="tit">완료되었습니다.</strong>
+            <button type="button" class="btn_close">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+    </div>
+    <!--snackbar : e-->
+
+    <!--toast : s-->
+    <div class="system_msg_area">
+        <div id="toast" class="toast"> <!--노출 원할 시 클래스 active 추가-->
+            <strong class="tit">변경사항이 저장되었습니다.</strong>
+        </div>
+    </div>
+    <!--toast : e-->
 </body>
 </html>
