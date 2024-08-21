@@ -1,26 +1,235 @@
 <!DOCTYPE html>
 <html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="cache-control" content="no-cache" />
-    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>로그인 | IBK</title>
-    <link rel="shortcut icon" type="image/x-icon" href="../../static/ClientUI/images/icon/favicon.ico" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title>로그인 | IBK 예산관리시스템 자동지급결의 AI 시스템</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../../static/ClientUI/images/icon/favicon.ico"/>
 
-    <link rel="stylesheet" href="../../static/css/common.css"/>
-    <link rel="stylesheet" href="../../static/css/style.css"/>
-    <link rel="stylesheet" href="../../static/css/login.css"/>
+    <link rel="stylesheet" href="../../static/ClientUI/css/common.css"/>
+    <link rel="stylesheet" href="../../static/ClientUI/css/login.css"/>
 
-    <script type="text/javascript" src="../../static/plugins/jquery-3.7.1.min.js"></script>
-    <script type="text/javascript" src="../../static/plugins/jquery.nice-select.min.js"></script>
-    <script type="text/javascript" src="../../static/js/style.js"></script>
-    <script type="text/javascript">
-        $(function(){
-        });
-    </script>
+    <script type="text/javascript" src="../../static/ClientUI/plugins/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="../../static/ClientUI/plugins/jquery.inputmask.min.js"></script>
+    <script type="text/javascript" src="../../static/ClientUI/plugins/jqueryScrollbar/jquery.scrollbar.min.js"></script>
+    <script type="text/javascript" src="../../static/ClientUI/plugins/datetimepicker/jquery.datetimepicker.full.js"></script>
+    <script type="text/javascript" src="../../static/ClientUI/plugins/jquery.nice-select.min.js"></script>
+    <script type="text/javascript" src="../../static/ClientUI/plugins/daterangepicker/moment.min.js"></script>
+    <script type="text/javascript" src="../../static/ClientUI/plugins/daterangepicker/daterangepicker.min.js"></script>
+
+    <script type="text/javascript" src="../../static/ClientUI/js/style.js"></script>
+    <script type="text/javascript" src="../../static/ClientUI/js/common.js"></script>
 </head>
-<body class="login_body">
+<body>
+<div id="wrap">
+    <div id="container">
+        <div class="left_cont">
+            <div class="intro_txt">
+                환영합니다! <br>
+                <b>IBK 예산관리시스템 자동지급결의 AI <br>
+                    시스템</b> 입니다.
+            </div>
+        </div>
+        <div class="right_cont">
+            <div class="login_form">
+                <h1 class="logo">
+                    <img src="../../static/ClientUI/images/common/logo_bk.svg" alt="maum XDC">
+                </h1>
+                <p class="login_txt">이용을 위해 로그인을 해주세요.</p>
+                <form action="#">
+                    <fieldset>
+                        <legend>로그인</legend>
 
+                        <div class="input">
+                            <label for="userId" class="blind">아이디 입력</label>
+                            <input type="text" id="userId" placeholder="아이디를 입력하세요.">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+
+                        <div class="input">
+                            <label for="userPw" class="blind">비밀번호 입력</label>
+                            <input type="password" id="userPw" placeholder="비밀번호를 입력하세요.">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+
+                        <button type="submit" class="btn btn_login">
+                            <span>로그인</span>
+                        </button>
+
+                        <div class="chk_area">
+                            <div class="checkbox txt">
+                                <input type="checkbox" id="save-id">
+                                <label for="save-id">아이디 저장</label>
+                            </div>
+
+                            <ul class="find_area">
+                                <li>
+                                    <button type="button" class="btn btn_text" onclick="layerShow('popFindId')">
+                                        <span>아이디 찾기</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="btn btn_text" onclick="layerShow('popFindPw')">
+                                        <span>비밀번호 찾기</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--아이디 찾기 팝업 : s-->
+<div id="popFindId" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_head">
+            <strong class="pop_tit">아이디 찾기</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popFindId')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont noscroll">
+            <table class="tbl_write">
+                <caption>아이디 찾기 : 이름, 이메일로 구성</caption>
+                <colgroup>
+                    <col style="width:140px">
+                    <col style="width:auto">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">
+                        <label for="findIdName">이름</label>
+                    </th>
+                    <td>
+                        <div class="input">
+                            <input type="text" id="findIdName" placeholder="이름을 입력하세요.">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn fill" onclick="layerShow('alertWarning')">
+                <span>아이디 찾기</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--아이디 찾기 팝업 : e-->
+
+<!--비밀번호 찾기 팝업 : s-->
+<div id="popFindPw" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_head">
+            <strong class="pop_tit">비밀번호 찾기</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popFindPw')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont noscroll">
+            <table class="tbl_write">
+                <caption>비밀번호 찾기 : 이름, 아이디로 구성</caption>
+                <colgroup>
+                    <col style="width:140px">
+                    <col style="width:auto">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">
+                        <label for="findPwLoginId">이름</label>
+                    </th>
+                    <td>
+                        <div class="input">
+                            <input type="text" id="findPwLoginId" placeholder="이름을 입력하세요.">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="findPwID">아이디</label>
+                    </th>
+                    <td>
+                        <div class="input">
+                            <input type="text" id="findPwID" placeholder="아이디를 입력하세요.">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn fill" onclick="layerHide('popFindPw');layerShow('alertComplete')">
+                <span>비밀번호 찾기</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--비밀번호 찾기 팝업 : e-->
+
+<!--얼럿 : s-->
+<div id="alertWarning" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_warning"></i>
+            <strong class="pop_tit">등록된 계정이 없습니다.</strong> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+            <p class="pop_txt"> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+                계정을 찾을 수 없습니다. <br>
+                이메일과 비밀번호를 확인해주세요.
+            </p>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('alertWarning')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill" onclick="layerHide('alertWarning')">
+                <span>확인</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--얼럿 : e-->
+
+<!--얼럿 : s-->
+<div id="alertComplete" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_complete"></i>
+            <strong class="pop_tit">계정 확인 완료되었습니다.</strong> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+            <p class="pop_txt"> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+                임시 비밀번호가 메일로 발송되었습니다.
+            </p>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn fill" onclick="layerHide('alertComplete')">
+                <span>확인</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--얼럿 : e-->
 </body>
 </html>

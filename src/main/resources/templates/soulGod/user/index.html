@@ -8,12 +8,120 @@
     </script>
 </head>
 <body>
-<div id="wrap">
-    <th:block th:insert="~{soulGod/fragments/header}"></th:block>
+    <div id="wrap">
+        <th:block th:insert="~{soulGod/fragments/header}"></th:block>
 
-    <div id="container">
-        <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+        <div id="container">
+            <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+
+            <div class="contents">
+                <div class="page_top">
+                    <div class="tit_area">
+                        <div class="one_depth">-</div>
+                        <h2 class="page_tit">계정</h2>
+                    </div>
+                </div>
+
+                <table class="tbl_list">
+                    <caption>계정 : 사용자 이름, 아이디, 사용자 그룹, 비밀번호 변경으로 구성</caption>
+                    <colgroup>
+                        <col style="width:8%;min-width:113px">
+                        <col style="width:8%;min-width:125px">
+                        <col style="width:8%;min-width:113px">
+                        <col style="width:auto">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col" class="tal">사용자 이름</th>
+                        <th scope="col">아이디</th>
+                        <th scope="col">사용자 그룹</th>
+                        <th scope="col">비밀번호 변경</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="tal">관리자</td>
+                        <td>admin</td>
+                        <td>system</td>
+                        <td>
+                            <button type="button" class="badge" onclick="layerShow('popPw')">
+                                <span>비밀번호 변경</span>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-</div>
+
+    <!--상세 팝업 : s-->
+    <div id="popPw" class="pop_layer">
+        <div class="dim"></div>
+        <div class="popup">
+            <div class="pop_head">
+                <strong class="pop_tit">비밀번호 변경</strong>
+                <button type="button" class="btn_close" onclick="layerHide('popPw')">
+                    <span class="blind">닫기</span>
+                </button>
+            </div>
+            <div class="pop_cont">
+                <table class="tbl_write">
+                    <caption>비밀번호 변경 : 기존 비밀번호, 새 비밀번호, 새 비밀번호 확인으로 구성</caption>
+                    <colgroup>
+                        <col style="width:140px">
+                        <col style="width:auto">
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">
+                            <label for="chkPwd">기존 비밀번호</label>
+                        </th>
+                        <td>
+                            <div class="input">
+                                <input type="password" id="chkPwd" placeholder="기존 비밀번호를 입력하세요.">
+                                <button type="button" class="btn_del" tabindex="-1">
+                                    <span class="blind">삭제</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="newPwd">새 비밀번호</label>
+                        </th>
+                        <td>
+                            <div class="input">
+                                <input type="password" id="newPwd" placeholder="새 비밀번호를 입력하세요.">
+                                <button type="button" class="btn_del" tabindex="-1">
+                                    <span class="blind">삭제</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="newPwdConfirm">새 비밀번호 확인</label>
+                        </th>
+                        <td>
+                            <div class="input">
+                                <input type="password" id="newPwdConfirm" placeholder="새 비밀번호를 입력하세요.">
+                                <button type="button" class="btn_del" tabindex="-1">
+                                    <span class="blind">삭제</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pop_foot">
+                <button type="button" class="btn fill">
+                    <span>비밀번호 변경</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!--상세 팝업 : e-->
 </body>
 </html>

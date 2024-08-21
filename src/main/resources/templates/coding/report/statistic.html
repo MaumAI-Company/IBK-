@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>기간별 통계 | IBK 예산관리시스템 자동지급결의 AI 시스템</title>
+    <meta property="og:keywords" content="IBK 예산관리시스템 자동지급결의 AI 시스템" />
+    <meta property="og:description" content="IBK 예산관리시스템 자동지급결의 AI 시스템" />
+    <meta property="og:image" content="../../../static/ClientUI/user/images/common/meta_logo.png" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../static/ClientUI/images/icon/favicon.ico" />
+
+    <link rel="stylesheet" href="../../../static/ClientUI/plugins/datetimepicker/jquery.datetimepicker.min.css"/>
+
+    <link rel="stylesheet" href="../../../static/ClientUI/css/common.css"/>
+    <link rel="stylesheet" href="../../../static/ClientUI/css/style.css"/>
+
+    <script type="text/javascript" src="../../../static/ClientUI/plugins/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="../../../static/ClientUI/plugins/datetimepicker/jquery.datetimepicker.full.js"></script>
+    <script type="text/javascript" src="../../../static/ClientUI/plugins/jquery.nice-select.min.js"></script>
+
+    <script type="text/javascript" src="../../../static/ClientUI/js/file.js"></script>
+    <script type="text/javascript" src="../../../static/ClientUI/js/style.js"></script>
+    <script type="text/javascript" src="../../../static/ClientUI/js/common.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            fn_setDatePicker('#stDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        maxDate: $('#edDt').val() ? $('#edDt').val() : false
+                    })
+                }
+            });
+            fn_setDatePicker('#edDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        minDate: $('#stDt').val() ? $('#stDt').val() : false
+                    })
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <header id="header">
+        <div class="contents">
+            <h1 class="logo">
+                <a href="../index.html">
+                    <img src="../../../static/ClientUI/images/common/logo.svg" alt="maum XDC">
+                </a>
+            </h1>
+            <div class="user_info">
+                <a href="../user/index.html" class="user">
+                    <span class="first">m</span> <!--TODO : 아이디 첫 글자 노출-->
+                    <span>maumxdc</span>
+                </a>
+                <a href="javascript:void(0);" class="btn_logout">
+                    <span class="blind">로그아웃</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div id="container">
+        <aside id="aside">
+            <nav>
+                <ul class="nav">
+                    <li class="ico_chart active">
+                        <a href="javascript:void(0);">지급결의 AI 적용 결과 조회</a>
+                        <ul class="depth" style="display:block">
+                            <li>
+                                <a href="../report/card.html">BC카드 지급결의 내역 조회</a>
+                            </li>
+                            <li>
+                                <a href="../report/taxInvoice.html">세금계산서 지급결의 내역 조회</a>
+                            </li>
+                            <li class="active">
+                                <a href="../report/statistic.html">기간별 통계</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="ico_database">
+                        <a href="javascript:void(0);">학습 관리</a>
+                        <ul class="depth">
+                            <li>
+                                <a href="../learn/dataManage.html">데이터 관리</a>
+                            </li>
+                            <li>
+                                <a href="../learn/modelManage.html">모델 관리</a>
+                            </li>
+                            <li>
+                                <a href="../learn/deployManage.html">배포 관리</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="ico_dns">
+                        <a href="javascript:void(0);">시스템 상태</a>
+                        <ul class="depth">
+                            <li>
+                                <a href="../system/monitoring.html">모니터링</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="ico_manage">
+                        <a href="javascript:void(0);">Admin</a>
+                        <ul class="depth">
+                            <li>
+                                <a href="javascript:void(0);">조직 관리</a>
+                                <ul>
+                                    <li>
+                                        <a href="../admin/department.html">부서 관리</a>
+                                    </li>
+                                    <li>
+                                        <a href="../admin/user.html">사용자 관리</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="../admin/auth.html">권한 관리</a>
+                            </li>
+                            <li>
+                                <a href="../admin/menu.html">메뉴 관리</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);">검증 설정</a>
+                                <ul>
+                                    <li>
+                                        <a href="../admin/fakeCheck.html">검증 수준(Threshold) 설정</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="../admin/commonCode.html">공통코드 관리</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <a href="javascript:;" class="btn_toggle_aside">
+                <span class="blind">메뉴 접기</span>
+            </a>
+        </aside>
+
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">지급결의 AI 적용 결과 조회</h2>
+                    <h3 class="page_tit">기간별 통계</h3>
+                </div>
+                <div class="btn_area">
+                    <button type="button" class="btn line_cool_grey30">
+                        <span>통계정보 다운로드</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="board_top">
+                <div class="mla">
+                    <div class="filter_area">
+                        <button type="button" class="btn btn_text btn_filter">
+                            <i class="ico_filter"></i>
+                            <span>필터</span>
+                        </button>
+
+                        <div class="filter">
+                            <div class="inner">
+                                <dl>
+                                    <dt>조회기간</dt>
+                                    <dd>
+                                        <div class="term_form">
+                                            <label for="stDt" class="blind">조회 시작 날짜</label>
+                                            <input type="text" id="stDt" class="datepicker" value="2024.08.01" readonly>
+                                            <div class="swung"></div>
+                                            <label for="edDt" class="blind">조회 종료 날짜</label>
+                                            <input type="text" id="edDt" class="datepicker" value="2024.08.31" readonly>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        <label for="cycle">주기</label>
+                                    </dt>
+                                    <dd>
+                                        <select name="cycle" id="cycle">
+                                            <option value="" selected>월별</option>
+                                            <option value="">일별</option>
+                                        </select>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        <label for="condition">실행조건</label>
+                                    </dt>
+                                    <dd>
+                                        <select name="condition" id="condition">
+                                            <option value="" selected>전체</option>
+                                            <option value="">기간</option>
+                                            <option value="">부점</option>
+                                            <option value="">비목명</option>
+                                        </select>
+                                    </dd>
+                                </dl>
+                                <div class="btn_area">
+                                    <button type="button" class="btn line_cool_grey30">
+                                        <span>초기화</span>
+                                    </button>
+                                    <button type="button" class="btn fill">
+                                        <span>검색</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="selected_filter"></div>
+
+            <div class="graph_area">
+                <div class="graph"> <!--TODO : 임의 높이값-->
+                    <div id="chartdiv" style="height:366px"></div>
+                </div>
+            </div>
+
+            <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
+            <!--<div class="nodata">
+				<p>검색 결과가 없습니다.</p>
+			</div>-->
+            <!--데이터가 없을 때 : e-->
+
+            <table class="tbl_list">
+                <caption>기간별 통계 : 전체, 본부, 지역본부, 영업점으로 구성</caption>
+                <colgroup>
+                    <col style="width:8%;min-width:125px">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                    <col style="width:7.66%">
+                </colgroup>
+                <thead>
+                <tr class="th_fc_cool_grey_50">
+                    <th scope="col"></th>
+                    <th scope="col">2024년 <span class="dib">01월</span></th>
+                    <th scope="col">2024년 <span class="dib">02월</span></th>
+                    <th scope="col">2024년 <span class="dib">03월</span></th>
+                    <th scope="col">2024년 <span class="dib">04월</span></th>
+                    <th scope="col">2024년 <span class="dib">05월</span></th>
+                    <th scope="col">2024년 <span class="dib">06월</span></th>
+                    <th scope="col">2024년 <span class="dib">07월</span></th>
+                    <th scope="col">2024년 <span class="dib">08월</span></th>
+                    <th scope="col">2024년 <span class="dib">09월</span></th>
+                    <th scope="col">2024년 <span class="dib">10월</span></th>
+                    <th scope="col">2024년 <span class="dib">11월</span></th>
+                    <th scope="col">2024년 <span class="dib">12월</span></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">전체</th>
+                    <td>256</td>
+                    <td>303</td>
+                    <td>310</td>
+                    <td>339</td>
+                    <td>405</td>
+                    <td>423</td>
+                    <td>385</td>
+                    <td>337</td>
+                    <td>310</td>
+                    <td>321</td>
+                    <td>298</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <th scope="row">본부, 지역본부</th>
+                    <td>243</td>
+                    <td>288</td>
+                    <td>298</td>
+                    <td>316</td>
+                    <td>376</td>
+                    <td>407</td>
+                    <td>376</td>
+                    <td>407</td>
+                    <td>289</td>
+                    <td>312</td>
+                    <td>284</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <th scope="row" class="fc_primary">영업점</th>
+                    <td>13</td>
+                    <td>15</td>
+                    <td>12</td>
+                    <td>23</td>
+                    <td>29</td>
+                    <td>16</td>
+                    <td>11</td>
+                    <td>12</td>
+                    <td>21</td>
+                    <td>9</td>
+                    <td>14</td>
+                    <td>-</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
