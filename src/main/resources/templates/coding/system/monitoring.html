@@ -19,13 +19,54 @@
     <script type="text/javascript" src="../../../static/ClientUI/plugins/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/plugins/datetimepicker/jquery.datetimepicker.full.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/plugins/jquery.nice-select.min.js"></script>
+    <script type="text/javascript" src="../../../static/ClientUI/plugins/amcharts5/index.js"></script>
+    <script type="text/javascript" src="../../../static/ClientUI/plugins/amcharts5/percent.js"></script>
+    <script type="text/javascript" src="../../../static/ClientUI/plugins/amcharts5/Animated.js"></script>
 
     <script type="text/javascript" src="../../../static/ClientUI/js/file.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/js/style.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/js/common.js"></script>
     <script type="text/javascript">
-        $(function(){
-        });
+        am5.ready(function() {
+            var root = am5.Root.new("chartdiv");
+
+            root.setThemes([
+                am5themes_Animated.new(root)
+            ]);
+
+            var chart = root.container.children.push(am5percent.PieChart.new(root, {
+                layout: root.verticalLayout,
+                innerRadius: am5.percent(50)
+            }));
+
+            var series = chart.series.push(am5percent.PieSeries.new(root, {
+                valueField: "value",
+                alignLabels: false
+            }));
+
+            series.labels.template.setAll({
+                textType: "circular",
+                centerX: 0,
+                centerY: 0
+            });
+
+            series.data.setAll([
+                { value: 9 },
+                { value: 1 },
+            ]);
+
+            var legend = chart.children.push(am5.Legend.new(root, {
+                centerX: am5.percent(50),
+                x: am5.percent(50),
+                marginTop: 15,
+                marginBottom: 15,
+            }));
+
+            legend.data.setAll(series.dataItems);
+
+            series.appear(1000, 100);
+
+        }); // end am5.ready()
     </script>
 </head>
 <body>
@@ -144,7 +185,9 @@
             </div>
 
             <div class="graph_area">
-                <div class="graph" style="height:430px;"></div>
+                <div class="graph">
+                    <div id="chartdiv" style="height:366px"></div>
+                </div>
                 <div class="graph" style="height:430px;"></div>
                 <div class="graph" style="height:430px;"></div>
                 <div class="graph" style="height:430px;"></div>
