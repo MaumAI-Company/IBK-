@@ -1,23 +1,52 @@
 package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
+import kr.co.ibk.common.utils.CustomMap;
 import kr.co.ibk.domain.web.Account;
+import kr.co.ibk.domain.web.DepTreetInfo;
+import kr.co.ibk.model.DeptForm;
+import kr.co.ibk.service.AdminDeptService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 public class AdminController {
-
+	private final AdminDeptService adminDeptService;
+	
     @RequestMapping( "/soulGod/admin/department")
     public String department(Model model,
                         @CurrentUser Account account) {
 
+    	log.info("##### URI :: { /admin/department } #####");
+    	
+    	List<DepTreetInfo> result = new ArrayList();
+    	CustomMap param = new CustomMap();    
+
+    	result = adminDeptService.getDeptTree();
+        
+        
         model.addAttribute("mc", "admin");
         model.addAttribute("pageTitle", "부서 관리");
 
+        model.addAttribute("sessionMember", account);
+        model.addAttribute("roles", "");
+        model.addAttribute("result", result);
+
+        log.info(result.toString());
         return "/soulGod/admin/department";
 
     }
@@ -72,4 +101,71 @@ public class AdminController {
         return "/soulGod/admin/commonCode";
 
     }
+    
+    @ResponseBody
+    @RequestMapping( "/soulGod/admin/user/getDeptList")
+    public HashMap<String, Object> userGetDeptList(DeptForm params) {
+        log.info("##### URI :: { /admin/user/getDeptList } #####");
+        log.info("##### params :: "+ params + " #####");
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        
+        // 부서
+        List<DeptForm> deptList = adminDeptService.getDeptList(params);
+        
+        // 리턴
+        map.put("deptList", deptList);
+        
+        // 페이지 정보
+        map.put("currentPageNo", params.getCurrentPageNo());
+        map.put("recordsPerPage",params.getRecordsPerPage());
+        map.put("pageSize",params.getPageSize());
+        map.put("hasPreviousPage", params.getPaginationInfo().isHasPreviousPage());
+        map.put("firstPage", params.getPaginationInfo().getFirstPage());
+        map.put("hasNextPage", params.getPaginationInfo().isHasNextPage());
+        map.put("lastPage", params.getPaginationInfo().getLastPage());
+        map.put("totalPageCount", params.getPaginationInfo().getTotalPageCount());
+        map.put("totalRecordCount", params.getPaginationInfo().getTotalRecordCount());
+        
+        // 검색 정보
+        map.put("searchType", params.getSearchType());
+        map.put("searchKeyword", params.getSearchKeyword());
+
+        return map;
+    }
+    
+	@PostMapping(value = {"/soulGod/admin/department/add"})
+	@ResponseBody
+    public HashMap<String, Object> departmentAdd(DeptForm params) {
+        log.info("##### URI :: { /admin/department/add } #####");
+        log.info("##### params :: "+ params + " #####");
+        
+        // user 관련
+        HashMap<String, Object> map = adminDeptService.addDept(params);
+        
+        return map;
+    }
+	
+	@PostMapping(value = {"/soulGod/admin/department/delete"})
+	@ResponseBody
+    public HashMap<String, Object> departmentDelete(DeptForm params) {
+        log.info("##### URI :: { /admin/department/delete } #####");
+        log.info("##### params :: "+ params + " #####");
+        
+        // user 관련
+        HashMap<String, Object> map = adminDeptService.deleteDept(params);
+        
+        return map;
+    }	
+	
+	@PostMapping(value = {"/soulGod/admin/department/mod"})
+	@ResponseBody
+    public HashMap<String, Object> departmentMod(DeptForm params) {
+        log.info("##### URI :: { /admin/department/mod } #####");
+        log.info("##### params :: "+ params + " #####");
+        
+        // user 관련
+        HashMap<String, Object> map = adminDeptService.modDept(params);
+        
+        return map;
+    }	
 }
