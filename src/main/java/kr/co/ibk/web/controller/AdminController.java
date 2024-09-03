@@ -4,8 +4,10 @@ import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.common.utils.CustomMap;
 import kr.co.ibk.domain.web.Account;
 import kr.co.ibk.domain.web.DepTreetInfo;
+import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.model.DeptForm;
 import kr.co.ibk.service.AdminDeptService;
+import kr.co.ibk.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 
 @Controller
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class AdminController {
 	private final AdminDeptService adminDeptService;
+	private final AdminUserService adminUserService;
 	
     @RequestMapping( "/soulGod/admin/department")
     public String department(Model model,
@@ -53,11 +57,28 @@ public class AdminController {
 
     @RequestMapping( "/soulGod/admin/user")
     public String user(Model model,
-                        @CurrentUser Account account) {
+                        @CurrentUser Account account, MemberInfo nowMember) {
 
         model.addAttribute("mc", "admin");
         model.addAttribute("pageTitle", "사용자 관리");
 
+        log.info("##### URI :: { /admin/user } #####");
+        log.info("##### params :: "+ account + " #####");
+        
+        // user 관련
+        List<MemberInfo> userList = adminUserService.getUserList(nowMember);
+        
+        
+        // 로그인된 시큐어 세션의 memberVO 정보
+        //UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        //Account sessionMember = userPrincipal.getMember();
+        
+        //model.addAttribute("sessionMember", sessionMember);
+        
+        model.addAttribute("roles", "");
+        model.addAttribute("userList", userList); // 사용자 목록
+        model.addAttribute("params", nowMember); // 사용자페이지 관련 정보 / 페이징 정보
+        model.addAttribute("totalRecordCount",nowMember.getPaginationInfo().getTotalRecordCount());
         return "/soulGod/admin/user";
 
     }
@@ -165,6 +186,32 @@ public class AdminController {
         
         // user 관련
         HashMap<String, Object> map = adminDeptService.modDept(params);
+        
+        return map;
+    }	
+	
+	@PostMapping(value = {"/soulGod/admin/user/getUserInfo"})
+	@ResponseBody
+    public HashMap<String, Object> userGetUserInfo(String userId) {
+        log.info("##### URI :: { /admin/user/getUserInfo } #####");
+        log.info("##### userId :: "+ userId + " #####");
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        
+        // user 관련
+        map.put("userInfo", adminUserService.getUserInfo(userId));
+        
+        return map;
+    }	
+	
+	@PostMapping(value = {"/soulGod/admin/user/checkUserId"})
+	@ResponseBody
+    public HashMap<String, Object> userCheckUserId(String userId) {
+        log.info("##### URI :: { /admin/user/checkUserId } #####");
+        log.info("##### userId :: "+ userId + " #####");
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        
+        // user 관련
+        map.put("cnt", adminUserService.getUserCount(userId));
         
         return map;
     }	
