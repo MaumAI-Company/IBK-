@@ -1,7 +1,7 @@
 package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
-import kr.co.ibk.domain.web.Account;
+import kr.co.ibk.domain.web.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +13,7 @@ public class ReportController {
 
     @RequestMapping( "/soulGod/report/card")
     public String card(Model model,
-                        @CurrentUser Account account) {
+                        @CurrentUser MemberInfo memberInfo) {
 
         model.addAttribute("mc", "report");
         model.addAttribute("pageTitle", "BC카드 지급결의 내역 조회");
@@ -24,7 +24,7 @@ public class ReportController {
 
     @RequestMapping( "/soulGod/report/taxInvoice")
     public String taxInvoice(Model model,
-                        @CurrentUser Account account) {
+                        @CurrentUser MemberInfo memberInfo) {
 
         model.addAttribute("mc", "report");
         model.addAttribute("pageTitle", "세금계산서 지급결의 내역 조회");
@@ -34,7 +34,7 @@ public class ReportController {
     }
     @RequestMapping( "/soulGod/report/statistic")
     public String statistic(Model model,
-                        @CurrentUser Account account) {
+                        @CurrentUser MemberInfo memberInfo) {
 
         model.addAttribute("mc", "report");
         model.addAttribute("pageTitle", "기간별 통계");

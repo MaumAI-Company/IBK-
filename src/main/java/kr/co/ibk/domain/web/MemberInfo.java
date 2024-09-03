@@ -1,20 +1,19 @@
 package kr.co.ibk.domain.web;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-
 import kr.co.ibk.common.utils.CustomMap;
 import kr.co.ibk.common.utils.StringUtil;
 import kr.co.ibk.model.paging.PageForm;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class MemberInfo extends PageForm implements Serializable{
     /* HC_MEMBER */
@@ -76,5 +75,42 @@ public class MemberInfo extends PageForm implements Serializable{
         	}	
     	}
     	return map.toString();
+    }
+
+    @Builder
+    public MemberInfo(String memSeq, String deptId, String memId, String memName, String memType, String memStat, String memBefoPwd, String memPwd, String memGender, String memBirthday, String memPhone, String memRank, String memZipcode, String memAddr, String memAddrDetail, String memEmail, String memRegId, Date memRegDt, String memModId, Date memModDt, Date memLstDt, int memFailCnt, Date memFailDt, String memColumn1, String memColumn2, String memColumn3, String memColumn4, String memColumn5, String roleId, String deptCode, String deptName, String deptEngName, List<RoleInfo> roleList) {
+        this.memSeq = memSeq;
+        this.deptId = deptId;
+        this.memId = memId;
+        this.memName = memName;
+        this.memType = memType;
+        this.memStat = memStat;
+        this.memBefoPwd = memBefoPwd;
+        this.memPwd = memPwd;
+        this.memGender = memGender;
+        this.memBirthday = memBirthday;
+        this.memPhone = memPhone;
+        this.memRank = memRank;
+        this.memZipcode = memZipcode;
+        this.memAddr = memAddr;
+        this.memAddrDetail = memAddrDetail;
+        this.memEmail = memEmail;
+        this.memRegId = memRegId;
+        this.memRegDt = memRegDt;
+        this.memModId = memModId;
+        this.memModDt = memModDt;
+        this.memLstDt = memLstDt;
+        this.memFailCnt = memFailCnt;
+        this.memFailDt = memFailDt;
+        this.memColumn1 = memColumn1;
+        this.memColumn2 = memColumn2;
+        this.memColumn3 = memColumn3;
+        this.memColumn4 = memColumn4;
+        this.memColumn5 = memColumn5;
+        this.roleId = roleId;
+        this.deptCode = deptCode;
+        this.deptName = deptName;
+        this.deptEngName = deptEngName;
+        this.roleList = roleList;
     }
 }

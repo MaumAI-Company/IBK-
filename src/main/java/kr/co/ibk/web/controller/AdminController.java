@@ -2,7 +2,6 @@ package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.common.utils.CustomMap;
-import kr.co.ibk.domain.web.Account;
 import kr.co.ibk.domain.web.DepTreetInfo;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.model.DeptForm;
@@ -10,18 +9,15 @@ import kr.co.ibk.service.AdminDeptService;
 import kr.co.ibk.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 
@@ -34,7 +30,7 @@ public class AdminController {
 	
     @RequestMapping( "/soulGod/admin/department")
     public String department(Model model,
-                        @CurrentUser Account account) {
+                        @CurrentUser MemberInfo memberInfo) {
 
     	log.info("##### URI :: { /admin/department } #####");
     	
@@ -47,7 +43,7 @@ public class AdminController {
         model.addAttribute("mc", "admin");
         model.addAttribute("pageTitle", "부서 관리");
 
-        model.addAttribute("sessionMember", account);
+        model.addAttribute("sessionMember", memberInfo);
         model.addAttribute("roles", "");
         model.addAttribute("result", result);
 
@@ -58,13 +54,10 @@ public class AdminController {
 
     @RequestMapping( "/soulGod/admin/user")
     public String user(Model model,
-                        @CurrentUser Account account, MemberInfo nowMember) {
+                        @CurrentUser MemberInfo memberInfo, MemberInfo nowMember) {
 
         model.addAttribute("mc", "admin");
         model.addAttribute("pageTitle", "사용자 관리");
-
-        log.info("##### URI :: { /admin/user } #####");
-        log.info("##### params :: "+ account + " #####");
         
         // user 관련
         List<MemberInfo> userList = adminUserService.getUserList(nowMember);
@@ -85,7 +78,7 @@ public class AdminController {
     }
     @RequestMapping( "/soulGod/admin/auth")
     public String auth(Model model,
-                        @CurrentUser Account account) {
+                        @CurrentUser MemberInfo memberInfo) {
 
         model.addAttribute("mc", "admin");
         model.addAttribute("pageTitle", "권한 관리");
@@ -95,7 +88,7 @@ public class AdminController {
     }
     @RequestMapping( "/soulGod/admin/menu")
     public String menu(Model model,
-                            @CurrentUser Account account) {
+                            @CurrentUser MemberInfo memberInfo) {
 
         model.addAttribute("mc", "admin");
         model.addAttribute("pageTitle", "메뉴 관리");
@@ -105,7 +98,7 @@ public class AdminController {
     }
     @RequestMapping( "/soulGod/admin/fakeCheck")
     public String fakeCheck(Model model,
-                            @CurrentUser Account account) {
+                            @CurrentUser MemberInfo memberInfo) {
 
         model.addAttribute("mc", "admin");
         model.addAttribute("pageTitle", "검증 수준(Threshold) 설정");
@@ -115,7 +108,7 @@ public class AdminController {
     }
     @RequestMapping( "/soulGod/admin/commonCode")
     public String commonCode(Model model,
-                            @CurrentUser Account account) {
+                            @CurrentUser MemberInfo memberInfo) {
 
         model.addAttribute("mc", "admin");
         model.addAttribute("pageTitle", "공통코드 관리");

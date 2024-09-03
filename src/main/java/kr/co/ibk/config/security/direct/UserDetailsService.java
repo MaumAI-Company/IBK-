@@ -1,10 +1,8 @@
 package kr.co.ibk.config.security.direct;
 
 import kr.co.ibk.common.utils.NullHelper;
-import kr.co.ibk.domain.enums.UserRoleType;
-import kr.co.ibk.domain.web.Account;
-import kr.co.ibk.model.AccountForm;
-import kr.co.ibk.repository.AccountRepository;
+import kr.co.ibk.domain.web.MemberInfo;
+import kr.co.ibk.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -20,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
-    private final AccountRepository accountRepository;
+    private final AdminUserService adminUserService;
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -31,28 +29,24 @@ public class UserDetailsService implements org.springframework.security.core.use
 
         log.info("**스프링시큐리터 회원정보조회 loadUserByUsername loginId:{}", loginId);
 
-        AccountForm accountForm = new AccountForm();
-        accountForm.setLoginId(loginId);
-        Account load = accountRepository.getLoad(accountForm);
+        MemberInfo userInfo = adminUserService.getUserInfo(loginId);
 
         List<String> authorities = new ArrayList<>();
 
-        if (NullHelper.isNull(load)) {
+        if (NullHelper.isNull(userInfo)) {
             throw new InternalAuthenticationServiceException("존재하지 않는 계정입니다. 관리자에게 문의하세요.");
         }
+        authorities.add(userInfo.getRoleId());
 
-        authorities.add(UserRoleType.ADMIN.name());
-
-        Account account = Account.builder()
-                .mngrPid(load.getMngrPid())
-                .mngrNm(load.getMngrNm())
-                .loginId(load.getLoginId())
-                .pwd(load.getPwd())
-                .useAt(load.getUseAt())
-                .delAt(load.getDelAt())
+        MemberInfo memberInfo = MemberInfo.builder()
+                .memSeq(userInfo.getMemSeq())
+                .memName(userInfo.getMemName())
+                .memId(userInfo.getMemId())
+                .memPwd(userInfo.getMemPwd())
+                .roleId(userInfo.getRoleId())
                 .build();
 
-        return new UserDetails(account, authorities);
+        return new UserDetails(memberInfo, authorities);
     }
 
 }
