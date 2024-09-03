@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 
+
 @Controller
 @Slf4j
 @RequiredArgsConstructor
@@ -215,4 +216,54 @@ public class AdminController {
         
         return map;
     }	
+	
+	@PostMapping(value = {"/soulGod/admin/user/add"})
+	@ResponseBody
+    public HashMap<String, Object> userAdd(MemberInfo params) {
+        log.info("##### URI :: { /admin/user/add } #####");
+        log.info("##### params :: "+ params + " #####");
+        
+        // user 관련
+        HashMap<String, Object> map = adminUserService.addUser(params);
+        
+        return map;
+    }
+	
+	@PostMapping(value = {"/soulGod/admin/user/mod"})
+	@ResponseBody
+    public HashMap<String, Object> userMod(MemberInfo params) {
+        log.info("##### URI :: { /admin/user/mod } #####");
+        log.info("##### params :: "+ params + " #####");
+        
+        // user 관련
+        HashMap<String, Object> map = adminUserService.modUser(params);
+        
+        return map;
+    }	
+	
+	 
+	@PostMapping(value = {"/soulGod/admin/user/resetPassword"})
+	@ResponseBody
+    public HashMap<String, Object> userResetPassword(MemberInfo params) {
+        log.info("##### URI :: { /admin/user/resetPassword } #####");
+        log.info("##### params :: "+ params + " #####");
+        
+        // user 관련
+        HashMap<String, Object> map = adminUserService.resetPassword(params);
+        
+        return map;
+    }
+
+	@PostMapping(value = {"/soulGod/admin/user/delete"})
+	@ResponseBody
+    public HashMap<String, Object> userDelete(MemberInfo params) {
+        log.info("##### URI :: { /admin/user/delete } #####");
+        log.info("##### params :: "+ params + " #####");
+        
+        // user 관련
+        HashMap<String, Object> map = adminUserService.deleteUser(params);
+        
+        return map;
+    }	
+	
 }

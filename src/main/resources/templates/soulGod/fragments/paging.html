@@ -9,11 +9,11 @@
     	<span>...</span>
     </th:block>
     <th:block th:each="num : ${#numbers.sequence(params.paginationInfo.firstPage, params.paginationInfo.lastPage)}">
-    	<th:block th:if="${params.currentPageNo} == num">
+    	<th:block th:if="${params.currentPageNo == num}">
     		<button type="button" class="active" th:onclick="movePage([[${params.makeQueryString(num)}]])" th:text="${num}"></button>
     	</th:block>
-    	<th:block th:if="${params.currentPageNo} != num">
-    		<button th:if="${params.currentPageNo} != num" type="button" th:onclick="movePage([[${params.makeQueryString(num)}]])" th:text="${num}"></button>
+    	<th:block th:if="${params.currentPageNo != num}">
+    		<button th:if="${params.currentPageNo != num}" type="button" th:onclick="movePage([[${params.makeQueryString(num)}]])" th:text="${num}"></button>
     	</th:block>
     </th:block>
     <th:block th:if="${params.paginationInfo.hasNextPage}">
