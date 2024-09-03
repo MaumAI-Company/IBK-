@@ -1,5 +1,31 @@
 // 공통 js
-
+var agent = navigator.userAgent.toLowerCase(),
+    MSIE = 'MSIE',
+    EDGE = 'Edge',
+    CHROME = 'Chrome',
+    FIREFOX = 'Firefox',
+    SAFARI = 'Safari',
+    browser = /trident/i.test(agent) || /msie/i.test(agent) ? MSIE :
+    /edge/i.test(agent) ? EDGE :
+    /chrome/i.test(agent) ? CHROME :
+    /firefox/i.test(agent) ? FIREFOX :
+    /safari/i.test(agent) ? SAFARI : 'Unknown',
+    WINDOWS = 'Windows',
+    LINUX = 'Linux',
+    MAC = 'Macintosh',
+    IPHONE = 'iPhone',
+    IPAD = 'iPad',
+    ANDROID = 'Android',
+    system = /Windows/i.test(agent) ? WINDOWS :
+    /linux/i.test(agent) ? LINUX :
+    /macintosh/i.test(agent) ? MAC :
+    /iphone/i.test(agent) ? IPHONE :
+    /ipad/i.test(agent) ? IPAD :
+    /android/i.test(agent) ? ANDROID : 'Unknown',
+    DEFAULT_SPECS = "toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1",
+    PATH = "/",
+    COVER_RATIO = 0.6625;
+	
 // Ckeditor4 START
 function makeFck(objName, callback) {
     try {
@@ -466,3 +492,69 @@ function nvl(obj, val) {
         return obj;
     }
 }
+
+/**
+ * Rest Service
+ * ex)	restCall('', {}, function(resp) {}, function(jqXHR) {});
+ */
+var restCall = function (url, args, callback, failCallback) {
+    var DEFAULTS = {
+        method: "GET",
+        contentType: "application/json",
+        async: true,
+        cache: false,
+        title: "progress ...",
+        loadingDelay: 30
+    };
+
+    var settings = $.extend({}, DEFAULTS, args);
+
+    // json object stringify
+    if (typeof settings.data === 'object') {
+        settings.data = JSON.stringify(settings.data);
+    }
+    // console.log('restCall', settings.method, url, settings.data);
+
+    var isCompleted = false;
+    var timeout = setTimeout(function () {
+        !isCompleted && loading.on(settings.title);
+    }, settings.loadingDelay);
+
+    $.ajax(PATH + url, settings).done(function (data) {
+        if (callback) {
+            callback(data);
+        }
+
+        clearTimeout(timeout);
+        try {
+            loading.off();
+        } catch (ignore) {}
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        console.log("restCall fail", url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
+        if (failCallback) {
+            failCallback(jqXHR, textStatus, errorThrown);
+        } else {
+            var errMsg = "";
+            if (jqXHR.getResponseHeader('error')) {
+                errMsg = 'Message: ' + jqXHR.getResponseHeader('error.message') + "<br>" +
+                    'Cause: ' + jqXHR.getResponseHeader('error.cause');
+            } else if (jqXHR.responseJSON) {
+                errMsg = 'Error: ' + jqXHR.responseJSON.error + '<br>' +
+                    'Message: ' + jqXHR.responseJSON.message + '<br>' +
+                    'Status: ' + jqXHR.responseJSON.status + '<br>' +
+                    'Path: ' + jqXHR.responseJSON.path;
+            } else {
+                errMsg = 'Error:<br>' + textStatus + "<br>" + errorThrown;
+            }
+            console.log("errMsg", errMsg);
+
+            var $errorBody = $("<div>", {
+                'class': 'overlay-error-body'
+            }).append(errMsg);
+            loading.on($errorBody);
+        }
+    }).always(function (data_jqXHR, textStatus, jqXHR_errorThrown) {
+        isCompleted = true;
+    });
+};
+

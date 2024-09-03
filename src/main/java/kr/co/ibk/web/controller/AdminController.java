@@ -4,20 +4,32 @@ import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.common.utils.CustomMap;
 import kr.co.ibk.domain.web.DepTreetInfo;
 import kr.co.ibk.domain.web.MemberInfo;
+import kr.co.ibk.domain.web.MenuAuthMember;
 import kr.co.ibk.model.DeptForm;
+import kr.co.ibk.service.AdminAuthManagementService;
 import kr.co.ibk.service.AdminDeptService;
 import kr.co.ibk.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 
@@ -27,6 +39,7 @@ import java.util.List;
 public class AdminController {
 	private final AdminDeptService adminDeptService;
 	private final AdminUserService adminUserService;
+	private final AdminAuthManagementService adminAuthManagementService;
 	
     @RequestMapping( "/soulGod/admin/department")
     public String department(Model model,
@@ -78,11 +91,32 @@ public class AdminController {
     }
     @RequestMapping( "/soulGod/admin/auth")
     public String auth(Model model,
-                        @CurrentUser MemberInfo memberInfo) {
+                        @CurrentUser MemberInfo memberInfo, MenuAuthMember param) {
 
+        log.info("##### URI :: { /admin/auth/main } #####");
+        ObjectMapper mapper = new ObjectMapper();
+        String menuAuthMemberVO;
+		try{
+			menuAuthMemberVO = mapper.writeValueAsString(param);
+			log.info("authMainPage params : {}",menuAuthMemberVO);
+		} catch (JsonProcessingException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}        
+        
+        ModelAndView mav = new ModelAndView();
+        model.addAttribute("sessionMember", memberInfo);
+        model.addAttribute("roles", "");
+        
+        // user 관련
+        List<MenuAuthMember> userList = adminAuthManagementService.getUserList(param);
+        model.addAttribute("userList", userList); // 사용자 목록
+        model.addAttribute("params", param); // 사용자페이지 관련 정보 / 페이징 정보
+
+        
         model.addAttribute("mc", "admin");
         model.addAttribute("pageTitle", "권한 관리");
-
+        model.addAttribute("totalRecordCount",param.getPaginationInfo().getTotalRecordCount());
         return "/soulGod/admin/auth";
 
     }
@@ -258,5 +292,60 @@ public class AdminController {
         
         return map;
     }	
+
+	/**
+	 * 권한관리 메뉴 목록 조회
+	 * @param req
+	 * @param userPrincipal
+	 * @param requestParamMap
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = {"/soulGod/admin/auth/memberMenu"},method = RequestMethod.POST)	
+    public HashMap<String, Object> authManagementMemberMenu(@CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {        
+    	log.info("access Url : auth/memberMenu, target Method : authManagementMemberMenu()");
+
+    	//request param을 담는다.
+    	CustomMap param = new CustomMap();
+    	param.putAll(requestParamMap);
+    	
+    	HashMap<String, Object> result = new HashMap<String, Object>();
+        
+    	List<CustomMap> resultMenuTree = new ArrayList();
+    	//메뉴트리목록을 가져온다.
+    	resultMenuTree = adminAuthManagementService.getMenuTree(param);    	
+		result.put("menuTree", resultMenuTree);
+        log.info("access Url : auth/memberMenu, target Method : authManagementMemberMenu() End View menuMainPage");
+        return result;
+    }
 	
+	/**
+	 * 메뉴 삭제 처리
+	 * @param req
+	 * @param userPrincipal
+	 * @param requestParamMap
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = {"/soulGod/admin/auth/insertMemberMenu"},method = RequestMethod.POST)	
+    public HashMap<String, Object> authManagementInsertMemberMenu(@CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {        
+    	log.info("access Url : /menu/addMenu, target Method : authManagementInsertMemberMenu()");
+    	
+    	//request param을 담는다.
+    	CustomMap param = new CustomMap();
+    	param.putAll(requestParamMap);
+    	param.orginPut("regMemId", memberInfo.getMemId());
+    	
+    	log.info("AdminController.authManagementInsertMemberMenu() param :: {}", param);
+    	adminAuthManagementService.insertMemberMenu(param);
+    	
+    	HashMap<String, Object> result = new HashMap<String, Object>();
+        
+    	List<CustomMap> resultMenuTree = new ArrayList();
+    	//메뉴트리목록을 가져온다.
+    	resultMenuTree = adminAuthManagementService.getMenuTree(param);    	
+		result.put("menuTree", resultMenuTree);
+        log.info("access Url : /menu/main, target Method : authManagementInsertMemberMenu() End View menuMainPage");
+        return result;
+    }		
 }
