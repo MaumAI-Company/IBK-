@@ -931,6 +931,13 @@
 		}
 		//선택한 메뉴ID
 		var orgMemuId = node.id;
+		
+		var parMenuDepth = treeList.LookUp('menuId', orgMemuId, 'menuDepth');
+		if ($('#add_menuMoveOption').val()=='3' && parMenuDepth=='3') {
+			alert('4단계 메뉴는 생성할 수 없습니다.');
+			return false;
+		}
+		
 		//메뉴코드
 		var menuCode =  nvl($('#add_menuCode').val(),'');
 		if(menuCode == ''){
