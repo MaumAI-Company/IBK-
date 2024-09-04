@@ -25,29 +25,27 @@
             <div class="box">
                 <div>
                     <label for="prevLevel" class="blind">검증 수준(Threshold) 설정</label>
-                    <select name="prevLevel" id="prevLevel">
-                        <option value="" disabled selected>선택하세요.</option>
-                        <option value="0.1">0.1</option>
-                        <option value="0.2">0.2</option>
-                        <option value="0.3">0.3</option>
-                        <option value="0.4">0.4</option>
-                        <option value="0.5">0.5</option>
-                        <option value="0.6">0.6</option>
-                        <option value="0.7">0.7</option>
-                        <option value="0.8">0.8</option>
-                        <option value="0.9">0.9</option>
-                        <option value="0.10">1.0</option>
+                    <th:block th:each="list, status : ${detectionLevelList}">
+                    	<th:block th:if="${list.useStatus eq '0'}">
+                    		<input type="hidden" id="prevLevel" name="prevLevel" th:value="${list.levelStrng}" />
+                    	</th:block>
+                    </th:block>
+                    <select name="levelSelect" id="levelSelect" onchange="changeSelect(this);">
+                    	<option value="" disabled selected>선택하세요.</option>
+                    <th:block th:each="list, status : ${detectionLevelList}">>
+                    	<option th:value="${list.levelStrng}" th:text="${list.levelStrng}" th:selected="${list.useStatus eq '0'}"></option>
+                    </th:block>
                     </select>
                     <span>or</span>
                     <div class="input">
-                        <input type="text" placeholder="0.1 이상 부터 값을 입력하세요.">
+                        <input type="text" id="userInputLevel" placeholder="0.1 이상 부터 값을 입력하세요." min="0.0" max="1.0" step="0.1" oninput="validateInput(this);">
                         <button type="button" class="btn_del" tabindex="-1">
                             <span class="blind">삭제</span>
                         </button>
                     </div>
                 </div>
                 <div class="btn_area">
-                    <button type="button" class="btn fill">
+                    <button type="button" class="btn fill" onclick="ajaxSetLevel();">
                         <span>설정 저장</span>
                     </button>
                 </div>
@@ -55,5 +53,83 @@
         </div>
     </div>
 </div>
+<!-- Local Script -->
+<script type="text/javascript">
+function validateInput(input){
+    // 숫자와 '.' 이외의 문자는 제거
+    input.value = input.value.replace(/[^0-9.]/g, '');
+
+    // 입력값을 0~1 사이의 소수점 첫째 자리까지만 허용
+    let value = input.value;
+
+    // 소수점 첫째 자리까지만 허용 및 0 ~ 1 범위 확인
+    if (!/^([0-1]?(\.\d{0,1})?)?$/.test(value) || parseFloat(value) > 1) {
+        input.value = value.slice(0, -1);
+    }
+}
+
+function changeSelect(obj){
+    $('#userInputLevel').val(obj.value);
+}
+function ajaxSetLevel(jsonData){
+	var prevLevel = $('#prevLevel').val();
+	//var changeLevel = $('input[name=fake_chk_set]:checked').val();
+	var changeLevel = $('#levelSelect').val()
+	
+	if (prevLevel == null || prevLevel == undefined || prevLevel.length==0){// 이전 seq 값이 없다면 끔.
+		prevLevel = "0.1";
+	}
+	
+	var userInputLevel = $('#userInputLevel').val();
+	
+	
+	if (prevLevel == changeLevel && userInputLevel==''){
+		alert('탐지 Level 변경 후 저장을 눌러주세요.');
+		return;
+	}  
+	
+	changeLevel = userInputLevel;
+	
+	var jsonData = {
+		prevLevel : prevLevel
+		, changeLevel : changeLevel
+		, sessionMemId : $('#sessionMemId').val()
+	};
+	$.ajax({
+		url : "/soulGod/admin/detection_level/change",
+		type : "post",
+		async : true,
+		data : JSON.stringify(jsonData),
+		dataType: "json",
+	    contentType: "application/json",
+	    timeout: 60000,// timeout : 60초간 서버와의 통신기다리는 시간.
+	    cache: false,
+		success : function(resp) {
+			console.log("resp :: ", resp);
+			if (changeLevel == 0){
+				alert("위조탐지 기능이 중지 되었습니다.");
+			}else {
+				alert("위조탐지 레벨이 "+changeLevel+"로 설정되었습니다.");
+			}
+				
+			location.href= "/soulGod/admin/fakeCheck";
+		},
+		beforeSend: function() { //로딩이미지 보여주기
+		    //$("#wrap-loading").show();
+		},
+		complete: function() { //로딩이미지 숨기기
+		    //$("#wrap-loading").hide();
+		},
+		error : function(jqXHR, textStatus) {
+	        if(textStatus === 'timeout'){     
+	            console.log('timeout : 60 sec');
+	        } else {
+				console.log("error");
+	        }
+		}
+	});
+}
+
+</script>
 </body>
 </html>

@@ -3,11 +3,13 @@ package kr.co.ibk.web.controller;
 import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.common.utils.CustomMap;
 import kr.co.ibk.domain.web.DepTreetInfo;
+import kr.co.ibk.domain.web.DetectionLevel;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.domain.web.MenuAuthMember;
 import kr.co.ibk.model.DeptForm;
 import kr.co.ibk.service.AdminAuthManagementService;
 import kr.co.ibk.service.AdminDeptService;
+import kr.co.ibk.service.AdminDetectLevelService;
 import kr.co.ibk.service.AdminMenuManagementService;
 import kr.co.ibk.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,7 @@ public class AdminController {
 	private final AdminUserService adminUserService;
 	private final AdminAuthManagementService adminAuthManagementService;
 	private final AdminMenuManagementService adminMenuManagementService;
+	private final AdminDetectLevelService adminDetectLevelService;
 	
     @RequestMapping( "/soulGod/admin/department")
     public String department(Model model,
@@ -158,8 +161,17 @@ public class AdminController {
     }
     @RequestMapping( "/soulGod/admin/fakeCheck")
     public String fakeCheck(Model model,
-                            @CurrentUser MemberInfo memberInfo) {
+                            @CurrentUser MemberInfo memberInfo, DetectionLevel params) {
 
+        log.info("##### URI :: { /admin/fake_check } #####");
+        
+        HashMap<String, Object> resultMap = adminDetectLevelService.getDetectionLevelList(params);
+		
+        model.addAttribute("sessionMember", memberInfo);
+        model.addAttribute("roles", "");
+        model.addAttribute("detectionLevelList", resultMap.get("detectionLevelList"));
+        model.addAttribute("status", resultMap.get("status"));
+        
         model.addAttribute("mc", "admin");
         model.addAttribute("pageTitle", "검증 수준(Threshold) 설정");
 
@@ -470,4 +482,14 @@ public class AdminController {
         return result;
     }
 	
+	@PostMapping(value = {"/soulGod/admin/detection_level/change"})
+	@ResponseBody
+    public HashMap<String, Object> detectionLevelChange(@RequestBody HashMap<String, Object> params, HttpServletRequest request) {
+        log.info("##### URI :: { /admin/detection_level/change } #####");
+        log.info("##### params :: "+ params + " #####");
+        
+        HashMap<String, Object> map = adminDetectLevelService.setDetectionLevel(params, request);
+        
+        return map;
+    }	
 }
