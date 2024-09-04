@@ -8,10 +8,12 @@ import kr.co.ibk.domain.web.MenuAuthMember;
 import kr.co.ibk.model.DeptForm;
 import kr.co.ibk.service.AdminAuthManagementService;
 import kr.co.ibk.service.AdminDeptService;
+import kr.co.ibk.service.AdminMenuManagementService;
 import kr.co.ibk.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.json.JSONArray;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,6 +42,7 @@ public class AdminController {
 	private final AdminDeptService adminDeptService;
 	private final AdminUserService adminUserService;
 	private final AdminAuthManagementService adminAuthManagementService;
+	private final AdminMenuManagementService adminMenuManagementService;
 	
     @RequestMapping( "/soulGod/admin/department")
     public String department(Model model,
@@ -124,6 +127,29 @@ public class AdminController {
     public String menu(Model model,
                             @CurrentUser MemberInfo memberInfo) {
 
+    	log.info("access Url : /menu/main, target Method : manuManagementMain()");
+    	
+    	List<CustomMap> resultMenuTree = new ArrayList();
+    	List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
+    	//메뉴트리목록을 가져온다.
+    	resultMenuTree = adminMenuManagementService.getMenuTree();
+    	//메뉴트리목록 건수
+    	resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();
+    	
+        model.addAttribute("sessionMember", memberInfo);
+        model.addAttribute("roles", "");
+        
+        //메뉴 목록 트리를 json 데이터로 가공한다.
+        JSONArray menuTree = new JSONArray(resultMenuTree);
+        model.addAttribute("menuTree", resultMenuTree);
+        
+        //메뉴목록 최대 카운트
+        JSONArray menuTreeOrderCount = new JSONArray(resultMenuTreeOrderCount);
+        model.addAttribute("menuTreeOrderCount",resultMenuTreeOrderCount);
+
+        log.info("access Url : /menu/main, target Method : manuManagementMain() End View menuMainPage");
+
+        
         model.addAttribute("mc", "admin");
         model.addAttribute("pageTitle", "메뉴 관리");
 
@@ -319,13 +345,6 @@ public class AdminController {
         return result;
     }
 	
-	/**
-	 * 메뉴 삭제 처리
-	 * @param req
-	 * @param userPrincipal
-	 * @param requestParamMap
-	 * @return
-	 */
 	@ResponseBody
 	@RequestMapping(value = {"/soulGod/admin/auth/insertMemberMenu"},method = RequestMethod.POST)	
     public HashMap<String, Object> authManagementInsertMemberMenu(@CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {        
@@ -347,5 +366,108 @@ public class AdminController {
 		result.put("menuTree", resultMenuTree);
         log.info("access Url : /menu/main, target Method : authManagementInsertMemberMenu() End View menuMainPage");
         return result;
-    }		
+    }
+	
+	/**
+	 * 메뉴 추가 처리
+	 * @param req
+	 * @param userPrincipal
+	 * @param requestParamMap
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = {"/soulGod/admin/menu/addMenu"},method = RequestMethod.POST)	
+    public HashMap<String, Object> manuManagementAddMenu(HttpServletRequest req, @CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {        
+    	log.info("access Url : /menu/addMenu, target Method : manuManagementAddMenu()");
+    	
+    	//request param을 담는다.
+    	CustomMap param = new CustomMap();
+    	param.putAll(requestParamMap);
+    	param.orginPut("menuRegId", memberInfo.getMemId());
+    	param.orginPut("menuModId", memberInfo.getMemId());
+    	
+    	adminMenuManagementService.insertHcMenuTree(param);
+    	adminMenuManagementService.updateHcMenuDepthLevel();
+    	
+    	HashMap<String, Object> result = new HashMap<String, Object>();
+        
+    	List<CustomMap> resultMenuTree = new ArrayList();
+    	List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
+    	//메뉴트리목록을 가져온다.
+    	resultMenuTree = adminMenuManagementService.getMenuTree();
+    	resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();    	
+		result.put("menuTree", resultMenuTree);
+		result.put("menuTreeOrderCount",resultMenuTreeOrderCount);
+        log.info("access Url : /menu/main, target Method : manuManagementMain() End View menuMainPage");
+        return result;
+    }
+	
+	/**
+	 * 메뉴 수정 처리
+	 * @param req
+	 * @param userPrincipal
+	 * @param requestParamMap
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = {"/soulGod/admin/menu/updateMenu"},method = RequestMethod.POST)	
+    public HashMap<String, Object> manuManagementUpdateMenu(HttpServletRequest req, @CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {        
+    	log.info("access Url : /menu/addMenu, target Method : manuManagementUpdateMenu()");
+    	
+    	//request param을 담는다.
+    	CustomMap param = new CustomMap();
+    	param.putAll(requestParamMap);
+    	param.orginPut("menuModId", memberInfo.getMemId());
+    	
+    	adminMenuManagementService.updateHcMenuTree(param);
+    	adminMenuManagementService.updateHcMenuDepthLevel();
+    	
+    	HashMap<String, Object> result = new HashMap<String, Object>();
+        
+    	List<CustomMap> resultMenuTree = new ArrayList();
+    	List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
+    	//메뉴트리목록을 가져온다.
+    	resultMenuTree = adminMenuManagementService.getMenuTree();
+    	resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();    	
+		result.put("menuTree", resultMenuTree);
+		result.put("menuTreeOrderCount",resultMenuTreeOrderCount);
+        log.info("access Url : /menu/main, target Method : manuManagementUpdateMenu() End View menuMainPage");
+        return result;
+    }
+	
+	/**
+	 * 메뉴 삭제 처리
+	 * @param req
+	 * @param userPrincipal
+	 * @param requestParamMap
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = {"/soulGod/admin/menu/deleteMenu"},method = RequestMethod.POST)	
+    public HashMap<String, Object> manuManagementDeleteMenu(HttpServletRequest req, @CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {        
+    	log.info("access Url : /menu/addMenu, target Method : manuManagementDeleteMenu()");
+    	
+    	//request param을 담는다.
+    	CustomMap param = new CustomMap();
+    	param.putAll(requestParamMap);
+    	param.orginPut("menuModId", memberInfo.getMemId());
+    	
+    	log.info("AdminController.manuManagementDeleteMenu() requestParamMap :: {}", requestParamMap);
+    	
+    	adminMenuManagementService.deleteHcMenuTree(param);
+    	adminMenuManagementService.updateHcMenuDepthLevel();
+    	
+    	HashMap<String, Object> result = new HashMap<String, Object>();
+        
+    	List<CustomMap> resultMenuTree = new ArrayList();
+    	List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
+    	//메뉴트리목록을 가져온다.
+    	resultMenuTree = adminMenuManagementService.getMenuTree();
+    	resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();    	
+		result.put("menuTree", resultMenuTree);
+		result.put("menuTreeOrderCount",resultMenuTreeOrderCount);
+        log.info("access Url : /menu/main, target Method : manuManagementDeleteMenu() End View menuMainPage");
+        return result;
+    }
+	
 }
