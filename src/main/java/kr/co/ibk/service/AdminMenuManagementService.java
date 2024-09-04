@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
 
 import kr.co.ibk.common.utils.CustomMap;
 import kr.co.ibk.repository.AdminMenuManagementRepository;
@@ -41,12 +42,14 @@ public class AdminMenuManagementService {
 		return result;
 	}
 	
+	@CacheEvict(value = "menu", allEntries = true)
 	public void updateHcMenuDepthLevel(){
 		log.info("AdminMenuManagementServiceimpl.updateHcMenuDepthLevel() Start");
 		log.info("AdminMenuManagementServiceimpl.updateHcMenuDepthLevel() result : ",adminMenuManagementRepository.updateHcMenuDepthLevel());
 		log.info("AdminMenuManagementServiceimpl.updateHcMenuDepthLevel() End");		
 	}
 	
+	@CacheEvict(value = "menu", allEntries = true)
 	public void insertHcMenuTree(CustomMap param){
 		log.info("AdminMenuManagementServiceimpl.insertHcMenuTree() Start");
 		log.info("AdminMenuManagementServiceimpl.insertHcMenuTree() param : {}", param);
@@ -54,6 +57,7 @@ public class AdminMenuManagementService {
 		log.info("AdminMenuManagementServiceimpl.insertHcMenuTree() End");		
 	}
 	
+	@CacheEvict(value = "menu", allEntries = true)
 	public void updateHcMenuTree(CustomMap param){
 		// TODO Auto-generated method stub
 		log.info("AdminMenuManagementServiceimpl.updateHcMenuTree() Start");
@@ -62,6 +66,7 @@ public class AdminMenuManagementService {
 		log.info("AdminMenuManagementServiceimpl.updateHcMenuTree() End");		
 	}
 	
+	@CacheEvict(value = "menu", allEntries = true)
 	public void deleteHcMenuTree(CustomMap param){
 		// TODO Auto-generated method stub
 		log.info("AdminMenuManagementServiceimpl.updateHcMenuTree() Start");
