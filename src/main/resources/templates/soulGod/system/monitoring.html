@@ -6,19 +6,35 @@
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/percent.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
     <script type="text/javascript">
+
+        $(function(){
+            // status, 디스크 사용량 조회
+            fn_getStatus();
+            
+            // process cpu 사용량 조회
+            fn_getProcessCpuUsage();
+            
+            // JVM 조회
+            fn_getJvmMemoryMax();
+            fn_getJvmMemoryUsed();
+            
+            // 프로세스 구동중인 시간
+            fn_drawProcessUptime();
+        })
+
         am5.ready(function() {
-            var root = am5.Root.new("chartdiv");
+            let root = am5.Root.new("chartdiv");
 
             root.setThemes([
                 am5themes_Animated.new(root)
             ]);
 
-            var chart = root.container.children.push(am5percent.PieChart.new(root, {
+            let chart = root.container.children.push(am5percent.PieChart.new(root, {
                 layout: root.verticalLayout,
                 innerRadius: am5.percent(50)
             }));
 
-            var series = chart.series.push(am5percent.PieSeries.new(root, {
+            let series = chart.series.push(am5percent.PieSeries.new(root, {
                 valueField: "value",
                 alignLabels: false
             }));
@@ -34,7 +50,7 @@
                 { value: 1 },
             ]);
 
-            var legend = chart.children.push(am5.Legend.new(root, {
+            let legend = chart.children.push(am5.Legend.new(root, {
                 centerX: am5.percent(50),
                 x: am5.percent(50),
                 marginTop: 15,
@@ -46,6 +62,240 @@
             series.appear(1000, 100);
 
         });
+
+        function fn_getStatus(){
+            $.ajax({
+                url : "/management/health",
+                type : "get",
+                async : false,
+                data: {},
+                //dataType: "json",
+                contentType: "application/json",
+                timeout: 60000,// timeout : 60초간 서버와의 통신기다리는 시간.
+                cache: false,
+                success : function(resp) {
+                    console.log(resp);
+                    // 상태
+                    /*if ("UP"==resp.status){
+                        $('#statusSuccess').addClass("active");
+                        $('#statusError').removeClass("active");
+                    }else{
+                        $('#statusSuccess').removeClass("active");
+                        $('#statusError').addClass("active");
+                    }*/
+
+                    let diskSpaceDetails = resp.components.diskSpace.details;
+                    console.log(diskSpaceDetails);
+
+                    // 디스크 사용량 차트 Draw
+                    // drawDiskSpace(diskSpaceDetails);
+
+                },
+                /*beforeSend: function() { //로딩이미지 보여주기
+                    $("#wrap-loading").show();
+                },
+                complete: function() { //로딩이미지 숨기기
+                    $("#wrap-loading").hide();
+                },*/
+                error : function(jqXHR, textStatus) {
+                    if(textStatus === 'timeout'){
+                        console.log('timeout : 60 sec');
+                    } else {
+                        console.log("error");
+                    }
+                }
+            });
+        }
+
+        function fn_getProcessCpuUsage(){
+            $.ajax({
+                url : "/management/metrics/process.cpu.usage",
+                type : "get",
+                async : false,
+                data: {},
+                //dataType: "json",
+                contentType: "application/json",
+                timeout: 60000,// timeout : 60초간 서버와의 통신기다리는 시간.
+                cache: false,
+                success : function(resp) {
+                    console.log(resp);
+
+                    let cpuUsage = resp.measurements[0].value;
+                    console.log(cpuUsage);
+
+                    // cpu 사용량
+                    // drawCpuUsage(cpuUsage);
+
+                },
+                /*beforeSend: function() { //로딩이미지 보여주기
+                    $("#wrap-loading").show();
+                },
+                complete: function() { //로딩이미지 숨기기
+                    $("#wrap-loading").hide();
+                },*/
+                error : function(jqXHR, textStatus) {
+                    if(textStatus === 'timeout'){
+                        console.log('timeout : 60 sec');
+                    } else {
+                        console.log("error");
+                    }
+                }
+            });
+        }
+        /*function fn_drawJvmMemory() {
+
+            let jvmMemoryMax = fn_getJvmMemoryMax();
+            let jvmMemoryUsed = fn_getJvmMemoryUsed();
+
+            let type = 'gb';
+
+            jvmMemoryMax = fn_convertSize(type, jvmMemoryMax);
+            jvmMemoryUsed = fn_convertSize(type, jvmMemoryUsed);
+        }*/
+        function fn_getJvmMemoryMax(){
+            let result;
+
+            $.ajax({
+                url : "/management/metrics/jvm.memory.max",
+                type : "get",
+                async : false,
+                data: {},
+                //dataType: "json",
+                contentType: "application/json",
+                timeout: 60000,// timeout : 60초간 서버와의 통신기다리는 시간.
+                cache: false,
+                success : function(resp) {
+                    console.log(resp);
+
+                    result = resp.measurements[0].value;
+                    
+                    let type = 'gb';
+                    let jvmMemoryMax = fn_convertSize(type, result);
+                    console.log(jvmMemoryMax);
+                },
+                /*beforeSend: function() { //로딩이미지 보여주기
+                    $("#wrap-loading").show();
+                },
+                complete: function() { //로딩이미지 숨기기
+                    $("#wrap-loading").hide();
+                },*/
+                error : function(jqXHR, textStatus) {
+                    if(textStatus === 'timeout'){
+                        console.log('timeout : 60 sec');
+                    } else {
+                        console.log("error");
+                    }
+                }
+            });
+        }
+
+        function fn_getJvmMemoryUsed(){
+            let result;
+
+            $.ajax({
+                url : "/management/metrics/jvm.memory.used",
+                type : "get",
+                async : false,
+                data: {},
+                //dataType: "json",
+                contentType: "application/json",
+                timeout: 60000,// timeout : 60초간 서버와의 통신기다리는 시간.
+                cache: false,
+                success : function(resp) {
+                    console.log(resp);
+
+                    result = resp.measurements[0].value;
+
+                    let type = 'gb';
+                    let jvmMemoryUsed = fn_convertSize(type, result);
+                    console.log(jvmMemoryUsed);
+                },
+                /*beforeSend: function() { //로딩이미지 보여주기
+                    $("#wrap-loading").show();
+                },
+                complete: function() { //로딩이미지 숨기기
+                    $("#wrap-loading").hide();
+                },*/
+                error : function(jqXHR, textStatus) {
+                    if(textStatus === 'timeout'){
+                        console.log('timeout : 60 sec');
+                    } else {
+                        console.log("error");
+                    }
+                }
+            });
+
+            return result;
+        }
+
+        function fn_drawProcessUptime(){
+            let processUptime;
+            $.ajax({
+                url : "/management/metrics/process.uptime",
+                type : "get",
+                async : false,
+                data: {},
+                //dataType: "json",
+                contentType: "application/json",
+                timeout: 60000,// timeout : 60초간 서버와의 통신기다리는 시간.
+                cache: false,
+                success : function(resp) {
+                    console.log(resp);
+
+                    processUptime = fn_time(resp.measurements[0].value);
+                    console.log(processUptime);
+                    // $('#processUptime').html("프로세스 구동중인 시간 :   " + processUptime);
+                },
+                /*beforeSend: function() { //로딩이미지 보여주기
+                    $("#wrap-loading").show();
+                },
+                complete: function() { //로딩이미지 숨기기
+                    $("#wrap-loading").hide();
+                },*/
+                error : function(jqXHR, textStatus) {
+                    if(textStatus === 'timeout'){
+                        console.log('timeout : 60 sec');
+                    } else {
+                        console.log("error");
+                    }
+                }
+            });
+
+        }
+
+        function fn_convertSize(type, byteSize){
+            let returnSize = 0;
+
+            let kbSize = byteSize / 1024;
+            let mbSize = kbSize / 1024;
+            let gbSize = mbSize / 1024;
+
+            if (type == "kb"){
+                returnSize = kbSize;
+            } else if (type == "mb"){
+                returnSize =  mbSize;
+            } else if (type == "gb"){
+                returnSize = gbSize;
+            } else {
+                returnSize = byteSize;
+            }
+
+            return returnSize.toFixed(2);// 소숫점 두번째 자리수까지 출력
+        }
+
+        function fn_time(seconds) {
+            let result;
+
+            //3항 연산자를 이용하여 10보다 작을 경우 0을 붙이도록 처리 하였다.
+            let hour = parseInt(seconds/3600) < 10 ? '0'+ parseInt(seconds/3600) : parseInt(seconds/3600);
+            let min = parseInt((seconds%3600)/60) < 10 ? '0'+ parseInt((seconds%3600)/60) : parseInt((seconds%3600)/60);
+            let sec = seconds % 60 < 10 ? '0'+ parseInt(seconds) % 60 : parseInt(seconds) % 60;
+
+            //연산한 값을 화면에 뿌려주는 코드
+            result = hour+"시간 "+min+"분 " + sec + "초 ";
+
+            return result;
+        }
     </script>
 </head>
 <body>
