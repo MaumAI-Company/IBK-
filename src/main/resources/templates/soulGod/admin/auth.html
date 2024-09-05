@@ -161,7 +161,7 @@ function fnCloseModal(obj){
 }
 
 //페이지 이동
-function fnMovePage(pageNo){
+function movePage(url, pageNo){
 	$('#currentPageNo').val(pageNo);
 	$('#aform').attr({ action : '/soulGod/admin/auth', method : 'post' }).unbind('submit').submit();
 }
@@ -238,7 +238,7 @@ function fnClearOpenModal(){
 
             <div class="board_top">
                 <div>
-                    <div class="total_num"><b>[[${totalRecordCount}]]</b> 개의 사용자가 있습니다.</div>
+                    <div class="total_num"><b>[[${totalRecordCount}]]</b> 명의 사용자가 있습니다.</div>
                 </div>
                 <div class="mla">
                     <!-- label for="recordsPerPage" class="blind">게시글 페이지 수</label>
