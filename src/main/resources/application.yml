@@ -1,0 +1,84 @@
+# ----------------------------------------
+# Core Properties
+# ----------------------------------------
+spring:
+  # spring.config.activate.on-profile defualt 세팅
+  profiles:
+    default: local
+
+  # ----------------------------------------
+  # Web Properties
+  # ViewResolver선언이 복수이면 java로 작성을 해줘야 하는듯;
+  # ----------------------------------------
+  servlet:
+    multipart:
+      # Max file size
+      max-file-size: 10MB
+      # Max request size
+      max-request-size: 100MB
+  # jsp jstl InternalResourceViewResolverConfig.java 세팅
+  mvc:
+    view:
+      prefix: /WEB-INF/
+      suffix: .jsp
+  # Time zone used when formatting dates. For instance "America/Los_Angeles" or "GMT+10" JSON Properties
+  jackson:
+    time-zone: GMT+09
+  # thymeleaf ThymeleafViewResolverConfig.java 세팅
+  thymeleaf:
+    view-names: thymeleaf/*
+    prefix: classpath:templates/
+    check-template-location: true
+    suffix: .html
+    template-resolver-order: 1
+    cache: false
+    mode: HTML5
+  # error Action: Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+  # 스프링 2.1 버전부터는 overriding의 default 값이 false로 나와서 생기는 오류라고한다. 해결 방법은 application.properties에 Action에 나와있는 'spring.main.allow-bean-definition-overriding=true'를 넣어주면 된다.
+  main:
+    allow-bean-definition-overriding: true
+# ----------------------------------------
+# Server
+# ----------------------------------------
+server:
+  # Server HTTP port.
+  port: 18080
+  servlet:
+    # Context path of the application
+    context-path: /
+  # error 정의
+  error:
+    # 기본 에러페이지 사용 안함
+    whitelabel:
+      enabled: false
+
+# ----------------------------------------
+# Logging
+# ----------------------------------------
+logging:
+  level:
+    root: WARN
+  config: classpath:logback-${spring.profiles.active}-spring.xml
+  file:
+    path: ./logs/
+    name: maumxdc
+
+# ----------------------------------------
+# Spring Actuator
+# ----------------------------------------
+management:
+  endpoints:
+    web:
+      base-path: "/management"
+      exposure: ## Http상에서 endpoint 공개하는 방법
+        include: "*"
+  #    enabled-by-default: false
+  endpoint:
+    #    info: ## endpoint 활성화 및 비활성화 방법
+    #      enabled: true
+    shutdown:
+      enabled: false
+    info:
+      enabled: true
+    health:
+      show-details: always
