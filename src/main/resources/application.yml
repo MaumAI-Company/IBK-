@@ -4,7 +4,8 @@
 spring:
   # spring.config.activate.on-profile defualt 세팅
   profiles:
-    default: local
+    active: dev
+  #    default: local
 
   # ----------------------------------------
   # Web Properties
@@ -42,7 +43,7 @@ spring:
 # ----------------------------------------
 server:
   # Server HTTP port.
-  port: 18080
+  port: 8080
   servlet:
     # Context path of the application
     context-path: /

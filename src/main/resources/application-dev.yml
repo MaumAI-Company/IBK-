@@ -12,7 +12,7 @@ spring:
 
       # MARIADB
       driver-class-name: org.mariadb.jdbc.Driver
-      jdbc-url: jdbc:mariadb://183.110.62.52:13306/maumxdc?characterEncoding=UTF-8&passwordCharacterEncoding=UTF-8&serverTimezone=UTC&allowMultiQueries=true
+      jdbc-url: jdbc:mariadb://127.0.0.1:13306/maumxdc?characterEncoding=UTF-8&passwordCharacterEncoding=UTF-8&serverTimezone=UTC&allowMultiQueries=true
       #jdbc-url: jdbc:mariadb://172.18.121.25:23306/maumxdc?characterEncoding=UTF-8&passwordCharacterEncoding=UTF-8&serverTimezone=UTC&allowMultiQueries=true
       #jdbc-url: jdbc:mariadb://121.166.163.253:23306/maumxdc?characterEncoding=UTF-8&passwordCharacterEncoding=UTF-8&serverTimezone=UTC&allowMultiQueries=true
       type: com.zaxxer.hikari.HikariDataSource
