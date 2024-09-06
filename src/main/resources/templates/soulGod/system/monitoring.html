@@ -67,13 +67,15 @@
                 success : function(resp) {
                     //console.log(resp);
                     // 상태
-                    /*if ("UP"==resp.status){
-                        $('#statusSuccess').addClass("active");
-                        $('#statusError').removeClass("active");
+                    if ("UP"==resp.status){
+                        $('#systemStatus').addClass("fc_primary");
+                        $('#systemStatus').removeClass("fc_error");
+                        $('#systemStatus').text("정상");
                     }else{
-                        $('#statusSuccess').removeClass("active");
-                        $('#statusError').addClass("active");
-                    }*/
+                        $('#systemStatus').removeClass("fc_primary");
+                        $('#systemStatus').addClass("fc_error");
+                        $('#systemStatus').text("비정상");
+                    }
 
                     let diskSpaceDetails = resp.components.diskSpace.details;
 
@@ -597,7 +599,7 @@
 
             <div class="box">
                 <p>시스템 상태</p>
-                <b class="fc_primary">정상</b>
+                <b id="systemStatus" class="fc_primary">정상</b>
                 <!--<b class="fc_error">비정상</b>-->
             </div>
 
