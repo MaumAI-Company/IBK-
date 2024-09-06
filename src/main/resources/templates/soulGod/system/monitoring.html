@@ -98,7 +98,8 @@
             });
         }
 
-        function fn_getProcessCpuUsage(){
+        function fn_getProcessCpuUsage(init){
+        	var firstValue = 0;
             $.ajax({
                 url : "/management/metrics/process.cpu.usage",
                 type : "get",
@@ -115,7 +116,11 @@
 
                     // cpu 사용량
                     // drawCpuUsage(cpuUsage);
-                    addData(cpuUsage);
+                    if(init) {
+                    	firstValue = cpuUsage;
+                    } else {
+                    	addData(cpuUsage);
+                    }
                 },
                 /*beforeSend: function() { //로딩이미지 보여주기
                     $("#wrap-loading").show();
@@ -131,6 +136,8 @@
                     }
                 }
             });
+            
+            return firstValue;
         }
 
         function fn_getJvmMemoryMax(){
@@ -505,6 +512,7 @@
 
 	  var lastDate = new Date(lastDataItem.get("valueX"));
 	  var time = am5.time.add(new Date(lastDate), "second", 10).getTime();
+	  
 	  cpuUseSeries.data.removeIndex(0);
 	  cpuUseSeries.data.push({
 	    date: time,
@@ -542,19 +550,22 @@
 	  }
 	}
 		    
-	$(function(){
+	$(async function(){
 	    // status, 디스크 사용량 조회
 	    fn_getStatus();
 	    
 	    // process cpu 사용량 조회
 	    
 	    var firstDate = new Date();
-	    firstDate.setDate(firstDate.getDate() - 1000);
 	    
-	    for (var i = 0; i < 15; i++) {
+	    var lastCpuUse = await fn_getProcessCpuUsage(true);
+	    
+	    for (var i = 14; i >= 0; i--) {
+	    	var nowDate = new Date(firstDate.getTime());
+	    	nowDate.setSeconds(nowDate.getSeconds() - (i*10));
 		    cpuChartData.push({
-	      		date: new Date(firstDate.setSeconds(i)).getTime(),
-	      		value: 0
+	      		date: nowDate.getTime(),
+	      		value: lastCpuUse
 			});
 		}			
 	    
@@ -566,7 +577,7 @@
 	    fn_drawProcessUptime();
 	    
 	    drawCpuUsage();
-	})        
+	});        
     </script>
 </head>
 <body>
