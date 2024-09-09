@@ -15,7 +15,7 @@ public class SystemController {
     public String monitoring(Model model,
                         @CurrentUser MemberInfo memberInfo) {
 
-        model.addAttribute("mc", "system");
+        model.addAttribute("mc", "ico_dns");
         model.addAttribute("pageTitle", "모니터링");
 
         return "/soulGod/system/monitoring";
