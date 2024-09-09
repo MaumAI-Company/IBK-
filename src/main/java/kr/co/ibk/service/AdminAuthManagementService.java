@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +60,7 @@ public class AdminAuthManagementService extends _BaseService{
 	}
 
 	
+	@CacheEvict(value = "menu", allEntries = true)
 	public void insertMemberMenu(CustomMap param){
 		log.info("adminAuthManagementRepository.insertMemberMenu() Start");
 		log.info("adminAuthManagementRepository.insertMemberMenu() param : {}", param);
