@@ -20,38 +20,79 @@
                 am5themes_Animated.new(root)
             ]);
 
-            let chart = root.container.children.push(am5percent.PieChart.new(root, {
-                layout: root.verticalLayout,
-                innerRadius: am5.percent(50)
-            }));
+			root.container.set("layout", root.verticalLayout);
+			
+			var chartContainer = root.container.children.push(am5.Container.new(root, {
+			  layout: root.horizontalLayout,
+			  width: am5.p100,
+			  height: am5.p100
+			}));
 
-            let series = chart.series.push(am5percent.PieSeries.new(root, {
-                valueField: "value",
-                alignLabels: false
-            }));
+			var chart = chartContainer.children.push(
+			  am5percent.PieChart.new(root, {
+			    endAngle: 270,
+			    innerRadius: am5.percent(60)
+			  })
+			);
 
-            series.labels.template.setAll({
-                textType: "circular",
-                centerX: 0,
-                centerY: 0
-            });
+			var series = chart.series.push(
+			  am5percent.PieSeries.new(root, {
+			    valueField: "value",
+			    categoryField: "category",
+			    endAngle: 270,
+			    alignLabels: false,
+				legendLabelText: "[{fill}]{category}[/]",
+    			legendValueText: "[bold {fill}]{value} Gb[/]"			    
+			  })
+			);
 
             series.data.setAll([
                 { category : '사용', value: fn_convertSize('gb', diskSpaceInfo.total -  diskSpaceInfo.free)},
                 { category : '여유', value: fn_convertSize('gb', diskSpaceInfo.free) }
             ]);
 
-            let legend = chart.children.push(am5.Legend.new(root, {
-                centerX: am5.percent(50),
-                x: am5.percent(50),
-                marginTop: 15,
-                marginBottom: 15,
-            }));
+			
+			var diskTotalSize = fn_convertSize('gb', diskSpaceInfo.total);
+			series.children.push(am5.Label.new(root, {
+			  centerX: am5.percent(50),
+			  centerY: am5.percent(50),
+			  text: "전체: "+ diskTotalSize + " Gb",
+			  populateText: true,
+			  fontSize: "1.5em"
+			}));
+			
+			series.slices.template.setAll({
+			  cornerRadius: 8
+			})
+			
+			series.states.create("hidden", {
+			  endAngle: -90
+			});
+			
+			series.labels.template.setAll({
+			  textType: "circular"
+			});
 
-            legend.data.setAll(series.dataItems);
+			function getSlice(dataItem, series) {
+			  var otherSlice;
+			  am5.array.each(series.dataItems, function(di) {
+			    if (di.get("category") === dataItem.get("category")) {
+			      otherSlice = di.get("slice");
+			    }
+			  });
+			
+			  return otherSlice;
+			}
+			
+			// Create legend
+			var legend = root.container.children.push(am5.Legend.new(root, {
+			  x: am5.percent(50),
+			  centerX: am5.percent(50)
+			}));
+			
+			legend.data.setAll(series.dataItems);
 
-            series.appear(1000, 100);
-
+			series.appear(1000, 100);			
         }
 
         function fn_getStatus(){
@@ -80,7 +121,6 @@
                     let diskSpaceDetails = resp.components.diskSpace.details;
 
                     // 디스크 사용량 차트 Draw
-                    $("#diskUse").text("디스크 사용량 (전체 : "+fn_convertSize('gb', diskSpaceDetails.total)+" Gb)");
                     drawDiskSpace(diskSpaceDetails);
 			
                 },
