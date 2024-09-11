@@ -15,7 +15,7 @@ public class LearnController {
     public String dataManage(Model model,
                         @CurrentUser MemberInfo memberInfo) {
 
-        model.addAttribute("mc", "learn");
+        model.addAttribute("mc", "ico_database");
         model.addAttribute("pageTitle", "데이터 관리");
 
         return "/soulGod/learn/dataManage";
@@ -26,7 +26,7 @@ public class LearnController {
     public String modelManage(Model model,
                         @CurrentUser MemberInfo memberInfo) {
 
-        model.addAttribute("mc", "learn");
+        model.addAttribute("mc", "ico_database");
         model.addAttribute("pageTitle", "모델 관리");
 
         return "/soulGod/learn/modelManage";
@@ -36,7 +36,7 @@ public class LearnController {
     public String deployManage(Model model,
                         @CurrentUser MemberInfo memberInfo) {
 
-        model.addAttribute("mc", "learn");
+        model.addAttribute("mc", "ico_database");
         model.addAttribute("pageTitle", "배포 관리");
 
         return "/soulGod/learn/deployManage";

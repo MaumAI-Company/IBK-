@@ -32,6 +32,7 @@
 			, IFNULL(hmm.MENU_ID, "") AS AUTH_MENU_ID
 			, IFNULL(hmm.ROLE_ID, "") AS AUTH_ROLE_ID
 			, IFNULL(hmm.MENU_USE, "") AS AUTH_MENU_USE
+			, al.MENU_COLUMN1
 		FROM (
 				SELECT 
 					  fnc.LEVEL AS REAL_DEPTH
@@ -54,6 +55,7 @@
 					, DATE_FORMAT(hc_mn.MENU_MOD_DT,'%Y%m%d') AS MENU_MOD_DT
 					, DATE_FORMAT(hc_mn.MENU_MOD_DT,'%H%i%S') AS MENU_MOD_TIME
 					, hc_mn.MENU_URL
+					, hc_mn.MENU_COLUMN1
 				FROM (
 				  		SELECT 
 				  			FNGETMENUTREE() AS MENU_ID

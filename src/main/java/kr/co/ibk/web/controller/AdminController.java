@@ -1,5 +1,7 @@
 package kr.co.ibk.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.common.utils.CustomMap;
 import kr.co.ibk.domain.web.DepTreetInfo;
@@ -7,33 +9,19 @@ import kr.co.ibk.domain.web.DetectionLevel;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.domain.web.MenuAuthMember;
 import kr.co.ibk.model.DeptForm;
-import kr.co.ibk.service.AdminAuthManagementService;
-import kr.co.ibk.service.AdminDeptService;
-import kr.co.ibk.service.AdminDetectLevelService;
-import kr.co.ibk.service.AdminMenuManagementService;
-import kr.co.ibk.service.AdminUserService;
+import kr.co.ibk.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.json.JSONArray;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 
@@ -59,7 +47,7 @@ public class AdminController {
     	result = adminDeptService.getDeptTree();
         
         
-        model.addAttribute("mc", "admin");
+        model.addAttribute("mc", "ico_manage");
         model.addAttribute("pageTitle", "부서 관리");
 
         model.addAttribute("sessionMember", memberInfo);
@@ -75,7 +63,7 @@ public class AdminController {
     public String user(Model model,
                         @CurrentUser MemberInfo memberInfo, MemberInfo nowMember) {
 
-        model.addAttribute("mc", "admin");
+        model.addAttribute("mc", "ico_manage");
         model.addAttribute("pageTitle", "사용자 관리");
         
         // user 관련
@@ -120,7 +108,7 @@ public class AdminController {
         model.addAttribute("params", param); // 사용자페이지 관련 정보 / 페이징 정보
 
         
-        model.addAttribute("mc", "admin");
+        model.addAttribute("mc", "ico_manage");
         model.addAttribute("pageTitle", "권한 관리");
         model.addAttribute("totalRecordCount",param.getPaginationInfo().getTotalRecordCount());
         return "/soulGod/admin/auth";
@@ -153,7 +141,7 @@ public class AdminController {
         log.info("access Url : /menu/main, target Method : manuManagementMain() End View menuMainPage");
 
         
-        model.addAttribute("mc", "admin");
+        model.addAttribute("mc", "ico_manage");
         model.addAttribute("pageTitle", "메뉴 관리");
 
         return "/soulGod/admin/menu";
@@ -172,7 +160,7 @@ public class AdminController {
         model.addAttribute("detectionLevelList", resultMap.get("detectionLevelList"));
         model.addAttribute("status", resultMap.get("status"));
         
-        model.addAttribute("mc", "admin");
+        model.addAttribute("mc", "ico_manage");
         model.addAttribute("pageTitle", "검증 수준(Threshold) 설정");
 
         return "/soulGod/admin/fakeCheck";
@@ -182,7 +170,7 @@ public class AdminController {
     public String commonCode(Model model,
                             @CurrentUser MemberInfo memberInfo) {
 
-        model.addAttribute("mc", "admin");
+        model.addAttribute("mc", "ico_manage");
         model.addAttribute("pageTitle", "공통코드 관리");
 
         return "/soulGod/admin/commonCode";

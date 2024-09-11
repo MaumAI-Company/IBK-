@@ -15,7 +15,7 @@ public class ReportController {
     public String card(Model model,
                         @CurrentUser MemberInfo memberInfo) {
 
-        model.addAttribute("mc", "report");
+        model.addAttribute("mc", "ico_chart");
         model.addAttribute("pageTitle", "BC카드 지급결의 내역 조회");
 
         return "/soulGod/report/card";
@@ -26,7 +26,7 @@ public class ReportController {
     public String taxInvoice(Model model,
                         @CurrentUser MemberInfo memberInfo) {
 
-        model.addAttribute("mc", "report");
+        model.addAttribute("mc", "ico_chart");
         model.addAttribute("pageTitle", "세금계산서 지급결의 내역 조회");
 
         return "/soulGod/report/taxInvoice";
@@ -36,7 +36,7 @@ public class ReportController {
     public String statistic(Model model,
                         @CurrentUser MemberInfo memberInfo) {
 
-        model.addAttribute("mc", "report");
+        model.addAttribute("mc", "ico_chart");
         model.addAttribute("pageTitle", "기간별 통계");
 
         return "/soulGod/report/statistic";
