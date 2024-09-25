@@ -714,7 +714,7 @@ function fnGetRevertDetailLayoutData(){
                             </th>
                             <td>
                                 <div class="input">
-                                    <input type="text" id="detail_deptEngName">
+                                    <input type="text" id="detail_deptEngName" onkeyup="this.value=this.value.replace(/[^a-z]/g,'');">
                                     <button type="button" class="btn_del" tabindex="-1">
                                         <span class="blind">삭제</span>
                                     </button>
@@ -848,7 +848,7 @@ function fnGetRevertDetailLayoutData(){
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="addDeptEngName">
+                            <input type="text" id="addDeptEngName" onkeyup="this.value=this.value.replace(/[^a-z]/g,'');">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>

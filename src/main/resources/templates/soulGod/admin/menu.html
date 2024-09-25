@@ -174,7 +174,7 @@
                             </th>
                             <td>
                                 <div class="input">
-                                    <input type="text" id="detail_menuEngName">
+                                    <input type="text" id="detail_menuEngName" onkeyup="this.value=this.value.replace(/[^a-z]/g,'');">
                                     <button type="button" class="btn_del" tabindex="-1">
                                         <span class="blind">삭제</span>
                                     </button>
@@ -327,7 +327,7 @@
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="add_menuEngName">
+                            <input type="text" id="add_menuEngName" onkeyup="this.value=this.value.replace(/[^a-z]/g,'');">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
