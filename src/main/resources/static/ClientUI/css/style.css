@@ -53,7 +53,7 @@
 .aside_hide #aside nav .nav > li > a:not(:only-child){padding-right:0}
 .aside_hide #aside nav .nav > li > a:after{display:none}
 .aside_hide #aside nav .nav > li ul{display:none !important}
-.aside_hide #aside nav .btn_toggle_aside{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M20 18V6h2v12zm-8 0l-1.425-1.4l3.6-3.6H2v-2h12.175L10.6 7.4L12 6l6 6z'/%3E%3C/svg%3E")}
+.aside_hide #aside .btn_toggle_aside{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M20 18V6h2v12zm-8 0l-1.425-1.4l3.6-3.6H2v-2h12.175L10.6 7.4L12 6l6 6z'/%3E%3C/svg%3E")}
 .aside_hide #container{padding-left:52px}
 #container{position:relative;min-height:calc(100vh - 52px);padding-left:260px;transition:padding linear .3s}
 #container .contents{padding:40px}
