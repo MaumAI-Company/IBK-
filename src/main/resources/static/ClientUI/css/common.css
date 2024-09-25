@@ -494,6 +494,60 @@ table .nodata{box-shadow:none}
 table .nodata p{padding-right:16px}
 /***** tree *****/
 .tree_area{overflow-y:auto;width:100%;border:1px solid #ebeff2;border-radius:4px;background-color:#fff}
+ul.jqtree-tree{width:100%}
+ul.jqtree-tree li.jqtree_common{position:relative}
+ul.jqtree-tree li.jqtree_common:hover > .jqtree-element .jqtree-title{font-weight:600}
+ul.jqtree-tree li.jqtree-folder{margin-bottom:0 !important}
+ul.jqtree-tree .jqtree-element{gap:8px;padding:10px 20px}
+ul.jqtree-tree .jqtree-toggler{width:20px;height:20px;font-size:0;text-indent:-9999px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%239AA1A6' d='M7 13h10v-2H7zm-2 8q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm0-2h14V5H5zM5 5v14z'/%3E%3C/svg%3E") no-repeat 0 0}
+ul.jqtree-tree .jqtree-toggler.jqtree-closed{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%239AA1A6' d='M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4zm-6 4q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm0-2h14V5H5zM5 5v14z'/%3E%3C/svg%3E")}
+ul.jqtree-tree .jqtree-toggler.jqtree-toggler-left{margin-right:0}
+ul.jqtree-tree .jqtree-title{display:flex;gap:6px;color:#252729;line-height:20px;outline:none}
+ul.jqtree-tree .jqtree-title:before{content:'';flex-shrink:0;width:20px;height:20px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%239AA1A6' d='M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm0-2h14V5H5z'/%3E%3C/svg%3E") no-repeat 0 0}
+ul.jqtree-tree .jqtree-title-button-left{margin-left:0}
+ul.jqtree-tree li.jqtree_common .jqtree-element:after{content:'';position:absolute;top:20px;left:40px;width:8px;border-bottom:1px dashed #9aa1a6}
+ul.jqtree-tree li.jqtree_common:not(.jqtree-folder) .jqtree-element:before{content:'';flex-shrink:0;width:20px;height:20px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%239AA1A6' d='M7 13h10v-2H7zm-2 8q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm0-2h14V5H5zM5 5v14z'/%3E%3C/svg%3E") no-repeat 0 0}
+ul.jqtree-tree ul.jqtree_common{position:relative;margin-left:0}
+ul.jqtree-tree ul.jqtree_common > li:before{left:49px}
+ul.jqtree-tree ul.jqtree_common > li .jqtree-element:after{left:60px}
+ul.jqtree-tree ul.jqtree_common .jqtree-element{padding-left:40px}
+ul.jqtree-tree ul.jqtree_common ul.jqtree_common > li .jqtree-element:after{left:80px}
+ul.jqtree-tree ul.jqtree_common ul.jqtree_common .jqtree-element{padding-left:60px}
+ul.jqtree-tree ul.jqtree_common ul.jqtree_common ul.jqtree_common > li .jqtree-element:after{left:100px}
+ul.jqtree-tree ul.jqtree_common ul.jqtree_common ul.jqtree_common .jqtree-element{padding-left:80px}
+ul.jqtree-tree ul.jqtree_common ul.jqtree_common ul.jqtree_common ul.jqtree_common > li .jqtree-element:after{left:120px}
+ul.jqtree-tree ul.jqtree_common ul.jqtree_common ul.jqtree_common ul.jqtree_common .jqtree-element{padding-left:100px}
+ul.jqtree-tree ul.jqtree_common ul.jqtree_common ul.jqtree_common ul.jqtree_common ul.jqtree_common > li .jqtree-element:after{left:140px}
+ul.jqtree-tree ul.jqtree_common ul.jqtree_common ul.jqtree_common ul.jqtree_common ul.jqtree_common .jqtree-element{padding-left:120px}
+ul.jqtree-tree ul.jqtree_common ul.jqtree_common ul.jqtree_common ul.jqtree_common ul.jqtree_common ul.jqtree_common > li .jqtree-element:after{left:160px}
+ul.jqtree-tree li.jqtree-selected > .jqtree-element{text-shadow:none;background:none}
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover{text-shadow:none;background:#f9f9f9}
+ul.jqtree-tree li.jqtree-selected .jqtree-title:before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%23004C9D' d='m10.6 16.2l7.05-7.05l-1.4-1.4l-5.65 5.65l-2.85-2.85l-1.4 1.4zM5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21z'/%3E%3C/svg%3E")}
+ul.jqtree-tree li.jqtree_common:before{content:'';position:absolute;background-color:#9aa1a6;z-index:1}
+ul.jqtree-tree > li.jqtree_common:before{top:28px;left:29px;width:1px;height:24px}
+ul.jqtree-tree > li.jqtree-folder:before{height:calc(100% - 16px)}
+ul.jqtree-tree > li.jqtree-folder:last-child:before{height:calc(100% - 28px)}
+ul.jqtree-tree > li.jqtree-folder:has( > ul > li[class="jqtree_common"]:last-child):last-child:before{height:calc(100% - 47px)}
+ul.jqtree-tree > li.jqtree-folder:has( > ul > li.jqtree-folder.jqtree-closed:last-child):last-child:before{min-height:calc(100% - 47px)}
+ul.jqtree-tree > li.jqtree-folder:has( > ul > li.jqtree-folder:last-child):last-child:before{height:calc(100% - 127px)}
+ul.jqtree-tree > li.jqtree-folder:has( > ul > li > ul > li.jqtree-folder.jqtree-closed:last-child):last-child:before{height:calc(100% - 87px)}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common:before{top:20px;left:30px;width:12px;height:1px}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common ul.jqtree_common:before{content:'';position:absolute;top:-12px;left:49px;width:1px;height:calc(100% - 7px);background-color:#9aa1a6;z-index:1}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common ul.jqtree_common:has(> li.jqtree-folder:not(.jqtree-closed):last-child):before{height:calc(100% - 47px)}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common ul.jqtree_common:has(> li.jqtree-folder:not(.jqtree-closed):nth-child(2):last-child):before{height:calc(100% - 87px)}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common li.jqtree_common:before{left:50px}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common li.jqtree_common ul.jqtree_common:before{left:69px}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common:before{left:70px}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common ul.jqtree_common:before{left:89px}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common:before{left:90px}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common ul.jqtree_common:before{left:109px}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common:before{left:110px}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common ul.jqtree_common:before{left:129px}
+ul.jqtree-tree > li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common li.jqtree_common:before{left:130px}
+ul.jqtree-tree > li[class="jqtree_common"]:last-child:before,
+ul.jqtree-tree > li.jqtree-folder.jqtree-closed:last-child:before{display:none}
+ul.jqtree-tree li.jqtree_common:hover > .jqtree-element{background-color:#f9f9f9}
+.box > .tree_area{align-items:flex-start}
 /***** popup *****/
 .popup{position:relative;border-radius:16px;background-color:#fff;box-shadow:5px 5px 25px rgba(0,0,0,0.25)}
 .popup .pop_tit{display:block}
