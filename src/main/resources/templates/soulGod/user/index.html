@@ -6,6 +6,11 @@
         $(function(){
         });
     </script>
+	<!-- RSA 평문전송 방지 -->
+	<script type="text/javascript" src="/ClientUI/js/rsa/rsa.js"></script>
+	<script type="text/javascript" src="/ClientUI/js/rsa/jsbn.js"></script>
+	<script type="text/javascript" src="/ClientUI/js/rsa/prng4.js"></script>
+	<script type="text/javascript" src="/ClientUI/js/rsa/rng.js"></script>    
 </head>
 <body>
     <div id="wrap">
@@ -21,7 +26,9 @@
                         <h2 class="page_tit">계정</h2>
                     </div>
                 </div>
-
+				<input type="hidden" id="userId" th:value="${memberInfo.memId}">
+				<input type="hidden" id="RSAModulus" th:value="${RSAModulus}"/>
+				<input type="hidden" id="RSAExponent" th:value="${RSAExponent}"/>				
                 <table class="tbl_list">
                     <caption>계정 : 사용자 이름, 아이디, 사용자 그룹, 비밀번호 변경으로 구성</caption>
                     <colgroup>
@@ -40,9 +47,9 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td class="tal">관리자</td>
-                        <td>admin</td>
-                        <td>system</td>
+                        <td class="tal" th:text="${memberInfo.memName}"></td>
+                        <td th:text="${memberInfo.memId}"></td>
+                        <td th:text="${memberInfo.deptName}"></td>
                         <td>
                             <button type="button" class="badge" onclick="layerShow('popPw')">
                                 <span>비밀번호 변경</span>
@@ -116,12 +123,149 @@
                 </table>
             </div>
             <div class="pop_foot">
-                <button type="button" class="btn fill">
+                <button type="button" class="btn fill" onclick="changePassword()">
                     <span>비밀번호 변경</span>
                 </button>
             </div>
         </div>
     </div>
     <!--상세 팝업 : e-->
+
+	<!--얼럿 : s-->
+	<div id="alertWarning" class="system_alert">
+	    <div class="dim"></div>
+	    <div class="popup">
+            <div class="pop_cont">
+                <i class="ico ico_warning"></i>
+                <strong class="pop_tit" id="failMsg"></strong> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+                <p class="pop_txt"> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+                </p>
+            </div>
+	        <div class="pop_foot">
+	            <button type="button" class="btn fill" onclick="layerHide('alertWarning')">
+	                <span>확인</span>
+	            </button>
+	        </div>
+	    </div>
+	</div>
+	<!--얼럿 : e-->    
+	
+    <!--얼럿 : s-->
+    <div id="alertComplete" class="system_alert">
+        <div class="dim"></div>
+        <div class="popup">
+            <div class="pop_cont">
+                <i class="ico ico_complete"></i>
+                <strong class="pop_tit">비밀번호 변경이 완료되었습니다.</strong> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+                <p class="pop_txt" id="pwdMsg"> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+                </p>
+            </div>
+            <div class="pop_foot">
+                <button type="button" class="btn fill" onclick="layerHide('alertComplete')">
+                    <span>확인</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!--얼럿 : e-->	
+<script type="text/javascript">    
+function changePassword(){
+	var $userId = $('#userId').val();
+	var $chkPwd = $('#chkPwd').val();
+	var $newPwd = $('#newPwd').val();
+	var $newPwdConfirm = $('#newPwdConfirm').val();
+
+	// 1. 암호 규칙 체크 필요
+	
+	// 2. 변경할 암호가 일치하는지 확인필요
+	
+	// 입력 안한 경우 체크
+	if ($chkPwd.length <= 0){
+		//layerShow('alertWarning');
+		alert('기존 암호를 입력해주세요');
+		$('#chkPwd').focus();
+		return;
+	} else if ($newPwd.length <= 0){
+		alert('새 암호를 입력해주세요');
+		$('#newPwd').focus();
+		return;
+	} else if ($newPwdConfirm.length <= 0){
+		alert('새 암호 확인을 입력해주세요');
+		$('#newPwdConfirm').focus();
+		return;
+	}
+	
+	var passMin = 8;
+	var passMax = 12; 
+	
+	// 입력한 경우 새로운 비밀번호는 8자리 이상인지 12자리 이하인지 체크.
+	// 패스워드는 하나 이상의 대문자, 소문자, 숫자, 특수문자를 포함한 8글자에서 12글자 내로 이루어져아합니다.
+	if (!($newPwd.length >= passMin && $newPwd.length <= passMax)){
+		alert('새 암호의 길이는 '+passMin+'글자 이상 '+passMax+'이하로 이루어져야합니다.');
+		$('#newPwd').focus();
+		return;
+	} else if (!($newPwdConfirm.length >= passMin && $newPwdConfirm.length <= passMax)){
+		alert('새 암호의 길이는 '+passMin+'글자 이상 '+passMax+'이하로 이루어져야합니다.');
+		$('#newPwdConfirm').focus();
+		return;
+	}
+	
+	// 입력한 경우 체크 동일 암호 체크	
+	if ($newPwd != $newPwdConfirm){
+		alert('암호가 일치하지 않습니다');
+		$('#newPwdConfirm').focus();
+		return;
+	} else {
+		// 3. 암호 변경 Ajax 요청 수행
+		
+	    // rsa 암호화	
+		var rsa = new RSAKey();
+		rsa.setPublic($('#RSAModulus').val(), $('#RSAExponent').val());
+
+		var jsonData = {
+				"userId" : rsa.encrypt($userId)
+				, "chkPwd" : rsa.encrypt($chkPwd)
+				, "newPwd" : rsa.encrypt($newPwd)
+		};
+		
+		if (confirm('암호를 변경하시겠습니까?')){
+			ajaxChangePassword(jsonData);
+			// 모달창 close 및 입력한 정보 초기화
+			$('#chkPwd').val('');
+			$('#newPwd').val('');
+			$('#newPwdConfirm').val('');
+		}
+	}
+}
+
+function ajaxChangePassword(jsonData){
+	// 암호 변경 Ajax
+	var result = "";
+
+	$.ajax({
+		url : "/soulGod/user/changeUserPassword",
+		type : "post",
+		async : false,
+		data : JSON.stringify(jsonData),
+		dataType: "json",
+        contentType: "application/json",
+		success : function(data) {
+			console.log(data);
+			result = data;
+			if ("SUCCESS" == data.status){
+				$('#pwdMsg').html(data.msg);
+				layerShow('alertComplete');
+			} else {
+				$('#failMsg').html(data.msg);
+				layerShow('alertWarning');
+			}
+		},
+		error : function() {
+			console.log("error");
+		}
+	});
+	return result;
+}    
+</script>
 </body>
 </html>
