@@ -284,7 +284,7 @@
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="modMemBirthday" name="modMemBirthday" placeholder="생년월일을 입력하세요.">
+                            <input type="text" id="modMemBirthday" name="modMemBirthday" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="생년월일을 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -297,7 +297,7 @@
                     </th>
                     <td>
                         <div class="input">
-                            <input type="tel" id="modMemPhone" name="modMemPhone" placeholder="휴대폰 번호를 입력하세요.">
+                            <input type="tel" id="modMemPhone" name="modMemPhone" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="휴대폰 번호를 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -509,7 +509,7 @@
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="addMemBirthday" name="addMemBirthday" placeholder="생년월일을 입력하세요.">
+                            <input type="text" id="addMemBirthday" name="addMemBirthday" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="생년월일을 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -522,7 +522,7 @@
                     </th>
                     <td>
                         <div class="input">
-                            <input type="tel" id="addMemPhone" name="addMemPhone" placeholder="휴대폰 번호를 입력하세요.">
+                            <input type="tel" id="addMemPhone" name="addMemPhone" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="휴대폰 번호를 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -832,6 +832,12 @@ function addUser(){
 
 	var $addMemColumn1 = $('#addMemColumn1').val();
 	
+    const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    if ($addMemColumn1.length > 0 && !ipv4Pattern.test($addMemColumn1)) {
+        alert("유효하지 않은 IP 주소입니다.");
+        return;
+    }
+    	
 	 // radio
 	 var $addMemGender = $("input[name='addMemGender']:checked").val(); // 성별
 	 var $addMemStat = $("input[name='addMemStat']:checked").val(); // 상태 
@@ -1043,6 +1049,12 @@ function modUser(){
 	
 	var $modMemColumn1 = $('#modMemColumn1').val();
 	
+    const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    if ($modMemColumn1.length > 0 && !ipv4Pattern.test($modMemColumn1)) {
+        alert("유효하지 않은 IP 주소입니다.");
+        return;
+    }
+    	
 	// radio
 	var $modMemGender = $("input[name='modMemGender']:checked").val(); // 성별
 	var $modMemStat = $("input[name='modMemStat']:checked").val(); // 상태 
@@ -1529,6 +1541,10 @@ function noEnKo(obj){
     var fmStr = str.join('.');
     
     var result = fmStr.replace(/[`~!@#$%^&*()_|+\-=?;:'"<>\{\}\[\]\\\|ㄱ-ㅎ|ㅏ-ㅣ-ㅢ|가-힣|a-z|A-Z]/g,'');
+    
+    if(result.length>15){
+    	result = result.substring(0,15);
+    }
     
     $('#'+id).val(result);
     //return result
