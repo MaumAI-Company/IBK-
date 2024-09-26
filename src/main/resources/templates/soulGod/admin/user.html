@@ -191,6 +191,16 @@
     <div class="popup lg">
         <div class="pop_head">
             <strong class="pop_tit">사용자 수정</strong>
+            <th:block th:if="${isSuperAdmin}">
+            <div class="button-container" style="display: flex; justify-content: flex-end; margin-left: auto;" >
+            <button id="superSet" type="button" style="display: none;" class="btn line_cool_grey30" onclick="setSuperAdmin(true);">
+	            <span>SUPER 권한 설정</span>
+            </button>
+            <button id="superUnset" type="button" style="display: none;" class="btn line_cool_grey30" onclick="setSuperAdmin(false);">
+	            <span>SUPER 권한 해제</span>
+            </button>            
+            </div>
+            </th:block>
             <button type="button" class="btn_close" onclick="layerHide('popModify')">
                 <span class="blind">닫기</span>
             </button>
@@ -242,9 +252,11 @@
                     </td>
                     <th scope="row">비밀번호</th>
                     <td>
+                    	<th:block th:if="${isSuperAdmin}">
                         <button type="button" class="btn line_cool_grey30" onclick="resetPassword();">
                             <span>비밀번호 초기화</span>
                         </button>
+                        </th:block>
                     </td>
                 </tr>
                 <tr>
@@ -961,6 +973,41 @@ function ajaxResetPassword(jsonData){
 	});
 }
 
+// super admin 설정
+function setSuperAdmin(mode) {
+	var jsonData = {
+	    memId : $('#modMemId').val().trim()
+	    , auth : (mode ? "SUPER" : "")
+	}; 
+console.log("jsonData : " + jsonData);
+	$.ajax({
+		url : "/soulGod/admin/user/setSuperAdmin",
+		type : "post",
+		async : false,
+		data : jsonData,
+		dataType: "json",
+		success : function(data) {
+			if ("SUCCESS" == data.status){
+				alert(data.msg);
+				if(mode) {
+					$('#superSet').hide();
+					$('#superUnset').show();
+				}else{
+					$('#superUnset').hide();
+					$('#superSet').show();
+				}
+			} else if ("FAIL" == data.status){
+				alert(data.msg);
+			} else {
+				alert('실패하였습니다.');
+			}
+		},
+		error : function() {
+			console.log("error");
+		}
+	});
+}
+
 function deleteUser(){
 	var memId = $('#delChkMemId').val();
 	var jsonData = {
@@ -1259,6 +1306,19 @@ function ajaxGetUserInfo(memId){
 		    $('#modMemBirthday').val(info.memBirthday); // 생년월일 yyyymmdd
 		    $('#modMemPhone').val(info.memPhone); // 전화번호
 		    $('#modMemColumn1').val(info.memColumn1); // IP
+		    
+		    if($('#superUnset').length) {
+		    	$('#superUnset').hide();
+		    }
+		    if($('#superSet').length) {
+		    	$('#superSet').hide();
+		    }
+		    
+		    if($('#superUnset').length && 'ADMIN'==info.roleId && 'SUPER' == info.memColumn3) {
+		    	$('#superUnset').show();
+		    }else if($('#superSet').length && 'ADMIN'==info.roleId && 'SUPER' != info.memColumn3) {
+		    	$('#superSet').show();
+		    }
 		    
 		    // radio 값 선택
 		    var memGender;

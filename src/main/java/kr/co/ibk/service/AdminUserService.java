@@ -3,10 +3,12 @@ package kr.co.ibk.service;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.co.ibk.common.utils.PasswordGenerator;
 import kr.co.ibk.config.EncryptConfig;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.domain.web.RoleInfo;
@@ -153,7 +155,9 @@ public class AdminUserService extends _BaseService{
 		long resetCnt = 0;
 		
 		// 사용자 비밀번호 초기화시 RESET_PASSWORD 로 초기화 > 추후 암호화하는 변경작업 있어야 함
-		String newPwd = RESET_PASSWORD;
+		
+		String newPwd = PasswordGenerator.generatePassword(10);
+		
 		String encPwd = encryptConfig.passwordEncoder("bcrypt").encode(newPwd);
 		params.setMemPwd(encPwd);
 		
@@ -161,13 +165,50 @@ public class AdminUserService extends _BaseService{
 		
 		if (resetCnt==1L ) {
 			status = "SUCCESS";
-			msg = "정상적으로 초기화 되었습니다.";
+			msg = "비밀번호가 [ "+ newPwd + " ] 으로 초기화 되었습니다.";
 			memberRepository.resetPasswordFailCnt(params);
 		} else if (resetCnt != 1L) {
 			status = "FAIL";
 			msg = "패스워드 초기화를 실패하였습니다.";
 		}  
 
+		map.put("status", status);
+		map.put("msg", msg);
+		
+		return map;
+	}
+	
+	public Map<String,String> setSuperAdmin(Map<String,String> paramMap) {
+		Map<String, String> map = new HashMap<String, String>();// 반환 데이터
+		String status = "ERROR"; // 상태
+		String msg = "에러";// 메시지		
+		
+		// 설정 해제시 - 마지막 사용자는 해제 못하게
+		if(!"SUPER".equals(paramMap.get("auth"))) {
+			long result = memberRepository.countSuperAdmin();
+			
+			if (result == 1L) {
+				status = "FAIL";
+				msg = "마지막 SUPER ADMIN 권한자는 해제 할수 없습니다.";
+				
+				map.put("status", status);
+				map.put("msg", msg);
+				
+				return map;
+			}
+		}
+		
+		// superAdmin 설정/해제
+		long result = memberRepository.setSuperAdmin(paramMap);
+		
+		if (result==1L ) {
+			status = "SUCCESS";
+			msg = "정상적으로 설정 되었습니다.";
+		} else if (result != 1L) {
+			status = "FAIL";
+			msg = "SUPER ADMIN 설정에 실패하였습니다.";
+		}  
+		
 		map.put("status", status);
 		map.put("msg", msg);
 		

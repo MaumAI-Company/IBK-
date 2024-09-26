@@ -78,6 +78,28 @@
 	    	AND MEM_ID = #{memId}
     </update>
 
+	<update id="setSuperAdmin" parameterType="Map">
+    	UPDATE 
+    		HC_MEMBER
+    	SET	
+			MEM_COLUMN3 = #{auth}
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_ID = #{memId}	
+	</update>
+	
+	<select id="countSuperAdmin" resultType="long">
+		SELECT 
+		    COUNT(1)
+    	FROM 
+    	    HC_MEMBER
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_COLUMN3 = 'SUPER'	
+	</select>
+	
     <sql id="hc_member_columns">
 		${alias}MEM_SEQ
 		, ${alias}DEPT_ID

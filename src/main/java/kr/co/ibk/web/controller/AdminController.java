@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 
@@ -80,6 +81,8 @@ public class AdminController {
         model.addAttribute("userList", userList); // 사용자 목록
         model.addAttribute("params", nowMember); // 사용자페이지 관련 정보 / 페이징 정보
         model.addAttribute("totalRecordCount",nowMember.getPaginationInfo().getTotalRecordCount());
+        model.addAttribute("isSuperAdmin", "SUPER".equals(memberInfo.getMemColumn3()) ? true : false);
+        
         return "/soulGod/admin/user";
 
     }
@@ -306,7 +309,33 @@ public class AdminController {
         
         return map;
     }
-
+	
+	@PostMapping(value = {"/soulGod/admin/user/setSuperAdmin"})
+	@ResponseBody
+    public Map<String, String> setSuperAdmin(@CurrentUser MemberInfo memberInfo, String memId, String auth) {
+        log.info("##### URI :: { /admin/user/resetPassword } #####");
+        
+        if (!"SUPER".equals(auth)) {
+        	auth = "";
+        }
+        
+        // user 관련
+        Map<String,String> paramMap = new HashMap<String,String>();
+        paramMap.put("memId", memId);
+        paramMap.put("auth", auth);
+        paramMap.put("adminMemId", memberInfo.getMemId());
+        
+        Map<String, String> map = new HashMap<String,String>();
+        if ("SUPER".equals(memberInfo.getMemColumn3())) {
+        	map = adminUserService.setSuperAdmin(paramMap);
+        } else {
+    		map.put("status", "ERROR");
+    		map.put("msg", "SUPER ADMIN 권한이 있는 사용자만 가능합니다.");
+        }
+        
+        return map;
+    }
+	
 	@PostMapping(value = {"/soulGod/admin/user/delete"})
 	@ResponseBody
     public HashMap<String, Object> userDelete(MemberInfo params) {

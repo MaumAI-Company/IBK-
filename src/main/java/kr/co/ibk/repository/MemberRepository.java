@@ -1,5 +1,7 @@
 package kr.co.ibk.repository;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Repository;
 
 import kr.co.ibk.domain.web.MemberInfo;
@@ -45,6 +47,19 @@ public interface MemberRepository {
      */
     public long resetPasswordFailCnt(MemberInfo params);
 
+    /**
+     * SUPER ADMIN 설정/해제
+     * @param Map<String,String> paramMap
+     * @return
+     */    
+    public long setSuperAdmin(Map<String,String> paramMap);
+
+    /**
+     * SUPER ADMIN 권한자 수 조회
+     * @param Map<String,String> paramMap
+     * @return
+     */        
+    public long countSuperAdmin();
     /**
      * 사용자의 패스워드 실패 카운트 변경
      * @param MemberInfo MemberInfo
