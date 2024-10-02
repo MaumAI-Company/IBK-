@@ -504,6 +504,7 @@ ul.jqtree-tree .jqtree-toggler.jqtree-closed{background-image:url("data:image/sv
 ul.jqtree-tree .jqtree-toggler.jqtree-toggler-left{margin-right:0}
 ul.jqtree-tree .jqtree-title{display:flex;gap:6px;color:#252729;line-height:20px;outline:none}
 ul.jqtree-tree .jqtree-title:before{content:'';flex-shrink:0;width:20px;height:20px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%239AA1A6' d='M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm0-2h14V5H5z'/%3E%3C/svg%3E") no-repeat 0 0}
+ul.jqtree-tree .checkbox + .jqtree-title:before{display:none}
 ul.jqtree-tree .jqtree-title-button-left{margin-left:0}
 ul.jqtree-tree li.jqtree_common .jqtree-element:after{content:'';position:absolute;top:20px;left:40px;width:8px;border-bottom:1px dashed #9aa1a6}
 ul.jqtree-tree li.jqtree_common:not(.jqtree-folder) .jqtree-element:before{content:'';flex-shrink:0;width:20px;height:20px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%239AA1A6' d='M7 13h10v-2H7zm-2 8q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm0-2h14V5H5zM5 5v14z'/%3E%3C/svg%3E") no-repeat 0 0}
