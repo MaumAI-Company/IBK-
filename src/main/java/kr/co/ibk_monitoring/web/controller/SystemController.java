@@ -15,7 +15,7 @@ public class SystemController {
         model.addAttribute("mc", "ico_dns");
         model.addAttribute("pageTitle", "모니터링");
 
-        return "/system/monitoring";
+        return "system/monitoring";
 
     }
 }
