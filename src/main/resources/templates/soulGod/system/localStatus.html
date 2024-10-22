@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <style>
+        #container{padding-left:0 !important;}
+    </style>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/index.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/percent.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
+    <script type="text/javascript">
+	var jvmMemoryMax = 0;
+	var jvmMemoryUsed = 0;
+	var cpuChartData = [];
+	var cpuUseSeries = null;
+	var xAxis_cpu = null;
+	
+        function drawDiskSpace(diskSpaceInfo) {
+            let root = am5.Root.new("chartdiv");
+
+            root.setThemes([
+                am5themes_Animated.new(root)
+            ]);
+
+			root.container.set("layout", root.verticalLayout);
+			
+			var chartContainer = root.container.children.push(am5.Container.new(root, {
+			  layout: root.horizontalLayout,
+			  width: am5.p100,
+			  height: am5.p100
+			}));
+
+			var chart = chartContainer.children.push(
+			  am5percent.PieChart.new(root, {
+			    endAngle: 270,
+			    innerRadius: am5.percent(60)
+			  })
+			);
+
+			var series = chart.series.push(
+			  am5percent.PieSeries.new(root, {
+			    valueField: "value",
+			    categoryField: "category",
+			    endAngle: 270,
+			    alignLabels: false,
+				legendLabelText: "[{fill}]{category}[/]",
+    			legendValueText: "[bold {fill}]{value} Gb[/]"			    
+			  })
+			);
+
+            series.data.setAll([
+                { category : '사용', value: fn_convertSize('gb', diskSpaceInfo.total -  diskSpaceInfo.free)},
+                { category : '여유', value: fn_convertSize('gb', diskSpaceInfo.free) }
+            ]);
+
+			
+			var diskTotalSize = fn_convertSize('gb', diskSpaceInfo.total);
+			series.children.push(am5.Label.new(root, {
+			  centerX: am5.percent(50),
+			  centerY: am5.percent(50),
+			  text: "전체: "+ diskTotalSize + " Gb",
+			  populateText: true,
+			  fontSize: "1.5em"
+			}));
+			
+			series.slices.template.setAll({
+			  cornerRadius: 8
+			})
+			
+			series.states.create("hidden", {
+			  endAngle: -90
+			});
+			
+			series.labels.template.setAll({
+			  textType: "circular"
+			});
+
+			function getSlice(dataItem, series) {
+			  var otherSlice;
+			  am5.array.each(series.dataItems, function(di) {
+			    if (di.get("category") === dataItem.get("category")) {
+			      otherSlice = di.get("slice");
+			    }
+			  });
+			
+			  return otherSlice;
+			}
+			
+			// Create legend
+			var legend = root.container.children.push(am5.Legend.new(root, {
+			  x: am5.percent(50),
+			  centerX: am5.percent(50)
+			}));
+			
+			legend.data.setAll(series.dataItems);
+
+			series.appear(1000, 100);			
+        }
+
+        function fn_getStatus(){
+            $.ajax({
+                url : "/management/health",
+                type : "get",
+                async : false,
+                data: {},
+                //dataType: "json",
+                contentType: "application/json",
+                timeout: 60000,// timeout : 60초간 서버와의 통신기다리는 시간.
+                cache: false,
+                success : function(resp) {
+                    //console.log(resp);
+                    // 상태
+                    if ("UP"==resp.status){
+                        $('#systemStatus').addClass("fc_primary");
+                        $('#systemStatus').removeClass("fc_error");
+                        $('#systemStatus').text("정상");
+                    }else{
+                        $('#systemStatus').removeClass("fc_primary");
+                        $('#systemStatus').addClass("fc_error");
+                        $('#systemStatus').text("비정상");
+                    }
+
+                    let diskSpaceDetails = resp.components.diskSpace.details;
+
+                    // 디스크 사용량 차트 Draw
+                    drawDiskSpace(diskSpaceDetails);
+			
+                },
+                /*beforeSend: function() { //로딩이미지 보여주기
+                    $("#wrap-loading").show();
+                },
+                complete: function() { //로딩이미지 숨기기
+                    $("#wrap-loading").hide();
+                },*/
+                error : function(jqXHR, textStatus) {
+                    if(textStatus === 'timeout'){
+                        console.log('timeout : 60 sec');
+                    } else {
+                        console.log("error");
+                    }
+                }
+            });
+        }
+
+        function fn_getProcessCpuUsage(init){
+        	var firstValue = 0;
+            $.ajax({
+                url : "/management/metrics/process.cpu.usage",
+                type : "get",
+                async : false,
+                data: {},
+                //dataType: "json",
+                contentType: "application/json",
+                timeout: 60000,// timeout : 60초간 서버와의 통신기다리는 시간.
+                cache: false,
+                success : function(resp) {
+                    //console.log(resp);
+
+                    let cpuUsage = resp.measurements[0].value;
+
+                    // cpu 사용량
+                    // drawCpuUsage(cpuUsage);
+                    if(init) {
+                    	firstValue = cpuUsage;
+                    } else {
+                    	addData(cpuUsage);
+                    }
+                },
+                /*beforeSend: function() { //로딩이미지 보여주기
+                    $("#wrap-loading").show();
+                },
+                complete: function() { //로딩이미지 숨기기
+                    $("#wrap-loading").hide();
+                },*/
+                error : function(jqXHR, textStatus) {
+                    if(textStatus === 'timeout'){
+                        console.log('timeout : 60 sec');
+                    } else {
+                        console.log("error");
+                    }
+                }
+            });
+            
+            return firstValue;
+        }
+
+        function fn_getJvmMemoryMax(){
+            let result;
+
+            $.ajax({
+                url : "/management/metrics/jvm.memory.max",
+                type : "get",
+                async : false,
+                data: {},
+                //dataType: "json",
+                contentType: "application/json",
+                timeout: 60000,// timeout : 60초간 서버와의 통신기다리는 시간.
+                cache: false,
+                success : function(resp) {
+                    //console.log(resp);
+
+                    result = resp.measurements[0].value;
+                    
+                    let type = 'gb';
+                    jvmMemoryMax = fn_convertSize(type, result);
+
+                },
+                /*beforeSend: function() { //로딩이미지 보여주기
+                    $("#wrap-loading").show();
+                },
+                complete: function() { //로딩이미지 숨기기
+                    $("#wrap-loading").hide();
+                },*/
+                error : function(jqXHR, textStatus) {
+                    if(textStatus === 'timeout'){
+                        console.log('timeout : 60 sec');
+                    } else {
+                        console.log("error");
+                    }
+                }
+            });
+        }
+
+        function fn_getJvmMemoryUsed(){
+            let result;
+
+            $.ajax({
+                url : "/management/metrics/jvm.memory.used",
+                type : "get",
+                async : false,
+                data: {},
+                //dataType: "json",
+                contentType: "application/json",
+                timeout: 60000,// timeout : 60초간 서버와의 통신기다리는 시간.
+                cache: false,
+                success : function(resp) {
+                    //console.log(resp);
+
+                    result = resp.measurements[0].value;
+
+                    let type = 'gb';
+                    jvmMemoryUsed = fn_convertSize(type, result);
+
+                    fn_drawJvmMemory();
+                },
+                /*beforeSend: function() { //로딩이미지 보여주기
+                    $("#wrap-loading").show();
+                },
+                complete: function() { //로딩이미지 숨기기
+                    $("#wrap-loading").hide();
+                },*/
+                error : function(jqXHR, textStatus) {
+                    if(textStatus === 'timeout'){
+                        console.log('timeout : 60 sec');
+                    } else {
+                        console.log("error");
+                    }
+                }
+            });
+
+            return result;
+        }
+
+        function fn_drawProcessUptime(){
+            let processUptime;
+            $.ajax({
+                url : "/management/metrics/process.uptime",
+                type : "get",
+                async : false,
+                data: {},
+                //dataType: "json",
+                contentType: "application/json",
+                timeout: 60000,// timeout : 60초간 서버와의 통신기다리는 시간.
+                cache: false,
+                success : function(resp) {
+                    //console.log(resp);
+
+                    processUptime = fn_time(resp.measurements[0].value);
+
+                    $('#processUptime').html("프로세스 구동중인 시간 :   " + processUptime);
+                },
+                /*beforeSend: function() { //로딩이미지 보여주기
+                    $("#wrap-loading").show();
+                },
+                complete: function() { //로딩이미지 숨기기
+                    $("#wrap-loading").hide();
+                },*/
+                error : function(jqXHR, textStatus) {
+                    if(textStatus === 'timeout'){
+                        console.log('timeout : 60 sec');
+                    } else {
+                        console.log("error");
+                    }
+                }
+            });
+
+        }
+
+        function fn_convertSize(type, byteSize){
+            let returnSize = 0;
+
+            let kbSize = byteSize / 1024;
+            let mbSize = kbSize / 1024;
+            let gbSize = mbSize / 1024;
+
+            if (type == "kb"){
+                returnSize = kbSize;
+            } else if (type == "mb"){
+                returnSize =  mbSize;
+            } else if (type == "gb"){
+                returnSize = gbSize;
+            } else {
+                returnSize = byteSize;
+            }
+
+            return returnSize.toFixed(2);// 소숫점 두번째 자리수까지 출력
+        }
+
+        function fn_time(seconds) {
+            let result;
+
+            //3항 연산자를 이용하여 10보다 작을 경우 0을 붙이도록 처리 하였다.
+            let hour = parseInt(seconds/3600) < 10 ? '0'+ parseInt(seconds/3600) : parseInt(seconds/3600);
+            let min = parseInt((seconds%3600)/60) < 10 ? '0'+ parseInt((seconds%3600)/60) : parseInt((seconds%3600)/60);
+            let sec = seconds % 60 < 10 ? '0'+ parseInt(seconds) % 60 : parseInt(seconds) % 60;
+
+            //연산한 값을 화면에 뿌려주는 코드
+            result = hour+"시간 "+min+"분 " + sec + "초 ";
+
+            return result;
+        }
+        
+	function fn_drawJvmMemory() {
+
+		let type = 'gb';
+				
+		var root = am5.Root.new("jvmMemory");
+				
+		var myTheme = am5.Theme.new(root);
+	
+		myTheme.rule("Grid", ["base"]).setAll({
+		  strokeOpacity: 0.1
+		});
+	
+		root.setThemes([
+		  am5themes_Animated.new(root),
+		  myTheme
+		]);
+	
+	
+		var chart = root.container.children.push(
+		  am5xy.XYChart.new(root, {
+		    panX: false,
+		    panY: false,
+		    wheelX: "none",
+		    wheelY: "none",
+		    paddingLeft: 0
+		  })
+		);
+	
+		var yRenderer = am5xy.AxisRendererY.new(root, {
+		  minGridDistance: 30,
+		  minorGridEnabled: true
+		});
+		yRenderer.grid.template.set("location", 1);
+		
+		var yAxis = chart.yAxes.push(
+		  am5xy.CategoryAxis.new(root, {
+		    maxDeviation: 0,
+		    categoryField: "country",
+		    renderer: yRenderer,
+		    tooltip: am5.Tooltip.new(root, { themeTags: ["axis"] })
+		  })
+		);
+		
+		var xAxis = chart.xAxes.push(
+		  am5xy.ValueAxis.new(root, {
+		    maxDeviation: 0,
+		    min: 0,
+		    renderer: am5xy.AxisRendererX.new(root, {
+		      strokeOpacity: 0.1,
+		      minGridDistance: 80
+		    })
+		  })
+		);
+	
+		var series = chart.series.push(
+		  am5xy.ColumnSeries.new(root, {
+		    name: "Series 1",
+		    xAxis: xAxis,
+		    yAxis: yAxis,
+		    valueXField: "value",
+		    sequencedInterpolation: true,
+		    categoryYField: "country",
+			tooltip: am5.Tooltip.new(root, {
+		    	pointerOrientation: "left",
+		    	labelText: "{valueX} Gb"
+		  	})      
+		  })
+		);
+	
+		var columnTemplate = series.columns.template;
+	
+		columnTemplate.setAll({
+		  cornerRadiusBR: 10,
+		  cornerRadiusTR: 10,
+		  strokeOpacity: 0
+		});
+		columnTemplate.adapters.add("fill", (fill, target) => {
+		  return chart.get("colors").getIndex(series.columns.indexOf(target));
+		});
+		
+		columnTemplate.adapters.add("stroke", (stroke, target) => {
+		  return chart.get("colors").getIndex(series.columns.indexOf(target));
+		});
+	
+		function getSeriesItem(category) {
+		  for (var i = 0; i < series.dataItems.length; i++) {
+		    var dataItem = series.dataItems[i];
+		    if (dataItem.get("categoryY") == category) {
+		      return dataItem;
+		    }
+		  }
+		}
+	
+		chart.set("cursor", am5xy.XYCursor.new(root, {
+		  behavior: "none",
+		  xAxis: xAxis,
+		  yAxis: yAxis
+		}));
+	
+		// Set data
+		var data = [{
+		  country: "사용중인 메모리",
+		  value: jvmMemoryUsed * 1
+		},{
+		  country: "전체 메모리",
+		  value: jvmMemoryMax * 1
+		}];
+				
+		yAxis.data.setAll(data);
+		series.data.setAll(data);
+	
+		series.appear(1000);
+		chart.appear(1000, 100);			
+	}
+        	
+    function drawCpuUsage() {
+    	var root = am5.Root.new("cpuUseChartdiv");
+    	root.setThemes([
+ 			am5themes_Animated.new(root)
+		]);
+		
+		var chart = root.container.children.push(am5xy.XYChart.new(root, {
+		  focusable: true,
+		  panX: true,
+		  panY: true,
+		  wheelX: "panX",
+		  wheelY: "zoomX",
+		  pinchZoomX:true,
+		  paddingLeft: 0
+		}));		
+		
+		var easing = am5.ease.linear;
+		
+		xAxis_cpu = chart.xAxes.push(am5xy.DateAxis.new(root, {
+		  maxDeviation: 0.5,
+		  groupData: false,
+		  extraMax:0.1, // this adds some space in front
+		  extraMin:-0.1,  // this removes some space form th beginning so that the line would not be cut off
+		  baseInterval: {
+		    timeUnit: "second",
+		    count: 10
+		  },
+		  renderer: am5xy.AxisRendererX.new(root, {
+		    minorGridEnabled: true,
+		    minGridDistance: 50
+		  }),
+		  tooltip: am5.Tooltip.new(root, {})
+		}));
+		
+		var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+		  renderer: am5xy.AxisRendererY.new(root, {})
+		}));
+		
+		cpuUseSeries = chart.series.push(am5xy.LineSeries.new(root, {
+		  name: "Series 1",
+		  xAxis: xAxis_cpu,
+		  yAxis: yAxis,
+		  valueYField: "value",
+		  valueXField: "date",
+		  tooltip: am5.Tooltip.new(root, {
+		    pointerOrientation: "horizontal",
+		    labelText: "{valueY}"
+		  })
+		}));
+		
+		cpuChartData[cpuChartData.length - 1].bullet = true;
+		cpuUseSeries.data.setAll(cpuChartData);
+		
+		
+		cpuUseSeries.bullets.push(function(root, series, dataItem) {  
+		  // only create sprite if bullet == true in data context
+		  if (dataItem.dataContext.bullet) {    
+		    var container = am5.Container.new(root, {});
+		    var circle0 = container.children.push(am5.Circle.new(root, {
+		      radius: 5,
+		      fill: am5.color(0xff0000)
+		    }));
+		    var circle1 = container.children.push(am5.Circle.new(root, {
+		      radius: 5,
+		      fill: am5.color(0xff0000)
+		    }));
+		
+		    circle1.animate({
+		      key: "radius",
+		      to: 20,
+		      duration: 1000,
+		      easing: am5.ease.out(am5.ease.cubic),
+		      loops: Infinity
+		    });
+		    circle1.animate({
+		      key: "opacity",
+		      to: 0,
+		      from: 1,
+		      duration: 1000,
+		      easing: am5.ease.out(am5.ease.cubic),
+		      loops: Infinity
+		    });
+		
+		    return am5.Bullet.new(root, {
+		      locationX:undefined,
+		      sprite: container
+		    })
+		  }
+		})
+		
+		var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+		  xAxis: xAxis_cpu
+		}));
+		cursor.lineY.set("visible", false);
+		
+		setInterval(function () {
+		  fn_getProcessCpuUsage();
+		}, 10000)
+
+		chart.appear(1000, 100);		
+    }
+    
+	function addData(newValue) {
+	  var lastDataItem = cpuUseSeries.dataItems[cpuUseSeries.dataItems.length - 1];
+	
+	  var lastValue = lastDataItem.get("valueY");
+	  
+	  //var newValue = fn_getProcessCpuUsage();
+
+	  var lastDate = new Date(lastDataItem.get("valueX"));
+	  var time = am5.time.add(new Date(lastDate), "second", 10).getTime();
+	  
+	  cpuUseSeries.data.removeIndex(0);
+	  cpuUseSeries.data.push({
+	    date: time,
+	    value: newValue
+	  })
+	
+	  var newDataItem = cpuUseSeries.dataItems[cpuUseSeries.dataItems.length - 1];
+	  newDataItem.animate({
+	    key: "valueYWorking",
+	    to: newValue,
+	    from: lastValue,
+	    duration: 600,
+	    easing: am5.ease.linear
+	  });
+	
+	  newDataItem.bullets = [];
+	  newDataItem.bullets[0] = lastDataItem.bullets[0];
+	  newDataItem.bullets[0].get("sprite").dataItem = newDataItem;
+	  lastDataItem.dataContext.bullet = false;
+	  lastDataItem.bullets = [];
+	
+	  var animation = newDataItem.animate({
+	    key: "locationX",
+	    to: 0.5,
+	    from: -0.5,
+	    duration: 600
+	  });
+	  if (animation) {
+	    var tooltip = xAxis_cpu.get("tooltip");
+	    if (tooltip && !tooltip.isHidden()) {
+	      animation.events.on("stopped", function () {
+	        xAxis_cpu.updateTooltip();
+	      })
+	    }
+	  }
+	}
+		    
+	$(async function(){
+	    // status, 디스크 사용량 조회
+	    fn_getStatus();
+	    
+	    // process cpu 사용량 조회
+	    
+	    var firstDate = new Date();
+	    
+	    var lastCpuUse = await fn_getProcessCpuUsage(true);
+	    
+	    for (var i = 14; i >= 0; i--) {
+	    	var nowDate = new Date(firstDate.getTime());
+	    	nowDate.setSeconds(nowDate.getSeconds() - (i*10));
+		    cpuChartData.push({
+	      		date: nowDate.getTime(),
+	      		value: lastCpuUse
+			});
+		}			
+	    
+	    // JVM 조회
+	    fn_getJvmMemoryMax();
+	    fn_getJvmMemoryUsed();
+	    
+	    // 프로세스 구동중인 시간
+	    fn_drawProcessUptime();
+	    
+	    drawCpuUsage();
+	});        
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <div id="container">
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">시스템 상태</h2>
+                    <h3 class="page_tit">모니터링</h3>
+                </div>
+            </div>
+
+            <div class="box">
+                <p>시스템 상태</p>
+                <b id="systemStatus" class="fc_primary">정상</b>
+                <!--<b class="fc_error">비정상</b>-->
+            </div>
+
+            <div class="graph_area">
+                <div class="graph" style="height:430px;">
+                	<div id="diskUse">디스크 사용량</div>
+                    <div id="chartdiv" style="height:366px"></div>
+                </div>
+                <div class="graph" style="height:430px;">
+                	<div>웹 어플리케이션 CPU 사용량</div>
+                	<div id="cpuUseChartdiv" style="height:366px"></div>
+                </div>
+                <div class="graph" style="height:430px;">
+                	<div>JVM MEMORY</div>
+                	<div id="jvmMemory" style="height:366px"></div>
+                </div>
+                <div class="graph" style="height:430px;">
+                	<div>업타임</div>
+                	<div id="processUptime"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
