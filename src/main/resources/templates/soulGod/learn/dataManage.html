@@ -5,6 +5,10 @@
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/index.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
+    <style>
+        #popLearnData .check_wrap{display:flex;flex-wrap:wrap;gap:8px}
+        #popLearnData .check_wrap .checkbox{width:calc((100% - 16px) / 3)}
+    </style>
     <script type="text/javascript">
         $(function(){
             fn_setDatePicker('#stDt', {
@@ -627,5 +631,96 @@
     </div>
 </div>
 <!--얼럿 : e-->
+
+<!--학습데이터 팝업 : s-->
+<div id="popLearnData" class="pop_layer active">
+    <div class="dim"></div>
+    <div class="popup lg">
+        <div class="pop_head">
+            <strong class="pop_tit">학습데이터</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popPw')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <table class="tbl_write">
+                <caption>학습데이터 : 학습데이터 명, 학습 선택으로 구성</caption>
+                <colgroup>
+                    <col style="width:140px">
+                    <col style="width:auto">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">
+                        <label for="learnText">학습데이터 명</label>
+                    </th>
+                    <td>
+                        <div class="input">
+                            <input type="text" id="learnText" placeholder="학습데이터 명을 입력하세요.">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <span>학습데이터 체크</span>
+                    </th>
+                    <td>
+                        <div class="check_wrap">
+                            <div class="checkbox">
+                                <input type="checkbox" name="learnChk" id="learnChk01">
+                                <label for="learnChk01">체크1</label>
+                            </div>
+                            <div class="checkbox">
+                                <input type="checkbox" name="learnChk" id="learnChk02">
+                                <label for="learnChk02">체크2</label>
+                            </div>
+                            <div class="checkbox">
+                                <input type="checkbox" name="learnChk" id="learnChk03">
+                                <label for="learnChk03">체크3</label>
+                            </div>
+                            <div class="checkbox">
+                                <input type="checkbox" name="learnChk" id="learnChk04">
+                                <label for="learnChk04">체크4</label>
+                            </div>
+                            <div class="checkbox">
+                                <input type="checkbox" name="learnChk" id="learnChk05">
+                                <label for="learnChk05">체크5</label>
+                            </div>
+                            <div class="checkbox">
+                                <input type="checkbox" name="learnChk" id="learnChk06">
+                                <label for="learnChk06">체크6</label>
+                            </div>
+                            <div class="checkbox">
+                                <input type="checkbox" name="learnChk" id="learnChk07">
+                                <label for="learnChk07">체크7</label>
+                            </div>
+                            <div class="checkbox">
+                                <input type="checkbox" name="learnChk" id="learnChk08">
+                                <label for="learnChk08">체크8</label>
+                            </div>
+                            <div class="checkbox">
+                                <input type="checkbox" name="learnChk" id="learnChk09">
+                                <label for="learnChk09">체크9</label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearnData')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill" onclick="layerHide('popLearnData')">
+                <span>확인</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--학습데이터 팝업 : e-->
 </body>
 </html>
