@@ -6,11 +6,18 @@
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
     <style>
-        #popLearnData .check_wrap{display:flex;flex-wrap:wrap;gap:8px}
-        #popLearnData .check_wrap .checkbox{width:calc((100% - 16px) / 3)}
+        #popLearnData .check_wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        #popLearnData .check_wrap .checkbox {
+            width: calc((100% - 16px) / 3)
+        }
     </style>
     <script type="text/javascript">
-        $(function(){
+        $(function () {
             fn_setDatePicker('#stDt', {
                 onShow: function (ct) {
                     this.setOptions({
@@ -27,19 +34,19 @@
             });
 
             //학습 팝업 도움말
-            $('.btn_help').each(function(){
-                $(this).on('click', function(){
+            $('.btn_help').each(function () {
+                $(this).on('click', function () {
                     $(this).parent('.th_help_area').toggleClass('active').parents('.tr').siblings('.tr').find('.th_help_area').removeClass('active');
                 });
             });
             $(document).on('click', function (e) {
-                if(!$(e.target).parents('div').hasClass('th_help_area')){
+                if (!$(e.target).parents('div').hasClass('th_help_area')) {
                     $('.th_help_area').removeClass('active');
                 }
             });
         });
 
-        am5.ready(function() {
+        am5.ready(function () {
             var root = am5.Root.new("chartdiv");
 
             root.setThemes([
@@ -51,7 +58,7 @@
                 panY: true,
                 wheelX: "panX",
                 wheelY: "zoomX",
-                pinchZoomX:true,
+                pinchZoomX: true,
                 paddingLeft: 0
             }));
 
@@ -88,14 +95,14 @@
                     count: 1
                 },
                 renderer: am5xy.AxisRendererX.new(root, {
-                    minorGridEnabled:true
+                    minorGridEnabled: true
                 }),
                 tooltip: am5.Tooltip.new(root, {})
             }));
 
             var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
                 renderer: am5xy.AxisRendererY.new(root, {
-                    pan:"zoom"
+                    pan: "zoom"
                 })
             }));
 
@@ -121,6 +128,72 @@
             chart.appear(1000, 100);
 
         });
+
+        /**
+         * 학습데이터 popup 초기화
+         */
+        function fn_learningDataOpen() {
+            //popup reset
+            layerShow('popLearnData');
+        }
+
+        const prefix = 'input_';
+
+        /**
+         * 학습데이터 유효성 검사
+         */
+        function fn_learnDataSaveChk() {
+            let learnName = $('#' + prefix + 'learnName').val();
+            let inputColumns = $(':checkbox[id^="' + prefix + '"]:checked');
+
+            if (!$.trim(learnName)) {
+                showAlert('warning', '학습데이터 명 입력은 필수입니다.');
+                return false;
+            }
+
+            if (inputColumns.length < 1) {
+                showAlert('warning', '학습데이터는 최소 1개 이상 선택해야합니다.');
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * 학습데이터 저장
+         */
+        function fn_learnDataSave() {
+            if (!fn_learnDataSaveChk()) {
+                return false;
+            }
+
+
+            let inputColumns = $(':checkbox[id^="' + prefix + '"]:checked');
+
+            let inputArr = [];
+            $.each(inputColumns, function (idx, item) {
+                inputArr.push($(item).val());
+            })
+
+            let jsonData = {
+                "learnName": $('#' + prefix + 'learnName').val(),
+                "inputFormArr": inputArr
+            }
+
+            $.ajax({
+                url: "/soulGod/learnData/save",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+
+                },
+                error: function () {
+
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -149,7 +222,7 @@
                     <button type="button" class="btn line_cool_grey30" onclick="layerShow('popLearn')">
                         <span>학습</span>
                     </button>
-                    <button type="button" class="btn line_cool_grey30" onclick="layerShow('popLearnData')">
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_learningDataOpen()">
                         <span>학습데이터 팝업 버튼</span>
                     </button>
                 </div>
@@ -445,7 +518,7 @@
                 </tbody>
             </table>
 
-            <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
+            <!--            <th:block th:insert="~{soulGod/fragments/paging}"></th:block>-->
         </div>
     </div>
 </div>
@@ -535,7 +608,8 @@
                     </div>
                     <div class="td">
                         <div class="input">
-                            <input type="text" id="learningRate" placeholder="Learning Rate를 입력하세요." value="0.02(default)">
+                            <input type="text" id="learningRate" placeholder="Learning Rate를 입력하세요."
+                                   value="0.02(default)">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -641,7 +715,7 @@
     <div class="popup lg">
         <div class="pop_head">
             <strong class="pop_tit">학습데이터</strong>
-            <button type="button" class="btn_close" onclick="layerHide('popPw')">
+            <button type="button" class="btn_close" onclick="layerHide('popLearnData')">
                 <span class="blind">닫기</span>
             </button>
         </div>
@@ -655,11 +729,11 @@
                 <tbody>
                 <tr>
                     <th scope="row">
-                        <label for="learnText">학습데이터 명</label>
+                        <label for="input_learnName">학습데이터 명</label>
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="learnText" placeholder="학습데이터 명을 입력하세요.">
+                            <input type="text" id="input_learnName" placeholder="학습데이터 명을 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -672,7 +746,13 @@
                     </th>
                     <td>
                         <div class="check_wrap">
-                            <div class="checkbox">
+                            <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
+                                <div class="checkbox">
+                                    <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}">
+                                    <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
+                                </div>
+                            </th:block>
+                            <!--<div class="checkbox">
                                 <input type="checkbox" name="learnChk" id="learnChk01">
                                 <label for="learnChk01">체크1</label>
                             </div>
@@ -707,7 +787,7 @@
                             <div class="checkbox">
                                 <input type="checkbox" name="learnChk" id="learnChk09">
                                 <label for="learnChk09">체크9</label>
-                            </div>
+                            </div>-->
                         </div>
                     </td>
                 </tr>
@@ -718,7 +798,7 @@
             <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearnData')">
                 <span>취소</span>
             </button>
-            <button type="button" class="btn fill" onclick="layerHide('popLearnData')">
+            <button type="button" class="btn fill" onclick="fn_learnDataSave()">
                 <span>확인</span>
             </button>
         </div>

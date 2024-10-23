@@ -48,8 +48,8 @@ function setEditor(name, editor) {
 // Ckeditor4 END
 
 /* example
- *   icon : 경고 - exclamation | 채크 - check | 질문 - question
- *   showAlert('check', '저장 되었습니다', function() {
+ *   icon : 경고 - warning | 채크 - complete | 질문 - message
+ *   showAlert('complete', '저장 되었습니다', function() {
  *       // 닫기 버튼 클릭 시 실행할 함수 (생략가능)
  *   });
  */
