@@ -25,7 +25,7 @@
                     })
                 }
             });
-            
+
             //학습 팝업 도움말
             $('.btn_help').each(function(){
                 $(this).on('click', function(){
@@ -148,6 +148,9 @@
                     </button>
                     <button type="button" class="btn line_cool_grey30" onclick="layerShow('popLearn')">
                         <span>학습</span>
+                    </button>
+                    <button type="button" class="btn line_cool_grey30" onclick="layerShow('popLearnData')">
+                        <span>학습데이터 팝업 버튼</span>
                     </button>
                 </div>
             </div>
@@ -633,7 +636,7 @@
 <!--얼럿 : e-->
 
 <!--학습데이터 팝업 : s-->
-<div id="popLearnData" class="pop_layer active">
+<div id="popLearnData" class="pop_layer">
     <div class="dim"></div>
     <div class="popup lg">
         <div class="pop_head">
