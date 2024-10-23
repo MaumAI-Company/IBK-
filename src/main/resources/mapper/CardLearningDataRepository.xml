@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.CardLearningDataRepository">
+    <select id="getList" resultType="CardLearningDataInfo" parameterType="SearchForm">
+        /*view colmn name : db comment*/
+        select cld.HDQR_BOB_DCD, /*대상 : 1/2*/
+               cld.FRRG_TS, /*적용일시 : 최초등록일시*/
+               cld.BRCD, /*부점 : 부점코드*/
+               cld.LSMD_EMN, /*직원*/
+            /*예산집행사유내용*/
+               cld.BDGT_PRFR_RSN_FRCS_CON, /*예산집행사유코드 : 비목집행사유내용(비목-집행사유코드)*/
+               cld.BDMN_ITEX_MNGM_NO, /*예산관리비목관리번호*/
+               cld.BDGT_BSNS_FRCS_CON /*예산(세부)사업ID*/
+        from CARD_LEARNING_DATA cld
+        order by cld.FRRG_TS desc limit 50
+    </select>
+</mapper>
