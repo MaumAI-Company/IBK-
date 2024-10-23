@@ -29,7 +29,7 @@ public class LearningModelForm {
     private LocalDateTime createDtm;   //'생성시간',
     private String deleteYn;  //'N: 정상, Y: 삭제된 데이터',
 
-    private String[] inputFormArr;
+    private String[] inputArr;
 }
 
 

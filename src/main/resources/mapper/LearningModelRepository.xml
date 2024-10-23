@@ -3,7 +3,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.ibk.repository.LearningModelRepository">
-    <update id="register">
-
-    </update>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="LearningModelForm">
+        INSERT INTO MaumMcc.LEARNING_MODEL
+        (LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM)
+        VALUES (#{learningId}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), #{learnName}, '0',
+                'SUCCESS', current_timestamp());
+    </insert>
 </mapper>
