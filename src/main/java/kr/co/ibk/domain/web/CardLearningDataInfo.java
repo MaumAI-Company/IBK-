@@ -20,19 +20,20 @@ public class CardLearningDataInfo {
     private LocalDateTime frrgTs; //최초등록일시
     private String lsmdEmn; //최종변경직원번호
 
-    private String bdgtPrfrYm; //예산집행년월
-    private String bdgtPrfrNo; //예산집행번호
     private String cdn; //카드번호
     private String bdgtTstmUseHms; //예산증빙사용시각
-    private String afstNm; //가맹점명
-    private String bzdyYn; //영업일여부
     private Integer amslAmt; //매출금액
+    private String afstNm; //가맹점명
     private String tpbsNm; //업종명
+    private String bzdyYn; //영업일여부
+    private String afstDtlAdr; //가맹점상세주소
+    private String brncAdr; //부점주소
+
+    private String bdgtPrfrYm; //예산집행년월
+    private String bdgtPrfrNo; //예산집행번호
     private String afstBzn; //가맹점사업자등록번호
     private String amslAfstNo; //매출가맹점번호
     private String afstTpbcd; //가맹점업종코드
-    private String afstDtlAdr; //가맹점상세주소
-    private String brncAdr; //부점주소
     private String rcvYmd; //수신년월일
     private String jobYmd; //작업년월일
     private String jobYn; //작업여부
