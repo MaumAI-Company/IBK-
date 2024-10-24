@@ -3,8 +3,8 @@ package kr.co.ibk.web.controller;
 import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.domain.web.CardLearningDataInfo;
 import kr.co.ibk.domain.web.MemberInfo;
+import kr.co.ibk.model.CardLearningDataForm;
 import kr.co.ibk.model.LearningModelForm;
-import kr.co.ibk.model.SearchForm;
 import kr.co.ibk.service.CardLearningDataService;
 import kr.co.ibk.service.LearningModelService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class LearnController {
 
     @RequestMapping("/soulGod/learn/dataManage")
     public String dataManage(Model model,
-                             @ModelAttribute SearchForm form) {
+                             @ModelAttribute CardLearningDataForm form) {
 
         List<CardLearningDataInfo> list = cardLearningDataService.getList(form);
 
