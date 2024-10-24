@@ -1,6 +1,7 @@
-package kr.co.ibk.model;
+package kr.co.ibk.domain.web;
 
 import kr.co.ibk.domain.enums.InOutGbnType;
+import kr.co.ibk.domain.enums.InputColumnType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LearningModelInputForm {
+public class LearningModelInputInfo {
     private String colName; //컬럼명
     private Integer modelId; //모델ID
     private InOutGbnType inoutGbn;    //인/아웃 구분

@@ -24,4 +24,24 @@
         from CARD_LEARNING_DATA cld
         order by cld.FRRG_TS desc limit 50
     </select>
+
+    <select id="getLearningList" resultType="CardLearningDataInfo" parameterType="SearchForm">
+        select cld.BRCD
+             , cld.CDN
+             , cld.BDGT_TSTM_USE_HMS
+             , cld.AMSL_AMT
+             , cld.AFST_NM
+             , cld.TPBS_NM
+             , cld.BZDY_YN
+             , cld.AFST_DTL_ADR
+             , cld.BRNC_ADR
+             , cld.AFST_BZN
+             , cld.AMSL_AFST_NO
+             , cld.AFST_TPBCD
+             , cld.BDMN_ITEX_MNGM_NO
+             , cld.BDGT_PRFR_RSN_FRCS_CON
+             , cld.BDGT_BSNS_FRCS_CON
+        from CARD_LEARNING_DATA cld
+        order by cld.FRRG_TS desc limit 100
+    </select>
 </mapper>
