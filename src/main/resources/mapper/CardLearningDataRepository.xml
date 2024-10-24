@@ -4,23 +4,33 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.ibk.repository.CardLearningDataRepository">
     <select id="getTotalCount" resultType="int">
-        select count(*)
-        from CARD_LEARNING_DATA cld
+        select
+            count(*)
+        from
+            CARD_LEARNING_DATA cld
+        where
+            cld.FRRG_TS is not null
+            <include refid="where"></include>
     </select>
 
-    <select id="getList" resultType="CardLearningDataInfo" parameterType="SearchForm">
+    <select id="getList" resultType="CardLearningDataInfo" parameterType="CardLearningDataForm">
         select
-        <include refid="columns"></include>
-        from CARD_LEARNING_DATA cld
-        order by cld.FRRG_TS desc limit 50
+            <include refid="columns"></include>
+        from
+            CARD_LEARNING_DATA cld
+        where
+            cld.FRRG_TS is not null
+            <include refid="where"></include>
+        order by
+            cld.FRRG_TS desc
+            <if test="pagingAt != null and pagingAt != '' and pagingAt == 'Y'">
+                <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
+            </if>
     </select>
 
     <sql id="columns">
         /*view colmn name : db comment*/
-        cld
-        .
-        HDQR_BOB_DCD
-        , /*대상 : 1/2*/
+        cld.HDQR_BOB_DCD, /*대상 : 1/2*/
         cld.FRRG_TS, /*적용일시 : 최초등록일시*/
         cld.BRCD, /*부점 : 부점코드*/
         cld.LSMD_EMN, /*직원*/
@@ -36,5 +46,9 @@
         cld.BZDY_YN, /*영업일여부*/
         cld.AFST_DTL_ADR, /*가맹점상세주소*/
         cld.BRNC_ADR /*부점주소*/
+    </sql>
+
+    <sql id="where">
+
     </sql>
 </mapper>

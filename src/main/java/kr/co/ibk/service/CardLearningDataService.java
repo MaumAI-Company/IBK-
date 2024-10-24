@@ -17,7 +17,13 @@ import java.util.List;
 public class CardLearningDataService extends _BaseService {
     private final CardLearningDataRepository cardLearningDataRepository;
 
-    public List<CardLearningDataInfo> getList(CardLearningDataForm form) {
+    /**
+     * return list & pagination info
+     *
+     * @param form
+     * @return
+     */
+    public List<CardLearningDataInfo> getListPage(CardLearningDataForm form) {
 
         int totalCount = cardLearningDataRepository.getTotalCount(form);
 
@@ -27,9 +33,20 @@ public class CardLearningDataService extends _BaseService {
 
         List<CardLearningDataInfo> list = new ArrayList<>();
         if (totalCount > 0) {
-            list = cardLearningDataRepository.getList(form);
+            form.setPagingAt("Y");
+            list = getList(form);
         }
 
         return list;
+    }
+
+    /**
+     * return all list
+     *
+     * @param form
+     * @return
+     */
+    public List<CardLearningDataInfo> getList(CardLearningDataForm form) {
+        return cardLearningDataRepository.getList(form);
     }
 }

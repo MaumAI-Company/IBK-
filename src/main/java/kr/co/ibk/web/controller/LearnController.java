@@ -25,8 +25,9 @@ public class LearnController {
     @RequestMapping("/soulGod/learn/dataManage")
     public String dataManage(Model model,
                              @ModelAttribute CardLearningDataForm form) {
+        model.addAttribute("excelList", cardLearningDataService.getList(form));
 
-        List<CardLearningDataInfo> list = cardLearningDataService.getList(form);
+        List<CardLearningDataInfo> list = cardLearningDataService.getListPage(form);
 
         model.addAttribute("list", list);
         model.addAttribute("mc", "ico_database");

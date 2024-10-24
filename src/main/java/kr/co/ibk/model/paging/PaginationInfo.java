@@ -3,6 +3,7 @@ package kr.co.ibk.model.paging;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.util.ObjectUtils;
 
 @Getter
 @Setter
@@ -39,10 +40,12 @@ public class PaginationInfo {
 		if (criteria.getCurrentPageNo() < 1) {
 			criteria.setCurrentPageNo(1);
 		}
-		if (criteria.getRecordsPerPage() < 1 || criteria.getRecordsPerPage() > 100) {
+		//if (criteria.getRecordsPerPage() < 1 || criteria.getRecordsPerPage() > 100) {
+		if (ObjectUtils.isEmpty(criteria.getRecordsPerPage()) || criteria.getRecordsPerPage() < 1) {
 			criteria.setRecordsPerPage(10);
 		}
-		if (criteria.getPageSize() < 5 || criteria.getPageSize() > 20) {
+		//if (criteria.getPageSize() < 5 || criteria.getPageSize() > 20) {
+		if (ObjectUtils.isEmpty(criteria.getPageSize()) || criteria.getPageSize() < 1) {
 			criteria.setPageSize(10);
 		}
 		if (criteria.getSearchType()==null) {//검색어 종류 없을 경우 모두

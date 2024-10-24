@@ -23,9 +23,10 @@ public class ReportController {
     public String card(Model model,
                        @ModelAttribute CardLearningDataForm form) {
 
-        List<CardLearningDataInfo> list = cardLearningDataService.getList(form);
+        List<CardLearningDataInfo> list = cardLearningDataService.getListPage(form);
 
         model.addAttribute("list", list);
+        model.addAttribute("pagingInfo", form.getPaginationInfo());
         model.addAttribute("params", form);
         model.addAttribute("mc", "ico_chart");
         model.addAttribute("pageTitle", "BC카드 지급결의 내역 조회");

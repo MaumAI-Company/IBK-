@@ -558,3 +558,26 @@ var restCall = function (url, args, callback, failCallback) {
     });
 };
 
+function fnTableToExcel(tableId, fileNm, callback) {
+    var table = $("#" + tableId);
+    if (table && table.length) {
+        $("#" + tableId + " strong.th").remove();
+        var preserveColors = (table.hasClass('table2excel_with_colors') ? true : false);
+        $(table).table2excel({
+            exclude: ".noExl",
+            name: "Excel Document Name",
+            filename: fileNm + '.xls',
+            fileext: ".xls",
+            exclude_img: true,
+            exclude_links: true,
+            exclude_inputs: true,
+            preserveColors: preserveColors
+        });
+        if (callback && typeof callback === 'function') {
+            callback();
+        }
+    } else {
+        alert("존재하지 않는 테이블 입니다.");
+        return false;
+    }
+}

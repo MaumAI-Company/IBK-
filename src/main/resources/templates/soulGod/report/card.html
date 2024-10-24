@@ -18,6 +18,8 @@
                     })
                 }
             });
+
+            fn_settingChips();
         });
 
         function fn_search() {
@@ -25,6 +27,16 @@
             frm.prop('action', '?');
             frm.submit();
         }
+
+        function fn_settingChips() {
+
+        }
+
+        function movePage(url, pageNo) {
+            $('#currentPageNo').val(pageNo);
+            $('#form1').attr({action: '/soulGod/report/card', method: 'post'}).unbind('submit').submit();
+        }
+
     </script>
 </head>
 <body>
@@ -48,18 +60,25 @@
             </div>
 
             <form id="form1">
+                <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
+
                 <div class="board_top">
                     <div>
-                        <div class="total_num"><b th:text="${list.size()}"></b> 개의 글이 있습니다.</div>
+                        <div class="total_num"><b
+                                th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? pagingInfo.totalRecordCount : 0}"></b>
+                            개의 글이 있습니다.
+                        </div>
                     </div>
                     <div class="mla">
-                        <label for="pageSize" class="blind">게시글 페이지 수</label>
-                        <select name="pageSize" id="pageSize" class="sel_board sel_visibility">
-                            <option value="10" selected>10개</option>
-                            <option value="20">20개</option>
-                            <option value="30">30개</option>
-                            <option value="40">40개</option>
-                            <option value="50">50개</option>
+                        <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
+                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
+                                onchange="fn_search()">
+                            <option value="10" th:selected="${pagingInfo.criteria.recordsPerPage == 10}" selected>10개
+                            </option>
+                            <option value="20" th:selected="${pagingInfo.criteria.recordsPerPage == 20}">20개</option>
+                            <option value="30" th:selected="${pagingInfo.criteria.recordsPerPage == 30}">30개</option>
+                            <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
+                            <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
                         <label for="sorting" class="blind">정렬조건</label>
                         <select name="sorting" id="sorting" class="sel_board sel_sorting">
@@ -96,9 +115,9 @@
                                         <dd>
                                             <select name="target" id="target">
                                                 <option value="" selected>전체</option>
-                                                <option value="">본부</option>
-                                                <option value="">지역본부</option>
-                                                <option value="">영업점</option>
+                                                <option value="1">본부</option>
+                                                <option value="2">지역본부</option>
+                                                <option value="3">영업점</option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -109,28 +128,29 @@
                                         <dd>
                                             <select name="condition" id="condition">
                                                 <option value="" selected>전체</option>
-                                                <option value="">비목관리번호</option>
-                                                <option value="">집행사유코드</option>
-                                                <option value="">예산(세부)사업ID</option>
-                                                <option value="">부점</option>
+                                                <option value="1">비목관리번호</option>
+                                                <option value="2">집행사유코드</option>
+                                                <option value="3">예산(세부)사업ID</option>
+                                                <option value="4">부점</option>
                                             </select>
                                         </dd>
                                     </dl>
                                     <dl>
                                         <dt>
-                                            <label for="searchKeyword">검색어</label>
+                                            <label>검색어</label>
                                         </dt>
                                         <dd>
                                             <div class="search_form">
                                                 <label for="searchType" class="blind">검색어 타입</label>
                                                 <select name="searchType" id="searchType">
-                                                    <option value="" selected>대상</option>
-                                                    <option value="">부점</option>
-                                                    <option value="">직원</option>
-                                                    <option value="">집행사유내용</option>
+                                                    <option value="1" selected>대상</option>
+                                                    <option value="2">부점</option>
+                                                    <option value="3">직원</option>
+                                                    <option value="4">집행사유내용</option>
                                                 </select>
                                                 <div class="search">
-                                                    <input type="search" id="searchKeyword" placeholder="검색어를 입력하세요.">
+                                                    <input type="search" th:field="${params.searchKeyword}"
+                                                           placeholder="검색어를 입력하세요.">
                                                     <button type="button" class="btn_del" tabindex="-1">
                                                         <span class="blind">삭제</span>
                                                     </button>
@@ -154,7 +174,7 @@
             </form>
 
             <div class="selected_filter">
-                <div class="chip">
+                <!--<div class="chip">
                     <div>2024.01.01~2024.12.30</div>
                     <button type="button" class="btn_del">
                         <span class="blind">삭제</span>
@@ -165,7 +185,7 @@
                     <button type="button" class="btn_del">
                         <span class="blind">삭제</span>
                     </button>
-                </div>
+                </div>-->
             </div>
 
             <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
@@ -178,16 +198,16 @@
                 <caption>BC카드 지급결의 내역 조회 : No, 대상, 적용일시, 부점, 직원, 예산집행사유내용, 예산집행사유코드, 예산관리비목관리번호, 예산(세부)사업ID, 상세보기로 구성
                 </caption>
                 <colgroup>
-<!--                    <col style="width: 3.5%;min-width: 44px;">-->
-<!--                    <col style="width: 8%;">-->
-<!--                    <col style="width: 9%;min-width: 90px;">-->
-<!--                    <col style="width: 7%;">-->
-<!--                    <col style="width: 7%;">-->
-<!--                    <col style="width: auto;">-->
-<!--                    <col style="width: 10%;">-->
-<!--                    <col style="width: 11%;">-->
-<!--                    <col style="width: 10%;">-->
-<!--                    <col style="width: 7.5%;min-width: 104px;">-->
+                    <!--                    <col style="width: 3.5%;min-width: 44px;">-->
+                    <!--                    <col style="width: 8%;">-->
+                    <!--                    <col style="width: 9%;min-width: 90px;">-->
+                    <!--                    <col style="width: 7%;">-->
+                    <!--                    <col style="width: 7%;">-->
+                    <!--                    <col style="width: auto;">-->
+                    <!--                    <col style="width: 10%;">-->
+                    <!--                    <col style="width: 11%;">-->
+                    <!--                    <col style="width: 10%;">-->
+                    <!--                    <col style="width: 7.5%;min-width: 104px;">-->
                     <col style="width: 3.5%;min-width: 44px;">
                     <col style="width: 8%;">
                     <col style="width: 11%;min-width: 90px;">
@@ -215,7 +235,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="item, idx:${list}">
-                    <td th:text="${idx.count}"></td>
+                    <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
                     <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
                     <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>
                     <td th:text="${item.brcd}"></td>
