@@ -10,7 +10,7 @@
             CARD_INPUT ci
         LEFT JOIN CARD_OUTPUT co ON ci.TSTM_YMD = co.TSTM_YMD
             AND ci.TSTM_NO = co.TSTM_NO
-            AND ci.BRCD = co.BRDC
+            AND ci.BRCD = co.BRCD
         <include refid="where"></include>
     </select>
 
@@ -21,7 +21,7 @@
             CARD_INPUT ci
         LEFT JOIN CARD_OUTPUT co ON ci.TSTM_YMD = co.TSTM_YMD
             AND ci.TSTM_NO = co.TSTM_NO
-            AND ci.BRCD = co.BRDC
+            AND ci.BRCD = co.BRCD
         <include refid="where"></include>
         ORDER BY
             ci.FRRG_TS

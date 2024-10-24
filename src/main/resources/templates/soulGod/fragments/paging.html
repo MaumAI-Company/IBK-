@@ -25,7 +25,7 @@
                 th:onclick="movePage([[${params.makeQueryString(params.paginationInfo.totalPageCount)}]], [[${params.paginationInfo.totalPageCount}]])"
                 th:text="${params.paginationInfo.totalPageCount}"></button>
         <button type="button" class="page_nav next"
-                th:onclick="movePage([[${params.makeQueryString(params.paginationInfo.lastPage+1)}]], [[${params.paginationInfo.lastPage+1]])">
+                th:onclick="movePage([[${params.makeQueryString(params.paginationInfo.lastPage+1)}]], [[${params.paginationInfo.lastPage+1}]])">
             <span class="blind">다음</span>
         </button>
     </th:block>
