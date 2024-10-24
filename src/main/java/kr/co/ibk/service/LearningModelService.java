@@ -1,5 +1,6 @@
 package kr.co.ibk.service;
 
+import kr.co.ibk.domain.enums.InOutGbnType;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.model.LearningModelForm;
 import kr.co.ibk.repository.LearningModelInputRepository;
@@ -31,9 +32,8 @@ public class LearningModelService extends _BaseService {
             form.setModId(memberInfo.getMemId());
             learningModelRepository.insert(form);
 
-            //rel input insert
-
-            saveCnt = learningModelInputRepository.insertList(form.getId(), form.getInputArr());
+            saveCnt = learningModelInputRepository.insertList(form.getId(), form.getInputArr(), InOutGbnType.INPUT.name());
+            saveCnt += learningModelInputRepository.insertList(form.getId(), form.getOutputArr(), InOutGbnType.OUTPUT.name());
 
         } else {
             //update

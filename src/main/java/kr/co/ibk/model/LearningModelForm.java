@@ -30,6 +30,7 @@ public class LearningModelForm {
     private String deleteYn;  //'N: 정상, Y: 삭제된 데이터',
 
     private String[] inputArr;
+    private String[] outputArr;
 }
 
 

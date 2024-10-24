@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LearningModelInputRepository {
-    public long insertList(@Param("id") Integer id, @Param("inputArr") String[] inputArr);
+    public long insertList(@Param("id") Integer id, @Param("dataArr") String[] dataArr, @Param("gbn") String gbn);
 }

@@ -7,13 +7,15 @@
         INSERT INTO LEARNING_MODEL_INPUT
         (
         COL_NAME,
-        MODEL_ID
+        MODEL_ID,
+        INOUT_GBN
         )
         VALUES
-        <foreach collection="inputArr" item="item" separator=",">
+        <foreach collection="dataArr" item="item" separator=",">
             (
             #{item},
-            #{id}
+            #{id},
+            #{gbn}
             )
         </foreach>
     </insert>

@@ -29,11 +29,12 @@ public class CardLearningDataInfo {
     private String afstDtlAdr; //가맹점상세주소
     private String brncAdr; //부점주소
 
-    private String bdgtPrfrYm; //예산집행년월
-    private String bdgtPrfrNo; //예산집행번호
     private String afstBzn; //가맹점사업자등록번호
     private String amslAfstNo; //매출가맹점번호
     private String afstTpbcd; //가맹점업종코드
+
+    private String bdgtPrfrYm; //예산집행년월
+    private String bdgtPrfrNo; //예산집행번호
     private String rcvYmd; //수신년월일
     private String jobYmd; //작업년월일
     private String jobYn; //작업여부
