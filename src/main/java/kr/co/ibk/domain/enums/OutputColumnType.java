@@ -1,10 +1,9 @@
 package kr.co.ibk.domain.enums;
 
 public enum OutputColumnType {
-    AFST_BZN("가맹점사업자등록번호", "afstBzn"),
-    AMSL_AFST_NO("매출가맹점번호", "amslAfstNo"),
-    AFST_TPBCD("가맹점업종코드", "afstTpbcd");
-
+    BDMN_ITEX_MNGM_NO("예산관리비목관리번호", "bdmnItexMngmNo"),
+    BDGT_PRFR_RSN_FRCS_CON("예산관리비목관리번호_예산집행사유코드", "bdgtPrfrRsnFrcsCon"),
+    BDGT_BSNS_FRCS_CON("사업세부사업", "bdgtBsnsFrcsCon");
     final private String name;
     final private String camelColumn;
 

@@ -19,4 +19,13 @@
             )
         </foreach>
     </insert>
+    <select id="getList" resultType="LearningModelInputInfo" parameterType="Integer">
+        select
+        lmi.COL_NAME
+        ,lmi.MODEL_ID
+        ,lmi.INOUT_GBN
+        from LEARNING_MODEL_INPUT lmi
+        where lmi.MODEL_ID = #{id}
+        order by lmi.INOUT_GBN asc
+    </select>
 </mapper>

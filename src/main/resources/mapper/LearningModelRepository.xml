@@ -9,4 +9,15 @@
         VALUES (#{learningId}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), #{learnName}, '0',
                 'SUCCESS', current_timestamp());
     </insert>
+    <select id="getLoad" resultType="LearningModelInfo" parameterType="Integer">
+        select
+         ID, LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM
+        from LEARNING_MODEL
+        where ID = #{id}
+    </select>
+    <insert id="updateFile" parameterType="LearningModelForm">
+        UPDATE MaumMcc.LEARNING_MODEL
+            SET FILE_PATH = #{filePath}, FILE_NAME = #{fileName}
+        WHERE ID = #{id}
+    </insert>
 </mapper>

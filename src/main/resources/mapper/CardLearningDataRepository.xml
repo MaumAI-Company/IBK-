@@ -19,25 +19,45 @@
     </select>
 
     <sql id="columns">
-        /*view colmn name : db comment*/
-        cld.HDQR_BOB_DCD, /*대상 : 1/2*/
-        cld.FRRG_TS, /*적용일시 : 최초등록일시*/
-        cld.BRCD, /*부점 : 부점코드*/
-        cld.LSMD_EMN, /*직원*/
-        /*예산집행사유내용*/
-        cld.BDGT_PRFR_RSN_FRCS_CON, /*예산집행사유코드 : 비목집행사유내용(비목-집행사유코드)*/
-        cld.BDMN_ITEX_MNGM_NO, /*예산관리비목관리번호*/
-        cld.BDGT_BSNS_FRCS_CON, /*예산(세부)사업ID*/
-        cld.CDN, /*카드번호*/
-        cld.BDGT_TSTM_USE_HMS, /*예산증빙사용시각*/
-        cld.AMSL_AMT, /*매출금액*/
-        cld.AFST_NM, /*가맹점명*/
-        cld.TPBS_NM, /*업종명*/
-        cld.BZDY_YN, /*영업일여부*/
-        cld.AFST_DTL_ADR, /*가맹점상세주소*/
-        cld.BRNC_ADR, /*부점주소*/
-        cld.AFST_BZN, /*가맹점사업자등록번호*/
-        cld.AMSL_AFST_NO, /*매출가맹점번호*/
-        cld.AFST_TPBCD /*가맹점업종코드*/
+    /*view colmn name : db comment*/
+    cld.HDQR_BOB_DCD, /*대상 : 1/2*/
+    cld.FRRG_TS, /*적용일시 : 최초등록일시*/
+    cld.BRCD, /*부점 : 부점코드*/
+    cld.LSMD_EMN, /*직원*/
+    /*예산집행사유내용*/
+    cld.BDGT_PRFR_RSN_FRCS_CON, /*예산집행사유코드 : 비목집행사유내용(비목-집행사유코드)*/
+    cld.BDMN_ITEX_MNGM_NO, /*예산관리비목관리번호*/
+    cld.BDGT_BSNS_FRCS_CON, /*예산(세부)사업ID*/
+    cld.CDN, /*카드번호*/
+    cld.BDGT_TSTM_USE_HMS, /*예산증빙사용시각*/
+    cld.AMSL_AMT, /*매출금액*/
+    cld.AFST_NM, /*가맹점명*/
+    cld.TPBS_NM, /*업종명*/
+       cld.BZDY_YN, /*영업일여부*/
+       cld.AFST_DTL_ADR, /*가맹점상세주소*/
+       cld.BRNC_ADR, /*부점주소*/
+       cld.AFST_BZN, /*가맹점사업자등록번호*/
+       cld.AMSL_AFST_NO, /*매출가맹점번호*/
+       cld.AFST_TPBCD /*가맹점업종코드*/
     </sql>
+
+    <select id="getLearningList" resultType="CardLearningDataInfo" parameterType="SearchForm">
+        select cld.BRCD
+             , cld.CDN
+             , cld.BDGT_TSTM_USE_HMS
+             , cld.AMSL_AMT
+             , cld.AFST_NM
+             , cld.TPBS_NM
+             , cld.BZDY_YN
+             , cld.AFST_DTL_ADR
+             , cld.BRNC_ADR
+             , cld.AFST_BZN
+             , cld.AMSL_AFST_NO
+             , cld.AFST_TPBCD
+             , cld.BDMN_ITEX_MNGM_NO
+             , cld.BDGT_PRFR_RSN_FRCS_CON
+             , cld.BDGT_BSNS_FRCS_CON
+        from CARD_LEARNING_DATA cld
+        order by cld.FRRG_TS desc limit 100
+    </select>
 </mapper>

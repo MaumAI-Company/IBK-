@@ -28,9 +28,12 @@ public class LearningModelForm {
     private String resultMsg;  //결과 메시지',
     private LocalDateTime createDtm;   //'생성시간',
     private String deleteYn;  //'N: 정상, Y: 삭제된 데이터',
+    private String filePath;    //학습파일 경로
+    private String fileName;    //학습파일명
 
     private String[] inputArr;
     private String[] outputArr;
+    private Integer[] idArr;
 }
 
 

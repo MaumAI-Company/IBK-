@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -62,5 +63,19 @@ public class LearnController {
     public HashMap<String, Object> learnDataSave(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
 
         return learningModelService.save(form, memberInfo);
+    }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/learnData/learning"})
+    public List<HashMap<String, Object>> dataLearning(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
+
+        List<HashMap<String, Object>> rtnList = new ArrayList<>();
+        if (form.getIdArr() != null) {
+            for (Integer id : form.getIdArr()) {
+                HashMap<String, Object> learning = learningModelService.learning(id);
+                rtnList.add(learning);
+            }
+        }
+        return rtnList;
     }
 }
