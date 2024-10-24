@@ -116,8 +116,8 @@
                                             <select name="target" id="target">
                                                 <option value="" selected>전체</option>
                                                 <option value="1">본부</option>
-                                                <option value="2">지역본부</option>
-                                                <option value="3">영업점</option>
+                                                <option value="2">영업점</option>
+                                                <option value="3">지역본부</option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -222,31 +222,28 @@
                 <thead>
                 <tr>
                     <th scope="col">No</th>
-                    <th scope="col">대상</th>
-                    <th scope="col">적용일시</th>
-                    <th scope="col">부점</th>
-                    <th scope="col">직원</th>
-                    <th scope="col">예산집행사유내용</th>
-                    <th scope="col">예산집행<span class="dib">사유코드</span></th>
-                    <th scope="col">예산관리비목<span class="dib">관리번호</span></th>
-                    <th scope="col">예산(세부)<span class="dib">사업ID</span></th>
+                    <th scope="col">구분</th>
+                    <th scope="col">카드번호</th>
+                    <th scope="col">승인시간</th>
+                    <th scope="col">매출금액</th>
+                    <th scope="col">가맹점명</th>
+                    <th scope="col">예산비목<span class="dib">정보내용</span></th>
+                    <th scope="col">예산사업<span class="dib">ID내용</span></th>
+                    <th scope="col">비목집행<span class="dib">사유내용</span></th>
                     <th scope="col">상세보기</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="item, idx:${list}">
                     <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
-                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : (item.hdqrBobDcd == '2' ? '영업점' : '지역본부'))}"></td>
+                    <td th:text="${item.cdn}"></td>
                     <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>
-                    <td th:text="${item.brcd}"></td>
-                    <td th:text="${item.lsmdEmn}"></td>
-                    <!--<td class="view"> &lt;!&ndash;TODO : 상세보기를 했을 경우 클래스 view 추가&ndash;&gt;
-                        국외점포장 전략 회의를 위한 간식 구입비
-                    </td>-->
-                    <td>-</td> <!--예산집행사유내용-->
-                    <td th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
-                    <td th:text="${item.bdmnItexMngmNo}"></td>
+                    <td th:text="${item.amslAmt}"></td>
+                    <td th:text="${item.afstNm}"></td>
+                    <td th:text="${item.bdgtItexFrcsCon}"></td>
                     <td th:text="${item.bdgtBsnsFrcsCon}"></td>
+                    <td th:text="${item.bdgfPrfrRsnFrcsCon}"></td>
                     <td>
                         <button type="button" class="badge" onclick="layerShow('popDetail')">
                             <i class="ico_plus"></i>
@@ -254,162 +251,8 @@
                         </button>
                     </td>
                 </tr>
-                <!--<tr>
-                    <td>9</td>
-                    <td>본부</td>
-                    <td>2024.07.22</td>
-                    <td>0751</td>
-                    <td>강길동</td>
-                    <td>회의 준비 등을 위한 시간외근무</td>
-                    <td>002</td>
-                    <td>224010</td>
-                    <td>2061-8</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>8</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>008</td>
-                    <td>222001</td>
-                    <td>20009-2</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>7</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>008</td>
-                    <td>222001</td>
-                    <td>20009-2</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>008</td>
-                    <td>222001</td>
-                    <td>20009-2</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>008</td>
-                    <td>222001</td>
-                    <td>20009-2</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>008</td>
-                    <td>222001</td>
-                    <td>20009-2</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>008</td>
-                    <td>222001</td>
-                    <td>20009-2</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>008</td>
-                    <td>222001</td>
-                    <td>20009-2</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>008</td>
-                    <td>222001</td>
-                    <td>20009-2</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>-->
                 </tbody>
             </table>
-
             <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
         </div>
     </div>

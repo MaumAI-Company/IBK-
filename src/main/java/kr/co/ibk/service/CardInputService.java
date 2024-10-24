@@ -1,0 +1,40 @@
+package kr.co.ibk.service;
+
+import kr.co.ibk.domain.web.CardInputInfo;
+import kr.co.ibk.model.CardInputForm;
+import kr.co.ibk.model.paging.PaginationInfo;
+import kr.co.ibk.repository.CardInputRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class CardInputService extends _BaseService {
+
+    private final CardInputRepository cardInputRepository;
+
+    public List<CardInputInfo> page(CardInputForm params) {
+        int totalCount = cardInputRepository.getTotalCount(params);
+
+        PaginationInfo paginationInfo = new PaginationInfo(params);
+        paginationInfo.setTotalRecordCount(totalCount);
+        params.setPaginationInfo(paginationInfo);
+
+        List<CardInputInfo> list = new ArrayList<>();
+        if (totalCount > 0) {
+            params.setPagingAt("Y");
+            list = list(params);
+        }
+
+        return list;
+    }
+
+    public List<CardInputInfo> list(CardInputForm params) {
+        return cardInputRepository.getList(params);
+    }
+}
