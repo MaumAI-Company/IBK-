@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CardInputForm extends PageForm {
     private String pagingAt;
+    private String sorting;
 }
 
 

@@ -32,6 +32,9 @@ public class Criteria {
 	/** 조회 기간  */
 	private String searchStartDate;
 	private String searchEndDate;
+
+	/*조회 대상*/
+	private String searchTarget;
 	
 	public String getSearchStartDate() {
 		if (this.searchStartDate == null || this.searchStartDate.length() < 1) {
