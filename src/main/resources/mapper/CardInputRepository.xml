@@ -11,6 +11,7 @@
         LEFT JOIN CARD_OUTPUT co ON ci.TSTM_YMD = co.TSTM_YMD
             AND ci.TSTM_NO = co.TSTM_NO
             AND ci.BRCD = co.BRCD
+        WHERE ci.BRCD is not null
         <include refid="where"></include>
     </select>
 
@@ -22,9 +23,18 @@
         LEFT JOIN CARD_OUTPUT co ON ci.TSTM_YMD = co.TSTM_YMD
             AND ci.TSTM_NO = co.TSTM_NO
             AND ci.BRCD = co.BRCD
+        WHERE ci.BRCD is not null
         <include refid="where"></include>
         ORDER BY
-            ci.FRRG_TS
+        ci.FRRG_TS
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
         <include refid="kr.co.ibk.repository.CommonRepository.paging" />
     </select>
 
@@ -36,10 +46,86 @@
         ci.AFST_NM ,
         co.BDGT_ITEX_FRCS_CON ,
         co.BDGT_BSNS_FRCS_CON ,
-        co.BDGF_PRFR_RSN_FRCS_CON
+        co.BDGF_PRFR_RSN_FRCS_CON ,
+        ci.TSTM_YMD ,
+        ci.TSTM_NO ,
+        ci.BRCD
     </sql>
 
     <sql id="where">
+        /*일자 검색*/
+        <if test="searchStartDate != null and searchStartDate != ''">
+            <![CDATA[
+				AND DATE_FORMAT( ci.FRRG_TS, '%Y.%m.%d') >= #{searchStartDate}
+			 ]]>
+        </if>
+        <if test="searchEndDate != null and searchEndDate != ''">
+            <![CDATA[
+				AND DATE_FORMAT( ci.FRRG_TS, '%Y.%m.%d') <= #{searchEndDate}
+			 ]]>
+        </if>
 
+        /*대상 검색*/
+         <if test="searchTarget != null and searchTarget != ''">
+             AND ci.HDQR_BOB_DCD = #{searchTarget}
+         </if>
+         
+         /*검색어 검색*/
+         <if test="searchKeyword != null  and searchKeyword != ''">
+             <choose>
+                 <when test="searchType != null and searchType != ''">
+                     <choose>
+                         <when test="searchType == '1'">
+                             AND ci.CDN LIKE CONCAT('%', #{searchKeyword}, '%')
+                         </when>
+                         <when test="searchType == '2'">
+                             AND ci.AFST_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+                         </when>
+                         <when test="searchType == '3'">
+                             AND co.BDGT_ITEX_FRCS_CON LIKE CONCAT('%', #{searchKeyword}, '%')
+                         </when>
+                         <when test="searchType == '4'">
+                             AND co.BDGT_BSNS_FRCS_CON LIKE CONCAT('%', #{searchKeyword}, '%')
+                         </when>
+                     </choose>
+                 </when>
+                 <otherwise>
+                     AND (ci.CDN LIKE CONCAT('%', #{searchKeyword}, '%')
+                            OR ci.AFST_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+                            OR co.BDGT_ITEX_FRCS_CON LIKE CONCAT('%', #{searchKeyword}, '%')
+                            OR co.BDGT_BSNS_FRCS_CON LIKE CONCAT('%', #{searchKeyword}, '%'))
+                 </otherwise>
+             </choose>
+         </if>
     </sql>
+
+    <select id="getDetail" resultType="CardInputInfo" parameterType="CardInputForm">
+        SELECT
+            <include refid="columns"></include>
+        FROM
+            CARD_INPUT ci
+        LEFT JOIN CARD_OUTPUT co ON ci.TSTM_YMD = co.TSTM_YMD
+            AND ci.TSTM_NO = co.TSTM_NO
+            AND ci.BRCD = co.BRCD
+        WHERE ci.BRCD is not null
+            AND ci.TSTM_YMD = #{tstmYmd}
+            AND ci.TSTM_NO = #{tstmNo}
+            AND ci.BRCD = #{brcd}
+        <!--<choose>
+            <when test="loadType != null and loadType != ''">
+                <include refid="where"></include>
+                <if test="loadType == 'prev'">
+
+                </if>
+                <if test="loadType == 'next'">
+
+                </if>
+            </when>
+            <otherwise>
+                AND ci.TSTM_YMD = #{tstmYmd}
+                AND ci.TSTM_NO = #{tstmNo}
+                AND ci.BRCD = #{brcd}
+            </otherwise>
+        </choose>-->
+    </select>
 </mapper>

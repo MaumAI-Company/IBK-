@@ -11,4 +11,6 @@ public interface CardInputRepository {
     List<CardInputInfo> getList(CardInputForm params);
 
     int getTotalCount(CardInputForm params);
+
+    CardInputInfo getDetail(CardInputForm params);
 }

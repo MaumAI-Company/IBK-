@@ -41,6 +41,45 @@
 
         }
 
+        function fn_detail(ymd, no, brcd, type) { //(카드 증빙 일자 , 카드 증빙번호, 부점코드 )=> pk
+
+            if (!$.trim(ymd) || !$.trim(no) || !$.trim(brcd)) {
+                return false;
+            }
+
+            let jsonData = {
+                "tstmYmd": ymd,
+                "tstmNo": no,
+                "brcd": brcd,
+                "loadType": type
+            }
+
+            $.ajax({
+                url: "/soulGod/report/card/detail",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    if (data) {
+                        $('#bdgtItexFrcsCon').text(data.bdgtItexFrcsCon);
+                        $('#bdgtBsnsFrcsCon').text(data.bdgtBsnsFrcsCon);
+                        $('#bdgfPrfrRsnFrcsCon').text(data.bdgfPrfrRsnFrcsCon);
+                        layerShow('popDetail');
+                    } else {
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        })
+                    }
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
+
     </script>
 </head>
 <body>
@@ -85,9 +124,9 @@
                             <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
                         <label for="sorting" class="blind">정렬조건</label>
-                        <select name="sorting" id="sorting" class="sel_board sel_sorting">
-                            <option value="asc">오름차순</option>
-                            <option value="desc" selected>내림차순</option>
+                        <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
                         </select>
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter active">
@@ -103,11 +142,13 @@
                                         <dd>
                                             <div class="term_form">
                                                 <label for="searchStartDate" class="blind">조회 시작 날짜</label>
-                                                <input type="text" id="searchStartDate" name="searchStartDate" class="datepicker" value="2024.08.01"
+                                                <input type="text" id="searchStartDate" name="searchStartDate"
+                                                       class="datepicker" th:value="${params.searchStartDate}"
                                                        readonly>
                                                 <div class="swung"></div>
                                                 <label for="searchEndDate" class="blind">조회 종료 날짜</label>
-                                                <input type="text" id="searchEndDate" name="searchEndDate" class="datepicker" value="2024.08.31"
+                                                <input type="text" id="searchEndDate" name="searchEndDate"
+                                                       class="datepicker" th:value="${params.searchEndDate}"
                                                        readonly>
                                             </div>
                                         </dd>
@@ -119,9 +160,12 @@
                                         <dd>
                                             <select name="searchTarget" id="searchTarget">
                                                 <option value="" selected>전체</option>
-                                                <option value="1">본부</option>
-                                                <option value="2">영업점</option>
-                                                <option value="3">지역본부</option>
+                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부
+                                                </option>
+                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
+                                                <option value="3" th:selected="${params.searchTarget == '3'}">지역본부
+                                                </option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -148,10 +192,15 @@
                                                 <label for="searchType" class="blind">검색어 타입</label>
                                                 <select name="searchType" id="searchType">
                                                     <option value="" selected>전체</option>
-                                                    <option value="1" >대상</option>
-                                                    <option value="2">부점</option>
-                                                    <option value="3">직원</option>
-                                                    <option value="4">집행사유내용</option>
+                                                    <option value="1" th:selected="${params.searchType == '1'}">카드번호
+                                                    </option>
+                                                    <option value="2" th:selected="${params.searchType == '2'}">가맹점명
+                                                    </option>
+                                                    <option value="3" th:selected="${params.searchType == '3'}">
+                                                        예산비목정보내용
+                                                    </option>
+                                                    <option value="4" th:selected="${params.searchType == '4'}">집행사유내용
+                                                    </option>
                                                 </select>
                                                 <div class="search">
                                                     <input type="search" th:field="${params.searchKeyword}"
@@ -227,7 +276,7 @@
                 <thead>
                 <tr>
                     <th scope="col">No</th>
-                    <th scope="col">구분</th>
+                    <th scope="col">대상</th>
                     <th scope="col">카드번호</th>
                     <th scope="col">승인시간</th>
                     <th scope="col">매출금액</th>
@@ -250,7 +299,8 @@
                     <td th:text="${item.bdgtBsnsFrcsCon}"></td>
                     <td th:text="${item.bdgfPrfrRsnFrcsCon}"></td>
                     <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
+                        <button type="button" class="badge"
+                                th:onclick="fn_detail([[${item.tstmYmd}]], [[${item.tstmNo}]], [[${item.brcd}]])">
                             <i class="ico_plus"></i>
                             <span>상세보기</span>
                         </button>
@@ -282,12 +332,24 @@
                 </colgroup>
                 <tbody>
                 <tr>
+                    <th scope="row">예산비목정보내용</th>
+                    <td id="bdgtItexFrcsCon"></td>
+                </tr>
+                <tr>
+                    <th scope="row">예산사업ID내용</th>
+                    <td id="bdgtBsnsFrcsCon"></td>
+                </tr>
+                <tr>
+                    <th scope="row">비목집행사유내용</th>
+                    <td id="bdgfPrfrRsnFrcsCon"></td>
+                </tr>
+                <!--<tr>
                     <th scope="row">부점</th>
                     <td>본부</td>
                 </tr>
                 <tr>
                     <th scope="row">예산관리비목관리번호</th>
-                    <td>201002</td>
+                    <td>-</td>
                 </tr>
                 <tr>
                     <th scope="row">예산(세부)사업ID</th>
@@ -300,7 +362,7 @@
                 <tr>
                     <th scope="row">예산집행사유내용</th>
                     <td>기업성장 목표배정 야식대</td>
-                </tr>
+                </tr>-->
                 </tbody>
             </table>
         </div>
