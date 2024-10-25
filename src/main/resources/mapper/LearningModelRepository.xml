@@ -27,6 +27,30 @@
 
     <sql id="where">
         where lm.DELETE_YN = 'N'
+
+        /*일자 검색*/
+        <if test="searchStartDate != null and searchStartDate != ''">
+            <![CDATA[
+				AND DATE_FORMAT( lm.CREATE_DTM, '%Y.%m.%d') >= #{searchStartDate}
+			 ]]>
+        </if>
+        <if test="searchEndDate != null and searchEndDate != ''">
+            <![CDATA[
+				AND DATE_FORMAT( lm.CREATE_DTM, '%Y.%m.%d') <= #{searchEndDate}
+			 ]]>
+        </if>
+
+        /*상태 검색*/
+        <if test="statusType != null and statusType != ''">
+            AND lm.DEPLOY_STATUS = #{statusType}
+        </if>
+
+        /*학습 가능 유무*/
+
+
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
     </sql>
     <select id="getList" resultType="LearningModelInfo" parameterType="LearningModelForm">
         select lm.ID,
@@ -50,7 +74,15 @@
         from LEARNING_MODEL lm
         inner join HC_MEMBER hm on lm.REG_ID = hm.MEM_ID
         <include refid="where"></include>
-        ORDER BY CREATE_DTM desc
+        ORDER BY CREATE_DTM
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
         <include refid="kr.co.ibk.repository.CommonRepository.paging" />
     </select>
     <select id="getTotalCount" resultType="int" parameterType="LearningModelForm">

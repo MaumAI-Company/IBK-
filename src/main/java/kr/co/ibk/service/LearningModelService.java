@@ -22,6 +22,7 @@ import org.springframework.util.ObjectUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -198,6 +199,14 @@ public class LearningModelService extends _BaseService {
         params.setPaginationInfo(paginationInfo);
 
         if (totalCount > 0) {
+            if (ObjectUtils.isEmpty(params.getSorting())) {
+                params.setSorting("desc");
+            }
+
+            if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+                params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
+                params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
+            }
             modelList = learningModelRepository.getList(params);
         }
 

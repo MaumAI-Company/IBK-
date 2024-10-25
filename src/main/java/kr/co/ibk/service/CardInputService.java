@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,10 @@ public class CardInputService extends _BaseService {
         if (totalCount > 0) {
             if (ObjectUtils.isEmpty(params.getSorting())) {
                 params.setSorting("desc");
+            }
+            if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+                params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
+                params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
             }
             params.setPagingAt("Y");
             list = list(params);

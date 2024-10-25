@@ -3,25 +3,32 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <script type="text/javascript">
-        $(function(){
-            fn_setDatePicker('#stDt', {
+        $(function () {
+            fn_setDatePicker('#searchStartDate', {
                 onShow: function (ct) {
                     this.setOptions({
-                        maxDate: $('#edDt').val() ? $('#edDt').val() : false
+                        maxDate: $('#searchEndDate').val() ? $('#searchEndDate').val() : false
                     })
                 }
             });
-            fn_setDatePicker('#edDt', {
+            fn_setDatePicker('#searchEndDate', {
                 onShow: function (ct) {
                     this.setOptions({
-                        minDate: $('#stDt').val() ? $('#stDt').val() : false
+                        minDate: $('#searchStartDate').val() ? $('#searchStartDate').val() : false
                     })
                 }
             });
         });
-        function movePage(url, pageNo){
+
+        function fn_search() {
+            let frm = $('#aform');
+            frm.prop('action', '?');
+            frm.submit();
+        }
+
+        function movePage(url, pageNo) {
             $('#currentPageNo').val(pageNo);
-            $('#aform').attr({ action : '/soulGod/learn/modelManage', method : 'post' }).unbind('submit').submit();
+            $('#aform').attr({action: '/soulGod/learn/modelManage', method: 'post'}).unbind('submit').submit();
         }
 
         function fn_showLearnPop() {
@@ -56,7 +63,7 @@
             }
             let checked = $("input[id^='chk_']:checked");
             let idArr = [];
-            $.each(checked, function() {
+            $.each(checked, function () {
                 idArr.push($(this).val());
             });
 
@@ -67,17 +74,17 @@
                 idArr: idArr
             }
             $.ajax({
-                url : "/soulGod/learnData/learning",
+                url: "/soulGod/learnData/learning",
                 type: "post",
                 async: false,
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
-                success : function(data) {
+                success: function (data) {
                     alert("txt파일 생성 완료, 학습 api 연동 필요.");
                     // todo 학습 api 실행
                     layerHide("popLearn")
                 },
-                error : function() {
+                error: function () {
                     console.log("error");
                 }
             });
@@ -108,27 +115,32 @@
 
             </div>
 
-            <div class="board_top">
-                <div>
-                    <div class="total_num"><b th:text="${params.paginationInfo.totalRecordCount}">0</b> 개의 글이 있습니다.</div>
-                </div>
-                <div class="mla">
-                    <form role="form" id="aform" method="post" enctype="multipart/form-data" class="form-horizontal">
+
+            <form role="form" id="aform" method="post" enctype="multipart/form-data" class="form-horizontal">
+                <div class="board_top">
+                    <div>
+                        <div class="total_num"><b th:text="${params.paginationInfo.totalRecordCount}">0</b> 개의 글이 있습니다.
+                        </div>
+                    </div>
+                    <div class="mla">
                         <!-- 신규 검색시 1 페이지로 이동 -->
                         <!--                    <input type="hidden" id="currentPageNo" name="currentPageNo" value="1"/>-->
                         <!-- org 검색시 1 페이지로 이동 -->
-                        <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
+                        <input type="hidden" id="currentPageNo" name="currentPageNo"
+                               th:value="${params.currentPageNo}"/>
                         <!-- org 페이지에 보여질 수 -->
-<!--                        <input type="hidden" id="recordsPerPage" name="recordsPerPage" th:value="${params.recordsPerPage}"/>-->
+                        <!--                        <input type="hidden" id="recordsPerPage" name="recordsPerPage" th:value="${params.recordsPerPage}"/>-->
                         <!-- org 페이지 블럭의 수 -->
                         <input type="hidden" id="pageSize" name="pageSize" th:value="${params.pageSize}"/>
                         <!-- org 검색 종류 -->
                         <input type="hidden" id="searchType" name="searchType" th:value="${params.searchType}"/>
                         <!-- org 검색 값 -->
-                        <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${params.searchKeyword}"/>
+                        <input type="hidden" id="searchKeyword" name="searchKeyword"
+                               th:value="${params.searchKeyword}"/>
+
 
                         <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
-                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility">
+                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility" onchange="fn_search()">
                             <option value="10" th:selected="${params.recordsPerPage eq 10}">10개</option>
                             <option value="20" th:selected="${params.recordsPerPage eq 20}">20개</option>
                             <option value="30" th:selected="${params.recordsPerPage eq 30}">30개</option>
@@ -136,9 +148,9 @@
                             <option value="50" th:selected="${params.recordsPerPage eq 50}">50개</option>
                         </select>
                         <label for="sorting" class="blind">정렬조건</label>
-                        <select name="sorting" id="sorting" class="sel_board sel_sorting">
-                            <option value="asc">오름차순</option>
-                            <option value="desc" selected>내림차순</option>
+                        <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
                         </select>
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter">
@@ -152,53 +164,90 @@
                                         <dt>조회기간</dt>
                                         <dd>
                                             <div class="term_form">
-                                                <label for="stDt" class="blind">조회 시작 날짜</label>
-                                                <input type="text" id="stDt" class="datepicker" value="2024.08.01" readonly>
+                                                <label for="searchStartDate" class="blind">조회 시작 날짜</label>
+                                                <input type="text" id="searchStartDate" name="searchStartDate"
+                                                       class="datepicker" th:value="${params.searchStartDate}"
+                                                       readonly>
                                                 <div class="swung"></div>
-                                                <label for="edDt" class="blind">조회 종료 날짜</label>
-                                                <input type="text" id="edDt" class="datepicker" value="2024.08.31" readonly>
+                                                <label for="searchEndDate" class="blind">조회 종료 날짜</label>
+                                                <input type="text" id="searchEndDate" name="searchEndDate"
+                                                       class="datepicker" th:value="${params.searchEndDate}"
+                                                       readonly>
                                             </div>
                                         </dd>
                                     </dl>
                                     <dl>
                                         <dt>
-                                            <label for="condition">조회조건</label>
+                                            <label for="statusType">상태</label>
                                         </dt>
                                         <dd>
-                                            <select name="condition" id="condition">
+                                            <select name="statusType" id="statusType">
                                                 <option value="" selected>전체</option>
-                                                <option value="">제목</option>
-                                                <option value="">상태</option>
+                                                <option value="0" th:selected="${params.statusType == '0'}">등록완료</option>
+                                                <option value="1" th:selected="${params.statusType == '1'}">오류</option>
+                                                <option value="2" th:selected="${params.statusType == '2'}">학습완료</option>
+                                                <option value="3" th:selected="${params.statusType == '3'}">학습중</option>
+                                                <option value="4" th:selected="${params.statusType == '4'}">배포완료</option>
+                                                <option value="5" th:selected="${params.statusType == '5'}">롤백</option>
+                                                <option value="6" th:selected="${params.statusType == '6'}">배포중</option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="learningType">학습 가능 유무</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="learningType" id="learningType">
+                                                <option value="" selected>전체</option>
                                                 <option value="">학습 가능</option>
                                                 <option value="">학습 불가</option>
                                             </select>
                                         </dd>
                                     </dl>
+                                    <!--<dl>
+                                        <dt>
+                                            <label>검색어</label>
+                                        </dt>
+                                        <dd>
+                                            <div class="search_form">
+                                                <div class="search">
+                                                    <input type="search" th:field="${params.searchKeyword}"
+                                                           placeholder="검색어를 입력하세요.">
+                                                    <button type="button" class="btn_del" tabindex="-1">
+                                                        <span class="blind">삭제</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>-->
                                     <div class="btn_area">
                                         <button type="button" class="btn line_cool_grey30">
                                             <span>초기화</span>
                                         </button>
-                                        <button type="button" class="btn fill">
+                                        <button type="button" class="btn fill" onclick="fn_search()">
                                             <span>검색</span>
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
+            </form>
 
             <div class="selected_filter"></div>
 
             <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
-            <!--<div class="nodata">
+            <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
 				<p>검색 결과가 없습니다.</p>
-			</div>-->
+			</div>
             <!--데이터가 없을 때 : e-->
 
-            <table class="tbl_list">
-                <caption>모델 관리 : No, 학습 모델 명, 등록자, 상태, Precision, recall, F-1 Score, epoch, Learning Rate, Batch Size, 생성일시로 구성</caption>
+            <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
+                <caption>모델 관리 : No, 학습 모델 명, 등록자, 상태, Precision, recall, F-1 Score, epoch, Learning Rate, Batch Size,
+                    생성일시로 구성
+                </caption>
                 <colgroup>
                     <col style="width: 3.5%;min-width: 44px;">
                     <col style="width: 3.5%;min-width: 44px;">
@@ -269,7 +318,6 @@
                 </tr>
                 </tbody>
             </table>
-
             <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
         </div>
     </div>
@@ -388,7 +436,8 @@
                     </div>
                     <div class="td">
                         <div class="input">
-                            <input type="number" id="batchSize" placeholder="Batch Size를 입력하세요.(default : 128)" value="128">
+                            <input type="number" id="batchSize" placeholder="Batch Size를 입력하세요.(default : 128)"
+                                   value="128">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>

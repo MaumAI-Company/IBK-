@@ -35,6 +35,12 @@ public class LearningModelForm extends PageForm  {
     private String[] inputArr;
     private String[] outputArr;
     private Integer[] idArr;
+
+    /*검색조건*/
+    private String statusType;
+    private String learningType;
+    private String sorting;
+
 }
 
 
