@@ -44,6 +44,7 @@
         ci.FRRG_TS ,
         ci.AMSL_AMT ,
         ci.AFST_NM ,
+        ci.BZDY_YN,
         co.BDGT_ITEX_FRCS_CON ,
         co.BDGT_BSNS_FRCS_CON ,
         co.BDGT_PRFR_RSN_FRCS_CON ,
