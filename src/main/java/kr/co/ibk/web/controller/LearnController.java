@@ -2,6 +2,7 @@ package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.domain.web.CardLearningDataInfo;
+import kr.co.ibk.domain.web.LearningModelInfo;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.model.CardLearningDataForm;
 import kr.co.ibk.model.LearningModelForm;
@@ -38,8 +39,13 @@ public class LearnController {
 
     @RequestMapping("/soulGod/learn/modelManage")
     public String modelManage(Model model,
+                              @ModelAttribute LearningModelForm form,
                               @CurrentUser MemberInfo memberInfo) {
 
+        List<LearningModelInfo> list = learningModelService.getList(form);
+
+        model.addAttribute("list", list);
+        model.addAttribute("params", form);
         model.addAttribute("mc", "ico_database");
         model.addAttribute("pageTitle", "모델 관리");
 
@@ -72,7 +78,8 @@ public class LearnController {
         List<HashMap<String, Object>> rtnList = new ArrayList<>();
         if (form.getIdArr() != null) {
             for (Integer id : form.getIdArr()) {
-                HashMap<String, Object> learning = learningModelService.learning(id);
+                form.setId(id);
+                HashMap<String, Object> learning = learningModelService.learning(form);
                 rtnList.add(learning);
             }
         }

@@ -5,6 +5,8 @@ import kr.co.ibk.model.LearningModelForm;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface LearningModelRepository {
 
@@ -12,4 +14,7 @@ public interface LearningModelRepository {
     public void insert(LearningModelForm form);
 
     void updateFile(LearningModelForm form);
+
+    List<LearningModelInfo> getList(LearningModelForm form);
+    int getTotalCount(LearningModelForm form);
 }

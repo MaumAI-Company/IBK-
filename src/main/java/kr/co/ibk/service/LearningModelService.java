@@ -9,6 +9,7 @@ import kr.co.ibk.domain.web.LearningModelInputInfo;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.model.LearningModelForm;
 import kr.co.ibk.model.SearchForm;
+import kr.co.ibk.model.paging.PaginationInfo;
 import kr.co.ibk.repository.CardLearningDataRepository;
 import kr.co.ibk.repository.LearningModelInputRepository;
 import kr.co.ibk.repository.LearningModelRepository;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -66,12 +68,12 @@ public class LearningModelService extends _BaseService {
     }
 
     @Transactional
-    public HashMap<String, Object> learning(Integer id) {
+    public HashMap<String, Object> learning(LearningModelForm form) {
         HashMap<String, Object> map = new HashMap<>();
-        LearningModelInfo load = learningModelRepository.getLoad(id);
+        LearningModelInfo load = learningModelRepository.getLoad(form.getId());
         map.put("learnName", load.getLearnName());
         try {
-            List<LearningModelInputInfo> list = learningModelInputRepository.getList(id);
+            List<LearningModelInputInfo> list = learningModelInputRepository.getList(form.getId());
             List<CardLearningDataInfo> dataList = cardLearningDataRepository.getLearningList(new SearchForm());
 
             // 헤더
@@ -170,9 +172,12 @@ public class LearningModelService extends _BaseService {
             writer.close();
 
             LearningModelForm update = new LearningModelForm();
-            update.setId(id);
+            update.setId(form.getId());
             update.setFilePath(filePath);
             update.setFileName(fileName);
+            update.setEpoch(form.getEpoch());
+            update.setLearningRate(form.getLearningRate());
+            update.setBatchSize(form.getBatchSize());
             learningModelRepository.updateFile(update);
 
             map.put("status", "SUCCESS");
@@ -180,5 +185,22 @@ public class LearningModelService extends _BaseService {
             map.put("status", "FAIL");
         }
         return map;
+    }
+
+    public List<LearningModelInfo> getList(LearningModelForm params) {
+        List<LearningModelInfo> modelList = Collections.emptyList();
+
+        int totalCount = learningModelRepository.getTotalCount(params);
+
+        PaginationInfo paginationInfo = new PaginationInfo(params);
+        paginationInfo.setTotalRecordCount(totalCount);
+
+        params.setPaginationInfo(paginationInfo);
+
+        if (totalCount > 0) {
+            modelList = learningModelRepository.getList(params);
+        }
+
+        return modelList;
     }
 }

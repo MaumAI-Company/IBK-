@@ -1,5 +1,6 @@
 package kr.co.ibk.model;
 
+import kr.co.ibk.model.paging.PageForm;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LearningModelForm {
+public class LearningModelForm extends PageForm  {
     private Integer id;
     private Integer learningId;  //'학습 키',
     private String regId;  //'등록자',
