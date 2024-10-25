@@ -11,6 +11,11 @@ import lombok.Setter;
 public class CardInputForm extends PageForm {
     private String pagingAt;
     private String sorting;
+
+    private String tstmYmd;
+    private String tstmNo;
+    private String brcd;
+    private String loadType;
 }
 
 

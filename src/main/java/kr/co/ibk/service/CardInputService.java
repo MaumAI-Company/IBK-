@@ -7,6 +7,7 @@ import kr.co.ibk.repository.CardInputRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,9 @@ public class CardInputService extends _BaseService {
 
         List<CardInputInfo> list = new ArrayList<>();
         if (totalCount > 0) {
+            if (ObjectUtils.isEmpty(params.getSorting())) {
+                params.setSorting("desc");
+            }
             params.setPagingAt("Y");
             list = list(params);
         }
@@ -36,5 +40,9 @@ public class CardInputService extends _BaseService {
 
     public List<CardInputInfo> list(CardInputForm params) {
         return cardInputRepository.getList(params);
+    }
+
+    public CardInputInfo detail(CardInputForm params) {
+        return cardInputRepository.getDetail(params);
     }
 }

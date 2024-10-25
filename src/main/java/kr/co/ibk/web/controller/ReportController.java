@@ -8,8 +8,7 @@ import kr.co.ibk.service.CardInputService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -55,5 +54,11 @@ public class ReportController {
 
         return "/soulGod/report/statistic";
 
+    }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/report/card/detail"})
+    public CardInputInfo cardDtail(@RequestBody CardInputForm form) {
+        return cardInputService.detail(form);
     }
 }
