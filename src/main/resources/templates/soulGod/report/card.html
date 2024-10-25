@@ -267,6 +267,7 @@
                     <col style="width: 12%;min-width: 90px;">
                     <col style="width: 8%;">
                     <col style="width: 5%;">
+                    <col style="width: 5%;">
                     <col style="width: 7%;">
                     <col style="width: auto;">
                     <col style="width: 14%;">
@@ -281,6 +282,7 @@
                     <th scope="col">승인시간</th>
                     <th scope="col">매출금액</th>
                     <th scope="col">가맹점명</th>
+                    <th scope="col">영업일여부</th>
                     <th scope="col">예산비목<span class="dib">정보내용</span></th>
                     <th scope="col">예산사업<span class="dib">ID내용</span></th>
                     <th scope="col">비목집행<span class="dib">사유내용</span></th>
@@ -295,6 +297,7 @@
                     <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>
                     <td th:text="${item.amslAmt}"></td>
                     <td th:text="${item.afstNm}"></td>
+                    <td th:text="${item.bzdyYn}"></td>
                     <td th:text="${item.bdgtItexFrcsCon}"></td>
                     <td th:text="${item.bdgtBsnsFrcsCon}"></td>
                     <td th:text="${item.bdgtPrfrRsnFrcsCon}"></td>

@@ -38,6 +38,18 @@ public class CardInputService extends _BaseService {
             }
             params.setPagingAt("Y");
             list = list(params);
+
+            list.forEach(item -> {
+                if (!ObjectUtils.isEmpty(item.getBdgtItexFrcsCon())) {
+                    item.setBdgtItexFrcsCon(item.getBdgtItexFrcsCon().split("\\|")[0]);
+                }
+                if (!ObjectUtils.isEmpty(item.getBdgtBsnsFrcsCon())) {
+                    item.setBdgtBsnsFrcsCon(item.getBdgtBsnsFrcsCon().split("\\|")[0]);
+                }
+                if (!ObjectUtils.isEmpty(item.getBdgtPrfrRsnFrcsCon())) {
+                    item.setBdgtPrfrRsnFrcsCon(item.getBdgtPrfrRsnFrcsCon().split("\\|")[0]);
+                }
+            });
         }
 
         return list;

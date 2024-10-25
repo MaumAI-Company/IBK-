@@ -20,6 +20,7 @@ public class CardInputInfo {
     private String bdgtItexFrcsCon;
     private String bdgtBsnsFrcsCon;
     private String bdgtPrfrRsnFrcsCon;
+    private String bzdyYn;
 
     private String tstmYmd;
     private String tstmNo;
