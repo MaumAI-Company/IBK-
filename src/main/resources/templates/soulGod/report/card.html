@@ -64,7 +64,7 @@
                     if (data) {
                         $('#bdgtItexFrcsCon').text(data.bdgtItexFrcsCon);
                         $('#bdgtBsnsFrcsCon').text(data.bdgtBsnsFrcsCon);
-                        $('#bdgfPrfrRsnFrcsCon').text(data.bdgfPrfrRsnFrcsCon);
+                        $('#bdgtPrfrRsnFrcsCon').text(data.bdgtPrfrRsnFrcsCon);
                         layerShow('popDetail');
                     } else {
                         showAlert('warning', '실패하였습니다.', () => {
@@ -297,7 +297,7 @@
                     <td th:text="${item.afstNm}"></td>
                     <td th:text="${item.bdgtItexFrcsCon}"></td>
                     <td th:text="${item.bdgtBsnsFrcsCon}"></td>
-                    <td th:text="${item.bdgfPrfrRsnFrcsCon}"></td>
+                    <td th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
                     <td>
                         <button type="button" class="badge"
                                 th:onclick="fn_detail([[${item.tstmYmd}]], [[${item.tstmNo}]], [[${item.brcd}]])">
@@ -341,7 +341,7 @@
                 </tr>
                 <tr>
                     <th scope="row">비목집행사유내용</th>
-                    <td id="bdgfPrfrRsnFrcsCon"></td>
+                    <td id="bdgtPrfrRsnFrcsCon"></td>
                 </tr>
                 <!--<tr>
                     <th scope="row">부점</th>
