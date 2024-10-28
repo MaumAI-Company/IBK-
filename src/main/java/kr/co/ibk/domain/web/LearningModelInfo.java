@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,6 +34,9 @@ public class LearningModelInfo {
     private String filePath;    //학습파일 경로
     private String fileName;    //학습파일명
     private String regName;
+
+    private List<LearningModelInputInfo> inputList;
+    private List<LearningModelInputInfo> outputList;
 }
 
 

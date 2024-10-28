@@ -28,4 +28,17 @@
         where lmi.MODEL_ID = #{id}
         order by lmi.INOUT_GBN asc
     </select>
+
+    <select id="getPartList" resultType="LearningModelInputInfo" parameterType="map">
+        select
+        lmi.COL_NAME
+        ,lmi.MODEL_ID
+        ,lmi.INOUT_GBN
+        from LEARNING_MODEL_INPUT lmi
+        where lmi.MODEL_ID = #{id}
+        <if test="gbn != null and gbn != ''">
+            and lmi.INOUT_GBN = #{gbn}
+        </if>
+        order by lmi.INOUT_GBN asc
+    </select>
 </mapper>

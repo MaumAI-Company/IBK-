@@ -212,4 +212,14 @@ public class LearningModelService extends _BaseService {
 
         return modelList;
     }
+
+    public LearningModelInfo getLoad(LearningModelForm form) {
+        //model
+        LearningModelInfo info = learningModelRepository.getLoad(form.getId());
+
+        //model input list set
+        info.setInputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name()));
+        info.setOutputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.OUTPUT.name()));
+        return info;
+    }
 }

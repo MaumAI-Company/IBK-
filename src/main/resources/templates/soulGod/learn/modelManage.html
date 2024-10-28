@@ -2,6 +2,17 @@
 <html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <style>
+        #popLearnData .check_wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        #popLearnData .check_wrap .checkbox {
+            width: calc((100% - 16px) / 3)
+        }
+    </style>
     <script type="text/javascript">
         $(function () {
             fn_setDatePicker('#searchStartDate', {
@@ -89,6 +100,115 @@
                 }
             });
         }
+
+        /**
+         * 학습데이터 popup 초기화
+         */
+        function fn_learningDataOpen(id) {
+            if (!id) {
+                return false;
+            }
+
+            let jsonData = {
+                "id": id
+            }
+
+            $.ajax({
+                url: "/soulGod/learnData/detail",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    if (data) {
+                        $('#learnName').val(data.data.learnName);
+
+                    }
+
+                    console.log(data);
+                    layerShow('popLearnData');
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        }
+
+        const inPrefix = 'input_';
+        const outPrefix = 'output_';
+
+        /**
+         * 학습데이터 유효성 검사
+         */
+        function fn_learnDataSaveChk() {
+            let learnName = $('#learnName').val();
+            let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+
+            if (!$.trim(learnName)) {
+                showAlert('warning', '학습데이터 명 입력은 필수입니다.');
+                return false;
+            }
+
+            if (inputColumns.length < 1) {
+                showAlert('warning', '학습데이터는 최소 1개 이상 선택해야합니다.');
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * 학습데이터 저장
+         */
+        function fn_learnDataSave() {
+            if (!fn_learnDataSaveChk()) {
+                return false;
+            }
+
+
+            let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+            let outputColumns = $(':checkbox[id^="' + outPrefix + '"]');
+
+            let inputArr = [];
+            $.each(inputColumns, function (idx, item) {
+                inputArr.push($(item).val());
+            })
+
+            let outputArr = [];
+            $.each(outputColumns, function (idx, item) {
+                outputArr.push($(item).val());
+            })
+
+            let jsonData = {
+                "learnName": $('#learnName').val(),
+                "inputArr": inputArr,
+                "outputArr": outputArr
+            }
+
+            $.ajax({
+                url: "/soulGod/learnData/save",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    if ("SUCCESS" === data.status) {
+                        showAlert('complete', '저장되었습니다.', () => {
+                            location.reload();
+                        })
+                    } else {
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        })
+                    }
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -140,7 +260,8 @@
 
 
                         <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
-                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility" onchange="fn_search()">
+                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
+                                onchange="fn_search()">
                             <option value="10" th:selected="${params.recordsPerPage eq 10}">10개</option>
                             <option value="20" th:selected="${params.recordsPerPage eq 20}">20개</option>
                             <option value="30" th:selected="${params.recordsPerPage eq 30}">30개</option>
@@ -183,11 +304,14 @@
                                         <dd>
                                             <select name="statusType" id="statusType">
                                                 <option value="" selected>전체</option>
-                                                <option value="0" th:selected="${params.statusType == '0'}">등록완료</option>
+                                                <option value="0" th:selected="${params.statusType == '0'}">등록완료
+                                                </option>
                                                 <option value="1" th:selected="${params.statusType == '1'}">오류</option>
-                                                <option value="2" th:selected="${params.statusType == '2'}">학습완료</option>
+                                                <option value="2" th:selected="${params.statusType == '2'}">학습완료
+                                                </option>
                                                 <option value="3" th:selected="${params.statusType == '3'}">학습중</option>
-                                                <option value="4" th:selected="${params.statusType == '4'}">배포완료</option>
+                                                <option value="4" th:selected="${params.statusType == '4'}">배포완료
+                                                </option>
                                                 <option value="5" th:selected="${params.statusType == '5'}">롤백</option>
                                                 <option value="6" th:selected="${params.statusType == '6'}">배포중</option>
                                             </select>
@@ -240,8 +364,8 @@
 
             <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
             <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
-				<p>검색 결과가 없습니다.</p>
-			</div>
+                <p>검색 결과가 없습니다.</p>
+            </div>
             <!--데이터가 없을 때 : e-->
 
             <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
@@ -296,7 +420,7 @@
                         </div>
                     </td>
                     <td th:text="${(params.paginationInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
-                    <td th:text="${item.learnName}">카드지급결의 통합모델_A</td>
+                    <td th:text="${item.learnName}" th:onclick="|fn_learningDataOpen(${item.id})|">카드지급결의 통합모델_A</td>
                     <td th:text="${item.regName}">홍길녀</td>
                     <td>
                         <!--0: 등록완료, 1: 오류, 2: 학습완료 3: 학습중 4: 배포완료, 5: 롤백완료, 6: 배포중-->
@@ -478,5 +602,82 @@
     </div>
 </div>
 <!--학습 팝업 : e-->
+
+<!--학습데이터 팝업 : s-->
+<div id="popLearnData" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup lg">
+        <div class="pop_head">
+            <strong class="pop_tit">학습데이터</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popLearnData')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <table class="tbl_write">
+                <caption>학습데이터 : 학습데이터 명, 학습 선택으로 구성</caption>
+                <colgroup>
+                    <col style="width:160px">
+                    <col style="width:auto">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">
+                        <label for="learnName">학습데이터 명</label>
+                    </th>
+                    <td>
+                        <div class="input">
+                            <input type="text" id="learnName" placeholder="학습데이터 명을 입력하세요.">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <span>학습데이터 체크</span>
+                    </th>
+                    <td>
+                        <div class="check_wrap">
+                            <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
+                                <div class="checkbox">
+                                    <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}">
+                                    <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
+                                </div>
+                            </th:block>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <span>학습데이터 (output)</span>
+                    </th>
+                    <td>
+                        <div class="check_wrap">
+                            <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnType).values()}">
+                                <div class="checkbox">
+                                    <input type="checkbox" th:id="${'output_' + item.camelColumn}" th:value="${item}"
+                                           checked disabled>
+                                    <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
+                                </div>
+                            </th:block>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearnData')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill" onclick="fn_learnDataSave()">
+                <span>확인</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--학습데이터 팝업 : e-->
 </body>
 </html>
