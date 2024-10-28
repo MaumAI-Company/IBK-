@@ -6,10 +6,10 @@ var agent = navigator.userAgent.toLowerCase(),
     FIREFOX = 'Firefox',
     SAFARI = 'Safari',
     browser = /trident/i.test(agent) || /msie/i.test(agent) ? MSIE :
-    /edge/i.test(agent) ? EDGE :
-    /chrome/i.test(agent) ? CHROME :
-    /firefox/i.test(agent) ? FIREFOX :
-    /safari/i.test(agent) ? SAFARI : 'Unknown',
+        /edge/i.test(agent) ? EDGE :
+            /chrome/i.test(agent) ? CHROME :
+                /firefox/i.test(agent) ? FIREFOX :
+                    /safari/i.test(agent) ? SAFARI : 'Unknown',
     WINDOWS = 'Windows',
     LINUX = 'Linux',
     MAC = 'Macintosh',
@@ -17,15 +17,15 @@ var agent = navigator.userAgent.toLowerCase(),
     IPAD = 'iPad',
     ANDROID = 'Android',
     system = /Windows/i.test(agent) ? WINDOWS :
-    /linux/i.test(agent) ? LINUX :
-    /macintosh/i.test(agent) ? MAC :
-    /iphone/i.test(agent) ? IPHONE :
-    /ipad/i.test(agent) ? IPAD :
-    /android/i.test(agent) ? ANDROID : 'Unknown',
+        /linux/i.test(agent) ? LINUX :
+            /macintosh/i.test(agent) ? MAC :
+                /iphone/i.test(agent) ? IPHONE :
+                    /ipad/i.test(agent) ? IPAD :
+                        /android/i.test(agent) ? ANDROID : 'Unknown',
     DEFAULT_SPECS = "toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1",
     PATH = "/",
     COVER_RATIO = 0.6625;
-	
+
 // Ckeditor4 START
 function makeFck(objName, callback) {
     try {
@@ -37,7 +37,7 @@ function makeFck(objName, callback) {
         if (callback && typeof callback === 'function') {
             callback(objName, editor);
         }
-    } catch(e) {
+    } catch (e) {
         console.log(e);
     }
 }
@@ -45,6 +45,7 @@ function makeFck(objName, callback) {
 function setEditor(name, editor) {
     contentEditor = editor;
 }
+
 // Ckeditor4 END
 
 /* example
@@ -72,7 +73,7 @@ function showAlert(icon, msg, callbackFunc) {
     $('body').append(alert);
     layerShow("alert");
 
-    $('.btn_close').click(function() {
+    $('.btn_close').click(function () {
         if (callbackFunc && typeof callbackFunc === 'function') {
             callbackFunc();
         }
@@ -109,7 +110,7 @@ function showConfirm(icon, msg, confirmFunc, dismissFunc) {
     $('body').append(confirm);
     layerShow("confirm");
 
-    $('#dismissBtn').click(function() {
+    $('#dismissBtn').click(function () {
         if (dismissFunc && typeof dismissFunc === 'function') {
             dismissFunc();
         }
@@ -117,7 +118,7 @@ function showConfirm(icon, msg, confirmFunc, dismissFunc) {
         $('#confirm').remove();
     });
 
-    $('#confirmBtn').click(function() {
+    $('#confirmBtn').click(function () {
         if (confirmFunc && typeof confirmFunc === 'function') {
             confirmFunc();
         }
@@ -151,7 +152,7 @@ function fn_numberOnly(obj) {
 function validFile(selector) {
     let retVal = true;
 
-    $(`#${selector}`).each(function(i) {
+    $(`#${selector}`).each(function (i) {
 
         let fileObj = $(this)[0].files[0];
         let maxSize = 10 * 1024 * 1024; // 1MB
@@ -163,12 +164,12 @@ function validFile(selector) {
 
         if (!allowedExtensions.exec(filename) || !["image/jpeg", "image/png", "image/jpg"].includes(fileType)) {
             showAlert('alert', '유효하지 않은 파일 유형입니다.');
-            retVal =  false;
+            retVal = false;
         }
 
         if (fileSize > maxSize) {
             showAlert('alert', '파일사이즈가 10MB가 넘습니다.');
-            retVal =  false;
+            retVal = false;
         }
     });
 
@@ -249,7 +250,7 @@ function fn_resetRangeDatePicker(minusDay) {
 function fn_pwdCheck(pwd) {
     let regExp = /^(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9])(?=.*[0-9]).{8,}$/;
 
-    if(!regExp.test(pwd)) {
+    if (!regExp.test(pwd)) {
         return false;
     } else {
         return true;
@@ -272,14 +273,14 @@ function telNoAutoHyphen(ele) {
  * @param prefix
  * prefix 없이 호출한 경우 zip, adres에 값 설정
  */
-function fn_openAdresPop(prefix, callback){
-    daum.postcode.load(function (){
+function fn_openAdresPop(prefix, callback) {
+    daum.postcode.load(function () {
         new daum.Postcode({
-            oncomplete: function(data) {
+            oncomplete: function (data) {
                 let zip = data.zonecode;
 
                 let adres = '';
-                if (data.userSelectedType === 'R'){
+                if (data.userSelectedType === 'R') {
                     // 도로명 주소 선택 시
                     adres = data.roadAddress;
                 } else {
@@ -287,14 +288,14 @@ function fn_openAdresPop(prefix, callback){
                     adres = data.jibunAddress;
                 }
 
-                if (!prefix){
+                if (!prefix) {
                     $('#zip').val(zip);
                     $('#adres').val(adres);
                     $('#dtlAdres').focus();
                 } else {
-                    $('#'+prefix+'Zip').val(zip);
-                    $('#'+prefix+'Adres').val(adres);
-                    $('#'+prefix+'DtlAdres').focus()
+                    $('#' + prefix + 'Zip').val(zip);
+                    $('#' + prefix + 'Adres').val(adres);
+                    $('#' + prefix + 'DtlAdres').focus()
                 }
 
                 // 콜백 함수 호출
@@ -330,15 +331,15 @@ function fn_checkUrl(url) {
     return urlRegex.test(url);
 }
 
-Array.prototype.LookUp =  function (key, value, column) {
-	var result = '';
-	var map = this.find((item, index) => item[key] == value);
-	if (map == undefined || map == null) {
-		result = '';
-	} else {
-		result = map[column];
-	}
-	return result;
+Array.prototype.LookUp = function (key, value, column) {
+    var result = '';
+    var map = this.find((item, index) => item[key] == value);
+    if (map == undefined || map == null) {
+        result = '';
+    } else {
+        result = map[column];
+    }
+    return result;
 };
 
 var DateUtils = {
@@ -456,12 +457,12 @@ var DateUtils = {
         var reg = /(\d{4})(\d{2})(\d{2})/;
         return input.replace(reg, '$1-$2-$3');
     },
-    
+
     convertDateKo: function (input) {
         var reg = /(\d{4})(\d{2})(\d{2})/;
         return input.replace(reg, '$1년 $2월 $3일');
     },
-    
+
     convertTimeKo: function (input) {
         var reg = /(\d{2})(\d{2})(\d{2})/;
         return input.replace(reg, '$1시 $2분 $3초');
@@ -528,7 +529,8 @@ var restCall = function (url, args, callback, failCallback) {
         clearTimeout(timeout);
         try {
             loading.off();
-        } catch (ignore) {}
+        } catch (ignore) {
+        }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         console.log("restCall fail", url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
         if (failCallback) {
@@ -580,4 +582,16 @@ function fnTableToExcel(tableId, fileNm, callback) {
         alert("존재하지 않는 테이블 입니다.");
         return false;
     }
+}
+
+function getCookie(cookieName) {
+    let cookieValue = null;
+    if (document.cookie) {
+        let array = document.cookie.split((escape(cookieName) + '='));
+        if (array.length >= 2) {
+            let arraySub = array[1].split(';');
+            cookieValue = unescape(arraySub[0]);
+        }
+    }
+    return cookieValue;
 }

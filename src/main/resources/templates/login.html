@@ -21,6 +21,11 @@
 
     <script type="text/javascript">
         $(function () {
+            let loginId = getCookie("loginId");
+            if (loginId) {
+                $("#userId").val(loginId);
+                $("#remember-me").prop("checked", true);
+            }
             let errormsg = $("#errormsg").val();
             if (errormsg) {
                 showAlert("exclamation", errormsg);
