@@ -1,6 +1,8 @@
 package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
+import kr.co.ibk.domain.enums.InputColumnType;
+import kr.co.ibk.domain.enums.OutputColumnType;
 import kr.co.ibk.domain.web.CardLearningDataInfo;
 import kr.co.ibk.domain.web.LearningModelInfo;
 import kr.co.ibk.domain.web.MemberInfo;
@@ -85,4 +87,17 @@ public class LearnController {
         }
         return rtnList;
     }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/learnData/detail"})
+    public HashMap<String, Object> learnDataDetail(@RequestBody LearningModelForm form) {
+        HashMap<String, Object> returnMap = new HashMap<>();
+
+        returnMap.put("data", learningModelService.getLoad(form));
+        returnMap.put("inputArr", InputColumnType.values());
+        returnMap.put("outputArr", OutputColumnType.values());
+
+        return returnMap;
+    }
+
 }
