@@ -137,7 +137,9 @@
          * 학습데이터 popup 초기화
          */
         function fn_learningDataOpen() {
-            //popup reset
+            $('#learnName').val('');
+            $(':checkbox[id^="' + inPrefix + '"]').prop('checked', false);
+
             layerShow('popLearnData');
         }
 
