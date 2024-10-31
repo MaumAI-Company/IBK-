@@ -57,8 +57,13 @@ public class LearnController {
 
     @RequestMapping("/soulGod/learn/deployManage")
     public String deployManage(Model model,
+                               @ModelAttribute LearningModelForm form,
                                @CurrentUser MemberInfo memberInfo) {
 
+        List<LearningModelInfo> list = learningModelService.getList(form);
+
+        model.addAttribute("list", list);
+        model.addAttribute("params", form);
         model.addAttribute("mc", "ico_database");
         model.addAttribute("pageTitle", "배포 관리");
 
