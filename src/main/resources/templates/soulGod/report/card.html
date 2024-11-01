@@ -164,8 +164,6 @@
                                                 </option>
                                                 <option value="2" th:selected="${params.searchTarget == '2'}">영업점
                                                 </option>
-                                                <option value="3" th:selected="${params.searchTarget == '3'}">지역본부
-                                                </option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -292,7 +290,7 @@
                 <tbody>
                 <tr th:each="item, idx:${list}">
                     <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
-                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : (item.hdqrBobDcd == '2' ? '영업점' : '지역본부'))}"></td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
                     <td th:text="${item.cdn}"></td>
                     <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>
                     <td th:text="${item.amslAmt}"></td>
