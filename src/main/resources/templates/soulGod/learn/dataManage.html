@@ -6,6 +6,9 @@
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
     <style>
+        .tbl_list{overflow:hidden}
+        .tbl_list > thead > tr > th{padding:0 8px}
+        .tbl_list > tbody > tr > td{padding:0 8px}
         @media screen and (max-width: 1851px) {
             .tbl_wrap{width:100%; overflow-x: auto;white-space: nowrap}
             .tbl_list{width:auto}
@@ -139,7 +142,8 @@
          */
         function fn_learningDataOpen() {
             $('#learnName').val('');
-            $(':checkbox[id^="' + inPrefix + '"]').prop('checked', false);
+             $('.checkedY').prop('checked', true);
+             $('.checkedN').prop('checked', false);
 
             layerShow('popLearnData');
         }
@@ -151,8 +155,13 @@
          * 학습데이터 유효성 검사
          */
         function fn_learnDataSaveChk() {
+            let hdqrBobDcd = $('#hdqrBobDcd').val();
             let learnName = $('#learnName').val();
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+
+            if (!$.trim(hdqrBobDcd)) {
+                return false;
+            }
 
             if (!$.trim(learnName)) {
                 showAlert('warning', '학습데이터 명 입력은 필수입니다.');
@@ -190,6 +199,7 @@
             })
 
             let jsonData = {
+                "hdqrBobDcd": $('#hdqrBobDcd').val(),
                 "learnName": $('#learnName').val(),
                 "inputArr": inputArr,
                 "outputArr": outputArr
@@ -384,9 +394,9 @@
                         <th scope="col">매출가맹점번호</th>
                         <th scope="col">가맹점업종코드</th>
 
-                        <th scope="col">예산관리비목관리번호</th>
-                        <th scope="col">예산집행사유코드</th> <!--예산관리비목관리번호_예산집행사유코드-->
-                        <th scope="col">사업세부사업</th>
+                        <th scope="col" style="background-color:#f9f9ff">예산관리비목관리번호</th>
+                        <th scope="col" style="background-color:#f9f9ff">예산집행사유코드</th> <!--예산관리비목관리번호_예산집행사유코드-->
+                        <th scope="col" style="background-color:#f9f9ff">사업세부사업</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -410,9 +420,9 @@
                         <td th:text="${item.afstTpbcd}"></td>
                         <!--output data : e-->
 
-                        <td th:text="${item.bdmnItexMngmNo}"></td>
-                        <td th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
-                        <td th:text="${item.bdgtBsnsFrcsCon}"></td>
+                        <td th:text="${item.bdmnItexMngmNo}" style="background-color:#f9f9ff"></td>
+                        <td th:text="${item.bdgtPrfrRsnFrcsCon}" style="background-color:#f9f9ff"></td>
+                        <td th:text="${item.bdgtBsnsFrcsCon}" style="background-color:#f9f9ff"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -628,6 +638,17 @@
                 <tbody>
                 <tr>
                     <th scope="row">
+                        <label for="hdqrBobDcd">학습 대상</label>
+                    </th>
+                    <td>
+                        <select id="hdqrBobDcd">
+                            <option value="1" selected>본부</option>
+                            <option value="2">영업점</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
                         <label for="learnName">학습데이터 명</label>
                     </th>
                     <td>
@@ -647,11 +668,15 @@
                         <div class="check_wrap">
                             <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
                                 <div class="checkbox">
-                                    <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}">
+                                    <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                           th:disabled="${T(kr.co.ibk.domain.enums.InputColumnType).BRCD == item ? true : false}"
+                                           th:checked="${item.isChecked}"
+                                    th:class="${'checked' + (item.isChecked ? 'Y' : 'N')}">
                                     <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
                                 </div>
                             </th:block>
                         </div>
+                        <div>※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div> <!--todo : 퍼블-->
                     </td>
                 </tr>
                 <tr>
