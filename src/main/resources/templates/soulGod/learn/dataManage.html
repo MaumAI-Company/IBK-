@@ -6,6 +6,9 @@
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
     <style>
+        .tbl_list{overflow:hidden}
+        .tbl_list > thead > tr > th{padding:0 8px}
+        .tbl_list > tbody > tr > td{padding:0 8px}
         @media screen and (max-width: 1851px) {
             .tbl_wrap{width:100%; overflow-x: auto;white-space: nowrap}
             .tbl_list{width:auto}
@@ -390,9 +393,9 @@
                         <th scope="col">매출가맹점번호</th>
                         <th scope="col">가맹점업종코드</th>
 
-                        <th scope="col">예산관리비목관리번호</th>
-                        <th scope="col">예산집행사유코드</th> <!--예산관리비목관리번호_예산집행사유코드-->
-                        <th scope="col">사업세부사업</th>
+                        <th scope="col" style="background-color:#f9f9ff">예산관리비목관리번호</th>
+                        <th scope="col" style="background-color:#f9f9ff">예산집행사유코드</th> <!--예산관리비목관리번호_예산집행사유코드-->
+                        <th scope="col" style="background-color:#f9f9ff">사업세부사업</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -416,9 +419,9 @@
                         <td th:text="${item.afstTpbcd}"></td>
                         <!--output data : e-->
 
-                        <td th:text="${item.bdmnItexMngmNo}"></td>
-                        <td th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
-                        <td th:text="${item.bdgtBsnsFrcsCon}"></td>
+                        <td th:text="${item.bdmnItexMngmNo}" style="background-color:#f9f9ff"></td>
+                        <td th:text="${item.bdgtPrfrRsnFrcsCon}" style="background-color:#f9f9ff"></td>
+                        <td th:text="${item.bdgtBsnsFrcsCon}" style="background-color:#f9f9ff"></td>
                     </tr>
                     </tbody>
                 </table>

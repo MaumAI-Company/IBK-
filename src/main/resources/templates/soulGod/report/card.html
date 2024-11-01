@@ -328,21 +328,59 @@
             <table class="tbl_write">
                 <caption>지급결의 AI적용 결과 : 부점, 예산관리비목관리번호, 예산(세부)사업ID, 예산집행사유코드, 예산집행사유내용으로 구성</caption>
                 <colgroup>
-                    <col style="width:160px">
+                    <col style="width:80px">
                     <col style="width:auto">
                 </colgroup>
                 <tbody>
                 <tr>
-                    <th scope="row">예산비목정보내용</th>
-                    <td id="bdgtItexFrcsCon"></td>
+                    <th scope="row">input</th>
+                    <td>
+                        <table>
+                            <colgroup>
+                                <col style="width:120px">
+                                <col style="width:auto">
+                            </colgroup>
+                            <tbody>
+                            <tr>
+                                <th scope="row">예산비목정보내용</th>
+                                <td id="bdgtItexFrcsCon"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">예산사업ID내용</th>
+                                <td id="bdgtBsnsFrcsCon"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">비목집행사유내용</th>
+                                <td id="bdgtPrfrRsnFrcsCon"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
                 </tr>
                 <tr>
-                    <th scope="row">예산사업ID내용</th>
-                    <td id="bdgtBsnsFrcsCon"></td>
-                </tr>
-                <tr>
-                    <th scope="row">비목집행사유내용</th>
-                    <td id="bdgtPrfrRsnFrcsCon"></td>
+                    <th scope="row">output</th>
+                    <td>
+                        <table>
+                            <colgroup>
+                                <col style="width:120px">
+                                <col style="width:auto">
+                            </colgroup>
+                            <tbody>
+                            <tr>
+                                <th scope="row">예산비목정보내용</th>
+                                <td>내용</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">예산사업ID내용</th>
+                                <td>내용내용</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">비목집행사유내용</th>
+                                <td>내용</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
                 </tr>
                 <!--<tr>
                     <th scope="row">부점</th>
