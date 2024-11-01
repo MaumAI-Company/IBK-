@@ -5,9 +5,9 @@
 <mapper namespace="kr.co.ibk.repository.LearningModelRepository">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="LearningModelForm">
         INSERT INTO MaumMcc.LEARNING_MODEL
-        (LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM)
+        (LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM, HDQR_BOB_DCD)
         VALUES (#{learningId}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), #{learnName}, '0',
-                'SUCCESS', current_timestamp());
+                'SUCCESS', current_timestamp(), #{hdqrBobDcd});
     </insert>
     <select id="getLoad" resultType="LearningModelInfo" parameterType="Integer">
         select
