@@ -41,7 +41,7 @@ jobs:
   deploy:
     runs-on: self-hosted
     needs: build  # 'build' 작업이 성공해야 이 작업이 실행됨
-    if: github.event_name == 'push' && github.ref == 'refs/heads/cicd'  # cicd 브랜치에 푸시될 때만 실행됨
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'  # develop 브랜치에 푸시될 때 실행됨
     steps:
       - name: Backup existing ROOT.war and copy new WAR file
         run: |
