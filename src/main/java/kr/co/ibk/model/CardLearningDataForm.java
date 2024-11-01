@@ -18,6 +18,8 @@ public class CardLearningDataForm extends PageForm {
     private LocalDate edDt;
 
     private String pagingAt;
+    private String sorting;
+    private String sortingTarget;
 }
 
 

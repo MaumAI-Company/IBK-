@@ -4,8 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.ibk.repository.CardLearningDataRepository">
     <select id="getTotalCount" resultType="int">
-        select count(*)
-        from CARD_LEARNING_DATA cld
+        select
+            count(*)
+        from
+            CARD_LEARNING_DATA cld
+        where
+            cld.BRCD is not null
+            <include refid="where"></include>
     </select>
 
     <select id="getList" resultType="CardLearningDataInfo" parameterType="CardLearningDataForm">
@@ -13,9 +18,42 @@
             <include refid="columns"></include>
         from
             CARD_LEARNING_DATA cld
+        where
+            cld.BRCD is not null
+            <include refid="where"></include>
         order by
-            cld.FRRG_TS desc
-        limit 30;
+        <choose>
+            <when test="sortingTarget != null and sortingTarget == 1">
+                cld.BRCD
+            </when>
+            <when test="sortingTarget != null and sortingTarget == 2">
+                cld.CDN
+            </when>
+            <when test="sortingTarget != null and sortingTarget == 3">
+                cld.AFST_NM
+            </when>
+            <when test="sortingTarget != null and sortingTarget == 4">
+                cld.BDMN_ITEX_MNGM_NO
+            </when>
+            <when test="sortingTarget != null and sortingTarget == 5">
+                cld.BDGT_PRFR_RSN_FRCS_CON
+            </when>
+            <when test="sortingTarget != null and sortingTarget == 6">
+                cld.BDGT_BSNS_FRCS_CON
+            </when>
+            <otherwise>
+                cld.BRCD
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
+        <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
     </select>
 
     <sql id="columns">
@@ -60,4 +98,10 @@
         from CARD_LEARNING_DATA cld
         order by cld.FRRG_TS desc limit 100
     </select>
+    <sql id="where">
+        /*대상 검색*/
+        <if test="searchTarget != null and searchTarget != ''">
+            AND cld.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+    </sql>
 </mapper>

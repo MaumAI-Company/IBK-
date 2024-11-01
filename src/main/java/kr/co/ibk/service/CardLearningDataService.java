@@ -7,6 +7,7 @@ import kr.co.ibk.repository.CardLearningDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,21 +21,25 @@ public class CardLearningDataService extends _BaseService {
     /**
      * return list & pagination info
      *
-     * @param form
+     * @param params
      * @return
      */
-    public List<CardLearningDataInfo> getListPage(CardLearningDataForm form) {
+    public List<CardLearningDataInfo> page(CardLearningDataForm params) {
 
-        int totalCount = cardLearningDataRepository.getTotalCount(form);
+        int totalCount = cardLearningDataRepository.getTotalCount(params);
 
-        PaginationInfo paginationInfo = new PaginationInfo(form);
+        PaginationInfo paginationInfo = new PaginationInfo(params);
         paginationInfo.setTotalRecordCount(totalCount);
-        form.setPaginationInfo(paginationInfo);
+        params.setPaginationInfo(paginationInfo);
 
         List<CardLearningDataInfo> list = new ArrayList<>();
         if (totalCount > 0) {
-            form.setPagingAt("Y");
-            list = getList(form);
+            if (ObjectUtils.isEmpty(params.getSorting())) {
+                params.setSorting("desc");
+            }
+
+            params.setPagingAt("Y");
+            list = getList(params);
         }
 
         return list;

@@ -28,10 +28,12 @@ public class LearnController {
 
     @RequestMapping("/soulGod/learn/dataManage")
     public String dataManage(Model model,
-                             @ModelAttribute CardLearningDataForm form) {
-        List<CardLearningDataInfo> list = cardLearningDataService.getList(form);
+                             @ModelAttribute CardLearningDataForm params) {
+        List<CardLearningDataInfo> list = cardLearningDataService.page(params);
 
         model.addAttribute("list", list);
+        model.addAttribute("pagingInfo", params.getPaginationInfo());
+        model.addAttribute("params", params);
         model.addAttribute("mc", "ico_database");
         model.addAttribute("pageTitle", "데이터 관리");
 

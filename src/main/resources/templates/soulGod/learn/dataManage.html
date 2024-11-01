@@ -10,6 +10,7 @@
             .tbl_wrap{width:100%; overflow-x: auto;white-space: nowrap}
             .tbl_list{width:auto}
         }
+
         #popLearnData .check_wrap {
             display: flex;
             flex-wrap: wrap;
@@ -218,6 +219,18 @@
                 }
             });
         }
+
+        function movePage(url, pageNo) {
+            $('#currentPageNo').val(pageNo);
+            $('#form1').attr({action: '/soulGod/learn/dataManage', method: 'post'}).unbind('submit').submit();
+        }
+
+        function fn_search() {
+            let frm = $('#form1');
+            frm.prop('action', '?');
+            frm.submit();
+        }
+
     </script>
 </head>
 <body>
@@ -253,26 +266,39 @@
             </div>
 
             <form id="form1">
+                <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
                 <div class="board_top">
                     <div>
-                        <div class="total_num"><b th:text="${list.size()}"></b> 개의 글이 있습니다.</div>
+                        <div class="total_num"><b th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? pagingInfo.totalRecordCount : 0}"></b> 개의 글이 있습니다.</div>
                     </div>
-                    <!--<div class="mla">
+                    <div class="mla">
                         <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
-                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility">
-                            <option value="10" selected>10개</option>
-                            <option value="20">20개</option>
-                            <option value="30">30개</option>
-                            <option value="40">40개</option>
-                            <option value="50">50개</option>
+                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
+                                onchange="fn_search()">
+                            <option value="10" th:selected="${pagingInfo.criteria.recordsPerPage == 10}" selected>10개
+                            </option>
+                            <option value="20" th:selected="${pagingInfo.criteria.recordsPerPage == 20}">20개</option>
+                            <option value="30" th:selected="${pagingInfo.criteria.recordsPerPage == 30}">30개</option>
+                            <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
+                            <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
+                        </select>
+                        <label for="sortingTarget" class="blind">정렬조건</label>
+                        <select name="sortingTarget" id="sortingTarget" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="1" th:selected="${params.sortingTarget == '1'}">부점코드</option>
+                            <option value="2" th:selected="${params.sortingTarget == '2'}">카드번호</option>
+                            <option value="3" th:selected="${params.sortingTarget == '3'}">가맹점명</option>
+                            <option value="4" th:selected="${params.sortingTarget == '4'}">예산관리비목관리번호</option>
+                            <option value="5" th:selected="${params.sortingTarget == '5'}">예산집행사유코드</option>
+                            <option value="6" th:selected="${params.sortingTarget == '6'}">사업세부사업</option>
                         </select>
                         <label for="sorting" class="blind">정렬조건</label>
-                        <select name="sorting" id="sorting" class="sel_board sel_sorting">
-                            <option value="asc">오름차순</option>
-                            <option value="desc" selected>내림차순</option>
+                        <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
                         </select>
                         <div class="filter_area">
-                            <button type="button" class="btn btn_text btn_filter">
+                            <button type="button" class="btn btn_text btn_filter active">
+                                <!--TODO : 선택된 조건이 있을 때는 클래스 active 추가, 필터 삭제되면 클래스 active 삭제-->
                                 <i class="ico_filter"></i>
                                 <span>필터</span>
                             </button>
@@ -280,45 +306,28 @@
                             <div class="filter">
                                 <div class="inner">
                                     <dl>
-                                        <dt>조회기간</dt>
-                                        <dd>
-                                            <div class="term_form">
-                                                <label for="stDt" class="blind">조회 시작 날짜</label>
-                                                <input type="text" id="stDt" class="datepicker" value="2024.08.01"
-                                                       readonly>
-                                                <div class="swung"></div>
-                                                <label for="edDt" class="blind">조회 종료 날짜</label>
-                                                <input type="text" id="edDt" class="datepicker" value="2024.08.31"
-                                                       readonly>
-                                            </div>
-                                        </dd>
-                                    </dl>
-                                    <dl>
                                         <dt>
-                                            <label for="condition">조회조건</label>
+                                            <label for="searchTarget">대상</label>
                                         </dt>
                                         <dd>
-                                            <select name="condition" id="condition">
+                                            <select name="searchTarget" id="searchTarget">
                                                 <option value="" selected>전체</option>
-                                                <option value="">제목</option>
-                                                <option value="">상태</option>
-                                                <option value="">학습 가능</option>
-                                                <option value="">학습 불가</option>
+                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부
+                                                </option>
+                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
                                             </select>
                                         </dd>
                                     </dl>
                                     <div class="btn_area">
-                                        <button type="button" class="btn line_cool_grey30">
-                                            <span>초기화</span>
-                                        </button>
-                                        <button type="button" class="btn fill">
+                                        <button type="button" class="btn fill" onclick="fn_search()">
                                             <span>검색</span>
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>-->
+                    </div>
                 </div>
             </form>
 
@@ -382,7 +391,7 @@
                     </thead>
                     <tbody>
                     <tr th:each="item, idx:${list}">
-                        <td th:text="${list.size() - idx.index}"></td>
+                        <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
                         <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
                         <td th:text="${item.brcd}"></td>
                         <td th:text="${item.cdn}"></td>
@@ -407,8 +416,8 @@
                     </tr>
                     </tbody>
                 </table>
+                <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
             </div>
-
         </div>
     </div>
 </div>
