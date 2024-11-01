@@ -142,7 +142,8 @@
          */
         function fn_learningDataOpen() {
             $('#learnName').val('');
-            $(':checkbox[id^="' + inPrefix + '"]').prop('checked', false);
+             $('.checkedY').prop('checked', true);
+             $('.checkedN').prop('checked', false);
 
             layerShow('popLearnData');
         }
@@ -667,7 +668,10 @@
                         <div class="check_wrap">
                             <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
                                 <div class="checkbox">
-                                    <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}">
+                                    <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                           th:disabled="${T(kr.co.ibk.domain.enums.InputColumnType).BRCD == item ? true : false}"
+                                           th:checked="${item.isChecked}"
+                                    th:class="${'checked' + (item.isChecked ? 'Y' : 'N')}">
                                     <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
                                 </div>
                             </th:block>
