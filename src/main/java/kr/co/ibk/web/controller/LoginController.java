@@ -53,7 +53,8 @@ public class LoginController extends BaseCont {
             }
         }
 
-        return "redirect:/soulGod/main";
+        //return "redirect:/soulGod/main";
+        return "redirect:/soulGod/report/card";
     }
 
     @PostMapping("/loginFailure")

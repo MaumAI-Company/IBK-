@@ -65,7 +65,7 @@
 	        FROM 
 	        	HC_DEPT AS hd
 	        WHERE 
-	        	hd.DEPT_STAT != 'delete' ) hd
+	        	hd.DEPT_STAT = 'use' ) hd
         WHERE 
         	1=1
         	<include refid="kr.co.ibk.repository.CommonRepository.searchDept" />
@@ -79,7 +79,7 @@
 	        FROM 
 	        	HC_DEPT AS hd
 	        WHERE 
-	        	hd.DEPT_STAT != 'delete' ) hd
+	        	hd.DEPT_STAT = 'use' ) hd
         WHERE 
         	1=1	
         	<include refid="kr.co.ibk.repository.CommonRepository.searchDept" />

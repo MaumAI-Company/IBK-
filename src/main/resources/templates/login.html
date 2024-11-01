@@ -13,18 +13,19 @@
     <link rel="stylesheet" href="/ClientUI/css/login.css"/>
 
     <script type="text/javascript" src="/ClientUI/plugins/jquery-3.7.1.min.js"></script>
-    <script type="text/javascript" src="/ClientUI/plugins/jquery.inputmask.min.js"></script>
-    <script type="text/javascript" src="/ClientUI/plugins/jqueryScrollbar/jquery.scrollbar.min.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/datetimepicker/jquery.datetimepicker.full.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/jquery.nice-select.min.js"></script>
-    <script type="text/javascript" src="/ClientUI/plugins/daterangepicker/moment.min.js"></script>
-    <script type="text/javascript" src="/ClientUI/plugins/daterangepicker/daterangepicker.min.js"></script>
 
     <script type="text/javascript" src="/ClientUI/js/style.js"></script>
     <script type="text/javascript" src="/ClientUI/js/common.js"></script>
 
     <script type="text/javascript">
         $(function () {
+            let loginId = getCookie("loginId");
+            if (loginId) {
+                $("#userId").val(loginId);
+                $("#remember-me").prop("checked", true);
+            }
             let errormsg = $("#errormsg").val();
             if (errormsg) {
                 showAlert("exclamation", errormsg);
@@ -85,7 +86,7 @@
             <div class="right_cont">
                 <div class="login_form">
                     <h1 class="logo">
-                        <img src="/ClientUI/images/common/logo_bk.svg" alt="maum XDC">
+                        <img src="/ClientUI/images/common/logo_bk.svg" alt="maum MCC">
                     </h1>
                     <p class="login_txt">이용을 위해 로그인을 해주세요.</p>
                     <form id="form1">

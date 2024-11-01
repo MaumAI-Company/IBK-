@@ -3,7 +3,7 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <script type="text/javascript">
-        $(function(){
+        $(function () {
             fn_setDatePicker('#stDt', {
                 onShow: function (ct) {
                     this.setOptions({
@@ -19,6 +19,27 @@
                 }
             });
         });
+
+        function fn_search() {
+            let frm = $('#aform');
+            frm.prop('action', '?');
+            frm.submit();
+        }
+
+        function movePage(url, pageNo) {
+            $('#currentPageNo').val(pageNo);
+            $('#aform').attr({action: '/soulGod/learn/deployManage', method: 'post'}).unbind('submit').submit();
+        }
+
+        function fn_showDeployPop() {
+            let checked = $("input[id^='chk_']:checked");
+            if (checked.length) {
+                layerShow('alert');
+            } else {
+                alert('배포할 모델을 1개 이상 선택하세요.');
+                return false;
+            }
+        }
     </script>
 </head>
 <body>
@@ -35,87 +56,110 @@
                     <h3 class="page_tit">배포 관리</h3>
                 </div>
                 <div class="btn_area">
-                    <button type="button" class="btn line_cool_grey30" onclick="layerShow('alert')">
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_showDeployPop()">
                         <span>배포</span>
                     </button>
                 </div>
             </div>
 
-            <div class="board_top">
-                <div>
-                    <div class="total_num"><b>346</b> 개의 글이 있습니다.</div>
-                </div>
-                <div class="mla">
-                    <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
-                    <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility">
-                        <option value="10" selected>10개</option>
-                        <option value="20">20개</option>
-                        <option value="30">30개</option>
-                        <option value="40">40개</option>
-                        <option value="50">50개</option>
-                    </select>
-                    <label for="sorting" class="blind">정렬조건</label>
-                    <select name="sorting" id="sorting" class="sel_board sel_sorting">
-                        <option value="asc">오름차순</option>
-                        <option value="desc" selected>내림차순</option>
-                    </select>
-                    <div class="filter_area">
-                        <button type="button" class="btn btn_text btn_filter">
-                            <i class="ico_filter"></i>
-                            <span>필터</span>
-                        </button>
+            <form role="form" id="aform" method="post" enctype="multipart/form-data" class="form-horizontal">
+                <div class="board_top">
+                    <div>
+                        <div class="total_num"><b th:text="${params.paginationInfo.totalRecordCount}">0</b> 개의 글이 있습니다.
+                        </div>
+                    </div>
+                    <div class="mla">
+                        <!-- 신규 검색시 1 페이지로 이동 -->
+                        <!--                    <input type="hidden" id="currentPageNo" name="currentPageNo" value="1"/>-->
+                        <!-- org 검색시 1 페이지로 이동 -->
+                        <input type="hidden" id="currentPageNo" name="currentPageNo"
+                               th:value="${params.currentPageNo}"/>
+                        <!-- org 페이지에 보여질 수 -->
+                        <!--                        <input type="hidden" id="recordsPerPage" name="recordsPerPage" th:value="${params.recordsPerPage}"/>-->
+                        <!-- org 페이지 블럭의 수 -->
+                        <input type="hidden" id="pageSize" name="pageSize" th:value="${params.pageSize}"/>
+                        <!-- org 검색 종류 -->
+                        <input type="hidden" id="searchType" name="searchType" th:value="${params.searchType}"/>
+                        <!-- org 검색 값 -->
+                        <input type="hidden" id="searchKeyword" name="searchKeyword"
+                               th:value="${params.searchKeyword}"/>
 
-                        <div class="filter">
-                            <div class="inner">
-                                <dl>
-                                    <dt>조회기간</dt>
-                                    <dd>
-                                        <div class="term_form">
-                                            <label for="stDt" class="blind">조회 시작 날짜</label>
-                                            <input type="text" id="stDt" class="datepicker" value="2024.08.01" readonly>
-                                            <div class="swung"></div>
-                                            <label for="edDt" class="blind">조회 종료 날짜</label>
-                                            <input type="text" id="edDt" class="datepicker" value="2024.08.31" readonly>
-                                        </div>
-                                    </dd>
-                                </dl>
-                                <dl>
-                                    <dt>
-                                        <label for="condition">조회조건</label>
-                                    </dt>
-                                    <dd>
-                                        <select name="condition" id="condition">
-                                            <option value="" selected>전체</option>
-                                            <option value="">제목</option>
-                                            <option value="">상태</option>
-                                            <option value="">학습 가능</option>
-                                            <option value="">학습 불가</option>
-                                        </select>
-                                    </dd>
-                                </dl>
-                                <div class="btn_area">
-                                    <button type="button" class="btn line_cool_grey30">
-                                        <span>초기화</span>
-                                    </button>
-                                    <button type="button" class="btn fill">
-                                        <span>검색</span>
-                                    </button>
+                        <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
+                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
+                                onchange="fn_search()">
+                            <option value="10" th:selected="${params.recordsPerPage eq 10}">10개</option>
+                            <option value="20" th:selected="${params.recordsPerPage eq 20}">20개</option>
+                            <option value="30" th:selected="${params.recordsPerPage eq 30}">30개</option>
+                            <option value="40" th:selected="${params.recordsPerPage eq 40}">40개</option>
+                            <option value="50" th:selected="${params.recordsPerPage eq 50}">50개</option>
+                        </select>
+                        <label for="sorting" class="blind">정렬조건</label>
+                        <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
+                        </select>
+                        <div class="filter_area">
+                            <button type="button" class="btn btn_text btn_filter">
+                                <i class="ico_filter"></i>
+                                <span>필터</span>
+                            </button>
+
+                            <div class="filter">
+                                <div class="inner">
+                                    <dl>
+                                        <dt>조회기간</dt>
+                                        <dd>
+                                            <div class="term_form">
+                                                <label for="searchStartDate" class="blind">조회 시작 날짜</label>
+                                                <input type="text" id="searchStartDate" name="searchStartDate"
+                                                       class="datepicker" th:value="${params.searchStartDate}"
+                                                       readonly>
+                                                <div class="swung"></div>
+                                                <label for="searchEndDate" class="blind">조회 종료 날짜</label>
+                                                <input type="text" id="searchEndDate" name="searchEndDate"
+                                                       class="datepicker" th:value="${params.searchEndDate}"
+                                                       readonly>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="condition">조회조건</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="condition" id="condition">
+                                                <option value="" selected>전체</option>
+                                                <option value="">제목</option>
+                                                <option value="">상태</option>
+                                                <option value="">학습 가능</option>
+                                                <option value="">학습 불가</option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <div class="btn_area">
+                                        <button type="button" class="btn line_cool_grey30">
+                                            <span>초기화</span>
+                                        </button>
+                                        <button type="button" class="btn fill" onclick="fn_search()">
+                                            <span>검색</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
 
             <div class="selected_filter"></div>
 
-            <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
-            <!--<div class="nodata">
-				<p>검색 결과가 없습니다.</p>
-			</div>-->
+            <!--데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
+            <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
+                <p>검색 결과가 없습니다.</p>
+            </div>
             <!--데이터가 없을 때 : e-->
 
-            <table class="tbl_list">
+            <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
                 <caption>배포 관리 : No, 학습 모델 명, 등록자, 상태, 배포 여부, 배포일시, 등록일시로 구성</caption>
                 <colgroup>
                     <col style="width: 3.5%;min-width: 44px;">
@@ -147,195 +191,25 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
+                <tr th:each="item,idx: ${list}">
                     <td>
                         <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk10">
-                            <label for="chk10">
+                            <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}">
+                            <label th:for="${'chk_' + item.id}">
                                 <span class="blind">선택</span>
                             </label>
                         </div>
                     </td>
-                    <td>10</td>
-                    <td>카드지급결의 통합모델_A</td>
-                    <td>홍길녀</td>
+                    <td th:text="${(params.paginationInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                    <td th:text="${item.learnName}" th:onclick="|fn_learningDataOpen(${item.id})|">카드지급결의 통합모델_A</td>
+                    <td th:text="${item.regName}">홍길녀</td>
                     <td>
-                        <div class="badge fill_blue_green">사용</div>
-                    </td>
-                    <td>성공</td>
-                    <td>2022.06.30</td>
-                    <td>2022.06.30</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk9">
-                            <label for="chk9">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td>9</td>
-                    <td>카드지급결의 통합모델_A</td>
-                    <td>홍길녀</td>
-                    <td>
-                        <div class="badge fill_error10">중지</div>
-                    </td>
-                    <td>실패</td>
-                    <td>2022.06.30</td>
-                    <td>2022.06.30</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk8">
-                            <label for="chk8">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td>8</td>
-                    <td>카드지급결의 통합모델_A</td>
-                    <td>홍길녀</td>
-                    <td>
-                        <div class="badge fill_blue_green">사용</div>
-                    </td>
-                    <td>-</td>
-                    <td>2022.06.30</td>
-                    <td>2022.06.30</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk7">
-                            <label for="chk7">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td>7</td>
-                    <td>카드지급결의 통합모델_A</td>
-                    <td>홍길녀</td>
-                    <td>
+                        <!--                        <div class="badge fill_blue_green">사용</div>-->
                         <div class="badge fill_error10">중지</div>
                     </td>
                     <td>-</td>
-                    <td>2022.06.30</td>
-                    <td>2022.06.30</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk6">
-                            <label for="chk6">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td>6</td>
-                    <td>카드지급결의 통합모델_A</td>
-                    <td>홍길녀</td>
-                    <td>
-                        <div class="badge fill_error10">중지</div>
-                    </td>
-                    <td>실패</td>
-                    <td>2022.06.30</td>
-                    <td>2022.06.30</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk5">
-                            <label for="chk5">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td>5</td>
-                    <td>카드지급결의 통합모델_A</td>
-                    <td>홍길녀</td>
-                    <td>
-                        <div class="badge fill_blue_green">사용</div>
-                    </td>
-                    <td>-</td>
-                    <td>2022.06.30</td>
-                    <td>2022.06.30</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk4">
-                            <label for="chk4">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td>4</td>
-                    <td>카드지급결의 통합모델_A</td>
-                    <td>홍길녀</td>
-                    <td>
-                        <div class="badge fill_error10">중지</div>
-                    </td>
-                    <td>-</td>
-                    <td>2022.06.30</td>
-                    <td>2022.06.30</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk3">
-                            <label for="chk3">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td>3</td>
-                    <td>카드지급결의 통합모델_A</td>
-                    <td>홍길녀</td>
-                    <td>
-                        <div class="badge fill_error10">중지</div>
-                    </td>
-                    <td>실패</td>
-                    <td>2022.06.30</td>
-                    <td>2022.06.30</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk2">
-                            <label for="chk2">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td>2</td>
-                    <td>카드지급결의 통합모델_A</td>
-                    <td>홍길녀</td>
-                    <td>
-                        <div class="badge fill_blue_green">사용</div>
-                    </td>
-                    <td>-</td>
-                    <td>2022.06.30</td>
-                    <td>2022.06.30</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk1">
-                            <label for="chk1">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td>1</td>
-                    <td>카드지급결의 통합모델_A</td>
-                    <td>홍길녀</td>
-                    <td>
-                        <div class="badge fill_error10">중지</div>
-                    </td>
-                    <td>-</td>
-                    <td>2022.06.30</td>
-                    <td>2022.06.30</td>
+                    <td th:text="${#temporals.format(item.deployDt, 'yyyy-MM-dd')}">2022.07.30</td>
+                    <td th:text="${#temporals.format(item.createDtm, 'yyyy-MM-dd')}">2022.07.30</td>
                 </tr>
                 </tbody>
             </table>

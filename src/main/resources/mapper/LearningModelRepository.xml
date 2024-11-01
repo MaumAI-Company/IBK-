@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.LearningModelRepository">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="LearningModelForm">
+        INSERT INTO MaumMcc.LEARNING_MODEL
+        (LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM)
+        VALUES (#{learningId}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), #{learnName}, '0',
+                'SUCCESS', current_timestamp());
+    </insert>
+    <select id="getLoad" resultType="LearningModelInfo" parameterType="Integer">
+        select
+         ID, LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM
+        from LEARNING_MODEL
+        where ID = #{id}
+    </select>
+    <update id="updateFile" parameterType="LearningModelForm">
+        UPDATE MaumMcc.LEARNING_MODEL
+        SET FILE_PATH     = #{filePath},
+            FILE_NAME     = #{fileName},
+            EPOCH         = #{epoch},
+            LEARNING_RATE = #{learningRate},
+            BATCH_SIZE    = #{batchSize}
+        WHERE ID = #{id}
+    </update>
+
+    <sql id="where">
+        where lm.DELETE_YN = 'N'
+
+        /*일자 검색*/
+        <if test="searchStartDate != null and searchStartDate != ''">
+            <![CDATA[
+				AND DATE_FORMAT( lm.CREATE_DTM, '%Y.%m.%d') >= #{searchStartDate}
+			 ]]>
+        </if>
+        <if test="searchEndDate != null and searchEndDate != ''">
+            <![CDATA[
+				AND DATE_FORMAT( lm.CREATE_DTM, '%Y.%m.%d') <= #{searchEndDate}
+			 ]]>
+        </if>
+
+        /*상태 검색*/
+        <if test="statusType != null and statusType != ''">
+            AND lm.DEPLOY_STATUS = #{statusType}
+        </if>
+
+        /*학습 가능 유무*/
+
+
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+    </sql>
+    <select id="getList" resultType="LearningModelInfo" parameterType="LearningModelForm">
+        select lm.ID,
+               lm.LEARNING_ID,
+               lm.REG_ID,
+               lm.REG_DT,
+               lm.MOD_ID,
+               lm.MOD_DT,
+               lm.LEARN_NAME,
+               lm.RESULT_CODE,
+               lm.RESULT_MSG,
+               lm.CREATE_DTM,
+               lm.EPOCH,
+               lm.LEARNING_RATE,
+               lm.BATCH_SIZE,
+               lm.DEPLOY_DT,
+               lm.ROLLBACK_DT,
+               lm.LEARNING_RESULT,
+               lm.DEPLOY_STATUS,
+               hm.MEM_NAME as REG_NAME
+        from LEARNING_MODEL lm
+        inner join HC_MEMBER hm on lm.REG_ID = hm.MEM_ID
+        <include refid="where"></include>
+        ORDER BY CREATE_DTM
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
+        <include refid="kr.co.ibk.repository.CommonRepository.paging" />
+    </select>
+    <select id="getTotalCount" resultType="int" parameterType="LearningModelForm">
+        SELECT
+            COUNT(*)
+        from LEARNING_MODEL lm
+        <include refid="where"></include>
+    </select>
+</mapper>
