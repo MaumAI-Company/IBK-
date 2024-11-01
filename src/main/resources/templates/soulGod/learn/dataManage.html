@@ -151,8 +151,13 @@
          * 학습데이터 유효성 검사
          */
         function fn_learnDataSaveChk() {
+            let hdqrBobDcd = $('#hdqrBobDcd').val();
             let learnName = $('#learnName').val();
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+
+            if (!$.trim(hdqrBobDcd)) {
+                return false;
+            }
 
             if (!$.trim(learnName)) {
                 showAlert('warning', '학습데이터 명 입력은 필수입니다.');
@@ -190,6 +195,7 @@
             })
 
             let jsonData = {
+                "hdqrBobDcd": $('#hdqrBobDcd').val(),
                 "learnName": $('#learnName').val(),
                 "inputArr": inputArr,
                 "outputArr": outputArr
@@ -628,6 +634,17 @@
                 <tbody>
                 <tr>
                     <th scope="row">
+                        <label for="hdqrBobDcd">학습 대상</label>
+                    </th>
+                    <td>
+                        <select id="hdqrBobDcd">
+                            <option value="1" selected>본부</option>
+                            <option value="2">영업점</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
                         <label for="learnName">학습데이터 명</label>
                     </th>
                     <td>
@@ -652,6 +669,7 @@
                                 </div>
                             </th:block>
                         </div>
+                        <div>※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div> <!--todo : 퍼블-->
                     </td>
                 </tr>
                 <tr>
