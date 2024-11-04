@@ -42,6 +42,9 @@
         }
 
         function fn_detail(ymd, no, brcd, type) { //(카드 증빙 일자 , 카드 증빙번호, 부점코드 )=> pk
+            console.log(ymd);
+            console.log(no);
+            console.log(brcd);
 
             if (!$.trim(ymd) || !$.trim(no) || !$.trim(brcd)) {
                 return false;
@@ -61,16 +64,37 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
+                    console.log(data);
+                    let contents;
                     if (data) {
-                        $('#bdgtItexFrcsCon').text(data.bdgtItexFrcsCon);
-                        $('#bdgtBsnsFrcsCon').text(data.bdgtBsnsFrcsCon);
-                        $('#bdgtPrfrRsnFrcsCon').text(data.bdgtPrfrRsnFrcsCon);
-                        layerShow('popDetail');
+                        //input
+                        if (data.inputList) {
+                            let inputContents = '';
+                            $.each(data.inputList, function (idx, item) {
+                                inputContents += '<tr> ' +
+                                    '                        <th scope="row">' + item.inputColumnNm + '</th> ' +
+                                    '                        <td>' + item.colName + '</td> ' +
+                                    '                    </tr>';
+                            })
+                            $('#inputBody').html(inputContents);
+                        }
+
+                        //output
+                        if (data.bdgtItexFrcsCon) {
+                            $('#bdgtItexFrcsCon').text(makeOutputText(data.bdgtItexFrcsCon, data.bdgtItexFrcsPrbCon));
+                        }
+                        if (data.bdgtBsnsFrcsCon) {
+                            $('#bdgtBsnsFrcsCon').text(makeOutputText(data.bdgtBsnsFrcsCon, data.bdgtBsnsFrcsPrbCon));
+                        }
+                        if (data.bdgtPrfrRsnFrcsCon) {
+                            $('#bdgtPrfrRsnFrcsCon').text(makeOutputText(data.bdgtPrfrRsnFrcsCon, data.bdgtPrfrRsnFrcsPrbCon));
+                        }
+                        contents = $('#defaultContens').html();
                     } else {
-                        showAlert('warning', '실패하였습니다.', () => {
-                            location.reload();
-                        })
+                        contents = '<tr><td colspan="2">추론 결과 데이터는 학습 이후 열람 가능합니다.</td></tr>';
                     }
+                    $('#detailBody').html(contents);
+                    layerShow('popDetail');
                 },
                 error: function () {
                     showAlert('warning', '실패하였습니다.', () => {
@@ -78,6 +102,21 @@
                     })
                 }
             });
+        }
+
+        function makeOutputText(primaryStr, secondaryStr) {
+            let arrayA = primaryStr.split('|');
+            let arrayB = secondaryStr ? secondaryStr.split('|') : null;
+
+            let text = '';
+            for (let i = 0; i < arrayA.length; i++) {
+                if (arrayB && arrayB[i]) {
+                    text += `${i + 1}순위는 ${arrayA[i]}이며, ${arrayB[i]}의 확률을 가집니다. \n`;
+                } else {
+                    text += `${i + 1}순위는 ${arrayA[i]}입니다. \n`;
+                }
+            }
+            return text;
         }
 
     </script>
@@ -385,77 +424,7 @@
                     <col style="width:80px">
                     <col style="width:auto">
                 </colgroup>
-                <tbody>
-                <tr>
-                    <th scope="row">input</th>
-                    <td>
-                        <table>
-                            <colgroup>
-                                <col style="width:120px">
-                                <col style="width:auto">
-                            </colgroup>
-                            <tbody>
-                            <tr>
-                                <th scope="row">예산비목정보내용</th>
-                                <td id="bdgtItexFrcsCon"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">예산사업ID내용</th>
-                                <td id="bdgtBsnsFrcsCon"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">비목집행사유내용</th>
-                                <td id="bdgtPrfrRsnFrcsCon"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">output</th>
-                    <td>
-                        <table>
-                            <colgroup>
-                                <col style="width:120px">
-                                <col style="width:auto">
-                            </colgroup>
-                            <tbody>
-                            <tr>
-                                <th scope="row">예산비목정보내용</th>
-                                <td>내용</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">예산사업ID내용</th>
-                                <td>내용내용</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">비목집행사유내용</th>
-                                <td>내용</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                <!--<tr>
-                    <th scope="row">부점</th>
-                    <td>본부</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산관리비목관리번호</th>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산(세부)사업ID</th>
-                    <td>2053-1</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산집행사유코드</th>
-                    <td>201002-002</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산집행사유내용</th>
-                    <td>기업성장 목표배정 야식대</td>
-                </tr>-->
+                <tbody id="detailBody">
                 </tbody>
             </table>
         </div>
@@ -469,6 +438,49 @@
                 <span class="blind">다음글</span>
             </button>
         </div>
+    </div>
+</div>
+
+<div style="display: none">
+    <div id="defaultContens">
+        <tr>
+            <th scope="row">input</th>
+            <td>
+                <table>
+                    <colgroup>
+                        <col style="width:120px">
+                        <col style="width:auto">
+                    </colgroup>
+                    <tbody id="inputBody">
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">output</th>
+            <td>
+                <table>
+                    <colgroup>
+                        <col style="width:120px">
+                        <col style="width:auto">
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">예산비목정보내용</th>
+                        <td id="bdgtItexFrcsCon"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">예산사업ID내용</th>
+                        <td id="bdgtBsnsFrcsCon"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">비목집행사유내용</th>
+                        <td id="bdgtPrfrRsnFrcsCon"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
     </div>
 </div>
 <!--상세 팝업 : e-->

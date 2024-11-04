@@ -34,6 +34,12 @@
         lmi.COL_NAME
         ,lmi.MODEL_ID
         ,lmi.INOUT_GBN
+        <if test="gbn != null and gbn != '' and gbn == 'INPUT'">
+            ,lmi.COL_NAME as inputColumnType
+        </if>
+        <if test="gbn != null and gbn != '' and gbn == 'OUTPUT'">
+            ,lmi.COL_NAME as outputColumnType
+        </if>
         from LEARNING_MODEL_INPUT lmi
         where lmi.MODEL_ID = #{id}
         <if test="gbn != null and gbn != ''">

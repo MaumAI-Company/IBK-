@@ -2,9 +2,12 @@ package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.domain.web.CardInputInfo;
+import kr.co.ibk.domain.web.CardOutputInfo;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.model.CardInputForm;
+import kr.co.ibk.model.CardOutputForm;
 import kr.co.ibk.service.CardInputService;
+import kr.co.ibk.service.CardOutputService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +22,7 @@ import java.util.List;
 public class ReportController {
 
     private final CardInputService cardInputService;
+    private final CardOutputService cardOutputService;
 
     @RequestMapping("/soulGod/report/card")
     public String card(Model model,
@@ -67,7 +71,7 @@ public class ReportController {
 
     @ResponseBody
     @PostMapping(value = {"/soulGod/report/card/detail"})
-    public CardInputInfo cardDtail(@RequestBody CardInputForm form) {
-        return cardInputService.detail(form);
+    public CardOutputInfo cardDtail(@RequestBody CardOutputForm form) {
+        return cardOutputService.detail(form);
     }
 }
