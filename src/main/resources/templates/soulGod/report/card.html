@@ -96,7 +96,8 @@
                     <h3 class="page_tit">BC카드 지급결의 내역 조회</h3>
                 </div>
                 <div class="btn_area">
-                    <button type="button" class="btn line_cool_grey30">
+                    <button type="button" class="btn line_cool_grey30"
+                            onclick="fnTableToExcel('excelTable', 'BC카드_지급결의_내역')">
                         <span>엑셀 다운로드</span>
                     </button>
                 </div>
@@ -310,6 +311,59 @@
                 </tbody>
             </table>
             <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
+
+            <table class="tbl_list" style="display: none" id="excelTable">
+                <colgroup>
+                    <!--                    <col style="width: 3.5%;min-width: 44px;">-->
+                    <!--                    <col style="width: 8%;">-->
+                    <!--                    <col style="width: 9%;min-width: 90px;">-->
+                    <!--                    <col style="width: 7%;">-->
+                    <!--                    <col style="width: 7%;">-->
+                    <!--                    <col style="width: auto;">-->
+                    <!--                    <col style="width: 10%;">-->
+                    <!--                    <col style="width: 11%;">-->
+                    <!--                    <col style="width: 10%;">-->
+                    <!--                    <col style="width: 7.5%;min-width: 104px;">-->
+                    <col style="width: 3%;min-width: 44px;">
+                    <col style="width: 5%;">
+                    <col style="width: 12%;min-width: 90px;">
+                    <col style="width: 8%;">
+                    <col style="width: 5%;">
+                    <col style="width: 5%;">
+                    <col style="width: 7%;">
+                    <col style="width: auto;">
+                    <col style="width: 14%;">
+                    <col style="width: auto;">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">대상</th>
+                    <th scope="col">카드번호</th>
+                    <th scope="col">승인시간</th>
+                    <th scope="col">매출금액</th>
+                    <th scope="col">가맹점명</th>
+                    <th scope="col">영업일여부</th>
+                    <th scope="col">예산비목<span class="dib">정보내용</span></th>
+                    <th scope="col">예산사업<span class="dib">ID내용</span></th>
+                    <th scope="col">비목집행<span class="dib">사유내용</span></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item, idx:${excelList}">
+                    <td th:text="${idx.count}"></td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td th:text="${item.cdn}"></td>
+                    <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${item.amslAmt}"></td>
+                    <td th:text="${item.afstNm}"></td>
+                    <td th:text="${item.bzdyYn}"></td>
+                    <td th:text="${item.bdgtItexFrcsCon}"></td>
+                    <td th:text="${item.bdgtBsnsFrcsCon}"></td>
+                    <td th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

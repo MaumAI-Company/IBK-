@@ -8,8 +8,10 @@ import kr.co.ibk.service.CardInputService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -21,6 +23,13 @@ public class ReportController {
     @RequestMapping("/soulGod/report/card")
     public String card(Model model,
                        @ModelAttribute CardInputForm params) {
+        if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+            params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
+            params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
+        }
+
+        List<CardInputInfo> excelList = cardInputService.list(params);
+        model.addAttribute("excelList", excelList);
 
         List<CardInputInfo> list = cardInputService.page(params);
 
