@@ -31,8 +31,8 @@ public class CardInputService extends _BaseService {
             if (ObjectUtils.isEmpty(params.getSorting())) {
                 params.setSorting("desc");
             }
-            list = list(params);
             params.setPagingAt("Y");
+            list = list(params);
 
             list.forEach(item -> {
                 if (!ObjectUtils.isEmpty(item.getBdgtItexFrcsCon())) {
