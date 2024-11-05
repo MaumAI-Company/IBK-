@@ -42,10 +42,6 @@
         }
 
         function fn_detail(ymd, no, brcd, type) { //(카드 증빙 일자 , 카드 증빙번호, 부점코드 )=> pk
-            console.log(ymd);
-            console.log(no);
-            console.log(brcd);
-
             if (!$.trim(ymd) || !$.trim(no) || !$.trim(brcd)) {
                 return false;
             }
@@ -69,31 +65,74 @@
                     if (data) {
                         //input
                         if (data.inputList) {
-                            let inputContents = '';
-                            $.each(data.inputList, function (idx, item) {
-                                inputContents += '<tr> ' +
-                                    '                        <th scope="row">' + item.inputColumnNm + '</th> ' +
-                                    '                        <td>' + item.colName + '</td> ' +
-                                    '                    </tr>';
-                            })
-                            $('#inputBody').html(inputContents);
+                            let inputContents = `
+                                <tr>
+                                    <th scope="row">input</th>
+                                    <td>
+                                        <table>
+                                            <colgroup>
+                                                <col style="width:120px">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>`;
+                                                $.each(data.inputList, function (idx, item) {
+                                                    inputContents += '<tr> ' +
+                                                        '                        <th scope="row">' + item.inputColumnNm + '</th> ' +
+                                                        '                        <td>' + item.colName + '</td> ' +
+                                                        '                    </tr>';
+                                                })
+                            inputContents += `</tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            `;
+
+                            contents = inputContents;
                         }
 
-                        //output
-                        if (data.bdgtItexFrcsCon) {
-                            $('#bdgtItexFrcsCon').text(makeOutputText(data.bdgtItexFrcsCon, data.bdgtItexFrcsPrbCon));
-                        }
-                        if (data.bdgtBsnsFrcsCon) {
-                            $('#bdgtBsnsFrcsCon').text(makeOutputText(data.bdgtBsnsFrcsCon, data.bdgtBsnsFrcsPrbCon));
-                        }
-                        if (data.bdgtPrfrRsnFrcsCon) {
-                            $('#bdgtPrfrRsnFrcsCon').text(makeOutputText(data.bdgtPrfrRsnFrcsCon, data.bdgtPrfrRsnFrcsPrbCon));
-                        }
-                        contents = $('#defaultContens').html();
+                        let outputContents = `
+                        <tr>
+                            <th scope="row">output</th>
+                            <td>
+                                <table>
+                                    <colgroup>
+                                        <col style="width:120px">
+                                        <col style="width:auto">
+                                    </colgroup>
+                                    <tbody>
+                                    <tr>
+                                        <th scope="row">예산비목정보내용</th>
+                                        <td>${data.bdgtItexFrcsCon ? makeOutputText(data.bdgtItexFrcsCon, data.bdgtItexFrcsPrbCon) : '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">예산사업ID내용</th>
+                                        <td>${data.bdgtBsnsFrcsCon ? makeOutputText(data.bdgtBsnsFrcsCon, data.bdgtBsnsFrcsPrbCon) : '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">비목집행사유내용</th>
+                                        <td>${data.bdgtPrfrRsnFrcsCon ? makeOutputText(data.bdgtPrfrRsnFrcsCon, data.bdgtPrfrRsnFrcsPrbCon) : '-'}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        `;
+
+                        contents += outputContents;
                     } else {
-                        contents = '<tr><td colspan="2">추론 결과 데이터는 학습 이후 열람 가능합니다.</td></tr>';
+                        contents = '<tr><td colspan="2">추론 결과 데이터는 학습이 완료된 이후 열람 가능합니다.</td></tr>';
                     }
+
                     $('#detailBody').html(contents);
+
+                    //btn onclick function set
+                    $('.prevBtn').off('click').on('click', function() {
+                        fn_detail(ymd, no, brcd, 'prev');
+                    });
+                    $('.nextBtn').off('click').on('click', function() {
+                        fn_detail(ymd, no, brcd, 'next');
+                    });
+
                     layerShow('popDetail');
                 },
                 error: function () {
@@ -429,58 +468,15 @@
             </table>
         </div>
         <div class="pop_foot">
-            <button type="button" class="btn btn_icon line_cool_grey30" disabled>
+            <button type="button" class="btn btn_icon line_cool_grey30 prevBtn">
                 <i class="ico_prev"></i>
                 <span class="blind">이전글</span>
             </button>
-            <button type="button" class="btn btn_icon line_cool_grey30">
+            <button type="button" class="btn btn_icon line_cool_grey30 nextBtn">
                 <i class="ico_next"></i>
                 <span class="blind">다음글</span>
             </button>
         </div>
-    </div>
-</div>
-
-<div style="display: none">
-    <div id="defaultContens">
-        <tr>
-            <th scope="row">input</th>
-            <td>
-                <table>
-                    <colgroup>
-                        <col style="width:120px">
-                        <col style="width:auto">
-                    </colgroup>
-                    <tbody id="inputBody">
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">output</th>
-            <td>
-                <table>
-                    <colgroup>
-                        <col style="width:120px">
-                        <col style="width:auto">
-                    </colgroup>
-                    <tbody>
-                    <tr>
-                        <th scope="row">예산비목정보내용</th>
-                        <td id="bdgtItexFrcsCon"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">예산사업ID내용</th>
-                        <td id="bdgtBsnsFrcsCon"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">비목집행사유내용</th>
-                        <td id="bdgtPrfrRsnFrcsCon"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
     </div>
 </div>
 <!--상세 팝업 : e-->

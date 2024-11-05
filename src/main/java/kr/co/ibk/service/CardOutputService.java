@@ -22,8 +22,13 @@ public class CardOutputService extends _BaseService {
     private final LearningModelInputRepository learningModelInputRepository;
 
     public CardOutputInfo detail(CardOutputForm params) {
-        //return cardInputRepository.getDetail(params);
         CardOutputInfo info = cardOutputRepository.getDetail(params);
+
+        /*if (ObjectUtils.isEmpty(params.getLoadType())) {
+            info = cardOutputRepository.getDetail(params);
+        } else {
+            info = cardOutputRepository.getDetail(params);
+        }*/
 
         if (!ObjectUtils.isEmpty(info) && !ObjectUtils.isEmpty(info.getLearningModelId())) {
             List<LearningModelInputInfo> inputInfos = learningModelInputRepository.getPartList(info.getLearningModelId(), InOutGbnType.INPUT.name());
