@@ -24,6 +24,11 @@
             BATCH_SIZE    = #{batchSize}
         WHERE ID = #{id}
     </update>
+    <update id="updateStatus" parameterType="LearningModelForm">
+        UPDATE MaumMcc.LEARNING_MODEL
+        SET DEPLOY_STATUS = #{deployStatus}
+        WHERE ID = #{id}
+    </update>
 
     <sql id="where">
         where lm.DELETE_YN = 'N'

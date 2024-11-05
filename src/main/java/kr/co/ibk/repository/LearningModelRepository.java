@@ -16,6 +16,8 @@ public interface LearningModelRepository {
 
     void updateFile(LearningModelForm form);
 
+    void updateStatus(LearningModelForm form);
+
     List<LearningModelInfo> getList(LearningModelForm form);
 
     int getTotalCount(LearningModelForm form);
