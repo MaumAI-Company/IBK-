@@ -595,3 +595,7 @@ function getCookie(cookieName) {
     }
     return cookieValue;
 }
+
+function fn_KorEngOnly(obj) {
+    obj.value = obj.value.replace(/[^가-힣a-zA-Z\s]/g, '');
+}
