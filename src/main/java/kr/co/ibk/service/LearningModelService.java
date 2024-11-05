@@ -47,20 +47,21 @@ public class LearningModelService extends _BaseService {
 
         Long saveCnt = 0L;
 
+        form.setRegId(memberInfo.getMemId());
+        form.setModId(memberInfo.getMemId());
+
         if (ObjectUtils.isEmpty(form.getId())) {
             //insert
-            form.setRegId(memberInfo.getMemId());
-            form.setModId(memberInfo.getMemId());
             learningModelRepository.insert(form);
-
-            saveCnt = learningModelInputRepository.insertList(form.getId(), form.getInputArr(), InOutGbnType.INPUT.name());
-            saveCnt += learningModelInputRepository.insertList(form.getId(), form.getOutputArr(), InOutGbnType.OUTPUT.name());
-
         } else {
             //update
+            learningModelRepository.update(form);
 
-            //rel input delete > insert
+            learningModelInputRepository.delete(form.getId());
         }
+
+        saveCnt = learningModelInputRepository.insertList(form.getId(), form.getInputArr(), InOutGbnType.INPUT.name());
+        saveCnt += learningModelInputRepository.insertList(form.getId(), form.getOutputArr(), InOutGbnType.OUTPUT.name());
 
         if (saveCnt > 0) {
             map.put("status", "SUCCESS");

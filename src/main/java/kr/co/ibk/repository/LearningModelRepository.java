@@ -11,10 +11,14 @@ import java.util.List;
 public interface LearningModelRepository {
 
     public LearningModelInfo getLoad(@Param("id") Integer id);
+
     public void insert(LearningModelForm form);
 
     void updateFile(LearningModelForm form);
 
     List<LearningModelInfo> getList(LearningModelForm form);
+
     int getTotalCount(LearningModelForm form);
+
+    void update(LearningModelForm form);
 }

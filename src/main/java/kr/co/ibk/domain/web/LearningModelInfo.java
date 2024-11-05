@@ -34,6 +34,7 @@ public class LearningModelInfo {
     private String filePath;    //학습파일 경로
     private String fileName;    //학습파일명
     private String regName;
+    private String hdqrBobDcd;
 
     private List<LearningModelInputInfo> inputList;
     private List<LearningModelInputInfo> outputList;

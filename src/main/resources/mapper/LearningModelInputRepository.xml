@@ -47,4 +47,9 @@
         </if>
         order by lmi.INOUT_GBN asc
     </select>
+
+    <delete id="delete" parameterType="Integer">
+        delete from LEARNING_MODEL_INPUT
+        where MODEL_ID = #{id}
+    </delete>
 </mapper>

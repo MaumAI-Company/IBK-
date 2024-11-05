@@ -11,7 +11,7 @@
     </insert>
     <select id="getLoad" resultType="LearningModelInfo" parameterType="Integer">
         select
-         ID, LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM
+         ID, LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM, HDQR_BOB_DCD
         from LEARNING_MODEL
         where ID = #{id}
     </select>
@@ -85,10 +85,20 @@
         </choose>
         <include refid="kr.co.ibk.repository.CommonRepository.paging" />
     </select>
+
     <select id="getTotalCount" resultType="int" parameterType="LearningModelForm">
         SELECT
             COUNT(*)
         from LEARNING_MODEL lm
         <include refid="where"></include>
     </select>
+
+    <update id="update" parameterType="LearningModelForm">
+        update MaumMcc.LEARNING_MODEL
+        set MOD_ID = #{modId},
+            MOD_DT = current_timestamp(),
+            LEARN_NAME = #{learnName},
+            HDQR_BOB_DCD = #{hdqrBobDcd}
+        where ID = #{id}
+    </update>
 </mapper>

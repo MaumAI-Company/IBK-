@@ -83,7 +83,7 @@ function showAlert(icon, msg, callbackFunc) {
 }
 
 /* example
- *   icon : 경고 - exclamation | 채크 - check | 질문 - question
+ *   icon : 경고 - warning | 채크 - complete | 질문 - message
  *   showConfirm('check', '저장 하시겠습니까?', function() {
  *       // 확인 버튼 클릭 시 실행할 함수
  *   }, function() {

@@ -120,13 +120,27 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
-                    if (data) {
-                        $('#learnName').val(data.data.learnName);
-
-                    }
-
                     console.log(data);
-                    layerShow('popLearnData');
+                    if (data) {
+                        let item = data.data;
+
+                        $('#id').val(id);
+                        $('#hdqrBobDcd').val(item.hdqrBobDcd).niceSelect('update');
+                        $('#learnName').val(item.learnName);
+
+                        if (item.inputList) {
+                            $.each(item.inputList, function (idx, item) {
+                                $(':checkbox[id^="' + inPrefix + '"]').each(function () {
+                                    if ($(this).val() === item.colName) {
+                                        $(this).prop('checked', true);
+                                    }
+                                })
+                            })
+                        }
+                        layerShow('popLearnData');
+                    } else {
+                        showAlert('warning', '학습 데이터가 존재하지 않습니다.');
+                    }
                 },
                 error: function () {
                     console.log("error");
@@ -141,8 +155,14 @@
          * 학습데이터 유효성 검사
          */
         function fn_learnDataSaveChk() {
+            let hdqrBobDcd = $('#hdqrBobDcd').val();
             let learnName = $('#learnName').val();
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+
+            if (!$.trim(hdqrBobDcd)) {
+                showAlert('warning', '학습대상 선택은 필수입니다.');
+                return false;
+            }
 
             if (!$.trim(learnName)) {
                 showAlert('warning', '학습데이터 명 입력은 필수입니다.');
@@ -154,17 +174,16 @@
                 return false;
             }
 
-            return true;
+            showConfirm('message', '저장하시겠습니까?', function () {
+                fn_learnDataSave();
+            })
         }
 
         /**
          * 학습데이터 저장
          */
         function fn_learnDataSave() {
-            if (!fn_learnDataSaveChk()) {
-                return false;
-            }
-
+            console.log('save');
 
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
             let outputColumns = $(':checkbox[id^="' + outPrefix + '"]');
@@ -180,6 +199,8 @@
             })
 
             let jsonData = {
+                "id": $('#id').val(),
+                "hdqrBobDcd": $('#hdqrBobDcd').val(),
                 "learnName": $('#learnName').val(),
                 "inputArr": inputArr,
                 "outputArr": outputArr
@@ -613,6 +634,7 @@
             </button>
         </div>
         <div class="pop_cont">
+            <input type="hidden" id="id">
             <table class="tbl_write">
                 <caption>학습데이터 : 학습데이터 명, 학습 선택으로 구성</caption>
                 <colgroup>
@@ -620,6 +642,17 @@
                     <col style="width:auto">
                 </colgroup>
                 <tbody>
+                <tr>
+                    <th scope="row">
+                        <label for="hdqrBobDcd">학습 대상</label>
+                    </th>
+                    <td>
+                        <select id="hdqrBobDcd">
+                            <option value="1" selected>본부</option>
+                            <option value="2">영업점</option>
+                        </select>
+                    </td>
+                </tr>
                 <tr>
                     <th scope="row">
                         <label for="learnName">학습데이터 명</label>
@@ -641,7 +674,8 @@
                         <div class="check_wrap">
                             <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
                                 <div class="checkbox">
-                                    <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}">
+                                    <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                           th:disabled="${T(kr.co.ibk.domain.enums.InputColumnType).BRCD == item ? true : false}">
                                     <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
                                 </div>
                             </th:block>
@@ -671,7 +705,7 @@
             <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearnData')">
                 <span>취소</span>
             </button>
-            <button type="button" class="btn fill" onclick="fn_learnDataSave()">
+            <button type="button" class="btn fill" onclick="fn_learnDataSaveChk()">
                 <span>확인</span>
             </button>
         </div>
