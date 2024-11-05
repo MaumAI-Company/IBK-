@@ -879,28 +879,28 @@
 
         // 필수조건
         if ($addDeptId.length < 1) {
-            alert("부서 정보를 입력해주세요.");
+            showAlert('warning', "부서 정보를 입력해주세요.");
             return;
         }
         if ($addMemId.length < 1) {
-            alert("사용자 아이디를 입력해주세요.");
+            showAlert('warning', "사용자 아이디를 입력해주세요.");
             $('#addMemId').focus();
             return;
         } else {
             if ("N" == $checkUserYN) {
-                alert("사용자 ID 중복확인이 필요합니다.");
+                showAlert('warning', "사용자 ID 중복확인이 필요합니다.");
                 $('#addMemId').focus();
                 return;
             } else {
                 if ($addMemId != $checkUserId) {
-                    alert("사용자 ID 중복확인이 필요합니다.");
+                    showAlert('warning', "사용자 ID 중복확인이 필요합니다.");
                     $('#addMemId').focus();
                     return;
                 }
             }
         }
         if ($addMemName.length < 1) {
-            alert("이름을 입력해주세요.");
+            showAlert('warning', "이름을 입력해주세요.");
             $('#addMemName').focus();
             return;
         }
@@ -917,7 +917,7 @@
 
         const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
         if ($addMemColumn1.length > 0 && !ipv4Pattern.test($addMemColumn1)) {
-            alert("유효하지 않은 IP 주소입니다.");
+            showAlert('warning', "유효하지 않은 IP 주소입니다.");
             return;
         }
 

@@ -233,14 +233,14 @@
                 dataType: "json",
                 success: function (data) {
                     if ("SUCCESS" == data.status) {
-                        alert(data.msg);
+                        showAlert('complete', data.msg);
                         location.href = "/soulGod/admin/department";
                     } else if ("EXIST" == data.status) {
-                        alert(data.msg);
+                        showAlert('warning', data.msg);
                     } else if ("FAIL" == data.status) {
-                        alert(data.msg);
+                        showAlert('warning',data.msg);
                     } else {
-                        alert('실패하였습니다.');
+                        showAlert('warning','실패하였습니다.');
                     }
                 },
                 error: function () {
@@ -256,7 +256,7 @@
             let $deptId = $('#detail_deptId').val();// 현재 선택된 부서를 삭제 하도록
 
             if ($deptId.length == 0) {
-                alert("삭제할 부서를 선택하여 주세요.");
+                showAlert("warning", "삭제할 부서를 선택하여 주세요.");
                 return;
             }
 
@@ -280,14 +280,14 @@
                 dataType: "json",
                 success: function (data) {
                     if ("SUCCESS" == data.status) {
-                        alert(data.msg);
+                        showAlert('complete', data.msg);
                         location.href = "/soulGod/admin/department";
                     } else if ("PARDEPT" == data.status) {
-                        alert(data.msg);
+                        showAlert('warning', data.msg);
                     } else if ("FAIL" == data.status) {
-                        alert(data.msg);
+                        showAlert('warning', data.msg);
                     } else {
-                        alert('실패하였습니다.');
+                        showAlert('warning', '실패하였습니다.');
                     }
                 },
                 error: function () {
@@ -360,16 +360,16 @@
 
             // 필수조건
             if ($addParDeptId.length < 1) {
-                alert("상위 부서를 선택해주세요.");
+                showAlert('warning', "상위 부서를 선택해주세요.");
                 return;
             }
             if ($addDeptCode.length < 1) {
-                alert("부서 코드를 입력해주세요.");
+                showAlert('warning', "부서 코드를 입력해주세요.");
                 $('#addDeptCode').focus();
                 return;
             }
             if ($addDeptName.length < 1) {
-                alert("부서명을 입력해주세요.");
+                showAlert('warning', "부서명을 입력해주세요.");
                 $('#addDeptName').focus();
                 return;
             }
@@ -397,13 +397,13 @@
                 dataType: "json",
                 success: function (data) {
                     if ("SUCCESS" == data.status) {
-                        alert(data.msg);
+                        showAlert('complete', data.msg);
                         addDeptClose();
                         location.href = "/soulGod/admin/department";
                     } else if ("FAIL" == data.status) {
-                        alert(data.msg);
+                        showAlert('warning', data.msg);
                     } else {
-                        alert('실패하였습니다.');
+                        showAlert('warning', '실패하였습니다.');
                     }
                 },
                 error: function () {
@@ -595,10 +595,10 @@
             // 체크박스 검사
             let chkCnt = $("input[name='chkBoxDept']:checked").length;
             if (chkCnt <= 0) {
-                alert("하나의 부서를 선택해주세요.");
+                showAlert('warning', "하나의 부서를 선택해주세요.");
                 return;
             } else if (chkCnt > 1) {
-                alert("하나의 부서를 선택해주세요.");
+                showAlert('warning', "하나의 부서를 선택해주세요.");
                 return;
             } else if (chkCnt == 1) {
                 // 하나의 부서가 선택되었음

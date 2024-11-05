@@ -49,7 +49,7 @@
             if (checked.length) {
                 fn_initLearnPop();
             } else {
-                alert('학습할 모델을 1개 이상 선택하세요.');
+                showAlert('warning', '학습할 모델을 1개 이상 선택하세요.');
                 return false;
             }
         }
@@ -64,15 +64,15 @@
         function fn_goLearning() {
             let epoch = $("#epoch");
             if (!$.trim(epoch.val())) {
-                alert("Epoch를 입력해주세요.");
+                showAlert('warning', "Epoch를 입력해주세요.");
             }
             let learningRate = $("#learningRate");
             if (!$.trim(learningRate.val())) {
-                alert("Learning Rate를 입력해주세요.");
+                showAlert('warning', "Learning Rate를 입력해주세요.");
             }
             let batchSize = $("#batchSize");
             if (!$.trim(batchSize.val())) {
-                alert("Batch Size를 입력해주세요.");
+                showAlert('warning', "Batch Size를 입력해주세요.");
             }
             let checked = $("input[id^='chk_']:checked");
             let idArr = [];
@@ -93,7 +93,7 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
-                    alert("txt파일 생성 완료, 학습 api 연동 필요.");
+                    showAlert('complete', "txt파일 생성 완료, 학습 api 연동 필요.");
                     // todo 학습 api 실행
                     layerHide("popLearn")
                 },

@@ -85,7 +85,7 @@ function ajaxSetLevel(jsonData){
 	
 	
 	if (prevLevel == changeLevel && userInputLevel==''){
-		alert('탐지 Level 변경 후 저장을 눌러주세요.');
+        showAlert('warning', '탐지 Level 변경 후 저장을 눌러주세요.');
 		return;
 	}  
 	
@@ -108,9 +108,9 @@ function ajaxSetLevel(jsonData){
 		success : function(resp) {
 			console.log("resp :: ", resp);
 			if (changeLevel == 0){
-				alert("위조탐지 기능이 중지 되었습니다.");
+                showAlert("warning", "위조탐지 기능이 중지 되었습니다.");
 			}else {
-				alert("위조탐지 레벨이 "+changeLevel+"로 설정되었습니다.");
+                showAlert("warning", "위조탐지 레벨이 "+changeLevel+"로 설정되었습니다.");
 			}
 				
 			location.href= "/soulGod/admin/fakeCheck";

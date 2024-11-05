@@ -24,7 +24,7 @@
                 }
                 , function (jqXHR, textStatus, errorThrown) {//실패
                     console.log('restCall fail' + '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
-                    alert('메뉴 추가처리에 실패하였습니다.\n관리자에게 문의하세요.');
+                    showAlert('warning', '메뉴 추가처리에 실패하였습니다.\n관리자에게 문의하세요.');
                 }
             );
         }
@@ -131,7 +131,7 @@
                     }
                     , function (jqXHR, textStatus, errorThrown) {//실패
                         console.log('restCall fail' + '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
-                        alert('메뉴 추가처리에 실패하였습니다.\n관리자에게 문의하세요.');
+                        showAlert('warning', '메뉴 추가처리에 실패하였습니다.\n관리자에게 문의하세요.');
                     }
                 );
             }
