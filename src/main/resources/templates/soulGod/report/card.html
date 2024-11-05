@@ -42,7 +42,6 @@
         }
 
         function fn_detail(ymd, no, brcd, type) { //(카드 증빙 일자 , 카드 증빙번호, 부점코드 )=> pk
-
             if (!$.trim(ymd) || !$.trim(no) || !$.trim(brcd)) {
                 return false;
             }
@@ -61,16 +60,80 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
+                    console.log(data);
+                    let contents;
                     if (data) {
-                        $('#bdgtItexFrcsCon').text(data.bdgtItexFrcsCon);
-                        $('#bdgtBsnsFrcsCon').text(data.bdgtBsnsFrcsCon);
-                        $('#bdgtPrfrRsnFrcsCon').text(data.bdgtPrfrRsnFrcsCon);
-                        layerShow('popDetail');
+                        //input
+                        if (data.inputList) {
+                            let inputContents = `
+                                <tr>
+                                    <th scope="row">input</th>
+                                    <td>
+                                        <table>
+                                            <colgroup>
+                                                <col style="width:120px">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>`;
+                                                $.each(data.inputList, function (idx, item) {
+                                                    inputContents += '<tr> ' +
+                                                        '                        <th scope="row">' + item.inputColumnNm + '</th> ' +
+                                                        '                        <td>' + item.colName + '</td> ' +
+                                                        '                    </tr>';
+                                                })
+                            inputContents += `</tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            `;
+
+                            contents = inputContents;
+                        }
+
+                        let outputContents = `
+                        <tr>
+                            <th scope="row">output</th>
+                            <td>
+                                <table>
+                                    <colgroup>
+                                        <col style="width:120px">
+                                        <col style="width:auto">
+                                    </colgroup>
+                                    <tbody>
+                                    <tr>
+                                        <th scope="row">예산비목정보내용</th>
+                                        <td>${data.bdgtItexFrcsCon ? makeOutputText(data.bdgtItexFrcsCon, data.bdgtItexFrcsPrbCon) : '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">예산사업ID내용</th>
+                                        <td>${data.bdgtBsnsFrcsCon ? makeOutputText(data.bdgtBsnsFrcsCon, data.bdgtBsnsFrcsPrbCon) : '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">비목집행사유내용</th>
+                                        <td>${data.bdgtPrfrRsnFrcsCon ? makeOutputText(data.bdgtPrfrRsnFrcsCon, data.bdgtPrfrRsnFrcsPrbCon) : '-'}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        `;
+
+                        contents += outputContents;
                     } else {
-                        showAlert('warning', '실패하였습니다.', () => {
-                            location.reload();
-                        })
+                        contents = '<tr><td colspan="2">추론 결과 데이터는 학습이 완료된 이후 열람 가능합니다.</td></tr>';
                     }
+
+                    $('#detailBody').html(contents);
+
+                    //btn onclick function set
+                    $('.prevBtn').off('click').on('click', function() {
+                        fn_detail(ymd, no, brcd, 'prev');
+                    });
+                    $('.nextBtn').off('click').on('click', function() {
+                        fn_detail(ymd, no, brcd, 'next');
+                    });
+
+                    layerShow('popDetail');
                 },
                 error: function () {
                     showAlert('warning', '실패하였습니다.', () => {
@@ -78,6 +141,21 @@
                     })
                 }
             });
+        }
+
+        function makeOutputText(primaryStr, secondaryStr) {
+            let arrayA = primaryStr.split('|');
+            let arrayB = secondaryStr ? secondaryStr.split('|') : null;
+
+            let text = '';
+            for (let i = 0; i < arrayA.length; i++) {
+                if (arrayB && arrayB[i]) {
+                    text += `${i + 1}순위는 ${arrayA[i]}이며, ${arrayB[i]}의 확률을 가집니다. \n`;
+                } else {
+                    text += `${i + 1}순위는 ${arrayA[i]}입니다. \n`;
+                }
+            }
+            return text;
         }
 
     </script>
@@ -96,7 +174,8 @@
                     <h3 class="page_tit">BC카드 지급결의 내역 조회</h3>
                 </div>
                 <div class="btn_area">
-                    <button type="button" class="btn line_cool_grey30">
+                    <button type="button" class="btn line_cool_grey30"
+                            onclick="fnTableToExcel('excelTable', 'BC카드_지급결의_내역')">
                         <span>엑셀 다운로드</span>
                     </button>
                 </div>
@@ -310,6 +389,59 @@
                 </tbody>
             </table>
             <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
+
+            <table class="tbl_list" style="display: none" id="excelTable">
+                <colgroup>
+                    <!--                    <col style="width: 3.5%;min-width: 44px;">-->
+                    <!--                    <col style="width: 8%;">-->
+                    <!--                    <col style="width: 9%;min-width: 90px;">-->
+                    <!--                    <col style="width: 7%;">-->
+                    <!--                    <col style="width: 7%;">-->
+                    <!--                    <col style="width: auto;">-->
+                    <!--                    <col style="width: 10%;">-->
+                    <!--                    <col style="width: 11%;">-->
+                    <!--                    <col style="width: 10%;">-->
+                    <!--                    <col style="width: 7.5%;min-width: 104px;">-->
+                    <col style="width: 3%;min-width: 44px;">
+                    <col style="width: 5%;">
+                    <col style="width: 12%;min-width: 90px;">
+                    <col style="width: 8%;">
+                    <col style="width: 5%;">
+                    <col style="width: 5%;">
+                    <col style="width: 7%;">
+                    <col style="width: auto;">
+                    <col style="width: 14%;">
+                    <col style="width: auto;">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">대상</th>
+                    <th scope="col">카드번호</th>
+                    <th scope="col">승인시간</th>
+                    <th scope="col">매출금액</th>
+                    <th scope="col">가맹점명</th>
+                    <th scope="col">영업일여부</th>
+                    <th scope="col">예산비목<span class="dib">정보내용</span></th>
+                    <th scope="col">예산사업<span class="dib">ID내용</span></th>
+                    <th scope="col">비목집행<span class="dib">사유내용</span></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item, idx:${excelList}">
+                    <td th:text="${idx.count}"></td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td th:text="${item.cdn}"></td>
+                    <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${item.amslAmt}"></td>
+                    <td th:text="${item.afstNm}"></td>
+                    <td th:text="${item.bzdyYn}"></td>
+                    <td th:text="${item.bdgtItexFrcsCon}"></td>
+                    <td th:text="${item.bdgtBsnsFrcsCon}"></td>
+                    <td th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -331,86 +463,16 @@
                     <col style="width:80px">
                     <col style="width:auto">
                 </colgroup>
-                <tbody>
-                <tr>
-                    <th scope="row">input</th>
-                    <td>
-                        <table>
-                            <colgroup>
-                                <col style="width:120px">
-                                <col style="width:auto">
-                            </colgroup>
-                            <tbody>
-                            <tr>
-                                <th scope="row">예산비목정보내용</th>
-                                <td id="bdgtItexFrcsCon"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">예산사업ID내용</th>
-                                <td id="bdgtBsnsFrcsCon"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">비목집행사유내용</th>
-                                <td id="bdgtPrfrRsnFrcsCon"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">output</th>
-                    <td>
-                        <table>
-                            <colgroup>
-                                <col style="width:120px">
-                                <col style="width:auto">
-                            </colgroup>
-                            <tbody>
-                            <tr>
-                                <th scope="row">예산비목정보내용</th>
-                                <td>내용</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">예산사업ID내용</th>
-                                <td>내용내용</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">비목집행사유내용</th>
-                                <td>내용</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                <!--<tr>
-                    <th scope="row">부점</th>
-                    <td>본부</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산관리비목관리번호</th>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산(세부)사업ID</th>
-                    <td>2053-1</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산집행사유코드</th>
-                    <td>201002-002</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산집행사유내용</th>
-                    <td>기업성장 목표배정 야식대</td>
-                </tr>-->
+                <tbody id="detailBody">
                 </tbody>
             </table>
         </div>
         <div class="pop_foot">
-            <button type="button" class="btn btn_icon line_cool_grey30" disabled>
+            <button type="button" class="btn btn_icon line_cool_grey30 prevBtn">
                 <i class="ico_prev"></i>
                 <span class="blind">이전글</span>
             </button>
-            <button type="button" class="btn btn_icon line_cool_grey30">
+            <button type="button" class="btn btn_icon line_cool_grey30 nextBtn">
                 <i class="ico_next"></i>
                 <span class="blind">다음글</span>
             </button>

@@ -14,4 +14,6 @@ public interface LearningModelInputRepository {
     public long insertList(@Param("id") Integer id, @Param("dataArr") String[] dataArr, @Param("gbn") String gbn);
 
     public List<LearningModelInputInfo> getPartList(@Param("id") Integer id, @Param("gbn") String gbn);
+
+    void delete(@Param("id") Integer id);
 }

@@ -129,4 +129,26 @@
             </otherwise>
         </choose>-->
     </select>
+
+    <select id="getAllList" resultType="CardInputInfo" parameterType="CardInputForm">
+        SELECT
+            <include refid="columns"></include>
+        FROM
+            CARD_INPUT ci
+        LEFT JOIN CARD_OUTPUT co ON ci.TSTM_YMD = co.TSTM_YMD
+            AND ci.TSTM_NO = co.TSTM_NO
+            AND ci.BRCD = co.BRCD
+        WHERE ci.BRCD is not null
+            <include refid="where"></include>
+        ORDER BY
+            ci.FRRG_TS
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
+    </select>
 </mapper>

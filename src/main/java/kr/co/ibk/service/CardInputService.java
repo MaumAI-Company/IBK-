@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,12 +31,8 @@ public class CardInputService extends _BaseService {
             if (ObjectUtils.isEmpty(params.getSorting())) {
                 params.setSorting("desc");
             }
-            if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
-                params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
-                params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
-            }
-            params.setPagingAt("Y");
             list = list(params);
+            params.setPagingAt("Y");
 
             list.forEach(item -> {
                 if (!ObjectUtils.isEmpty(item.getBdgtItexFrcsCon())) {
@@ -56,10 +51,14 @@ public class CardInputService extends _BaseService {
     }
 
     public List<CardInputInfo> list(CardInputForm params) {
-        return cardInputRepository.getList(params);
+        if (!ObjectUtils.isEmpty(params.getPagingAt()) && "Y".equals(params.getPagingAt())) {
+            return cardInputRepository.getList(params);
+        }
+        return cardInputRepository.getAllList(params);
     }
 
     public CardInputInfo detail(CardInputForm params) {
         return cardInputRepository.getDetail(params);
     }
+
 }
