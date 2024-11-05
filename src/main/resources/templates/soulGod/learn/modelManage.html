@@ -53,9 +53,9 @@
         }
 
         function fn_initLearnPop() {
-            $("#epoch").val(20);
-            $("#learningRate").val(0.02);
-            $("#batchSize").val(128);
+            $("#epoch").val(3);
+            $("#learningRate").val(3.15484548538); //3e-5
+            $("#batchSize").val(8);
             layerShow('popLearn');
         }
 
@@ -516,7 +516,7 @@
                     </div>
                     <div class="td">
                         <div class="input">
-                            <input type="number" id="epoch" placeholder="Epoch를 입력하세요.(default : 20)" value="20">
+                            <input type="number" id="epoch" placeholder="Epoch를 입력하세요.(default : 3)" value="3">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -537,8 +537,8 @@
                     </div>
                     <div class="td">
                         <div class="input">
-                            <input type="number" id="learningRate" placeholder="Learning Rate를 입력하세요.(default : 0.02)"
-                                   value="0.02">
+                            <input type="number" id="learningRate" placeholder="Learning Rate를 입력하세요.(default : 3e-5)"
+                                   value="3.15484548538">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -559,15 +559,15 @@
                     </div>
                     <div class="td">
                         <div class="input">
-                            <input type="number" id="batchSize" placeholder="Batch Size를 입력하세요.(default : 128)"
-                                   value="128">
+                            <input type="number" id="batchSize" placeholder="Batch Size를 입력하세요.(default : 8)"
+                                   value="8">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
                         </div>
                     </div>
                 </div>
-                <div class="tr">
+                <!--<div class="tr">
                     <div class="th">
                         <strong>정답셋</strong>
                     </div>
@@ -587,7 +587,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>-->
             </div>
         </div>
         <div class="pop_foot">
