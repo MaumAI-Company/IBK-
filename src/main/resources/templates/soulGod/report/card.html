@@ -120,7 +120,7 @@
 
                         contents += outputContents;
                     } else {
-                        contents = '<tr><td colspan="2">추론 결과 데이터는 학습이 완료된 이후 열람 가능합니다.</td></tr>';
+                        contents = '<tr><td colspan="2">해당 데이터에 대한 AI 추론 결과가 없습니다.</td></tr>';
                     }
 
                     $('#detailBody').html(contents);
@@ -371,7 +371,8 @@
                     <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
                     <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
                     <td th:text="${item.cdn}"></td>
-                    <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>
+<!--                    <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>-->
+                    <td th:text="${item.bdgtTstmUseHms}"></td>
                     <td th:text="${item.amslAmt}"></td>
                     <td th:text="${item.afstNm}"></td>
                     <td th:text="${item.bzdyYn}"></td>
@@ -432,7 +433,8 @@
                     <td th:text="${idx.count}"></td>
                     <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
                     <td th:text="${item.cdn}"></td>
-                    <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>
+<!--                    <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>-->
+                    <td th:text="${item.bdgtTstmUseHms}"></td>
                     <td th:text="${item.amslAmt}"></td>
                     <td th:text="${item.afstNm}"></td>
                     <td th:text="${item.bzdyYn}"></td>
