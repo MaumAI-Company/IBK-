@@ -42,6 +42,7 @@
         ci.HDQR_BOB_DCD ,
         ci.CDN ,
         ci.FRRG_TS ,
+        ci.BDGT_TSTM_USE_HMS,
         ci.AMSL_AMT ,
         ci.AFST_NM ,
         ci.BZDY_YN,
