@@ -10,7 +10,8 @@
         co.LEARNING_MODEL_ID ,
         co.BDGT_ITEX_FRCS_PRB_CON ,
         co.BDGT_BSNS_FRCS_PRB_CON ,
-        co.BDGT_PRFR_RSN_FRCS_PRB_CON
+        co.BDGT_PRFR_RSN_FRCS_PRB_CON ,
+        ci.*
     </sql>
 
     <sql id="where">
@@ -21,7 +22,10 @@
             <include refid="columns"></include>
         from
             CARD_OUTPUT co
-                inner join LEARNING_MODEL lm on co.LEARNING_MODEL_ID = lm.ID
+        inner join LEARNING_MODEL lm on co.LEARNING_MODEL_ID = lm.ID
+        inner join CARD_INPUT ci ON co.TSTM_YMD = ci.TSTM_YMD
+            AND co.TSTM_NO = ci.TSTM_NO
+            AND co.BRCD = ci.BRCD
         where co.BRCD is not null
             AND co.TSTM_YMD = #{tstmYmd}
             AND co.TSTM_NO = #{tstmNo}

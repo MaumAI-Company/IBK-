@@ -17,6 +17,7 @@ public class LearningModelInputInfo {
 
     private InputColumnType inputColumnType;
     private String inputColumnNm;
+    private String inputColumnVal;
     private OutputColumnType outputColumnType;
     private String outputColumnNm;
 }
