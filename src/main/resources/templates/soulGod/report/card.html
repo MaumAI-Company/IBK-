@@ -2,6 +2,16 @@
 <html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <style>
+        #popDetail .tbl_write table th,
+        #popDetail .tbl_write table td{padding-top:2px;padding-bottom:2px}
+        #popDetail .tbl_write .in_table{border-radius:8px;border:1px solid #ebeff2;margin-top:4px}
+        #popDetail .tbl_write .in_table th{color:#6d7175;font-weight:600;font-size:13px;vertical-align:middle;border-bottom:1px solid #ebeff2;padding: 6px}
+        #popDetail .tbl_write .in_table th + th{border-left:1px solid #ebeff2}
+        #popDetail .tbl_write .in_table td{vertical-align:middle;border-bottom:1px solid #ebeff2;padding: 6px}
+        #popDetail .tbl_write .in_table td + td{border-left:1px solid #ebeff2}
+        #popDetail .tbl_write div + div{margin-top:12px}
+    </style>
     <script type="text/javascript">
         $(function () {
             fn_setDatePicker('#searchStartDate', {
@@ -466,6 +476,119 @@
                     <col style="width:auto">
                 </colgroup>
                 <tbody id="detailBody">
+                </tbody>
+
+                <tbody> <!--TODO: 채린님 요청-->
+                <tr>
+                    <th scope="row">output</th>
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong class="tit">예산 비목 정보</strong>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">비목 번호</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1순위</td>
+                                                <td>203099</td>
+                                                <td>38.31</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2순위</td>
+                                                <td>224010</td>
+                                                <td>36.11</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3순위</td>
+                                                <td>201002</td>
+                                                <td>26.25</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div>
+                                        <strong class="tit">예산 사업 ID</strong>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">사업 ID</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1순위</td>
+                                                <td>2638-2</td>
+                                                <td>38.31</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2순위</td>
+                                                <td>4366-34</td>
+                                                <td>16.46</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3순위</td>
+                                                <td>19710-1</td>
+                                                <td>5.41</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div>
+                                        <strong class="tit">비목 집행 사유</strong>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">비목 번호</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1순위</td>
+                                                <td>203099_3</td>
+                                                <td>28.95</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2순위</td>
+                                                <td>224010_4</td>
+                                                <td>26.27</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3순위</td>
+                                                <td>201002_2</td>
+                                                <td>15.1</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
