@@ -2,9 +2,12 @@
 <html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <link rel="stylesheet" href="/ClientUI/plugins/jquery-ui/jquery-ui.min.css">
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/index.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/monthpicker/jquery.mtz.monthpicker.js"></script>
     <style>
         .tbl_list {
             overflow: hidden
@@ -43,6 +46,8 @@
         .txt_guide {
             margin-top: 8px
         }
+
+        .mtz-monthpicker-year{background: #fff url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"%3E%3Cpath fill="%236d7175" d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71L8.46 9.17a1 1 0 0 0-1.41 0a1 1 0 0 0 0 1.42l4.24 4.24a1 1 0 0 0 1.42 0L17 10.59a1 1 0 0 0 0-1.42Z"%2F%3E%3C%2Fsvg%3E') no-repeat calc(100% - 11px) 50% / 20px auto}
     </style>
     <script type="text/javascript">
         $(function () {
@@ -72,6 +77,22 @@
                     $('.th_help_area').removeClass('active');
                 }
             });
+
+            //필터 - 기간검색
+            var currentYear = (new Date()).getFullYear();
+            var startYear = currentYear-10;
+            var options = {
+                startYear: startYear,
+                finalYear: currentYear,
+                pattern: 'yyyy-mm',
+                monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
+            };
+            $('#searchYMPicker').monthpicker(options);
+
+            $('.ui-datepicker').on('click',function(e) {
+                e.stopPropagation();
+            })
+
         });
 
         am5.ready(function () {
@@ -345,6 +366,15 @@
 
                             <div class="filter">
                                 <div class="inner">
+                                    <dl>
+                                        <dt>조회기간</dt>
+                                        <dd>
+                                            <div class="term_form">
+                                                <label for="searchYMPicker" class="blind">조회 날짜</label>
+                                                <input type="text" id="searchYMPicker" name="searchYMPicker" class="datepicker" readonly>
+                                            </div>
+                                        </dd>
+                                    </dl>
                                     <dl>
                                         <dt>
                                             <label for="searchTarget">대상</label>
