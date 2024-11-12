@@ -27,6 +27,7 @@ public class LLMService {
 
     private final LearningModelRepository learningModelRepository;
 
+    /* 0: 등록완료, 1: 오류, 2: 학습완료 3: 학습중 4: 배포완료, 5: 롤백완료, 6: 배포중, 7:학습중지 */
     public void trainModel(Integer modelId) {
         LearningModelInfo info = learningModelRepository.getLoad(modelId);
         if (info == null) {
@@ -46,7 +47,8 @@ public class LLMService {
             modelCfg.put("batch_size", info.getBatchSize());
             modelCfg.put("epochs", info.getEpoch());
             params.put("model_cfg", modelCfg);
-            params.put("file_name", info.getFileName());
+            //params.put("file_name", info.getFileName());
+            params.put("file_name", "test.txt");
 
             new Thread(new Runnable() {
                 @Override

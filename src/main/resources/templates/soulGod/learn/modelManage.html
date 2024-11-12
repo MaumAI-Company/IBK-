@@ -13,7 +13,9 @@
             width: calc((100% - 16px) / 3)
         }
 
-        .txt_guide{margin-top:8px}
+        .txt_guide {
+            margin-top: 8px
+        }
     </style>
     <script type="text/javascript">
         $(function () {
@@ -49,7 +51,7 @@
             if (checked.length) {
                 fn_initLearnPop();
             } else {
-                showAlert('warning', '학습할 모델을 1개 이상 선택하세요.');
+                showAlert('warning', '학습모델 선택은 필수입니다.');
                 return false;
             }
         }
@@ -410,14 +412,15 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th scope="col">
+                    <!--<th scope="col">
                         <div class="checkbox">
                             <input type="checkbox" name="chk" id="allChk" class="all_chk">
                             <label for="allChk">
                                 <span class="blind">전체선택</span>
                             </label>
                         </div>
-                    </th>
+                    </th>-->
+                    <th scope="col">선택</th>
                     <th scope="col">No</th>
                     <th scope="col">학습 모델 명</th>
                     <th scope="col">등록자</th>
@@ -434,8 +437,8 @@
                 <tbody>
                 <tr th:each="item,idx: ${list}">
                     <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}">
+                        <div class="radio">
+                            <input type="radio" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}">
                             <label th:for="${'chk_' + item.id}">
                                 <span class="blind">선택</span>
                             </label>
@@ -471,7 +474,7 @@
 
 
 <!--얼럿 : s-->
-<div id="alert" class="system_alert">
+<!--<div id="alert" class="system_alert">
     <div class="dim"></div>
     <div class="popup">
         <div class="pop_cont">
@@ -490,7 +493,7 @@
             </button>
         </div>
     </div>
-</div>
+</div>-->
 <!--얼럿 : e-->
 
 <!--얼럿 : s-->
