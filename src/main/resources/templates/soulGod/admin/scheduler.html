@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <style>
+        #popDetail .tbl_write table th,
+        #popDetail .tbl_write table td {
+            padding-top: 2px;
+            padding-bottom: 2px
+        }
+
+        #popDetail .tbl_write .in_table {
+            border-radius: 8px;
+            border: 1px solid #ebeff2;
+            margin-top: 4px
+        }
+
+        #popDetail .tbl_write .in_table th {
+            color: #6d7175;
+            font-weight: 600;
+            font-size: 13px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popDetail .tbl_write .in_table th + th {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popDetail .tbl_write .in_table td {
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popDetail .tbl_write .in_table td + td {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popDetail .tbl_write div + div {
+            margin-top: 12px
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+        });
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <th:block th:insert="~{soulGod/fragments/header}"></th:block>
+
+    <div id="container">
+        <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">Admin</h2>
+                    <h3 class="page_tit">학습 스케줄러 관리</h3>
+                </div>
+            </div>
+
+            <form id="form1">
+                <!--<input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>-->
+                <div class="board_top">
+                    <div>
+                        <div class="total_num"><b>3</b>
+                            개의 글이 있습니다.
+                        </div>
+                    </div>
+                    <!--<div class="mla">
+                        <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
+                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
+                                onchange="fn_search()">
+                            <option value="10" th:selected="${pagingInfo.criteria.recordsPerPage == 10}" selected>10개
+                            </option>
+                            <option value="20" th:selected="${pagingInfo.criteria.recordsPerPage == 20}">20개</option>
+                            <option value="30" th:selected="${pagingInfo.criteria.recordsPerPage == 30}">30개</option>
+                            <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
+                            <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
+                        </select>
+                        <label for="sorting" class="blind">정렬조건</label>
+                        <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
+                        </select>
+                    </div>-->
+                </div>
+            </form>
+            <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
+            <!--<div class="nodata">
+                <p>검색 결과가 없습니다.</p>
+            </div>-->
+            <!--데이터가 없을 때 : e-->
+
+            <table class="tbl_list">
+                <caption>학습 스케줄러 관리 : No, 스케줄러명, 모델명, 등록자, 상태, 최근 동작 일시, 등록일시로 구성</caption>
+                <colgroup>
+                    <col style="width: 45px;">
+                    <col style="width: 45px;">
+                    <col style="width: auto;">
+                    <col style="width: auto;">
+                    <col style="width: auto;">
+
+                    <col style="width: auto;">
+                    <col style="width: auto;">
+                    <col style="width: auto;">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="allChk" class="all_chk">
+                            <label for="allChk">
+                                <span class="blind">전체선택</span>
+                            </label>
+                        </div>
+                    </th>
+                    <th scope="col">No</th>
+                    <th scope="col">스케줄러명</th>
+                    <th scope="col">모델명</th>
+                    <th scope="col">등록자</th>
+
+                    <th scope="col">사용여부</th>
+                    <th scope="col">최근 동작 일시</th>
+                    <th scope="col">등록일시</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk_0">
+                            <label for="chk_0">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>1</td>
+                    <td>영업점_카드지급결의 학습모델 생성_Job</td>
+                    <td>영업점 학습모델 202408</td>
+                    <td>이덕구</td>
+
+                    <td>사용</td>
+                    <td>2024.11.05 00:00:00</td>
+                    <td>2024.02.22 12:22:33</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk_1">
+                            <label for="chk_1">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>2</td>
+                    <td>본부_카드지급결의 학습모델 생성_Job-1</td>
+                    <td>본부 학습모델 202410</td>
+                    <td>최지환</td>
+
+                    <td>사용</td>
+                    <td>2024.10.14 00:00:00</td>
+                    <td>2024.01.10 12:22:33</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="chk_2">
+                            <label for="chk_2">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td>3</td>
+                    <td>본부_카드지급결의 학습모델</td>
+                    <td>본부 학습모델 v1</td>
+                    <td>김정무</td>
+
+                    <td>미사용</td>
+                    <td>2024.11.30 12:00:00</td>
+                    <td>2022.12.04 00:30:00</td>
+                </tr>
+                </tbody>
+            </table>
+            <!--<th:block th:insert="~{soulGod/fragments/paging}"></th:block>-->
+        </div>
+    </div>
+</div>
+</body>
+</html>
