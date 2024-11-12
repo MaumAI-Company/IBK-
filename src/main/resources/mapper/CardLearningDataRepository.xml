@@ -104,5 +104,33 @@
         <if test="searchTarget != null and searchTarget != ''">
             AND cld.HDQR_BOB_DCD = #{searchTarget}
         </if>
+
+        /*검색어 zz검색*/
+        <if test="searchKeyword != null  and searchKeyword != ''">
+            <choose>
+                <when test="searchType != null and searchType != ''">
+                    <choose>
+                        <when test="searchType == '1'.toString()">
+                            AND cld.BRCD LIKE CONCAT('%', #{searchKeyword}, '%')
+                        </when>
+                        <when test="searchType == '2'.toString()">
+                            AND cld.CDN LIKE CONCAT('%', #{searchKeyword}, '%')
+                        </when>
+                        <when test="searchType == '3'.toString()">
+                            AND cld.BDMN_ITEX_MNGM_NO LIKE CONCAT('%', #{searchKeyword}, '%')
+                        </when>
+                        <when test="searchType == '4'.toString()">
+                            AND cld.BDGT_PRFR_RSN_FRCS_CON LIKE CONCAT('%', #{searchKeyword}, '%')
+                        </when>
+                    </choose>
+                </when>
+                <otherwise>
+                    AND (cld.BRCD LIKE CONCAT('%', #{searchKeyword}, '%')
+                    OR cld.CDN LIKE CONCAT('%', #{searchKeyword}, '%')
+                    OR cld.BDMN_ITEX_MNGM_NO LIKE CONCAT('%', #{searchKeyword}, '%')
+                    OR cld.BDGT_PRFR_RSN_FRCS_CON LIKE CONCAT('%', #{searchKeyword}, '%'))
+                </otherwise>
+            </choose>
+        </if>
     </sql>
 </mapper>
