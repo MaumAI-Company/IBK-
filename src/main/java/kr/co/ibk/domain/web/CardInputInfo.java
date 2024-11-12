@@ -26,6 +26,7 @@ public class CardInputInfo {
     private String tstmYmd;
     private String tstmNo;
     private String brcd;
+    private Integer no;
 }
 
 

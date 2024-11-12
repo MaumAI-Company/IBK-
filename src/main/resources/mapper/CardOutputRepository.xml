@@ -11,24 +11,33 @@
         co.BDGT_ITEX_FRCS_PRB_CON ,
         co.BDGT_BSNS_FRCS_PRB_CON ,
         co.BDGT_PRFR_RSN_FRCS_PRB_CON ,
+        co.no as outputNo ,
         ci.*
     </sql>
 
     <sql id="where">
     </sql>
 
-    <select id="getDetail" resultType="CardOutputInfo" parameterType="CardOutputForm">
+    <select id="getDetail" resultType="CardOutputInfo" parameterType="CardInputForm">
         select
             <include refid="columns"></include>
+            , lm.ID as learningModelId
         from
-            CARD_OUTPUT co
-        inner join LEARNING_MODEL lm on co.LEARNING_MODEL_ID = lm.ID
-        inner join CARD_INPUT ci ON co.TSTM_YMD = ci.TSTM_YMD
-            AND co.TSTM_NO = ci.TSTM_NO
-            AND co.BRCD = ci.BRCD
-        where co.BRCD is not null
-            AND co.TSTM_YMD = #{tstmYmd}
-            AND co.TSTM_NO = #{tstmNo}
-            AND co.BRCD = #{brcd}
+            CARD_INPUT ci
+        left join CARD_OUTPUT co ON ci.TSTM_YMD = co.TSTM_YMD
+            AND ci.TSTM_NO = co.TSTM_NO
+            AND ci.BRCD = co.BRCD
+        left join LEARNING_MODEL lm on co.LEARNING_MODEL_ID = lm.ID
+        where ci.BRCD is not null
+        <choose>
+            <when test="loadType != null">
+                AND ci.TSTM_YMD = #{tstmYmd}
+                AND ci.TSTM_NO = #{tstmNo}
+                AND ci.BRCD = #{brcd}
+            </when>
+            <otherwise>
+                AND ci.NO = #{no}
+            </otherwise>
+        </choose>
     </select>
 </mapper>

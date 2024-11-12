@@ -1,9 +1,11 @@
 package kr.co.ibk.service;
 
 import kr.co.ibk.domain.enums.InOutGbnType;
+import kr.co.ibk.domain.web.CardInputInfo;
 import kr.co.ibk.domain.web.CardOutputInfo;
 import kr.co.ibk.domain.web.LearningModelInputInfo;
-import kr.co.ibk.model.CardOutputForm;
+import kr.co.ibk.model.CardInputForm;
+import kr.co.ibk.repository.CardInputRepository;
 import kr.co.ibk.repository.CardOutputRepository;
 import kr.co.ibk.repository.LearningModelInputRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +21,11 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CardOutputService extends _BaseService {
 
+    private final CardInputRepository cardInputRepository;
     private final CardOutputRepository cardOutputRepository;
     private final LearningModelInputRepository learningModelInputRepository;
 
-    public CardOutputInfo detail(CardOutputForm params) {
+    public CardOutputInfo detail(CardInputForm params) {
         CardOutputInfo info = cardOutputRepository.getDetail(params);
 
         if (!ObjectUtils.isEmpty(info) && !ObjectUtils.isEmpty(info.getLearningModelId())) {
@@ -50,6 +53,29 @@ public class CardOutputService extends _BaseService {
                 info.setInputList(inputInfos);
             }
         }
+
+        //이전/다음글 no find
+        for (int i = 0; i < 2; i++) {
+            params.setLoadType(i == 0 ? "prev" : "next");
+
+            if (ObjectUtils.isEmpty(params.getSorting())) {
+                params.setSorting("desc");
+            }
+            CardInputInfo inputInfo = cardInputRepository.getInputKey(params);
+            if (!ObjectUtils.isEmpty(inputInfo)) {
+                params.setTstmYmd(inputInfo.getTstmYmd());
+                params.setTstmNo(inputInfo.getTstmNo());
+                params.setBrcd(inputInfo.getBrcd());
+
+                CardOutputInfo prevAndNext = cardOutputRepository.getDetail(params);
+                if (i == 0) {
+                    info.setPrevNo(prevAndNext.getNo());
+                } else {
+                    info.setNextNo(prevAndNext.getNo());
+                }
+            }
+        }
+
         return info;
     }
 

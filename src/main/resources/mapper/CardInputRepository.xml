@@ -26,7 +26,7 @@
         WHERE ci.BRCD is not null
         <include refid="where"></include>
         ORDER BY
-        ci.FRRG_TS
+        ci.NO
         <choose>
             <when test="sorting != null and sorting == 'asc'">
                 ASC
@@ -51,7 +51,8 @@
         co.BDGT_PRFR_RSN_FRCS_CON ,
         ci.TSTM_YMD ,
         ci.TSTM_NO ,
-        ci.BRCD
+        ci.BRCD ,
+        ci.NO
     </sql>
 
     <sql id="where">
@@ -151,5 +152,39 @@
                 DESC
             </otherwise>
         </choose>
+    </select>
+
+    <select id="getInputKey" resultType="CardInputInfo" parameterType="CardInputForm">
+        SELECT
+            ci.TSTM_YMD ,
+            ci.TSTM_NO ,
+            ci.BRCD
+        FROM
+            CARD_INPUT ci
+        LEFT JOIN CARD_OUTPUT co ON ci.TSTM_YMD = co.TSTM_YMD
+            AND ci.TSTM_NO = co.TSTM_NO
+            AND ci.BRCD = co.BRCD
+        WHERE
+            ci.BRCD is not null
+        <include refid="where"></include>
+        <choose>
+            <when test="(sorting == 'asc' and loadType == 'prev') or (sorting == 'desc' and loadType == 'next')">
+                and ci.NO &lt; #{no} <!--ci.NO < #{no}-->
+            </when>
+            <when test="(sorting == 'asc' and loadType == 'next') or (sorting == 'desc' and loadType == 'prev')">
+                and ci.NO &gt; #{no} <!--ci.NO > #{no}-->
+            </when>
+        </choose>
+        ORDER BY
+        ci.NO
+        <choose>
+            <when test="(sorting == 'asc' and loadType == 'next') or (sorting == 'desc' and loadType == 'prev')">
+                ASC
+            </when>
+            <when test="(sorting == 'asc' and loadType == 'prev') or (sorting == 'desc' and loadType == 'next')">
+                DESC
+            </when>
+        </choose>
+        limit 1
     </select>
 </mapper>

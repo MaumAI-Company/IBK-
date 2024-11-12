@@ -5,7 +5,6 @@ import kr.co.ibk.domain.web.CardInputInfo;
 import kr.co.ibk.domain.web.CardOutputInfo;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.model.CardInputForm;
-import kr.co.ibk.model.CardOutputForm;
 import kr.co.ibk.service.CardInputService;
 import kr.co.ibk.service.CardOutputService;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +70,7 @@ public class ReportController {
 
     @ResponseBody
     @PostMapping(value = {"/soulGod/report/card/detail"})
-    public CardOutputInfo cardDtail(@RequestBody CardOutputForm form) {
+    public CardOutputInfo cardDtail(@RequestBody CardInputForm form) {
         return cardOutputService.detail(form);
     }
 }

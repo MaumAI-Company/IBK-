@@ -6,12 +6,28 @@
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
     <style>
-        .tbl_list{overflow:hidden}
-        .tbl_list > thead > tr > th{padding:0 8px}
-        .tbl_list > tbody > tr > td{padding:0 8px}
+        .tbl_list {
+            overflow: hidden
+        }
+
+        .tbl_list > thead > tr > th {
+            padding: 0 8px
+        }
+
+        .tbl_list > tbody > tr > td {
+            padding: 0 8px
+        }
+
         @media screen and (max-width: 1851px) {
-            .tbl_wrap{width:100%; overflow-x: auto;white-space: nowrap}
-            .tbl_list{width:auto}
+            .tbl_wrap {
+                width: 100%;
+                overflow-x: auto;
+                white-space: nowrap
+            }
+
+            .tbl_list {
+                width: auto
+            }
         }
 
         #popLearnData .check_wrap {
@@ -24,7 +40,9 @@
             width: calc((100% - 16px) / 3)
         }
 
-        .txt_guide{margin-top:8px}
+        .txt_guide {
+            margin-top: 8px
+        }
     </style>
     <script type="text/javascript">
         $(function () {
@@ -144,8 +162,8 @@
          */
         function fn_learningDataOpen() {
             $('#learnName').val('');
-             $('.checkedY').prop('checked', true);
-             $('.checkedN').prop('checked', false);
+            $('.checkedY').prop('checked', true);
+            $('.checkedN').prop('checked', false);
 
             layerShow('popLearnData');
         }
@@ -281,7 +299,10 @@
                 <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
                 <div class="board_top">
                     <div>
-                        <div class="total_num"><b th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? pagingInfo.totalRecordCount : 0}"></b> 개의 글이 있습니다.</div>
+                        <div class="total_num"><b
+                                th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? pagingInfo.totalRecordCount : 0}"></b>
+                            개의 글이 있습니다.
+                        </div>
                     </div>
                     <div class="mla">
                         <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
@@ -295,7 +316,8 @@
                             <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
                         <label for="sortingTarget" class="blind">정렬조건</label>
-                        <select name="sortingTarget" id="sortingTarget" class="sel_board sel_sorting" onchange="fn_search()">
+                        <select name="sortingTarget" id="sortingTarget" class="sel_board sel_sorting"
+                                onchange="fn_search()">
                             <option value="1" th:selected="${params.sortingTarget == '1'}">부점코드</option>
                             <option value="2" th:selected="${params.sortingTarget == '2'}">카드번호</option>
                             <option value="3" th:selected="${params.sortingTarget == '3'}">가맹점명</option>
@@ -331,7 +353,41 @@
                                             </select>
                                         </dd>
                                     </dl>
+                                    <dl>
+                                        <dt>
+                                            <label>검색어</label>
+                                        </dt>
+                                        <dd>
+                                            <div class="search_form">
+                                                <label for="searchType" class="blind">검색어 타입</label>
+                                                <select name="searchType" id="searchType">
+                                                    <option value="" selected>전체</option>
+                                                    <option value="1" th:selected="${params.searchType == '1'}">부점코드
+                                                    </option>
+                                                    <option value="2" th:selected="${params.searchType == '2'}">카드번호
+                                                    </option>
+                                                    <option value="3" th:selected="${params.searchType == '3'}">
+                                                        예산비목정보내용
+                                                    </option>
+                                                    <option value="4" th:selected="${params.searchType == '4'}">비목집행사유내용
+                                                    </option>
+                                                    <option value="5" th:selected="${params.searchType == '5'}">예산사업ID내용
+                                                    </option>
+                                                </select>
+                                                <div class="search">
+                                                    <input type="search" th:field="${params.searchKeyword}"
+                                                           placeholder="검색어를 입력하세요.">
+                                                    <button type="button" class="btn_del" tabindex="-1">
+                                                        <span class="blind">삭제</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
                                     <div class="btn_area">
+                                        <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
+                                            <span>초기화</span>
+                                        </button>
                                         <button type="button" class="btn fill" onclick="fn_search()">
                                             <span>검색</span>
                                         </button>
@@ -676,12 +732,13 @@
                                     <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
                                            th:disabled="${T(kr.co.ibk.domain.enums.InputColumnType).BRCD == item ? true : false}"
                                            th:checked="${item.isChecked}"
-                                    th:class="${'checked' + (item.isChecked ? 'Y' : 'N')}">
+                                           th:class="${'checked' + (item.isChecked ? 'Y' : 'N')}">
                                     <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
                                 </div>
                             </th:block>
                         </div>
-                        <div class="txt_guide fc_primary">※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div> <!--todo : 퍼블-->
+                        <div class="txt_guide fc_primary">※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div>
+                        <!--todo : 퍼블-->
                     </td>
                 </tr>
                 <tr>

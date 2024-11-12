@@ -37,6 +37,10 @@ public class CardOutputInfo {
     private String afstBzn;
     private String amslAfstNo;
     private String afstTpbcd;
+
+    private Integer no;
+    private Integer prevNo;
+    private Integer nextNo;
 }
 
 

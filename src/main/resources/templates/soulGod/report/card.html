@@ -4,13 +4,43 @@
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <style>
         #popDetail .tbl_write table th,
-        #popDetail .tbl_write table td{padding-top:2px;padding-bottom:2px}
-        #popDetail .tbl_write .in_table{border-radius:8px;border:1px solid #ebeff2;margin-top:4px}
-        #popDetail .tbl_write .in_table th{color:#6d7175;font-weight:600;font-size:13px;vertical-align:middle;border-bottom:1px solid #ebeff2;padding: 6px}
-        #popDetail .tbl_write .in_table th + th{border-left:1px solid #ebeff2}
-        #popDetail .tbl_write .in_table td{vertical-align:middle;border-bottom:1px solid #ebeff2;padding: 6px}
-        #popDetail .tbl_write .in_table td + td{border-left:1px solid #ebeff2}
-        #popDetail .tbl_write div + div{margin-top:12px}
+        #popDetail .tbl_write table td {
+            padding-top: 2px;
+            padding-bottom: 2px
+        }
+
+        #popDetail .tbl_write .in_table {
+            border-radius: 8px;
+            border: 1px solid #ebeff2;
+            margin-top: 4px
+        }
+
+        #popDetail .tbl_write .in_table th {
+            color: #6d7175;
+            font-weight: 600;
+            font-size: 13px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popDetail .tbl_write .in_table th + th {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popDetail .tbl_write .in_table td {
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popDetail .tbl_write .in_table td + td {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popDetail .tbl_write div + div {
+            margin-top: 12px
+        }
     </style>
     <script type="text/javascript">
         $(function () {
@@ -51,16 +81,21 @@
 
         }
 
-        function fn_detail(ymd, no, brcd, type) { //(카드 증빙 일자 , 카드 증빙번호, 부점코드 )=> pk
-            if (!$.trim(ymd) || !$.trim(no) || !$.trim(brcd)) {
+        function fn_detail(no, type) { //(카드 증빙 일자 , 카드 증빙번호, 부점코드 )=> pk
+            if (!$.trim(no)) {
+                showAlert('warning', '잘못된 접근입니다.');
                 return false;
             }
 
             let jsonData = {
-                "tstmYmd": ymd,
-                "tstmNo": no,
-                "brcd": brcd,
-                "loadType": type
+                "no": no,
+                "loadType": type,
+                "sorting": $('#sorting').val(),
+                "searchStartDate": $('#searchStartDate').val(),
+                "searchEndDate": $('#searchEndDate').val(),
+                "searchTarget": $('#searchTarget').val(),
+                "searchType": $('#searchType').val(),
+                "searchKeyword": $('#searchKeyword').val()
             }
 
             $.ajax({
@@ -72,7 +107,7 @@
                 success: function (data) {
                     console.log(data);
                     let contents;
-                    if (data) {
+                    if (data.learningModelId) {
                         //input
                         if (data.inputList) {
                             let inputContents = `
@@ -85,12 +120,12 @@
                                                 <col style="width:auto">
                                             </colgroup>
                                             <tbody>`;
-                                                $.each(data.inputList, function (idx, item) {
-                                                    inputContents += '<tr> ' +
-                                                        '                        <th scope="row">' + item.inputColumnNm + '</th> ' +
-                                                        '                        <td>' + item.inputColumnVal + '</td> ' +
-                                                        '                    </tr>';
-                                                })
+                            $.each(data.inputList, function (idx, item) {
+                                inputContents += '<tr> ' +
+                                    '                        <th scope="row">' + item.inputColumnNm + '</th> ' +
+                                    '                        <td>' + item.inputColumnVal + '</td> ' +
+                                    '                    </tr>';
+                            })
                             inputContents += `</tbody>
                                         </table>
                                     </td>
@@ -134,14 +169,23 @@
                     }
 
                     $('#detailBody').html(contents);
-
+                    console.log(data.no);
                     //btn onclick function set
-                    $('.prevBtn').off('click').on('click', function() {
-                        fn_detail(ymd, no, brcd, 'prev');
-                    });
-                    $('.nextBtn').off('click').on('click', function() {
-                        fn_detail(ymd, no, brcd, 'next');
-                    });
+                    if (data.prevNo) {
+                        $('.prevBtn').off('click').on('click', function () {
+                            fn_detail(data.prevNo);
+                        }).prop('disabled', false);
+                    } else {
+                        $('.prevBtn').prop('disabled', true);
+                    }
+
+                    if (data.nextNo) {
+                        $('.nextBtn').off('click').on('click', function () {
+                            fn_detail(data.nextNo);
+                        }).prop('disabled', false);
+                    } else {
+                        $('.nextBtn').prop('disabled', true);
+                    }
 
                     layerShow('popDetail');
                 },
@@ -193,7 +237,6 @@
 
             <form id="form1">
                 <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
-
                 <div class="board_top">
                     <div>
                         <div class="total_num"><b
@@ -258,15 +301,15 @@
                                     </dl>
                                     <dl>
                                         <dt>
-                                            <label for="condition">선택조건</label>
+                                            <label for="searchType">검색구분</label>
                                         </dt>
                                         <dd>
-                                            <select name="condition" id="condition">
+                                            <select name="searchType" id="searchType">
                                                 <option value="" selected>전체</option>
-                                                <option value="1">비목관리번호</option>
-                                                <option value="2">집행사유코드</option>
-                                                <option value="3">예산(세부)사업ID</option>
-                                                <option value="4">부점</option>
+                                                <option value="1">예산비목정보내용</option>
+                                                <option value="2">비목집행사유내용</option>
+                                                <option value="3">예산사업ID내용</option>
+                                                <option value="4">부점코드</option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -276,7 +319,7 @@
                                         </dt>
                                         <dd>
                                             <div class="search_form">
-                                                <label for="searchType" class="blind">검색어 타입</label>
+                                                <!--<label for="searchType" class="blind">검색어 타입</label>
                                                 <select name="searchType" id="searchType">
                                                     <option value="" selected>전체</option>
                                                     <option value="1" th:selected="${params.searchType == '1'}">카드번호
@@ -288,7 +331,7 @@
                                                     </option>
                                                     <option value="4" th:selected="${params.searchType == '4'}">집행사유내용
                                                     </option>
-                                                </select>
+                                                </select>-->
                                                 <div class="search">
                                                     <input type="search" th:field="${params.searchKeyword}"
                                                            placeholder="검색어를 입력하세요.">
@@ -381,7 +424,7 @@
                     <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
                     <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
                     <td th:text="${item.cdn}"></td>
-<!--                    <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>-->
+                    <!--                    <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>-->
                     <td th:text="${item.bdgtTstmUseHms}"></td>
                     <td th:text="${item.amslAmt}"></td>
                     <td th:text="${item.afstNm}"></td>
@@ -391,7 +434,7 @@
                     <td th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
                     <td>
                         <button type="button" class="badge"
-                                th:onclick="fn_detail([[${item.tstmYmd}]], [[${item.tstmNo}]], [[${item.brcd}]])">
+                                th:onclick="fn_detail([[${item.no}]])">
                             <i class="ico_plus"></i>
                             <span>상세보기</span>
                         </button>
@@ -443,7 +486,7 @@
                     <td th:text="${idx.count}"></td>
                     <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
                     <td th:text="${item.cdn}"></td>
-<!--                    <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>-->
+                    <!--                    <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>-->
                     <td th:text="${item.bdgtTstmUseHms}"></td>
                     <td th:text="${item.amslAmt}"></td>
                     <td th:text="${item.afstNm}"></td>
@@ -584,7 +627,6 @@
                                     </div>
                                 </td>
                             </tr>
-
                             </tbody>
                         </table>
                     </td>
