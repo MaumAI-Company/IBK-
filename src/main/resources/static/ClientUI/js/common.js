@@ -163,12 +163,12 @@ function validFile(selector) {
         let fileSize = fileObj.size;
 
         if (!allowedExtensions.exec(filename) || !["image/jpeg", "image/png", "image/jpg"].includes(fileType)) {
-            showAlert('alert', '유효하지 않은 파일 유형입니다.');
+            showAlert('warning', '유효하지 않은 파일 유형입니다.');
             retVal = false;
         }
 
         if (fileSize > maxSize) {
-            showAlert('alert', '파일사이즈가 10MB가 넘습니다.');
+            showAlert('warning', '파일사이즈가 10MB가 넘습니다.');
             retVal = false;
         }
     });
@@ -579,7 +579,7 @@ function fnTableToExcel(tableId, fileNm, callback) {
             callback();
         }
     } else {
-        alert("존재하지 않는 테이블 입니다.");
+        showAlert("warning", "존재하지 않는 테이블 입니다.");
         return false;
     }
 }
@@ -594,4 +594,8 @@ function getCookie(cookieName) {
         }
     }
     return cookieValue;
+}
+
+function fn_KorEngOnly(obj) {
+    obj.value = obj.value.replace(/[^가-힣a-zA-Z\s]/g, '');
 }

@@ -45,6 +45,7 @@ public class MainController {
 //        model.addAttribute("loginDtm", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd(E) HH:mm:ss")));
         model.addAttribute("pageTitle", "대시보드");
 
-        return "/soulGod/main";
+//        return "/soulGod/main";
+        return "redirect:/soulGod/report/card";
     }
 }

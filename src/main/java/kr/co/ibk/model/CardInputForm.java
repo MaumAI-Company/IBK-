@@ -15,6 +15,7 @@ public class CardInputForm extends PageForm {
     private String tstmYmd;
     private String tstmNo;
     private String brcd;
+    private Integer no;
     private String loadType;
 }
 

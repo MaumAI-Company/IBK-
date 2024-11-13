@@ -23,6 +23,24 @@ public class CardOutputInfo {
 
     private List<LearningModelInputInfo> inputList;
     private List<LearningModelInputInfo> outputList;
+
+    /*input columns*/
+    private String brcd;
+    private String cdn;
+    private String bdgtTstmUseHms;
+    private Integer amslAmt;
+    private String afstNm;
+    private String tpbsNm;
+    private String bzdyYn;
+    private String afstDtlAdr;
+    private String brncAdr;
+    private String afstBzn;
+    private String amslAfstNo;
+    private String afstTpbcd;
+
+    private Integer no;
+    private Integer prevNo;
+    private Integer nextNo;
 }
 
 

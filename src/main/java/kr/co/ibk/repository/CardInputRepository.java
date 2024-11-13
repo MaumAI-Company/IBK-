@@ -15,4 +15,6 @@ public interface CardInputRepository {
     CardInputInfo getDetail(CardInputForm params);
 
     List<CardInputInfo> getAllList(CardInputForm params);
+
+    CardInputInfo getInputKey(CardInputForm params);
 }

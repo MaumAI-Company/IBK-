@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class CardOutputForm extends PageForm {
-    private String tstmYmd;
-    private String tstmNo;
-    private String brcd;
+    private String no;
     private String loadType;
 }
 

@@ -76,7 +76,8 @@
        cld.BRNC_ADR, /*부점주소*/
        cld.AFST_BZN, /*가맹점사업자등록번호*/
        cld.AMSL_AFST_NO, /*매출가맹점번호*/
-       cld.AFST_TPBCD /*가맹점업종코드*/
+       cld.AFST_TPBCD, /*가맹점업종코드*/
+       cld.BDGT_PRFR_YM /*예산집행년월*/
     </sql>
 
     <select id="getLearningList" resultType="CardLearningDataInfo" parameterType="SearchForm">
@@ -102,6 +103,34 @@
         /*대상 검색*/
         <if test="searchTarget != null and searchTarget != ''">
             AND cld.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+
+        /*검색어 zz검색*/
+        <if test="searchKeyword != null  and searchKeyword != ''">
+            <choose>
+                <when test="searchType != null and searchType != ''">
+                    <choose>
+                        <when test="searchType == '1'.toString()">
+                            AND cld.BRCD LIKE CONCAT('%', #{searchKeyword}, '%')
+                        </when>
+                        <when test="searchType == '2'.toString()">
+                            AND cld.CDN LIKE CONCAT('%', #{searchKeyword}, '%')
+                        </when>
+                        <when test="searchType == '3'.toString()">
+                            AND cld.BDMN_ITEX_MNGM_NO LIKE CONCAT('%', #{searchKeyword}, '%')
+                        </when>
+                        <when test="searchType == '4'.toString()">
+                            AND cld.BDGT_PRFR_RSN_FRCS_CON LIKE CONCAT('%', #{searchKeyword}, '%')
+                        </when>
+                    </choose>
+                </when>
+                <otherwise>
+                    AND (cld.BRCD LIKE CONCAT('%', #{searchKeyword}, '%')
+                    OR cld.CDN LIKE CONCAT('%', #{searchKeyword}, '%')
+                    OR cld.BDMN_ITEX_MNGM_NO LIKE CONCAT('%', #{searchKeyword}, '%')
+                    OR cld.BDGT_PRFR_RSN_FRCS_CON LIKE CONCAT('%', #{searchKeyword}, '%'))
+                </otherwise>
+            </choose>
         </if>
     </sql>
 </mapper>

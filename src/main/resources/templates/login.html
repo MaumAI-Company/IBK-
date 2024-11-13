@@ -28,7 +28,7 @@
             }
             let errormsg = $("#errormsg").val();
             if (errormsg) {
-                showAlert("exclamation", errormsg);
+                showAlert("warning", errormsg);
             }
             $('input[id="userId"]').keydown(function (e) {
                 if (e.keyCode === 13) {
@@ -52,12 +52,12 @@
             let userPw = $('#userPw');
 
             if (!$.trim(userId.val())) {
-                alert('아이디를 입력해 주세요.');
+                showAlert('warning', '아이디를 입력해 주세요.');
                 userId.focus();
                 return false;
             }
             if (!$.trim(userPw.val())) {
-                alert('비밀번호를 입력해 주세요.');
+                showAlert('warning', '비밀번호를 입력해 주세요.');
                 userPw.focus();
                 return false;
             }

@@ -2,16 +2,35 @@
 <html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <link rel="stylesheet" href="/ClientUI/plugins/jquery-ui/jquery-ui.min.css">
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/index.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/monthpicker/jquery.mtz.monthpicker.js"></script>
     <style>
-        .tbl_list{overflow:hidden}
-        .tbl_list > thead > tr > th{padding:0 8px}
-        .tbl_list > tbody > tr > td{padding:0 8px}
+        .tbl_list {
+            overflow: hidden
+        }
+
+        .tbl_list > thead > tr > th {
+            padding: 0 8px
+        }
+
+        .tbl_list > tbody > tr > td {
+            padding: 0 8px
+        }
+
         @media screen and (max-width: 1851px) {
-            .tbl_wrap{width:100%; overflow-x: auto;white-space: nowrap}
-            .tbl_list{width:auto}
+            .tbl_wrap {
+                width: 100%;
+                overflow-x: auto;
+                white-space: nowrap
+            }
+
+            .tbl_list {
+                width: auto
+            }
         }
 
         #popLearnData .check_wrap {
@@ -24,7 +43,11 @@
             width: calc((100% - 16px) / 3)
         }
 
-        .txt_guide{margin-top:8px}
+        .txt_guide {
+            margin-top: 8px
+        }
+
+        .mtz-monthpicker-year{background: #fff url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"%3E%3Cpath fill="%236d7175" d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71L8.46 9.17a1 1 0 0 0-1.41 0a1 1 0 0 0 0 1.42l4.24 4.24a1 1 0 0 0 1.42 0L17 10.59a1 1 0 0 0 0-1.42Z"%2F%3E%3C%2Fsvg%3E') no-repeat calc(100% - 11px) 50% / 20px auto}
     </style>
     <script type="text/javascript">
         $(function () {
@@ -54,6 +77,22 @@
                     $('.th_help_area').removeClass('active');
                 }
             });
+
+            //필터 - 기간검색
+            var currentYear = (new Date()).getFullYear();
+            var startYear = currentYear-10;
+            var options = {
+                startYear: startYear,
+                finalYear: currentYear,
+                pattern: 'yyyy-mm',
+                monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
+            };
+            $('#searchYMPicker').monthpicker(options);
+
+            $('.ui-datepicker').on('click',function(e) {
+                e.stopPropagation();
+            })
+
         });
 
         am5.ready(function () {
@@ -144,8 +183,8 @@
          */
         function fn_learningDataOpen() {
             $('#learnName').val('');
-             $('.checkedY').prop('checked', true);
-             $('.checkedN').prop('checked', false);
+            $('.checkedY').prop('checked', true);
+            $('.checkedN').prop('checked', false);
 
             layerShow('popLearnData');
         }
@@ -243,6 +282,12 @@
             frm.submit();
         }
 
+        function fn_reset() {
+            $('#searchTarget').val('').niceSelect('update');
+            $('#searchType').val('').niceSelect('update');
+            $('#searchKeyword').val('');
+        }
+
     </script>
 </head>
 <body>
@@ -281,7 +326,10 @@
                 <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
                 <div class="board_top">
                     <div>
-                        <div class="total_num"><b th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? pagingInfo.totalRecordCount : 0}"></b> 개의 글이 있습니다.</div>
+                        <div class="total_num"><b
+                                th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? pagingInfo.totalRecordCount : 0}"></b>
+                            개의 글이 있습니다.
+                        </div>
                     </div>
                     <div class="mla">
                         <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
@@ -295,7 +343,8 @@
                             <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
                         <label for="sortingTarget" class="blind">정렬조건</label>
-                        <select name="sortingTarget" id="sortingTarget" class="sel_board sel_sorting" onchange="fn_search()">
+                        <select name="sortingTarget" id="sortingTarget" class="sel_board sel_sorting"
+                                onchange="fn_search()">
                             <option value="1" th:selected="${params.sortingTarget == '1'}">부점코드</option>
                             <option value="2" th:selected="${params.sortingTarget == '2'}">카드번호</option>
                             <option value="3" th:selected="${params.sortingTarget == '3'}">가맹점명</option>
@@ -318,6 +367,15 @@
                             <div class="filter">
                                 <div class="inner">
                                     <dl>
+                                        <dt>조회기간</dt>
+                                        <dd>
+                                            <div class="term_form">
+                                                <label for="searchYMPicker" class="blind">조회 날짜</label>
+                                                <input type="text" id="searchYMPicker" name="searchYMPicker" class="datepicker" readonly>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <dl>
                                         <dt>
                                             <label for="searchTarget">대상</label>
                                         </dt>
@@ -331,7 +389,41 @@
                                             </select>
                                         </dd>
                                     </dl>
+                                    <dl>
+                                        <dt>
+                                            <label>검색어</label>
+                                        </dt>
+                                        <dd>
+                                            <div class="search_form">
+                                                <label for="searchType" class="blind">검색어 타입</label>
+                                                <select name="searchType" id="searchType">
+                                                    <option value="" selected>전체</option>
+                                                    <option value="1" th:selected="${params.searchType == '1'}">부점코드
+                                                    </option>
+                                                    <option value="2" th:selected="${params.searchType == '2'}">카드번호
+                                                    </option>
+                                                    <option value="3" th:selected="${params.searchType == '3'}">
+                                                        예산비목정보내용
+                                                    </option>
+                                                    <option value="4" th:selected="${params.searchType == '4'}">비목집행사유내용
+                                                    </option>
+                                                    <option value="5" th:selected="${params.searchType == '5'}">예산사업ID내용
+                                                    </option>
+                                                </select>
+                                                <div class="search">
+                                                    <input type="search" th:field="${params.searchKeyword}"
+                                                           placeholder="검색어를 입력하세요.">
+                                                    <button type="button" class="btn_del" tabindex="-1">
+                                                        <span class="blind">삭제</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
                                     <div class="btn_area">
+                                        <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
+                                            <span>초기화</span>
+                                        </button>
                                         <button type="button" class="btn fill" onclick="fn_search()">
                                             <span>검색</span>
                                         </button>
@@ -372,6 +464,7 @@
                         <col style="width: auto">
                         <col style="width: auto">
                         <col style="width: 7%">
+                        <col style="width: 7%">
 
                         <col style="width: 6.5%;">
                         <col style="width: 7%;">
@@ -395,6 +488,7 @@
                         <th scope="col">가맹점사업자등록번호</th>
                         <th scope="col">매출가맹점번호</th>
                         <th scope="col">가맹점업종코드</th>
+                        <th scope="col">예산집행년월</th>
 
                         <th scope="col" style="background-color:#f9f9ff">예산관리비목관리번호</th>
                         <th scope="col" style="background-color:#f9f9ff">예산집행사유코드</th> <!--예산관리비목관리번호_예산집행사유코드-->
@@ -420,6 +514,7 @@
                         <td th:text="${item.afstBzn}"></td>
                         <td th:text="${item.amslAfstNo}"></td>
                         <td th:text="${item.afstTpbcd}"></td>
+                        <td th:text="${item.bdgtPrfrYm}"></td>
                         <!--output data : e-->
 
                         <td th:text="${item.bdmnItexMngmNo}" style="background-color:#f9f9ff"></td>
@@ -673,12 +768,13 @@
                                     <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
                                            th:disabled="${T(kr.co.ibk.domain.enums.InputColumnType).BRCD == item ? true : false}"
                                            th:checked="${item.isChecked}"
-                                    th:class="${'checked' + (item.isChecked ? 'Y' : 'N')}">
+                                           th:class="${'checked' + (item.isChecked ? 'Y' : 'N')}">
                                     <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
                                 </div>
                             </th:block>
                         </div>
-                        <div class="txt_guide fc_primary">※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div> <!--todo : 퍼블-->
+                        <div class="txt_guide fc_primary">※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div>
+                        <!--todo : 퍼블-->
                     </td>
                 </tr>
                 <tr>

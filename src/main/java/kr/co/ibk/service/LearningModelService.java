@@ -40,6 +40,7 @@ public class LearningModelService extends _BaseService {
     private final LearningModelRepository learningModelRepository;
     private final LearningModelInputRepository learningModelInputRepository;
     private final CardLearningDataRepository cardLearningDataRepository;
+    private final LLMService llmService;
 
     public HashMap<String, Object> save(LearningModelForm form, MemberInfo memberInfo) {
         HashMap<String, Object> map = new HashMap<>();
@@ -181,6 +182,8 @@ public class LearningModelService extends _BaseService {
             update.setLearningRate(form.getLearningRate());
             update.setBatchSize(form.getBatchSize());
             learningModelRepository.updateFile(update);
+
+            //llmService.trainModel(form.getId());
 
             map.put("status", "SUCCESS");
         } catch (Exception e) {

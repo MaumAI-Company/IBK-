@@ -3,524 +3,530 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <script th:inline="javascript">
-    /*<![CDATA[*/
-    	var treeList = [[${result}]];
-    /*]]>*/
+        /*<![CDATA[*/
+        let treeList = [[${result}]];
+        /*]]>*/
     </script>
     <script type="text/javascript">
-        $(function(){
+        $(function () {
         });
 
-//메뉴 트리를 object로 return 
-function fnMakeDeptTreeJson(treeList, id) {
-    var deptChildrenArr = new Array();
-    var deptChildrenObj = new Object();
-    var obj = new Object();
-    if (treeList.LookUp('parId', id, 'deptId') == '') {
-        obj.id = treeList.LookUp('deptId', id, 'deptId');
-        obj.name = treeList.LookUp('deptId', id, 'deptName');
-        return obj;
-    } else {
-        obj.id = treeList.LookUp('deptId', id, 'deptId');
-        obj.name = treeList.LookUp('deptId', id, 'deptName');	    	
-    	obj.children = fnMakeDeptTreeChildren(treeList, id);	
-        return obj;
-    }
-}
-
-//상위 메뉴트리가 메타 데이터에서 존재하면, 재귀처리
-function fnMakeDeptTreeChildren(treeList, id) {
-    var arr = new Array();
-    treeList.forEach(function (obj, idx) {
-        if (obj.parId == id) {
-            var dept = new Object();
-            dept.id = obj.deptId;
-            dept.name = obj.deptName;
-            if (treeList.LookUp('parId', obj.deptId, 'deptId') != '') {
-            	dept.children = fnMakeDeptTreeChildren(treeList, obj.deptId);
+        //메뉴 트리를 object로 return
+        function fnMakeDeptTreeJson(treeList, id) {
+            let deptChildrenArr = new Array();
+            let deptChildrenObj = new Object();
+            let obj = new Object();
+            if (treeList.LookUp('parId', id, 'deptId') == '') {
+                obj.id = treeList.LookUp('deptId', id, 'deptId');
+                obj.name = treeList.LookUp('deptId', id, 'deptName');
+                return obj;
+            } else {
+                obj.id = treeList.LookUp('deptId', id, 'deptId');
+                obj.name = treeList.LookUp('deptId', id, 'deptName');
+                obj.children = fnMakeDeptTreeChildren(treeList, id);
+                return obj;
             }
-            arr.push(dept);
         }
-    });
-    return arr;
-}
 
-//메뉴 정보 상세 초기화
-function fnClearDetailLayout(){
-	var input = $('#detail_layout').find('input');
-	//input의 text타입을 초기화한다.
-	$.each(input,function(idx,obj){
-	    var inputType = $(obj).attr('type');
-	    if(inputType == 'text'){
-	        $(obj).val('');
-	        $(obj).prop('disabled',true);
-	    }
-	});
-	//라디오 초기화
-	$('input:radio[name="detail_deptStat"][value="use"]').prop('checked', true);
-	$('input:radio[name="detail_deptStat"]').prop('disabled', true);
-	//메뉴 정보 상세에서 사용하는 id가 있는 td초기화
-	var td = $('#detail_layout').find('tr > td');
-	//input의 text타입을 초기화한다.
-	$.each(td,function(idx,obj){
-	    var tdId = $(obj).attr('id');
-	    if(tdId !== undefined){
-	        $(obj).text('');
-	    }    
-	});
-}
-
-//메뉴 정보 상세 데이터
-function fnGetDetailLayoutData(id,val){
-	var input = $('#detail_layout').find('input');
-	//input의 text타입을 초기화한다.
-	$.each(input,function(idx,obj){
-	    var inputType = $(obj).attr('type');
-	    var inputId = $(obj).attr('id');
-	    if(inputType == 'text' && inputId !== undefined && inputId.replace('detail_','') == id){
-	        $(obj).val(val);
-	        $(obj).prop('disabled',false);
-	    }else if (inputType == 'hidden' && inputId !== undefined && inputId.replace('detail_','') == id){
-	        $(obj).val(val);
-	        $(obj).prop('disabled',false);
-	    }
-	});
-	//이전 부서코드 지정
-	$('#detail_deptCodePrev').val($('#detail_deptCode').val());
-
-	//라디오 지정
-	if(id == 'deptStat'){
-		console.log('deptStat', val);
-		$('input:radio[name="detail_deptStat"][value="'+val+'"]').prop('checked', true);
-		$('input:radio[name="detail_deptStat"]').prop('disabled', false);
-	}
-	
-	//메뉴 정보 상세에서 사용하는 id가 있는 td초기화
-	var td = $('#detail_layout').find('tr > td');
-	//input의 text타입을 초기화한다.
-	$.each(td,function(idx,obj){
-	    var tdId = $(obj).attr('id');
-	    if(tdId !== undefined && (tdId.replace('detail_','') == id)){
-	        $(obj).text(val);
-	    }    
-	});
-}
-
-$(document).ready(function(){
-	
-	fnClearDetailLayout();
-	//초기 root data 생성
-	var data = new Array();
-	var tree = new Array();
-	//meta data 생성
-	treeList.forEach(function (obj, idx) {
-	    var deptObj = new Object();
-	    //반복처리 하나의 겟을 만든다.
-	    if (obj.parId === 'system') { 
-	        deptObj.id = obj.deptId;
-	        deptObj.name = decodeURIComponent(obj.deptName);
-	        tree.push(deptObj);
-	    }
-	});
-
-	$.each(tree, function (idx, obj) {
-	    var deptObj = new Object();
-	    deptObj = fnMakeDeptTreeJson(treeList, obj.id);
-	    data.push(deptObj);
-	});
-    
-    var $jqtree = $("#deptList");
-    $jqtree.tree({
-        data: data,
-        onCreateLi: function(node, $li) {
-            // Add 'icon' span before title
-            console.log('createLi : ',node);
-        	var deptId = node.id
-            var keys = Object.keys(treeList[0]);
-            $.each(keys,function(idx,key){
-            	var elId = 'li_'+key;
-            	var elHtml = '<input type="hidden" id="" value="">';
-            	elHtml = $(elHtml).attr('id',elId);
-            	elHtml = $(elHtml).attr('value',treeList.LookUp('deptId', deptId, key));
-            	$li.find('.jqtree-title').after(elHtml);
+        //상위 메뉴트리가 메타 데이터에서 존재하면, 재귀처리
+        function fnMakeDeptTreeChildren(treeList, id) {
+            let arr = new Array();
+            treeList.forEach(function (obj, idx) {
+                if (obj.parId == id) {
+                    let dept = new Object();
+                    dept.id = obj.deptId;
+                    dept.name = obj.deptName;
+                    if (treeList.LookUp('parId', obj.deptId, 'deptId') != '') {
+                        dept.children = fnMakeDeptTreeChildren(treeList, obj.deptId);
+                    }
+                    arr.push(dept);
+                }
             });
-        },
-        autoOpen: true,
-        usecontextdept: true            
-    });
-    
-    $jqtree.on(
-    	    'tree.select',
-    	    function(event) {
-    	        if (event.node) {
-    	        	console.log('tree.select : ',event.node);
-                	var deptId = event.node.id
-                    var keys = Object.keys(treeList[0]);
-                    $.each(keys,function(idx,key){
-                    	var id = key;
-						var val = '';
-                    	if(id == 'deptRegDt'){
-                    		var deptDt = treeList.LookUp('deptId', deptId, 'deptRegDt');
-                    		var deptTime = treeList.LookUp('deptId', deptId, 'deptRegTime');
-                    		val = (DateUtils.convertDateKo(deptDt) + ' ' + DateUtils.convertTimeKo(deptTime));
-                    	}else if(id == 'deptModDt'){
-                    		var deptDt = treeList.LookUp('deptId', deptId, 'deptModDt');
-                    		var deptTime = treeList.LookUp('deptId', deptId, 'deptModTime');
-                    		val = (DateUtils.convertDateKo(deptDt) + ' ' + DateUtils.convertTimeKo(deptTime));
-                    	}else{
-                        	val = treeList.LookUp('deptId', deptId, key);
-                    	}
-                    	fnGetDetailLayoutData(id,val);
+            return arr;
+        }
+
+        //메뉴 정보 상세 초기화
+        function fnClearDetailLayout() {
+            let input = $('#detail_layout').find('input');
+            //input의 text타입을 초기화한다.
+            $.each(input, function (idx, obj) {
+                let inputType = $(obj).attr('type');
+                if (inputType == 'text') {
+                    $(obj).val('');
+                    $(obj).prop('disabled', true);
+                }
+            });
+            //선택된 부서id 초기화
+            $('#detail_deptId').val('');
+
+            //라디오 초기화
+            $('input:radio[name="detail_deptStat"][value="use"]').prop('checked', true);
+            $('input:radio[name="detail_deptStat"]').prop('disabled', true);
+            //메뉴 정보 상세에서 사용하는 id가 있는 td초기화
+            let td = $('#detail_layout').find('tr > td');
+            //input의 text타입을 초기화한다.
+            $.each(td, function (idx, obj) {
+                let tdId = $(obj).attr('id');
+                if (tdId !== undefined) {
+                    $(obj).text('');
+                }
+            });
+        }
+
+        //메뉴 정보 상세 데이터
+        function fnGetDetailLayoutData(id, val) { //todo1
+            let input = $('#detail_layout').find('input');
+            //input의 text타입을 초기화한다.
+            $.each(input, function (idx, obj) {
+                let inputType = $(obj).attr('type');
+                let inputId = $(obj).attr('id');
+                if (inputType == 'text' && inputId !== undefined && inputId.replace('detail_', '') == id) {
+                    $(obj).val(val);
+                    $(obj).prop('disabled', false);
+                } else if (inputType == 'hidden' && inputId !== undefined && inputId.replace('detail_', '') == id) {
+                    $(obj).val(val);
+                    $(obj).prop('disabled', false);
+                }
+            });
+            //이전 부서코드 지정
+            $('#detail_deptCodePrev').val($('#detail_deptCode').val());
+
+            //라디오 지정
+            if (id == 'deptStat') {
+                console.log('deptStat', val);
+                $('input:radio[name="detail_deptStat"][value="' + val + '"]').prop('checked', true);
+                $('input:radio[name="detail_deptStat"]').prop('disabled', false);
+            }
+
+            //메뉴 정보 상세에서 사용하는 id가 있는 td초기화
+            let td = $('#detail_layout').find('tr > td');
+            //input의 text타입을 초기화한다.
+            $.each(td, function (idx, obj) {
+                let tdId = $(obj).attr('id');
+                if (tdId !== undefined && (tdId.replace('detail_', '') == id)) {
+                    $(obj).text(val);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+
+            fnClearDetailLayout();
+            //초기 root data 생성
+            let data = new Array();
+            let tree = new Array();
+            //meta data 생성
+            treeList.forEach(function (obj, idx) {
+                let deptObj = new Object();
+                //반복처리 하나의 겟을 만든다.
+                if (obj.parId === 'system') {
+                    deptObj.id = obj.deptId;
+                    deptObj.name = decodeURIComponent(obj.deptName);
+                    tree.push(deptObj);
+                }
+            });
+
+            $.each(tree, function (idx, obj) {
+                let deptObj = new Object();
+                deptObj = fnMakeDeptTreeJson(treeList, obj.id);
+                data.push(deptObj);
+            });
+
+            let $jqtree = $("#deptList");
+            $jqtree.tree({
+                data: data,
+                onCreateLi: function (node, $li) {
+                    // Add 'icon' span before title
+                    console.log('createLi : ', node);
+                    let deptId = node.id
+                    let keys = Object.keys(treeList[0]);
+                    $.each(keys, function (idx, key) {
+                        let elId = 'li_' + key;
+                        let elHtml = '<input type="hidden" id="" value="">';
+                        elHtml = $(elHtml).attr('id', elId);
+                        elHtml = $(elHtml).attr('value', treeList.LookUp('deptId', deptId, key));
+                        $li.find('.jqtree-title').after(elHtml);
                     });
-    	        }else{
-    	        	fnClearDetailLayout();
-    	        }
-    	    }
-    	);        
-});
+                },
+                autoOpen: true,
+                usecontextdept: true
+            });
 
-function modDept(){
- 	// 공백제거
-	$('#detail_deptId').val($('#detail_deptId').val().trim()); // 부서 ID
-	$('#detail_deptCodePrev').val($('#detail_deptCodePrev').val().trim()); // 이전 부서코드
-	$('#detail_deptCode').val($('#detail_deptCode').val().trim()); // 부서코드
-	$('#detail_deptName').val($('#detail_deptName').val().trim()); // 부서명
-	$('#detail_deptEngName').val($('#detail_deptEngName').val().trim()); // 부서명(영문)
-	
-	// value Get
-	var $detail_deptId = $('#detail_deptId').val();
-	var $detail_deptCodePrev = $('#detail_deptCodePrev').val();
-	var $detail_deptCode = $('#detail_deptCode').val();
-	var $detail_deptName = $('#detail_deptName').val();
-	var $detail_deptEngName = $('#detail_deptEngName').val();
-	
-	 // radio
-	 var $detail_deptStat = $("input[name='detail_deptStat']:checked").val(); // 상태 
-	 
-	 // 변경될 CODE 값 관련
-	 var $modDeptCode;
-	 if ($detail_deptCode != $detail_deptCodePrev){
-		 $modDeptCode = $detail_deptCode;
-	 } else {
-		 $modDeptCode = null;
-	 }
-	
-	if(confirm("수정하시겠습니까?")){
-		var jsonData = {
-		    deptId : $detail_deptId
-		    , deptCode : $modDeptCode
-		    , deptName : $detail_deptName
-		    , deptEngName : $detail_deptEngName
-		    , deptStat : $detail_deptStat
-		    , deptModId : $('#sessionMemId').val()
-		};
-		// 부서 수정 실행
-		ajaxModDept(jsonData);
-	}
-	return;
-}
-//부서 수정
-function ajaxModDept(jsonData){
-	$.ajax({
-		url : "/soulGod/admin/department/mod",
-		type : "post",
-		async : false,
-		data : jsonData,
-		dataType: "json",
-		success : function(data) {
-			if ("SUCCESS" == data.status){
-				alert(data.msg);
-				location.href = "/soulGod/admin/department";
-			} else if ("EXIST" == data.status){
-				alert(data.msg);
-			} else if ("FAIL" == data.status){
-				alert(data.msg);
-			} else {
-				alert('실패하였습니다.');
-			}
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-}
+            $jqtree.on(
+                'tree.select',
+                function (event) {
+                    if (event.node) {
+                        console.log('tree.select : ', event.node);
+                        let deptId = event.node.id
+                        let keys = Object.keys(treeList[0]);
+                        $.each(keys, function (idx, key) {
+                            let id = key;
+                            let val = '';
+                            if (id == 'deptRegDt') {
+                                let deptDt = treeList.LookUp('deptId', deptId, 'deptRegDt');
+                                let deptTime = treeList.LookUp('deptId', deptId, 'deptRegTime');
+                                val = (DateUtils.convertDateKo(deptDt) + ' ' + DateUtils.convertTimeKo(deptTime));
+                            } else if (id == 'deptModDt') {
+                                let deptDt = treeList.LookUp('deptId', deptId, 'deptModDt');
+                                let deptTime = treeList.LookUp('deptId', deptId, 'deptModTime');
+                                val = (DateUtils.convertDateKo(deptDt) + ' ' + DateUtils.convertTimeKo(deptTime));
+                            } else {
+                                val = treeList.LookUp('deptId', deptId, key);
+                            }
+                            fnGetDetailLayoutData(id, val);
+                        });
+                    } else {
+                        fnClearDetailLayout();
+                    }
+                }
+            );
+        });
 
-function deleteDept(){
- 	// 공백제거
-	$('#detail_deptId').val($('#detail_deptId').val().trim()); // 부서 ID
-	// value Get
-	var $deptId = $('#detail_deptId').val();// 현재 선택된 부서를 삭제 하도록
-	
-	if ($deptId.length ==0 ){
-		alert("삭제할 부서를 선택하여 주세요.");
-		return;
-	}
-	
-	if(confirm("삭제하시겠습니까?")){
-		var jsonData = {
-		    deptId : $deptId
-		    , deptModId : $('#sessionMemId').val()
-		};
-		ajaxDeleteDept(jsonData);
-	}
-	return;
-}
+        function modDept() {
+            // 공백제거
+            $('#detail_deptId').val($('#detail_deptId').val().trim()); // 부서 ID
+            $('#detail_deptCodePrev').val($('#detail_deptCodePrev').val().trim()); // 이전 부서코드
+            $('#detail_deptCode').val($('#detail_deptCode').val().trim()); // 부서코드
+            $('#detail_deptName').val($('#detail_deptName').val().trim()); // 부서명
+            $('#detail_deptEngName').val($('#detail_deptEngName').val().trim()); // 부서명(영문)
 
-//부서 삭제
-function ajaxDeleteDept(jsonData){
-	$.ajax({
-		url : "/soulGod/admin/department/delete",
-		type : "post",
-		async : false,
-		data : jsonData,
-		dataType: "json",
-		success : function(data) {
-			if ("SUCCESS" == data.status){
-				alert(data.msg);
-				location.href = "/soulGod/admin/department";
-			} else if ("PARDEPT" == data.status){
-				alert(data.msg);
-			} else if ("FAIL" == data.status){
-				alert(data.msg);
-			} else {
-				alert('실패하였습니다.');
-			}
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-}
+            // value Get
+            let $detail_deptId = $('#detail_deptId').val();
+            let $detail_deptCodePrev = $('#detail_deptCodePrev').val();
+            let $detail_deptCode = $('#detail_deptCode').val();
+            let $detail_deptName = $('#detail_deptName').val();
+            let $detail_deptEngName = $('#detail_deptEngName').val();
+
+            // radio
+            let $detail_deptStat = $("input[name='detail_deptStat']:checked").val(); // 상태
+
+            // 변경될 CODE 값 관련
+            let $modDeptCode;
+            if ($detail_deptCode != $detail_deptCodePrev) {
+                $modDeptCode = $detail_deptCode;
+            } else {
+                $modDeptCode = null;
+            }
+
+            if (confirm("수정하시겠습니까?")) {
+                let jsonData = {
+                    deptId: $detail_deptId
+                    , deptCode: $modDeptCode
+                    , deptName: $detail_deptName
+                    , deptEngName: $detail_deptEngName
+                    , deptStat: $detail_deptStat
+                    , deptModId: $('#sessionMemId').val()
+                };
+                // 부서 수정 실행
+                ajaxModDept(jsonData);
+            }
+            return;
+        }
+
+        //부서 수정
+        function ajaxModDept(jsonData) {
+            $.ajax({
+                url: "/soulGod/admin/department/mod",
+                type: "post",
+                async: false,
+                data: jsonData,
+                dataType: "json",
+                success: function (data) {
+                    if ("SUCCESS" == data.status) {
+                        showAlert('complete', data.msg);
+                        location.href = "/soulGod/admin/department";
+                    } else if ("EXIST" == data.status) {
+                        showAlert('warning', data.msg);
+                    } else if ("FAIL" == data.status) {
+                        showAlert('warning',data.msg);
+                    } else {
+                        showAlert('warning','실패하였습니다.');
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        }
+
+        function deleteDept() {
+            // 공백제거
+            $('#detail_deptId').val($('#detail_deptId').val().trim()); // 부서 ID
+            // value Get
+            let $deptId = $('#detail_deptId').val();// 현재 선택된 부서를 삭제 하도록
+
+            if ($deptId.length == 0) {
+                showAlert("warning", "삭제할 부서를 선택하여 주세요.");
+                return;
+            }
+
+            if (confirm("삭제하시겠습니까?")) {
+                let jsonData = {
+                    deptId: $deptId
+                    , deptModId: $('#sessionMemId').val()
+                };
+                ajaxDeleteDept(jsonData);
+            }
+            return;
+        }
+
+        //부서 삭제
+        function ajaxDeleteDept(jsonData) {
+            $.ajax({
+                url: "/soulGod/admin/department/delete",
+                type: "post",
+                async: false,
+                data: jsonData,
+                dataType: "json",
+                success: function (data) {
+                    if ("SUCCESS" == data.status) {
+                        showAlert('complete', data.msg);
+                        location.href = "/soulGod/admin/department";
+                    } else if ("PARDEPT" == data.status) {
+                        showAlert('warning', data.msg);
+                    } else if ("FAIL" == data.status) {
+                        showAlert('warning', data.msg);
+                    } else {
+                        showAlert('warning', '실패하였습니다.');
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        }
 
 
-function modalOpenClose(modal, type){
-	if (type == "open"){
-		$("#"+modal).css("display","block");
-		$("#"+modal+"_background").css("display","block");
-		$("#"+modal+"_btn_cancle").toggleClass("btn_lyr_close_modal");
-	} else if (type == "close"){
-		$("#"+modal).css("display","none");
-		$("#"+modal+"_background").css("display","none");
-		$("#"+modal+"_btn_cancle").toggleClass("btn_lyr_close_modal");
-	} 
-}
+        function modalOpenClose(modal, type) {
+            if (type == "open") {
+                $("#" + modal).css("display", "block");
+                $("#" + modal + "_background").css("display", "block");
+                $("#" + modal + "_btn_cancle").toggleClass("btn_lyr_close_modal");
+            } else if (type == "close") {
+                $("#" + modal).css("display", "none");
+                $("#" + modal + "_background").css("display", "none");
+                $("#" + modal + "_btn_cancle").toggleClass("btn_lyr_close_modal");
+            }
+        }
 
-//부서 등록 > 부서 관리 모달 오픈
-function addDeptOpen(){
-	// 등록 버튼누르면 기존 입력된 데이터 초기화 진행
-	addDeptClear();
-	$('#srch_dptmt_type').val('add');
-	layerShow('popAdd');
-}
+        //부서 등록 > 부서 관리 모달 오픈
+        function addDeptOpen() {
+            // 등록 버튼누르면 기존 입력된 데이터 초기화 진행
+            addDeptClear();
+            $('#srch_dptmt_type').val('add');
+            layerShow('popAdd');
+        }
 
-//부서 등록 > 부서 관리 모달 > 취소 (닫기)
-function addDeptClose(){
-	// 부서 관리 모달에서 취소 버튼누르면 기존 입력된 데이터 초기화 진행
-	addDeptClear();
-	//modalOpenClose("add_dept","close");
-	layerHide('popAdd');
-}
+        //부서 등록 > 부서 관리 모달 > 취소 (닫기)
+        function addDeptClose() {
+            // 부서 관리 모달에서 취소 버튼누르면 기존 입력된 데이터 초기화 진행
+            addDeptClear();
+            //modalOpenClose("add_dept","close");
+            layerHide('popAdd');
+        }
 
-//사용자 등록 데이터 초기화 
-function addDeptClear(){
-	// input 초기화
- $('#addParDeptId').val(''); // 부서 ID
- $('#addParDeptName').val('');
- $('#addParDeptCode').val(''); 
- 
- $('#addDeptCode').val(''); // 부서코드
- $('#addDeptName').val(''); // 회원 이름
- $('#addDeptEngName').val(''); 
- 
- // radio 초기화 - 첫번째 선택지
- $("input[name='addDeptStat'][value='use']").prop("checked", true);
-}
+        //사용자 등록 데이터 초기화
+        function addDeptClear() {
+            // input 초기화
+            $('#addParDeptId').val(''); // 부서 ID
+            $('#addParDeptName').val('');
+            $('#addParDeptCode').val('');
 
-function addDept(){
- 	// 공백제거
-	$('#addParDeptId').val($('#addParDeptId').val().trim()); // 상위 부서 ID
-	
-	$('#addDeptCode').val($('#addDeptCode').val().trim());
-	$('#addDeptName').val($('#addDeptName').val().trim());
-	$('#addDeptEngName').val($('#addDeptEngName').val().trim());
-	
-	// value Get
-	var $addParDeptId = $('#addParDeptId').val();
-	
-	var $addDeptCode = $('#addDeptCode').val();
-	var $addDeptName = $('#addDeptName').val();
-	var $addDeptEngName = $('#addDeptEngName').val();
-	
-	 // radio
-	 var $addDeptStat = $("input[name='addDeptStat']:checked").val(); // 상태 
-	 
-	// 필수조건
-	if ($addParDeptId.length < 1){
-	    alert("상위 부서를 선택해주세요.");
-	    return ;
-	} 
-	if ($addDeptCode.length < 1){
-	    alert("부서 코드를 입력해주세요.");
-	    $('#addDeptCode').focus();
-	    return ;
-	}
-	if ($addDeptName.length < 1){
-	    alert("부서명을 입력해주세요.");
-	    $('#addDeptName').focus();
-	    return ;
-	}
-	
-	var jsonData = {
-	    parId : $addParDeptId
-	    , deptCode : $addDeptCode
-	    , deptName : $addDeptName
-	    , deptEngName : $addDeptEngName
-	    , deptStat : $addDeptStat
-	    , deptRegId : $('#sessionMemId').val()
-	    , deptModId : $('#sessionMemId').val()
-	};
-	// 부서 추가 실행
-	ajaxAddDept(jsonData);
-}
+            $('#addDeptCode').val(''); // 부서코드
+            $('#addDeptName').val(''); // 회원 이름
+            $('#addDeptEngName').val('');
 
-//부서 데이터 체크 
-function ajaxAddDept(jsonData){
-	$.ajax({
-		url : "/soulGod/admin/department/add",
-		type : "post",
-		async : false,
-		data : jsonData,
-		dataType: "json",
-		success : function(data) {
-			if ("SUCCESS" == data.status){
-				alert(data.msg);
-				addDeptClose();
-				location.href = "/soulGod/admin/department";
-			} else if ("FAIL" == data.status){
-				alert(data.msg);
-			} else {
-				alert('실패하였습니다.');
-			}
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-}
-//부서 조회창 오픈
-function searchDeptOpen(){
-	// 모달 오픈
-	// 추가될 데이터 초기화
-	
-	var type = $('#srch_dptmt_type').val();
-	
-	$("#"+type+"ParDeptId").val("");
-	$("#"+type+"ParDeptName").val("");
-	$("#"+type+"ParDeptCode").val("");
-	
-	searchDeptClear(); // 신규 조회시 데이터 초기화
-	//modalOpenClose("srch_dptmt",'open');
-	layerShow('popSearch')
-	
-	var jsonData = {
-			currentPageNo : $('#dept_currentPageNo').val()
-			, recordsPerPage : $('#h_dept_recordsPerPage').val()
-			, pageSize : $('#h_dept_pageSize').val()
-			, searchType : $('#h_dept_searchType').val()
-			, searchKeyword : $('#h_dept_searchKeyword').val()
-	};
-	ajaxSearchDept(jsonData);
-}
+            // radio 초기화 - 첫번째 선택지
+            $("input[name='addDeptStat'][value='use']").prop("checked", true);
+        }
 
-//부서 조회(검색)
-function searchDept(){
-	var jsonData = {
-			currentPageNo : $('#dept_currentPageNo').val()
-			, recordsPerPage : $('#h_dept_recordsPerPage').val()
-			, pageSize : $('#h_dept_pageSize').val()
-			, searchType : $('#dept_searchType').val()
-			, searchKeyword : $('#dept_searchKeyword').val()
-	};
-	ajaxSearchDept(jsonData);
-}
+        function addDept() {
+            // 공백제거
+            $('#addParDeptId').val($('#addParDeptId').val().trim()); // 상위 부서 ID
 
-//부서 조회 페이지 이동
-function searchDeptMove(pageNo){
-	var jsonData = {
-			currentPageNo : pageNo
-			, recordsPerPage : $('#h_dept_recordsPerPage').val()
-			, pageSize : $('#h_dept_pageSize').val()
-			, searchType : $('#h_dept_searchType').val()
-			, searchKeyword : $('#h_dept_searchKeyword').val()
-	};
-	ajaxSearchDept(jsonData);
-}
+            $('#addDeptCode').val($('#addDeptCode').val().trim());
+            $('#addDeptName').val($('#addDeptName').val().trim());
+            $('#addDeptEngName').val($('#addDeptEngName').val().trim());
 
-//부서 조회 닫기
-function searchDeptClose(){
-	// 모달 클로즈
-	searchDeptClear(); // 닫을 시 데이터 초기화
-	//modalOpenClose("srch_dptmt",'close');
-	layerHide('popSearch');
-}
-//부서 목록 조회
-function ajaxSearchDept(jsonData){
-	// 페이지 및 목록 데이터 초기화
-	$("#srch_dptmt_tbody").html('');
-	$("#deptPagingArea").html('');
-	
-	var htmlPagination = '';
-	var htmlDeptList = '';
-	$.ajax({
-		url : "/soulGod/admin/user/getDeptList",
-		type : "post",
-		async : false,
-		data : jsonData,
-		success : function(data) {
-			// 페이지 이동을 위한 데이터  세팅
-			$('#dept_currentPageNo').val('1');      // 신규 검색시에 무조건 1페이지 부터 보여줌
-			$('#h_dept_currentPageNo').val(data.currentPageNo);    // 현재 페이지
-			$('#h_dept_recordsPerPage').val(data.recordsPerPage);   // 한 페이지에 보여질 데이터 갯수 5개(Modal)
-			$('#h_dept_pageSize').val(data.pageSize);        // 한 페이지에 보여질 하단 페이지 블럭 갯수
-			$('#h_dept_searchType').val(data.searchType);     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
-			$('#h_dept_searchKeyword').val(data.searchKeyword);     // 검색어 : 
-			
-			// 부서 목록 - data.deptList | 체크박스, 부서 명, 부서 명(영문), 부서 코드
-			if (data.deptList.length <= 0){
-				htmlDeptList += '<tr>';
-				htmlDeptList += '    <td class="empty" scope="row" colspan="4">데이터가 없습니다.</td>';
-				htmlDeptList += '</tr>';
-			} else {
-				for (var i = 0; i < data.deptList.length; i++){
-					htmlDeptList += '<tr>';
-					htmlDeptList += '    <td scope="row">';
-                    htmlDeptList += '        <div class="radio">';
-                    htmlDeptList += '            <input type="radio" name="chkBoxDept" id="chk10'+i+'" value="chkDept'+i+'">';
-                    htmlDeptList += '            <label for="chk10'+i+'">';
-                    htmlDeptList += '                <span class="blind">선택</span>';
-                    htmlDeptList += '            </label>';
-                    htmlDeptList += '        </div>';
-                    					
-					//htmlDeptList += '        <div class="chkBoxOnly">';
-					//htmlDeptList += '            <input name="chkBoxDept" type="checkbox" class="eachChk" value="chkDept'+i+'">';
-					//htmlDeptList += '        </div>';
-					
-					htmlDeptList += '    </td>';
-					htmlDeptList += '    <td>'+data.deptList[i].deptCode+'</td>';
-					htmlDeptList += '    <td>'+data.deptList[i].deptName+'</td>';
-					htmlDeptList += '    <td>'+nvl(data.deptList[i].deptEngName,'')+'</td>';
-					htmlDeptList += '    <input id="chkDept'+i+'_deptId" type="hidden" value="'+data.deptList[i].deptId+'">';
-					htmlDeptList += '    <input id="chkDept'+i+'_deptCode" type="hidden" value="'+data.deptList[i].deptCode+'">';
-					htmlDeptList += '    <input id="chkDept'+i+'_deptName" type="hidden" value="'+data.deptList[i].deptName+'">';
-					htmlDeptList += '    <input id="chkDept'+i+'_deptEngName" type="hidden" value="'+data.deptList[i].deptEngName+'">';
-					htmlDeptList += '</tr>';
-				}
-			}	
-			
-			// 부서 페이지네이션 - data.params
-			$('#totalRecordCount').text(data.totalRecordCount);
-	        htmlPagination += '<div class="pagination">';
-          if(data.hasPreviousPage){
+            // value Get
+            let $addParDeptId = $('#addParDeptId').val();
+
+            let $addDeptCode = $('#addDeptCode').val();
+            let $addDeptName = $('#addDeptName').val();
+            let $addDeptEngName = $('#addDeptEngName').val();
+
+            // radio
+            let $addDeptStat = $("input[name='addDeptStat']:checked").val(); // 상태
+
+            // 필수조건
+            if ($addParDeptId.length < 1) {
+                showAlert('warning', "상위 부서를 선택해주세요.");
+                return;
+            }
+            if ($addDeptCode.length < 1) {
+                showAlert('warning', "부서 코드를 입력해주세요.");
+                $('#addDeptCode').focus();
+                return;
+            }
+            if ($addDeptName.length < 1) {
+                showAlert('warning', "부서명을 입력해주세요.");
+                $('#addDeptName').focus();
+                return;
+            }
+
+            let jsonData = {
+                parId: $addParDeptId
+                , deptCode: $addDeptCode
+                , deptName: $addDeptName
+                , deptEngName: $addDeptEngName
+                , deptStat: $addDeptStat
+                , deptRegId: $('#sessionMemId').val()
+                , deptModId: $('#sessionMemId').val()
+            };
+            // 부서 추가 실행
+            ajaxAddDept(jsonData);
+        }
+
+        //부서 데이터 체크
+        function ajaxAddDept(jsonData) {
+            $.ajax({
+                url: "/soulGod/admin/department/add",
+                type: "post",
+                async: false,
+                data: jsonData,
+                dataType: "json",
+                success: function (data) {
+                    if ("SUCCESS" == data.status) {
+                        showAlert('complete', data.msg);
+                        addDeptClose();
+                        location.href = "/soulGod/admin/department";
+                    } else if ("FAIL" == data.status) {
+                        showAlert('warning', data.msg);
+                    } else {
+                        showAlert('warning', '실패하였습니다.');
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        }
+
+        //부서 조회창 오픈
+        function searchDeptOpen() {
+            // 모달 오픈
+            // 추가될 데이터 초기화
+
+            let type = $('#srch_dptmt_type').val();
+
+            $("#" + type + "ParDeptId").val("");
+            $("#" + type + "ParDeptName").val("");
+            $("#" + type + "ParDeptCode").val("");
+
+            searchDeptClear(); // 신규 조회시 데이터 초기화
+            //modalOpenClose("srch_dptmt",'open');
+            layerShow('popSearch')
+
+            let jsonData = {
+                currentPageNo: $('#dept_currentPageNo').val()
+                , recordsPerPage: $('#h_dept_recordsPerPage').val()
+                , pageSize: $('#h_dept_pageSize').val()
+                , searchType: $('#h_dept_searchType').val()
+                , searchKeyword: $('#h_dept_searchKeyword').val()
+            };
+            ajaxSearchDept(jsonData);
+        }
+
+        //부서 조회(검색)
+        function searchDept() {
+            let jsonData = {
+                currentPageNo: $('#dept_currentPageNo').val()
+                , recordsPerPage: $('#h_dept_recordsPerPage').val()
+                , pageSize: $('#h_dept_pageSize').val()
+                , searchType: $('#dept_searchType').val()
+                , searchKeyword: $('#dept_searchKeyword').val()
+            };
+            ajaxSearchDept(jsonData);
+        }
+
+        //부서 조회 페이지 이동
+        function searchDeptMove(pageNo) {
+            let jsonData = {
+                currentPageNo: pageNo
+                , recordsPerPage: $('#h_dept_recordsPerPage').val()
+                , pageSize: $('#h_dept_pageSize').val()
+                , searchType: $('#h_dept_searchType').val()
+                , searchKeyword: $('#h_dept_searchKeyword').val()
+            };
+            ajaxSearchDept(jsonData);
+        }
+
+        //부서 조회 닫기
+        function searchDeptClose() {
+            // 모달 클로즈
+            searchDeptClear(); // 닫을 시 데이터 초기화
+            //modalOpenClose("srch_dptmt",'close');
+            layerHide('popSearch');
+        }
+
+        //부서 목록 조회
+        function ajaxSearchDept(jsonData) {
+            // 페이지 및 목록 데이터 초기화
+            $("#srch_dptmt_tbody").html('');
+            $("#deptPagingArea").html('');
+
+            let htmlPagination = '';
+            let htmlDeptList = '';
+            $.ajax({
+                url: "/soulGod/admin/user/getDeptList",
+                type: "post",
+                async: false,
+                data: jsonData,
+                success: function (data) {
+                    // 페이지 이동을 위한 데이터  세팅
+                    $('#dept_currentPageNo').val('1');      // 신규 검색시에 무조건 1페이지 부터 보여줌
+                    $('#h_dept_currentPageNo').val(data.currentPageNo);    // 현재 페이지
+                    $('#h_dept_recordsPerPage').val(data.recordsPerPage);   // 한 페이지에 보여질 데이터 갯수 5개(Modal)
+                    $('#h_dept_pageSize').val(data.pageSize);        // 한 페이지에 보여질 하단 페이지 블럭 갯수
+                    $('#h_dept_searchType').val(data.searchType);     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
+                    $('#h_dept_searchKeyword').val(data.searchKeyword);     // 검색어 :
+
+                    // 부서 목록 - data.deptList | 체크박스, 부서 명, 부서 명(영문), 부서 코드
+                    if (data.deptList.length <= 0) {
+                        htmlDeptList += '<tr>';
+                        htmlDeptList += '    <td class="empty" scope="row" colspan="4">데이터가 없습니다.</td>';
+                        htmlDeptList += '</tr>';
+                    } else {
+                        for (let i = 0; i < data.deptList.length; i++) {
+                            htmlDeptList += '<tr>';
+                            htmlDeptList += '    <td scope="row">';
+                            htmlDeptList += '        <div class="radio">';
+                            htmlDeptList += '            <input type="radio" name="chkBoxDept" id="chk10' + i + '" value="chkDept' + i + '">';
+                            htmlDeptList += '            <label for="chk10' + i + '">';
+                            htmlDeptList += '                <span class="blind">선택</span>';
+                            htmlDeptList += '            </label>';
+                            htmlDeptList += '        </div>';
+
+                            //htmlDeptList += '        <div class="chkBoxOnly">';
+                            //htmlDeptList += '            <input name="chkBoxDept" type="checkbox" class="eachChk" value="chkDept'+i+'">';
+                            //htmlDeptList += '        </div>';
+
+                            htmlDeptList += '    </td>';
+                            htmlDeptList += '    <td>' + data.deptList[i].deptCode + '</td>';
+                            htmlDeptList += '    <td>' + data.deptList[i].deptName + '</td>';
+                            htmlDeptList += '    <td>' + nvl(data.deptList[i].deptEngName, '') + '</td>';
+                            htmlDeptList += '    <input id="chkDept' + i + '_deptId" type="hidden" value="' + data.deptList[i].deptId + '">';
+                            htmlDeptList += '    <input id="chkDept' + i + '_deptCode" type="hidden" value="' + data.deptList[i].deptCode + '">';
+                            htmlDeptList += '    <input id="chkDept' + i + '_deptName" type="hidden" value="' + data.deptList[i].deptName + '">';
+                            htmlDeptList += '    <input id="chkDept' + i + '_deptEngName" type="hidden" value="' + data.deptList[i].deptEngName + '">';
+                            htmlDeptList += '</tr>';
+                        }
+                    }
+
+                    // 부서 페이지네이션 - data.params
+                    $('#totalRecordCount').text(data.totalRecordCount);
+                    htmlPagination += '<div class="pagination">';
+                    if (data.hasPreviousPage) {
 //				htmlPagination += '        <a href="javascript:searchDeptMove(1);" class="btn_paging first">';
 //				htmlPagination += '            <span class="hide">처음 페이지</span>';
 //				htmlPagination += '            <em class="fas fa-angle-double-left"></em>';
@@ -529,116 +535,116 @@ function ajaxSearchDept(jsonData){
 //				htmlPagination += '            <span class="hide">이전 페이지</span>';
 //				htmlPagination += '            <em class="fas fa-angle-left"></em>';
 //				htmlPagination += '        </a>';
-				htmlPagination += '        <button type="button" class="page_nav prev disabled" onclick="searchDeptMove('+(data.firstPage-1)+');">';
-				htmlPagination += '            <span class="blind">이전</span>';
-				htmlPagination += '        </button>';
-				htmlPagination += '        <button type="button" onclick="searchDeptMove(1);">1</button>';
-          }
-          for(var i = data.firstPage; i <= data.lastPage; i++){
-				if (data.currentPageNo == i){
-					//htmlPagination += '            <a href="javascript:searchDeptMove('+i+');" class="current">'+i+'</a>';
-					htmlPagination += '            <button type="button" onclick="searchDeptMove('+i+');" class="active">'+i+'</button>';
-				} else {
-					//htmlPagination += '            <a href="javascript:searchDeptMove('+i+');">'+i+'</a>';
-					htmlPagination += '            <button type="button" onclick="searchDeptMove('+i+');">'+i+'</button>';
-				}
-          }
-          if (data.hasNextPage){
-				//htmlPagination += '        <a href="javascript:searchDeptMove('+(data.lastPage+1)+');" class="btn_paging next">';
-				//htmlPagination += '            <span class="hide">다음 페이지</span>';
-				//htmlPagination += '            <em class="fas fa-angle-right"></em>';
-				//htmlPagination += '        </a>';
-				//htmlPagination += '        <a href="javascript:searchDeptMove('+data.totalPageCount+');" class="btn_paging last">';
-				//htmlPagination += '            <span class="hide">마지막 페이지</span>';
-				//htmlPagination += '            <em class="fas fa-angle-double-right"></em>';
-				//htmlPagination += '        </a>';
-				htmlPagination += '        <button type="button" onclick="searchDeptMove('+data.totalPageCount+');">'+data.totalPageCount+'</button>';
-				htmlPagination += '        <button type="button" class="page_nav next">';
-        		htmlPagination += '        <span class="blind" onclick="searchDeptMove('+(data.lastPage+1)+');">다음</span>';
-    			htmlPagination += '        </button>';				
-          }
-			htmlPagination += '</div>';
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-	$("#srch_dptmt_tbody").html(htmlDeptList);
-	$("#deptPagingArea").html(htmlPagination);
-}
+                        htmlPagination += '        <button type="button" class="page_nav prev disabled" onclick="searchDeptMove(' + (data.firstPage - 1) + ');">';
+                        htmlPagination += '            <span class="blind">이전</span>';
+                        htmlPagination += '        </button>';
+                        htmlPagination += '        <button type="button" onclick="searchDeptMove(1);">1</button>';
+                    }
+                    for (let i = data.firstPage; i <= data.lastPage; i++) {
+                        if (data.currentPageNo == i) {
+                            //htmlPagination += '            <a href="javascript:searchDeptMove('+i+');" class="current">'+i+'</a>';
+                            htmlPagination += '            <button type="button" onclick="searchDeptMove(' + i + ');" class="active">' + i + '</button>';
+                        } else {
+                            //htmlPagination += '            <a href="javascript:searchDeptMove('+i+');">'+i+'</a>';
+                            htmlPagination += '            <button type="button" onclick="searchDeptMove(' + i + ');">' + i + '</button>';
+                        }
+                    }
+                    if (data.hasNextPage) {
+                        //htmlPagination += '        <a href="javascript:searchDeptMove('+(data.lastPage+1)+');" class="btn_paging next">';
+                        //htmlPagination += '            <span class="hide">다음 페이지</span>';
+                        //htmlPagination += '            <em class="fas fa-angle-right"></em>';
+                        //htmlPagination += '        </a>';
+                        //htmlPagination += '        <a href="javascript:searchDeptMove('+data.totalPageCount+');" class="btn_paging last">';
+                        //htmlPagination += '            <span class="hide">마지막 페이지</span>';
+                        //htmlPagination += '            <em class="fas fa-angle-double-right"></em>';
+                        //htmlPagination += '        </a>';
+                        htmlPagination += '        <button type="button" onclick="searchDeptMove(' + data.totalPageCount + ');">' + data.totalPageCount + '</button>';
+                        htmlPagination += '        <button type="button" class="page_nav next">';
+                        htmlPagination += '        <span class="blind" onclick="searchDeptMove(' + (data.lastPage + 1) + ');">다음</span>';
+                        htmlPagination += '        </button>';
+                    }
+                    htmlPagination += '</div>';
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+            $("#srch_dptmt_tbody").html(htmlDeptList);
+            $("#deptPagingArea").html(htmlPagination);
+        }
 
-//부서 조회 초기화
-function searchDeptClear(){
-	// 부서 검색 초기화
-	$("#dept_searchType").val("all").attr("selected","selected");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
-	$("#dept_searchKeyword").val("");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
-	// 부서 검색 페이지 초기화
-	$("#dept_currentPageNo").val("1");      // 신규 검색시에 무조건 1페이지 부터 보여줌
-	$("#h_dept_currentPageNo").val("1");    // 현재 페이지
-	$("#h_dept_recordsPerPage").val("5");   // 한 페이지에 보여질 데이터 갯수 5개(Modal)
-	$("#h_dept_pageSize").val("10");        // 한 페이지에 보여질 하단 페이지 블럭 갯수
-	$("#h_dept_searchType").val("all");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
-	$("#h_dept_searchKeyword").val("");     // 검색어 : 
-}
+        //부서 조회 초기화
+        function searchDeptClear() {
+            // 부서 검색 초기화
+            $("#dept_searchType").val("all").attr("selected", "selected");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
+            $("#dept_searchKeyword").val("");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
+            // 부서 검색 페이지 초기화
+            $("#dept_currentPageNo").val("1");      // 신규 검색시에 무조건 1페이지 부터 보여줌
+            $("#h_dept_currentPageNo").val("1");    // 현재 페이지
+            $("#h_dept_recordsPerPage").val("5");   // 한 페이지에 보여질 데이터 갯수 5개(Modal)
+            $("#h_dept_pageSize").val("10");        // 한 페이지에 보여질 하단 페이지 블럭 갯수
+            $("#h_dept_searchType").val("all");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
+            $("#h_dept_searchKeyword").val("");     // 검색어 :
+        }
 
-//부서 ID 입력
-function chkBoxDeptSave(){
-	//type : add, mod
-	var type = $('#srch_dptmt_type').val();
-	
-	// 체크박스 검사	
-	var chkCnt = $("input[name='chkBoxDept']:checked").length;
-	if (chkCnt<=0){
-		alert("하나의 부서를 선택해주세요.");
-		return;
-	} else if (chkCnt>1){
-		alert("하나의 부서를 선택해주세요.");
-		return;
-	}else if (chkCnt == 1){
-		// 하나의 부서가 선택되었음
-		$("input[name='chkBoxDept']:checked").each(function(){
-			var chkDeptId = $(this).val();
-			console.log($("#"+chkDeptId+"_deptId").val());
-			console.log($("#"+chkDeptId+"_deptCode").val());
-			console.log($("#"+chkDeptId+"_deptName").val());
-			console.log($("#"+chkDeptId+"_deptEngName").val());
-			
-			$("#"+type+"ParDeptId").val($("#"+chkDeptId+"_deptId").val());
-			$("#"+type+"ParDeptName").val($("#"+chkDeptId+"_deptName").val());
-			$("#"+type+"ParDeptCode").val($("#"+chkDeptId+"_deptCode").val());
-			
-			searchDeptClose();
-			return;
-		});
-		
-	}
-}
+        //부서 ID 입력
+        function chkBoxDeptSave() {
+            //type : add, mod
+            let type = $('#srch_dptmt_type').val();
 
-//메뉴 상세정보 되돌리기
-function fnGetRevertDetailLayoutData(){
-	//선택이 되어 있지 않으면 false를 반환함.
-	var node = $("#deptList").tree("getSelectedNode");
-	if(node){
-    	var deptId = node.id
-        var keys = Object.keys(treeList[0]);
-        $.each(keys,function(idx,key){
-        	var id = key;
-			var val = '';
-        	if(id == 'deptRegDt'){
-        		var deptDt = treeList.LookUp('deptId', deptId, 'deptRegDt');
-        		var deptTime = treeList.LookUp('deptId', deptId, 'deptRegTime');
-        		val = (DateUtils.convertDateKo(deptDt) + ' ' + DateUtils.convertTimeKo(deptTime));
-        	}else if(id == 'deptModDt'){
-        		var deptDt = treeList.LookUp('deptId', deptId, 'deptModDt');
-        		var deptTime = treeList.LookUp('deptId', deptId, 'deptModTime');
-        		val = (DateUtils.convertDateKo(deptDt) + ' ' + DateUtils.convertTimeKo(deptTime));
-        	}else{
-            	val = treeList.LookUp('deptId', deptId, key);
-        	}
-        	fnGetDetailLayoutData(id,val);
-        });
-	}
-}
+            // 체크박스 검사
+            let chkCnt = $("input[name='chkBoxDept']:checked").length;
+            if (chkCnt <= 0) {
+                showAlert('warning', "하나의 부서를 선택해주세요.");
+                return;
+            } else if (chkCnt > 1) {
+                showAlert('warning', "하나의 부서를 선택해주세요.");
+                return;
+            } else if (chkCnt == 1) {
+                // 하나의 부서가 선택되었음
+                $("input[name='chkBoxDept']:checked").each(function () {
+                    let chkDeptId = $(this).val();
+                    console.log($("#" + chkDeptId + "_deptId").val());
+                    console.log($("#" + chkDeptId + "_deptCode").val());
+                    console.log($("#" + chkDeptId + "_deptName").val());
+                    console.log($("#" + chkDeptId + "_deptEngName").val());
+
+                    $("#" + type + "ParDeptId").val($("#" + chkDeptId + "_deptId").val());
+                    $("#" + type + "ParDeptName").val($("#" + chkDeptId + "_deptName").val());
+                    $("#" + type + "ParDeptCode").val($("#" + chkDeptId + "_deptCode").val());
+
+                    searchDeptClose();
+                    return;
+                });
+
+            }
+        }
+
+        //메뉴 상세정보 되돌리기
+        function fnGetRevertDetailLayoutData() {
+            //선택이 되어 있지 않으면 false를 반환함.
+            let node = $("#deptList").tree("getSelectedNode");
+            if (node) {
+                let deptId = node.id
+                let keys = Object.keys(treeList[0]);
+                $.each(keys, function (idx, key) {
+                    let id = key;
+                    let val = '';
+                    if (id == 'deptRegDt') {
+                        let deptDt = treeList.LookUp('deptId', deptId, 'deptRegDt');
+                        let deptTime = treeList.LookUp('deptId', deptId, 'deptRegTime');
+                        val = (DateUtils.convertDateKo(deptDt) + ' ' + DateUtils.convertTimeKo(deptTime));
+                    } else if (id == 'deptModDt') {
+                        let deptDt = treeList.LookUp('deptId', deptId, 'deptModDt');
+                        let deptTime = treeList.LookUp('deptId', deptId, 'deptModTime');
+                        val = (DateUtils.convertDateKo(deptDt) + ' ' + DateUtils.convertTimeKo(deptTime));
+                    } else {
+                        val = treeList.LookUp('deptId', deptId, key);
+                    }
+                    fnGetDetailLayoutData(id, val);
+                });
+            }
+        }
     </script>
 </head>
 <body>
@@ -680,8 +686,8 @@ function fnGetRevertDetailLayoutData(){
                             <col style="width:auto">
                         </colgroup>
                         <tbody>
-							<input type="hidden" id="detail_deptId" name="detail_deptId" value="">
-                            <input type="hidden" id="detail_deptCodePrev" name="detail_deptCodePrev" value="">
+                        <input type="hidden" id="detail_deptId" name="detail_deptId" value="">
+                        <input type="hidden" id="detail_deptCodePrev" name="detail_deptCodePrev" value="">
                         <tr>
                             <th scope="row">
                                 <label for="detail_deptCode">부서코드</label>
@@ -714,7 +720,8 @@ function fnGetRevertDetailLayoutData(){
                             </th>
                             <td>
                                 <div class="input">
-                                    <input type="text" id="detail_deptEngName" onkeyup="this.value=this.value.replace(/[^a-z]/g,'');">
+                                    <input type="text" id="detail_deptEngName"
+                                           onkeyup="this.value=this.value.replace(/[^a-z]/g,'');">
                                     <button type="button" class="btn_del" tabindex="-1">
                                         <span class="blind">삭제</span>
                                     </button>
@@ -756,12 +763,12 @@ function fnGetRevertDetailLayoutData(){
                         </tbody>
                     </table>
                     <div class="btn_area">
-            			<button type="button" class="btn line_cool_grey30" onclick="fnGetRevertDetailLayoutData();">
-                			<span>되돌리기</span>
-            			</button>
-            			<button type="button" class="btn fill" onclick="modDept();">
-                			<span>수정</span>
-            			</button>                        
+                        <button type="button" class="btn line_cool_grey30" onclick="fnGetRevertDetailLayoutData();">
+                            <span>되돌리기</span>
+                        </button>
+                        <button type="button" class="btn fill" onclick="modDept();">
+                            <span>수정</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -795,7 +802,7 @@ function fnGetRevertDetailLayoutData(){
                     </th>
                     <td>
                         <div class="input">
-                        	<input id="addParDeptId" name="addParDeptId" type="hidden">
+                            <input id="addParDeptId" name="addParDeptId" type="hidden">
                             <input type="text" id="addParDeptName" readonly>
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
@@ -848,7 +855,8 @@ function fnGetRevertDetailLayoutData(){
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="addDeptEngName" onkeyup="this.value=this.value.replace(/[^a-z]/g,'');">
+                            <input type="text" id="addDeptEngName"
+                                   onkeyup="this.value=this.value.replace(/[^a-z]/g,'');">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -890,15 +898,15 @@ function fnGetRevertDetailLayoutData(){
 
 <!--상위 부서명/부서코드 검색 팝업 : s-->
 <div id="popSearch" class="pop_layer">
-	<input type="hidden" id="srch_dptmt_type" name="srch_dptmt"/>
-	<div id="srch_dptmt_background" style="display:none;"></div>
-	
-	<input type="hidden" id="dept_currentPageNo" name="dept_currentPageNo"/> <!-- 신규 검색시 1 페이지로 이동 -->
-	<input type="hidden" id="h_dept_currentPageNo" name="h_dept_currentPageNo">    	<!-- 신규 검색시 1 페이지로 이동 -->
-	<input type="hidden" id="h_dept_recordsPerPage" name="h_dept_recordsPerPage"/> 	<!-- 한 페이지에 보여질 수 -->
-	<input type="hidden" id="h_dept_pageSize" name="h_dept_pageSize"/>             	<!-- 페이지 블럭의 수 -->
-	<input type="hidden" id="h_dept_searchType" name="h_dept_searchType" />           	<!-- 검색 종류 -->
-	<input type="hidden" id="h_dept_searchKeyword" name="h_dept_searchKeyword" />  	    <!-- 검색 값 -->
+    <input type="hidden" id="srch_dptmt_type" name="srch_dptmt"/>
+    <div id="srch_dptmt_background" style="display:none;"></div>
+
+    <input type="hidden" id="dept_currentPageNo" name="dept_currentPageNo"/> <!-- 신규 검색시 1 페이지로 이동 -->
+    <input type="hidden" id="h_dept_currentPageNo" name="h_dept_currentPageNo">        <!-- 신규 검색시 1 페이지로 이동 -->
+    <input type="hidden" id="h_dept_recordsPerPage" name="h_dept_recordsPerPage"/>    <!-- 한 페이지에 보여질 수 -->
+    <input type="hidden" id="h_dept_pageSize" name="h_dept_pageSize"/>                <!-- 페이지 블럭의 수 -->
+    <input type="hidden" id="h_dept_searchType" name="h_dept_searchType"/>            <!-- 검색 종류 -->
+    <input type="hidden" id="h_dept_searchKeyword" name="h_dept_searchKeyword"/>        <!-- 검색 값 -->
 
     <div class="dim"></div>
     <div class="popup">

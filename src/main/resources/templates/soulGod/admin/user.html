@@ -3,22 +3,22 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <script type="text/javascript">
-        $(function(){
+        $(function () {
             //이메일 주소
-            $('.email_form').each(function(){
-                var emailForm = $(this);
-                emailForm.find('select').on('change', function(){
-                    var emailVal = $(this).val();
-                    if(emailVal === '1'){
+            $('.email_form').each(function () {
+                let emailForm = $(this);
+                emailForm.find('select').on('change', function () {
+                    let emailVal = $(this).val();
+                    if (emailVal === '1') {
                         emailForm.find('.input_email input').val('').prop('readonly', false);
-                    }else{
+                    } else {
                         emailForm.find('.input_email input').val(emailVal).prop('readonly', true);
                     }
                 });
             });
         });
-        
-        
+
+
     </script>
 </head>
 <body>
@@ -45,12 +45,15 @@
             </div>
 
             <div class="board_top">
-				<input type="hidden" id="currentPageNo" name="currentPageNo" value="1"/>    						<!-- 신규 검색시 1 페이지로 이동 -->
-				<input type="hidden" id="h_currentPageNo" name="h_currentPageNo" th:value="${params.currentPageNo}"/>    	<!-- 신규 검색시 1 페이지로 이동 -->
-                <input type="hidden" id="h_recordsPerPage" name="h_recordsPerPage" th:value="${params.recordsPerPage}"/> 	<!-- 한 페이지에 보여질 수 -->
-                <input type="hidden" id="h_pageSize" name="h_pageSize" th:value="${params.pageSize}"/>             		<!-- 페이지 블럭의 수 -->
-				<input type="hidden" id="h_searchType" name="h_searchType" th:value="${params.searchType}"/>           	<!-- 검색 종류 -->
-				<input type="hidden" id="h_searchKeyword" name="h_searchKeyword" th:value="${params.searchKeyword}"/>             
+                <input type="hidden" id="currentPageNo" name="currentPageNo" value="1"/><!-- 신규 검색시 1 페이지로 이동 -->
+                <input type="hidden" id="h_currentPageNo" name="h_currentPageNo" th:value="${params.currentPageNo}"/>
+                <!-- 신규 검색시 1 페이지로 이동 -->
+                <input type="hidden" id="h_recordsPerPage" name="h_recordsPerPage" th:value="${params.recordsPerPage}"/>
+                <!-- 한 페이지에 보여질 수 -->
+                <input type="hidden" id="h_pageSize" name="h_pageSize" th:value="${params.pageSize}"/><!-- 페이지 블럭의 수 -->
+                <input type="hidden" id="h_searchType" name="h_searchType" th:value="${params.searchType}"/>
+                <!-- 검색 종류 -->
+                <input type="hidden" id="h_searchKeyword" name="h_searchKeyword" th:value="${params.searchKeyword}"/>
                 <div>
                     <div class="total_num"><b>[[${totalRecordCount}]]</b> 명의 사용자가 있습니다.</div>
                 </div>
@@ -79,15 +82,27 @@
                                         <div class="search_form">
                                             <label for="searchType" class="blind">검색어 타입</label>
                                             <select name="searchType" id="searchType">
-                                                <option value="all" th:selected="${params.searchType == 'all'}">전체</option>
-                                                <option value="memName" th:selected="${params.searchType == 'memName'}">이름</option>
-                                                <option value="memId" th:selected="${params.searchType == 'memId'}">아이디</option>
-                                                <option value="deptCode" th:selected="${params.searchType == 'deptCode'}">부서ID</option>
-                                                <option value="deptName" th:selected="${params.searchType == 'deptName'}">부서명</option>
-                                                <option value="deptEngName" th:selected="${params.searchType == 'deptEngName'}">부서명(영문)</option>
+                                                <option value="all" th:selected="${params.searchType == 'all'}">전체
+                                                </option>
+                                                <option value="memName" th:selected="${params.searchType == 'memName'}">
+                                                    이름
+                                                </option>
+                                                <option value="memId" th:selected="${params.searchType == 'memId'}">
+                                                    아이디
+                                                </option>
+                                                <option value="deptCode"
+                                                        th:selected="${params.searchType == 'deptCode'}">부서ID
+                                                </option>
+                                                <option value="deptName"
+                                                        th:selected="${params.searchType == 'deptName'}">부서명
+                                                </option>
+                                                <option value="deptEngName"
+                                                        th:selected="${params.searchType == 'deptEngName'}">부서명(영문)
+                                                </option>
                                             </select>
                                             <div class="search">
-                                                <input type="search" id="searchKeyword" placeholder="검색어를 입력하세요." th:value="${params.searchKeyword}">
+                                                <input type="search" id="searchKeyword" placeholder="검색어를 입력하세요."
+                                                       th:value="${params.searchKeyword}">
                                                 <button type="button" class="btn_del" tabindex="-1">
                                                     <span class="blind">삭제</span>
                                                 </button>
@@ -154,12 +169,13 @@
                 </thead>
                 <tbody>
                 <tr th:if="${totalRecordCount} == 0">
-                	<td colspan="10">데이터가 없습니다.</td>
+                    <td colspan="10">데이터가 없습니다.</td>
                 </tr>
                 <tr th:each="list, status : ${userList}">
                     <td>
                         <div class="checkbox">
-                            <input type="checkbox" name="chkBoxUser" th:id="'chk' + ${status.count}" th:value="${list.memId}">
+                            <input type="checkbox" name="chkBoxUser" th:id="'chk' + ${status.count}"
+                                   th:value="${list.memId}">
                             <label th:for="'chk' + ${status.count}">
                                 <span class="blind">선택</span>
                             </label>
@@ -168,12 +184,13 @@
                     <td th:text="${((params.currentPageNo-1)*params.recordsPerPage) + status.count}">10</td>
                     <td th:text="${list.memName }">관리자</td>
                     <td>
-                        <a href="javascript:void(0);" class="link" th:onclick="modUserOpen([[${list.memId}]]);" th:text="${list.memId}">admin</a>
+                        <a href="javascript:void(0);" class="link" th:onclick="modUserOpen([[${list.memId}]]);"
+                           th:text="${list.memId}">admin</a>
                     </td>
                     <td th:text="${list.deptCode }"></td>
-			        <td th:text="${list.deptName }"></td>
-			        <td th:text="${list.deptEngName }"></td>
-			        <td th:text="${list.memPhone }"></td>
+                    <td th:text="${list.deptName }"></td>
+                    <td th:text="${list.deptEngName }"></td>
+                    <td th:text="${list.memPhone }"></td>
                     <td th:text="${#dates.format(list.memRegDt, 'yyyy-MM-dd HH:mm:ss')}">2020.05.19</td>
                     <td th:text="${#dates.format(list.memModDt, 'yyyy-MM-dd HH:mm:ss')}">2020.05.19</td>
                 </tr>
@@ -192,14 +209,16 @@
         <div class="pop_head">
             <strong class="pop_tit">사용자 수정</strong>
             <th:block th:if="${isSuperAdmin}">
-            <div class="button-container" style="display: flex; justify-content: flex-end; margin-left: auto;" >
-            <button id="superSet" type="button" style="display: none;" class="btn line_cool_grey30" onclick="setSuperAdmin(true);">
-	            <span>SUPER 권한 설정</span>
-            </button>
-            <button id="superUnset" type="button" style="display: none;" class="btn line_cool_grey30" onclick="setSuperAdmin(false);">
-	            <span>SUPER 권한 해제</span>
-            </button>            
-            </div>
+                <div class="button-container" style="display: flex; justify-content: flex-end; margin-left: auto;">
+                    <button id="superSet" type="button" style="display: none;" class="btn line_cool_grey30"
+                            onclick="setSuperAdmin(true);">
+                        <span>SUPER 권한 설정</span>
+                    </button>
+                    <button id="superUnset" type="button" style="display: none;" class="btn line_cool_grey30"
+                            onclick="setSuperAdmin(false);">
+                        <span>SUPER 권한 해제</span>
+                    </button>
+                </div>
             </th:block>
             <button type="button" class="btn_close" onclick="layerHide('popModify')">
                 <span class="blind">닫기</span>
@@ -222,7 +241,7 @@
                     </th>
                     <td colspan="3">
                         <div class="input">
-                        	<input id="modDeptId" name="modDeptId" type="hidden">
+                            <input id="modDeptId" name="modDeptId" type="hidden">
                             <input type="text" name="modDeptName" id="modDeptName" readonly>
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
@@ -247,15 +266,15 @@
                         <span class="aster"></span>
                     </th>
                     <td>
-                    	<input id="modMemId" name="modMemId" type="hidden" class="ipt_txt user_id" readonly="readonly">
-                    	<span id="modMemIdSpan"></span>
+                        <input id="modMemId" name="modMemId" type="hidden" class="ipt_txt user_id" readonly="readonly">
+                        <span id="modMemIdSpan"></span>
                     </td>
                     <th scope="row">비밀번호</th>
                     <td>
-                    	<th:block th:if="${isSuperAdmin}">
-                        <button type="button" class="btn line_cool_grey30" onclick="resetPassword();">
-                            <span>비밀번호 초기화</span>
-                        </button>
+                        <th:block th:if="${isSuperAdmin}">
+                            <button type="button" class="btn line_cool_grey30" onclick="resetPassword();">
+                                <span>비밀번호 초기화</span>
+                            </button>
                         </th:block>
                     </td>
                 </tr>
@@ -265,8 +284,8 @@
                         <span class="aster"></span>
                     </th>
                     <td>
-                    	<input id="modMemName" name="modMemName" type="hidden" class="ipt_txt" readonly="readonly">
-                    	<span id="modMemNameSpan"></span>
+                        <input id="modMemName" name="modMemName" type="hidden" class="ipt_txt" readonly="readonly">
+                        <span id="modMemNameSpan"></span>
                     </td>
                     <th scope="row">성별</th>
                     <td>
@@ -287,29 +306,34 @@
                         <label for="modMemEmail1">이메일</label>
                     </th>
                     <td>
-						<input id="modMemEmail1" name="modMemEmail1" type="text" class="ipt_txt email" style="width:44%;">
+                        <input id="modMemEmail1" name="modMemEmail1" type="text" class="ipt_txt email"
+                               style="width:44%;">
                         @
-						<input id="modMemEmail2" name="modMemEmail2" type="text" class="ipt_txt email" style="width:44%;">
+                        <input id="modMemEmail2" name="modMemEmail2" type="text" class="ipt_txt email"
+                               style="width:44%;">
                     </td>
                     <th scope="row">
                         <label for="modMemBirthday">생년월일</label>
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="modMemBirthday" name="modMemBirthday" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="생년월일을 입력하세요.">
+                            <input type="text" id="modMemBirthday" name="modMemBirthday" maxlength="8"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="생년월일을 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
                         </div>
                     </td>
-                </tr>  
-                <tr>                  
+                </tr>
+                <tr>
                     <th scope="row">
                         <label for="modMemPhone">휴대폰 번호</label>
                     </th>
                     <td>
                         <div class="input">
-                            <input type="tel" id="modMemPhone" name="modMemPhone" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="휴대폰 번호를 입력하세요.">
+                            <input type="tel" id="modMemPhone" name="modMemPhone" maxlength="11"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                   placeholder="휴대폰 번호를 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -327,7 +351,7 @@
                                 <label for="modMemRoleAdmin">관리자</label>
                             </div>
                         </div>
-                    </td>                    
+                    </td>
                 </tr>
                 <tr>
                     <th scope="row">
@@ -335,7 +359,8 @@
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="modMemColumn1" name="modMemColumn1" placeholder="xxx.xxx.xxx.xxx, ..." onKeyUp="javascript:noEnKo(this)">
+                            <input type="text" id="modMemColumn1" name="modMemColumn1"
+                                   placeholder="xxx.xxx.xxx.xxx, ..." onKeyUp="javascript:noEnKo(this)">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -417,7 +442,7 @@
                     </th>
                     <td colspan="3">
                         <div class="input">
-                        	<input id="addDeptId" name="addDeptId" type="hidden">
+                            <input id="addDeptId" name="addDeptId" type="hidden">
                             <input type="text" id="addDeptName" name="addDeptName" readonly>
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
@@ -446,7 +471,7 @@
                             <div class="input flb223">
                                 <input type="text" id="addMemId" name="addMemId" placeholder="아이디를 입력하세요.">
                                 <input id="checkUserId" name="checkUserId" type="hidden">
-                                <input id="checkUserYN" name="checkUserYN" type="hidden">                                
+                                <input id="checkUserYN" name="checkUserYN" type="hidden">
                                 <button type="button" class="btn_del" tabindex="-1">
                                     <span class="blind">삭제</span>
                                 </button>
@@ -464,7 +489,7 @@
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="addMemName" placeholder="이름을 입력하세요.">
+                            <input type="text" id="addMemName" placeholder="이름을 입력하세요." onkeydown="fn_KorEngOnly(this)">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -485,7 +510,7 @@
                     </td>
                 </tr>
                 <tr>
-                   <th scope="row">
+                    <th scope="row">
                         <label for="addMemEmail1">이메일</label>
                     </th>
                     <td>
@@ -521,7 +546,8 @@
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="addMemBirthday" name="addMemBirthday" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="생년월일을 입력하세요.">
+                            <input type="text" id="addMemBirthday" name="addMemBirthday" maxlength="8"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="생년월일을 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -534,7 +560,9 @@
                     </th>
                     <td>
                         <div class="input">
-                            <input type="tel" id="addMemPhone" name="addMemPhone" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="휴대폰 번호를 입력하세요.">
+                            <input type="tel" id="addMemPhone" name="addMemPhone" maxlength="11"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                   placeholder="휴대폰 번호를 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -561,7 +589,8 @@
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="addMemColumn1" name="addMemColumn1" placeholder="xxx.xxx.xxx.xxx, ..." onKeyUp="javascript:noEnKo(this)">
+                            <input type="text" id="addMemColumn1" name="addMemColumn1"
+                                   placeholder="xxx.xxx.xxx.xxx, ..." onKeyUp="javascript:noEnKo(this)">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -581,7 +610,7 @@
                                 <label for="addMemColumn2_N">미사용</label>
                             </div>
                         </div>
-                    </td>                    
+                    </td>
                 </tr>
                 <tr>
                     <th scope="row">
@@ -618,16 +647,16 @@
 
 <!--부서명/부서ID 검색 팝업 : s-->
 <div id="popSearch" class="pop_layer">
-	<input type="hidden" id="srch_dptmt_type" name="srch_dptmt"/>
-	<div id="srch_dptmt_background" class="lyr_bg" style="display:none;"></div>
-	
-	<input type="hidden" id="dept_currentPageNo" name="dept_currentPageNo"/> <!-- 신규 검색시 1 페이지로 이동 -->
-	<input type="hidden" id="h_dept_currentPageNo" name="h_dept_currentPageNo">    	<!-- 신규 검색시 1 페이지로 이동 -->
-	<input type="hidden" id="h_dept_recordsPerPage" name="h_dept_recordsPerPage"/> 	<!-- 한 페이지에 보여질 수 -->
-	<input type="hidden" id="h_dept_pageSize" name="h_dept_pageSize"/>             	<!-- 페이지 블럭의 수 -->
-	<input type="hidden" id="h_dept_searchType" name="h_dept_searchType" />           	<!-- 검색 종류 -->
-	<input type="hidden" id="h_dept_searchKeyword" name="h_dept_searchKeyword" />  	    <!-- 검색 값 -->
-	
+    <input type="hidden" id="srch_dptmt_type" name="srch_dptmt"/>
+    <div id="srch_dptmt_background" class="lyr_bg" style="display:none;"></div>
+
+    <input type="hidden" id="dept_currentPageNo" name="dept_currentPageNo"/> <!-- 신규 검색시 1 페이지로 이동 -->
+    <input type="hidden" id="h_dept_currentPageNo" name="h_dept_currentPageNo">        <!-- 신규 검색시 1 페이지로 이동 -->
+    <input type="hidden" id="h_dept_recordsPerPage" name="h_dept_recordsPerPage"/>    <!-- 한 페이지에 보여질 수 -->
+    <input type="hidden" id="h_dept_pageSize" name="h_dept_pageSize"/>                <!-- 페이지 블럭의 수 -->
+    <input type="hidden" id="h_dept_searchType" name="h_dept_searchType"/>            <!-- 검색 종류 -->
+    <input type="hidden" id="h_dept_searchKeyword" name="h_dept_searchKeyword"/>        <!-- 검색 값 -->
+
     <div class="dim"></div>
     <div class="popup">
         <div class="pop_head">
@@ -725,7 +754,7 @@
             <strong class="pop_tit">삭제하시겠습니까?</strong>
         </div>
         <div class="pop_foot">
-        	<input type="hidden" id="delChkMemId" name="delChkMemId" />
+            <input type="hidden" id="delChkMemId" name="delChkMemId"/>
             <button type="button" class="btn line_cool_grey30" onclick="layerHide('alertWarning')">
                 <span>취소</span>
             </button>
@@ -754,713 +783,726 @@
 </div>
 <!--얼럿 : e-->
 <script type="text/javascript">
-// 페이지 이동
-function movePage(queryString){
-	location.href = "/soulGod/admin/user" + queryString;	
-}
-
-// 사용자 목록 조회
-function searchUser(){
-	var uri = "/soulGod/admin/user";
-	var queryString = "?currentPageNo=" + $('#currentPageNo').val()
-			+ "&recordsPerPage=" + $('#h_recordsPerPage').val()
-			+ "&pageSize=" + $('#h_pageSize').val()
-			+ "&searchType=" + $('#searchType').val()
-			+ "&searchKeyword=" + $('#searchKeyword').val();
-	
-	location.href = uri + queryString;
-}
-
-// 사용자 등록 > 사용자 관리 모달 오픈
-function addUserOpen(){
-	// 등록 버튼누르면 기존 입력된 데이터 초기화 진행
-	addUserClear();
-	$('#srch_dptmt_type').val('add');
-	//modalOpenClose("add_user","open");
-	layerShow('popRegister')
-}
-
-//사용자 등록 > 사용자 관리 모달 > 취소 (닫기)
-function addUserClose(){
-	// 사용자 관리 모달에서 취소 버튼누르면 기존 입력된 데이터 초기화 진행
-	addUserClear();
-	//modalOpenClose("add_user","close");
-	layerHide('popRegister');
-}
-
-// 사용자 등록 > 사용자 관리 모달 오픈
-function modUserOpen(memId){
-	// 수정 버튼누르면 기존 입력된 데이터 초기화 진행
-	modUserClear();
-	$('#srch_dptmt_type').val('mod');
-	ajaxGetUserInfo(memId);
-	//modalOpenClose("mod_user","open");
-	layerShow('popModify');
-}
-
-//사용자 등록 > 사용자 관리 모달 > 취소 (닫기)
-function modUserClose(){
-	// 사용자 관리 모달에서 취소 버튼누르면 기존 입력된 데이터 초기화 진행
-	modUserClear();
-	//modalOpenClose("mod_user","close");
-	layerHide('popModify');
-}
-
-//사용자 추가 
-function addUser(){
- 	// 공백제거
-	$('#addDeptId').val($('#addDeptId').val().trim()); // 부서 ID
-	$('#addDeptName').val($('#addDeptName').val().trim());
-	$('#addDeptCode').val($('#addDeptCode').val().trim());
-	$('#addMemId').val($('#addMemId').val().trim()); // 회원 ID
-	$('#addMemName').val($('#addMemName').val().trim()); // 회원 이름
-	$('#addMemEmail1').val($('#addMemEmail1').val().trim());
-	$('#addMemEmail2').val($('#addMemEmail2').val().trim());
-	$('#addMemBirthday').val($('#addMemBirthday').val().trim()); // 생년월일 yyyymmdd
-	$('#addMemPhone').val($('#addMemPhone').val().trim()); // 전화번호
-	$('#checkUserId').val($('#checkUserId').val().trim());
-	$('#checkUserYN').val($('#checkUserYN').val().trim());
-	
-	$('#addMemColumn1').val($('#addMemColumn1').val().trim());//IP 주소
-	
-	// value Get
-	var $addDeptId = $('#addDeptId').val();
-	var $addDeptName = $('#addDeptName').val();
-	var $addDeptCode = $('#addDeptCode').val();
-	var $addMemId = $('#addMemId').val();
-	var $addMemName = $('#addMemName').val();
-	var $addMemEmail1 = $('#addMemEmail1').val();
-	var $addMemEmail2 = $('#addMemEmail2').val();
-	var $addMemBirthday = $('#addMemBirthday').val();
-	var $addMemPhone = $('#addMemPhone').val();
-	var $addMemEmail = $addMemEmail1 + "@" + $addMemEmail2;
-
-	var $addMemColumn1 = $('#addMemColumn1').val();
-	
-    const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-    if ($addMemColumn1.length > 0 && !ipv4Pattern.test($addMemColumn1)) {
-        alert("유효하지 않은 IP 주소입니다.");
-        return;
+    // 페이지 이동
+    function movePage(queryString) {
+        location.href = "/soulGod/admin/user" + queryString;
     }
-    	
-	 // radio
-	 var $addMemGender = $("input[name='addMemGender']:checked").val(); // 성별
-	 var $addMemStat = $("input[name='addMemStat']:checked").val(); // 상태 
-	 var $addMemRoleId = $("input[name='addMemRoleId']:checked").val(); // 상태 
-	 
-	 var $addMemColumn2 = $("input[name='addMemColumn2']:checked").val(); // IP 체크여부 
-	 
-	 // 아이디 중복 관련
-	 var $checkUserId = $('#checkUserId').val();
-	 var $checkUserYN = $('#checkUserYN').val();
 
-	// 필수조건
-	if ($addDeptId.length < 1){
-	    alert("부서 정보를 입력해주세요.");
-	    return ;
-	} 
-	if ($addMemId.length < 1){
-	    alert("사용자 아이디를 입력해주세요.");
-	    $('#addMemId').focus();
-	    return ;
-	} else {
-		if ("N" == $checkUserYN){
-			alert("사용자 ID 중복확인이 필요합니다.");
-			$('#addMemId').focus();
-		    return ;
-		} else {
-			if ($addMemId!=$checkUserId){
-				alert("사용자 ID 중복확인이 필요합니다.");
-				$('#addMemId').focus();
-			    return ;
-			}
-		}
-	} 
-	if ($addMemName.length < 1){
-	    alert("이름을 입력해주세요.");
-	    $('#addMemName').focus();
-	    return ;
-	}
-	
-	if ("@" == $addMemEmail){
-		$addMemEmail = "";
-	}
-	
-	var jsonData = {
-	    deptId : $addDeptId
-	    , memId : $addMemId
-	    , memName : $addMemName
-	    , memBirthday : $addMemBirthday
-	    , memPhone : $addMemPhone
-	    , memGender : $addMemGender
-	    , memStat : $addMemStat
-	    , memEmail : $addMemEmail
-	    , roleId : $addMemRoleId
-	    , memColumn1 : $addMemColumn1
-	    , memColumn2 : $addMemColumn2
-	    , memRegId : $('#sessionMemId').val()
-	    , memModId : $('#sessionMemId').val()
-	};
-	// 사용자 추가 실행
-	ajaxAddUser(jsonData);
-}
+    // 사용자 목록 조회
+    function searchUser() {
+        let uri = "/soulGod/admin/user";
+        let queryString = "?currentPageNo=" + $('#currentPageNo').val()
+            + "&recordsPerPage=" + $('#h_recordsPerPage').val()
+            + "&pageSize=" + $('#h_pageSize').val()
+            + "&searchType=" + $('#searchType').val()
+            + "&searchKeyword=" + $('#searchKeyword').val();
 
-//사용자 데이터 체크 - 사용자 아이디 중복체크
-function ajaxAddUser(jsonData){
-	$.ajax({
-		url : "/soulGod/admin/user/add",
-		type : "post",
-		async : false,
-		data : jsonData,
-		dataType: "json",
-		success : function(data) {
-			if ("SUCCESS" == data.status){
-				alert(data.msg);
-				addUserClose();// 사용자 관리 추가 모달 CLOSE
-				searchUser();
-			} else if ("FAIL" == data.status){
-				alert(data.msg);
-				addUserClose();// 사용자 관리 추가 모달 CLOSE
-			} else {
-				alert('실패하였습니다.');
-				addUserClose();// 사용자 관리 추가 모달 CLOSE
-			}
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-}
-
-function resetPassword(){
-	var $modMemId = $('#modMemId').val();
-
-	var jsonData = {
-		memId : $modMemId
-	};
-	if(confirm('비밀번호 초기화를 하시겠습니까?')){
-		ajaxResetPassword(jsonData);
-	}
-}
-
-// 사용자 비밀번호 초기화
-function ajaxResetPassword(jsonData){
-	$.ajax({
-		url : "/soulGod/admin/user/resetPassword",
-		type : "post",
-		async : false,
-		data : jsonData,
-		dataType: "json",
-		success : function(data) {
-			if ("SUCCESS" == data.status){
-				alert(data.msg);
-			} else if ("FAIL" == data.status){
-				alert(data.msg);
-			} else {
-				alert('실패하였습니다.');
-			}
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-}
-
-// super admin 설정
-function setSuperAdmin(mode) {
-	var jsonData = {
-	    memId : $('#modMemId').val().trim()
-	    , auth : (mode ? "SUPER" : "")
-	}; 
-console.log("jsonData : " + jsonData);
-	$.ajax({
-		url : "/soulGod/admin/user/setSuperAdmin",
-		type : "post",
-		async : false,
-		data : jsonData,
-		dataType: "json",
-		success : function(data) {
-			if ("SUCCESS" == data.status){
-				alert(data.msg);
-				if(mode) {
-					$('#superSet').hide();
-					$('#superUnset').show();
-				}else{
-					$('#superUnset').hide();
-					$('#superSet').show();
-				}
-			} else if ("FAIL" == data.status){
-				alert(data.msg);
-			} else {
-				alert('실패하였습니다.');
-			}
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-}
-
-function deleteUser(){
-	var memId = $('#delChkMemId').val();
-	var jsonData = {
-	    memId : memId
-	    , memModId : $('#sessionMemId').val()
-	};
-	// 사용자 추가 실행
-	ajaxDeleteUser(jsonData);
-}
-
-//사용자 비밀번호 초기화
-function ajaxDeleteUser(jsonData){
-	layerHide('alertWarning');
-	$.ajax({
-		url : "/soulGod/admin/user/delete",
-		type : "post",
-		async : false,
-		data : jsonData,
-		dataType: "json",
-		success : function(data) {
-			if ("SUCCESS" == data.status){
-				alert(data.msg);
-				searchUser();
-			} else if ("FAIL" == data.status){
-				alert(data.msg);
-			} else {
-				alert('실패하였습니다.');
-			}
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-}
-
-// 사용자 등록 데이터 초기화 
-function addUserClear(){
-	// input 초기화
-    $('#addDeptId').val(''); // 부서 ID
-    $('#addDeptName').val('');
-    $('#addDeptCode').val(''); 
-    $('#addMemId').val(''); // 회원 ID
-    $('#addMemName').val(''); // 회원 이름
-    $('#addMemEmail1').val(''); 
-    $('#addMemEmail2').val('');
-    $('#addMemBirthday').val(''); // 생년월일 yyyymmdd
-    $('#addMemPhone').val(''); // 전화번호
-    $('#addMemColumn1').val(''); // IP주소
-    
-    // radio 초기화 - 첫번째 선택지
-    $("input[name='addMemGender'][value='M']").prop("checked", true);
-    $("input[name='addMemStat'][value='use']").prop("checked", true);
-    $("input[name='addMemColumn2'][value='N']").prop("checked", true); 
-    
-    // 아이디 중복 관련
-    $('#checkUserId').val(''); // 중복체크된 아이디
-    $('#checkUserYN').val('N'); // 중복체크된 아이디
-}
-
-//사용자 추가 
-function modUser(){
-	// 공백제거
-	$('#modDeptId').val($('#modDeptId').val().trim()); // 부서 ID
-	$('#modDeptName').val($('#modDeptName').val().trim());
-	$('#modDeptCode').val($('#modDeptCode').val().trim());
-	$('#modMemId').val($('#modMemId').val().trim()); // 회원 ID
-	$('#modMemName').val($('#modMemName').val().trim()); // 회원 이름
-	$('#modMemEmail1').val($('#modMemEmail1').val().trim());
-	$('#modMemEmail2').val($('#modMemEmail2').val().trim());
-	$('#modMemBirthday').val($('#modMemBirthday').val().trim()); // 생년월일 yyyymmdd
-	$('#modMemPhone').val($('#modMemPhone').val().trim()); // 전화번호
-
-	$('#modMemColumn1').val($('#modMemColumn1').val().trim());//IP 주소
-
-	// value Get
-	var $modDeptId = $('#modDeptId').val();
-	var $modDeptName = $('#modDeptName').val();
-	var $modDeptCode = $('#modDeptCode').val();
-	var $modMemId = $('#modMemId').val();
-	var $modMemName = $('#modMemName').val();
-	var $modMemEmail1 = $('#modMemEmail1').val();
-	var $modMemEmail2 = $('#modMemEmail2').val();
-	var $modMemBirthday = $('#modMemBirthday').val();
-	var $modMemPhone = $('#modMemPhone').val();
-	var $modMemEmail = $modMemEmail1 + "@" + $modMemEmail2;
-	
-	var $modMemColumn1 = $('#modMemColumn1').val();
-	
-    const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-    if ($modMemColumn1.length > 0 && !ipv4Pattern.test($modMemColumn1)) {
-        alert("유효하지 않은 IP 주소입니다.");
-        return;
+        location.href = uri + queryString;
     }
-    	
-	// radio
-	var $modMemGender = $("input[name='modMemGender']:checked").val(); // 성별
-	var $modMemStat = $("input[name='modMemStat']:checked").val(); // 상태 
-	var $modMemRoleId = $("input[name='modMemRoleId']:checked").val(); // 상태 
-	 
-	var $modMemColumn2 = $("input[name='modMemColumn2']:checked").val(); // IP 체크여부 
 
-	// 필수조건
-	if ($modDeptId.length < 1){
-	    alert("부서 정보를 입력해주세요.");
-	    return ;
-	} 
-	if ("@" == $modMemEmail){
-		$modMemEmail = "";
-	}
-	
-	var jsonData = {
-	    deptId : $modDeptId
-	    , memId : $modMemId
-	    , memBirthday : $modMemBirthday
-	    , memPhone : $modMemPhone
-	    , memGender : $modMemGender
-	    , memStat : $modMemStat
-	    , memEmail : $modMemEmail
-	    , roleId : $modMemRoleId
-	    , memColumn1 : $modMemColumn1
-	    , memColumn2 : $modMemColumn2
-	    , memModId : $('#sessionMemId').val()
-	};
-	// 사용자 추가 실행
-	ajaxModUser(jsonData);
-}
+    // 사용자 등록 > 사용자 관리 모달 오픈
+    function addUserOpen() {
+        // 등록 버튼누르면 기존 입력된 데이터 초기화 진행
+        addUserClear();
+        $('#srch_dptmt_type').val('add');
+        //modalOpenClose("add_user","open");
+        layerShow('popRegister')
+    }
 
-//사용자 데이터 체크 - 사용자 아이디 중복체크
-function ajaxModUser(jsonData){
-	$.ajax({
-		url : "/soulGod/admin/user/mod",
-		type : "post",
-		async : false,
-		data : jsonData,
-		dataType: "json",
-		success : function(data) {
-			if ("SUCCESS" == data.status){
-				alert(data.msg);
-				modUserClose();// 사용자 관리 추가 모달 CLOSE
-				searchUser();
-			} else if ("FAIL" == data.status){
-				alert(data.msg);
-				modUserClose();// 사용자 관리 추가 모달 CLOSE
-			} else {
-				alert('실패하였습니다.');
-				modUserClose();// 사용자 관리 추가 모달 CLOSE
-			}
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-}
+    //사용자 등록 > 사용자 관리 모달 > 취소 (닫기)
+    function addUserClose() {
+        // 사용자 관리 모달에서 취소 버튼누르면 기존 입력된 데이터 초기화 진행
+        addUserClear();
+        //modalOpenClose("add_user","close");
+        layerHide('popRegister');
+    }
 
-// 사용자 수정 데이터 초기화 
-function modUserClear(){
-	// input 초기화
-    $('#modDeptId').val(''); // 부서 ID
-    $('#modDeptName').val('');
-    $('#modDeptCode').val(''); 
-    $('#modMemId').val(''); // 회원 ID
-    $('#modMemName').val(''); // 회원 이름
-    $('#modMemIdSpan').html(''); // 회원 ID
-    $('#modMemNameSpan').html(''); // 회원 이름
-    $('#modMemEmail1').val(''); 
-    $('#modMemEmail2').val('');
-    $('#modMemBirthday').val(''); // 생년월일 yyyymmdd
-    $('#modMemPhone').val(''); // 전화번호
-    $('#modMemColumn1').val(''); // IP주소
-    
-    // radio 초기화 - 첫번째 선택지
-    $("input[name='modMemGender']").prop("checked", false);
-    $("input[name='modMemStat']").prop("checked", false);
-	$("input[name='modMemRoleId']").prop("checked", false); 
-	$("input[name='modMemColumn2']").prop("checked", false); 
+    // 사용자 등록 > 사용자 관리 모달 오픈
+    function modUserOpen(memId) {
+        // 수정 버튼누르면 기존 입력된 데이터 초기화 진행
+        modUserClear();
+        $('#srch_dptmt_type').val('mod');
+        ajaxGetUserInfo(memId);
+        //modalOpenClose("mod_user","open");
+        layerShow('popModify');
+    }
 
-}
+    //사용자 등록 > 사용자 관리 모달 > 취소 (닫기)
+    function modUserClose() {
+        // 사용자 관리 모달에서 취소 버튼누르면 기존 입력된 데이터 초기화 진행
+        modUserClear();
+        //modalOpenClose("mod_user","close");
+        layerHide('popModify');
+    }
 
-// 추가할 사용자 ID 중복 확인
-function addCheckUserId(){
-    // 좌우 공백 제거
-    $("#addMemId").val($("#addMemId").val().trim());
-    
-	var checkUserId = $("#addMemId").val();
-	
-	if (checkUserId.length == 0){
-		alert("사용자 ID를 입력해주세요.");
-		return;
-	}
-	// 수행
-	ajaxCheckUserId(checkUserId);
-}
+    //사용자 추가
+    function addUser() {
+        // 공백제거
+        $('#addDeptId').val($('#addDeptId').val().trim()); // 부서 ID
+        $('#addDeptName').val($('#addDeptName').val().trim());
+        $('#addDeptCode').val($('#addDeptCode').val().trim());
+        $('#addMemId').val($('#addMemId').val().trim()); // 회원 ID
+        $('#addMemName').val($('#addMemName').val().trim()); // 회원 이름
+        $('#addMemEmail1').val($('#addMemEmail1').val().trim());
+        $('#addMemEmail2').val($('#addMemEmail2').val().trim());
+        $('#addMemBirthday').val($('#addMemBirthday').val().trim()); // 생년월일 yyyymmdd
+        $('#addMemPhone').val($('#addMemPhone').val().trim()); // 전화번호
+        $('#checkUserId').val($('#checkUserId').val().trim());
+        $('#checkUserYN').val($('#checkUserYN').val().trim());
 
-// 사용자 중복확인 모달
-function modalOpenClose(modal, type){
-	if (type == "open"){
-		$("#"+modal).css("display","block");
-		$("#"+modal+"_background").css("display","block");
-		$("#"+modal+"_btn_cancle").toggleClass("btn_lyr_close_modal");
-	} else if (type == "close"){
-		$("#"+modal).css("display","none");
-		$("#"+modal+"_background").css("display","none");
-		$("#"+modal+"_btn_cancle").toggleClass("btn_lyr_close_modal");
-	} 
-}
+        $('#addMemColumn1').val($('#addMemColumn1').val().trim());//IP 주소
 
-//사용자 데이터 체크 - 사용자 아이디 중복체크
-function ajaxCheckUserId(checkUserId){
-	var text = "";
-	var result = "";
-	// 사용자 아이디  검사
-	var jsonData = {
-			"userId" : checkUserId
-	};
-	
-	$.ajax({
-		url : "/soulGod/admin/user/checkUserId",
-		type : "post",
-		async : false,
-		data : jsonData,
-		dataType: "json",
-		success : function(data) {
-			result = data.cnt; // 조회된 사용자 건수 반환
-			if (result == 0){
-				// 조회된 사용자가 없으므로 사용가능
-				text = "<b>"+ checkUserId +"</b> 는 사용 가능한 아이디 입니다.";
-    			$("#id_chk_text").html(text);
-    			$("#checkUserId").val(checkUserId); // 사용 가능 ID 입력
-    			$("#checkUserYN").val("Y"); // 사용 가능 상태  Y
-    			$("#alertIco").attr("class", "ico ico_complete");
-			} else if (result > 0) {
-				// 조회된 사용자가 있으므로 사용불가
-				text = "<b>"+ checkUserId +"</b> 는 사용중인 아이디 입니다.";
-    			$("#id_chk_text").html(text);
-			    $("#addMemId").val(""); // 중복 확인 정보 초기화
-			    $("#checkUserId").val(""); // 중복 확인 정보 초기화
-			    $("#checkUserYN").val("N"); // 중복된 사용자 : N, 중복되지 않아서 사용가능한 사용자 : Y
-			    $("#alertIco").attr("class", "ico ico_warning");
-			} else {
-			}
-			// modal OPEN
-			//modalOpenClose("id_chk","open");
-			layerShow('alertComplete');
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-	return result;
-}
+        // value Get
+        let $addDeptId = $('#addDeptId').val();
+        let $addDeptName = $('#addDeptName').val();
+        let $addDeptCode = $('#addDeptCode').val();
+        let $addMemId = $('#addMemId').val();
+        let $addMemName = $('#addMemName').val();
+        let $addMemEmail1 = $('#addMemEmail1').val();
+        let $addMemEmail2 = $('#addMemEmail2').val();
+        let $addMemBirthday = $('#addMemBirthday').val();
+        let $addMemPhone = $('#addMemPhone').val();
+        let $addMemEmail = $addMemEmail1 + "@" + $addMemEmail2;
 
-//사용자 정보 조회 및 수정 화면 값 입력
-function ajaxGetUserInfo(memId){
-	var text = "";
-	var result = "";
-	// 사용자 아이디  검사
-	var jsonData = {
-			"userId" : memId
-	};
-	
-	$.ajax({
-		url : "/soulGod/admin/user/getUserInfo",
-		type : "post",
-		async : false,
-		data : jsonData,
-		dataType: "json",
-		success : function(data) {
-			//console.log(data);
-			result = data;
-			
-			var info = data.userInfo;
-			var email = info.memEmail;
-			var email1 = '';
-			var email2 = '';
-			if (email != null && email != undefined ){
-				var emailArr = email.split('@');
-				
-				if (emailArr.length == 1){
-					email1 = emailArr[0]; 
-				} else if (emailArr.length == 2){
-					email1 = emailArr[0];
-					email2 = emailArr[1]; 
-				}
-			}
-			
-			// input 값 입력
-		    $('#modDeptId').val(info.deptId); // 부서 ID
-		    $('#modDeptName').val(info.deptName);
-		    $('#modDeptCode').val(info.deptCode); 
-		    $('#modMemId').val(info.memId); // 회원 ID
-		    $('#modMemIdSpan').html(info.memId); // 회원 ID
-		    $('#modMemName').val(info.memName); // 회원 이름
-		    $('#modMemNameSpan').html(info.memName); // 회원 이름
-		    $('#modMemEmail1').val(email1); 
-		    $('#modMemEmail2').val(email2);
-		    $('#modMemBirthday').val(info.memBirthday); // 생년월일 yyyymmdd
-		    $('#modMemPhone').val(info.memPhone); // 전화번호
-		    $('#modMemColumn1').val(info.memColumn1); // IP
-		    
-		    if($('#superUnset').length) {
-		    	$('#superUnset').hide();
-		    }
-		    if($('#superSet').length) {
-		    	$('#superSet').hide();
-		    }
-		    
-		    if($('#superUnset').length && 'ADMIN'==info.roleId && 'SUPER' == info.memColumn3) {
-		    	$('#superUnset').show();
-		    }else if($('#superSet').length && 'ADMIN'==info.roleId && 'SUPER' != info.memColumn3) {
-		    	$('#superSet').show();
-		    }
-		    
-		    // radio 값 선택
-		    var memGender;
-		    var memStat;
-		    var roleId;
-		    var memColumn2;
-		    
-		    if (info.memGender == null || info.memGender == ""){
-		    	memGender = "M";
-		    } else {
-		    	memGender = info.memGender;
-		    }
-		    if (info.memStat == null || info.memStat == ""){
-		    	memStat = "use";
-		    } else {
-		    	memStat = info.memStat;
-		    }
-		    if (info.roleId == null || info.roleId == ""){
-		    	roleId = "USER";
-		    } else {
-		    	roleId = info.roleId;
-		    }
-		    if (info.memColumn2 == null || info.memColumn2 == ""){
-		    	memColumn2 = "N";
-		    } else {
-		    	memColumn2 = info.memColumn2;
-		    }
-		    $("input[name='modMemGender'][value='"+memGender+"']").prop("checked", true);
-		    $("input[name='modMemStat'][value='"+memStat+"']").prop("checked", true);
-		    $("input[name='modMemRoleId'][value='"+roleId+"']").prop("checked", true); 
-		    $("input[name='modMemColumn2'][value='"+memColumn2+"']").prop("checked", true); 
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-	return result;
-}
+        let $addMemColumn1 = $('#addMemColumn1').val();
 
-//부서 조회창 오픈
-function searchDeptOpen(){
-	// 모달 오픈
-	// 추가될 데이터 초기화
-	
-	var type = $('#srch_dptmt_type').val();
-	
-	$("#"+type+"DeptId").val("");
-	$("#"+type+"DeptName").val("");
-	$("#"+type+"DeptCode").val("");
-	
-	searchDeptClear(); // 신규 조회시 데이터 초기화
-	//modalOpenClose("srch_dptmt",'open');
-	layerShow('popSearch');
-	
-	var jsonData = {
-			currentPageNo : $('#dept_currentPageNo').val()
-			, recordsPerPage : $('#h_dept_recordsPerPage').val()
-			, pageSize : $('#h_dept_pageSize').val()
-			, searchType : $('#h_dept_searchType').val()
-			, searchKeyword : $('#h_dept_searchKeyword').val()
-	};
-	ajaxSearchDept(jsonData);
-}
+        // radio
+        let $addMemGender = $("input[name='addMemGender']:checked").val(); // 성별
+        let $addMemStat = $("input[name='addMemStat']:checked").val(); // 상태
+        let $addMemRoleId = $("input[name='addMemRoleId']:checked").val(); // 상태
 
-//부서 조회(검색)
-function searchDept(){
-	var jsonData = {
-			currentPageNo : $('#dept_currentPageNo').val()
-			, recordsPerPage : $('#h_dept_recordsPerPage').val()
-			, pageSize : $('#h_dept_pageSize').val()
-			, searchType : $('#dept_searchType').val()
-			, searchKeyword : $('#dept_searchKeyword').val()
-	};
-	ajaxSearchDept(jsonData);
-}
+        let $addMemColumn2 = $("input[name='addMemColumn2']:checked").val(); // IP 체크여부
 
-// 부서 조회 페이지 이동
-function searchDeptMove(pageNo){
-	var jsonData = {
-			currentPageNo : pageNo
-			, recordsPerPage : $('#h_dept_recordsPerPage').val()
-			, pageSize : $('#h_dept_pageSize').val()
-			, searchType : $('#h_dept_searchType').val()
-			, searchKeyword : $('#h_dept_searchKeyword').val()
-	};
-	ajaxSearchDept(jsonData);
-}
+        // 아이디 중복 관련
+        let $checkUserId = $('#checkUserId').val();
+        let $checkUserYN = $('#checkUserYN').val();
 
-//부서 조회 닫기
-function searchDeptClose(){
-	// 모달 클로즈
-	searchDeptClear(); // 닫을 시 데이터 초기화
-	//modalOpenClose("srch_dptmt",'close');
-	layerHide('popSearch');
-}
-//부서 목록 조회
-function ajaxSearchDept(jsonData){
-	// 페이지 및 목록 데이터 초기화
-	$("#srch_dptmt_tbody").html('');
-	$("#deptPagingArea").html('');
-	
-	var htmlPagination = '';
-	var htmlDeptList = '';
-	$.ajax({
-		url : "/soulGod/admin/user/getDeptList",
-		type : "post",
-		async : false,
-		data : jsonData,
-		success : function(data) {
-			// 페이지 이동을 위한 데이터  세팅
-			$('#dept_currentPageNo').val('1');      // 신규 검색시에 무조건 1페이지 부터 보여줌
-			$('#h_dept_currentPageNo').val(data.currentPageNo);    // 현재 페이지
-			$('#h_dept_recordsPerPage').val(data.recordsPerPage);   // 한 페이지에 보여질 데이터 갯수 5개(Modal)
-			$('#h_dept_pageSize').val(data.pageSize);        // 한 페이지에 보여질 하단 페이지 블럭 갯수
-			$('#h_dept_searchType').val(data.searchType);     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
-			$('#h_dept_searchKeyword').val(data.searchKeyword);     // 검색어 : 
-			
-			$('#searchDeptCnt').text(data.totalRecordCount);
-			
-			// 부서 목록 - data.deptList | 체크박스, 부서 명, 부서 명(영문), 부서 코드
-			if (data.deptList.length <= 0){
-				htmlDeptList += '<tr>';
-				htmlDeptList += '    <td class="empty" scope="row" colspan="4">데이터가 없습니다.</td>';
-				htmlDeptList += '</tr>';
-			} else {
-				for (var i = 0; i < data.deptList.length; i++){
-					htmlDeptList += '<tr>';
-					htmlDeptList += '    <td scope="row">';
-					htmlDeptList += '        <div class="radio">';
-					htmlDeptList += '            <input name="chkBoxDept" type="radio" id="chkBoxDept'+i+'" value="chkDept'+i+'">';
-					htmlDeptList += '            <label for="chkBoxDept'+i+'">';
-                    htmlDeptList += '            	<span class="blind">선택</span>';
-                    htmlDeptList += '            </label>';
-					htmlDeptList += '        </div>';
-					htmlDeptList += '    </td>';
-					htmlDeptList += '    <td>'+data.deptList[i].deptCode+'</td>';
-					htmlDeptList += '    <td>'+data.deptList[i].deptName+'</td>';
-					htmlDeptList += '    <td>'+nvl(data.deptList[i].deptEngName,'')+'</td>';
-					htmlDeptList += '    <input id="chkDept'+i+'_deptId" type="hidden" value="'+data.deptList[i].deptId+'">';
-					htmlDeptList += '    <input id="chkDept'+i+'_deptCode" type="hidden" value="'+data.deptList[i].deptCode+'">';
-					htmlDeptList += '    <input id="chkDept'+i+'_deptName" type="hidden" value="'+data.deptList[i].deptName+'">';
-					htmlDeptList += '    <input id="chkDept'+i+'_deptEngName" type="hidden" value="'+data.deptList[i].deptEngName+'">';
-					htmlDeptList += '</tr>';
-				}
-			}	
-			
-			// 부서 페이지네이션 - data.params
-	        htmlPagination += '<div class="pagination">';
-          if(data.hasPreviousPage){
+        // 필수조건
+        if ($addDeptId.length < 1) {
+            showAlert('warning', "부서 정보를 입력해주세요.");
+            return;
+        }
+        if ($addMemId.length < 1) {
+            showAlert('warning', "사용자 아이디를 입력해주세요.");
+            $('#addMemId').focus();
+            return;
+        } else {
+            if ("N" == $checkUserYN) {
+                showAlert('warning', "사용자 ID 중복확인이 필요합니다.");
+                $('#addMemId').focus();
+                return;
+            } else {
+                if ($addMemId != $checkUserId) {
+                    showAlert('warning', "사용자 ID 중복확인이 필요합니다.");
+                    $('#addMemId').focus();
+                    return;
+                }
+            }
+        }
+        if ($addMemName.length < 1) {
+            showAlert('warning', "이름을 입력해주세요.");
+            $('#addMemName').focus();
+            return;
+        }
+
+        if ("@" == $addMemEmail) {
+            $addMemEmail = "";
+        } else {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test($addMemEmail)) {
+                showAlert('warning', '올바르지 않은 이메일 주소입니다.');
+                return false;
+            }
+        }
+
+        const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        if ($addMemColumn1.length > 0 && !ipv4Pattern.test($addMemColumn1)) {
+            showAlert('warning', "유효하지 않은 IP 주소입니다.");
+            return;
+        }
+
+        let jsonData = {
+            deptId: $addDeptId
+            , memId: $addMemId
+            , memName: $addMemName
+            , memBirthday: $addMemBirthday
+            , memPhone: $addMemPhone
+            , memGender: $addMemGender
+            , memStat: $addMemStat
+            , memEmail: $addMemEmail
+            , roleId: $addMemRoleId
+            , memColumn1: $addMemColumn1
+            , memColumn2: $addMemColumn2
+            , memRegId: $('#sessionMemId').val()
+            , memModId: $('#sessionMemId').val()
+        };
+        // 사용자 추가 실행
+        ajaxAddUser(jsonData);
+    }
+
+    //사용자 데이터 체크 - 사용자 아이디 중복체크
+    function ajaxAddUser(jsonData) {
+        $.ajax({
+            url: "/soulGod/admin/user/add",
+            type: "post",
+            async: false,
+            data: jsonData,
+            dataType: "json",
+            success: function (data) {
+                if ("SUCCESS" == data.status) {
+                    alert(data.msg);
+                    addUserClose();// 사용자 관리 추가 모달 CLOSE
+                    searchUser();
+                } else if ("FAIL" == data.status) {
+                    alert(data.msg);
+                    addUserClose();// 사용자 관리 추가 모달 CLOSE
+                } else {
+                    alert('실패하였습니다.');
+                    addUserClose();// 사용자 관리 추가 모달 CLOSE
+                }
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+    }
+
+    function resetPassword() {
+        let $modMemId = $('#modMemId').val();
+
+        let jsonData = {
+            memId: $modMemId
+        };
+        if (confirm('비밀번호 초기화를 하시겠습니까?')) {
+            ajaxResetPassword(jsonData);
+        }
+    }
+
+    // 사용자 비밀번호 초기화
+    function ajaxResetPassword(jsonData) {
+        $.ajax({
+            url: "/soulGod/admin/user/resetPassword",
+            type: "post",
+            async: false,
+            data: jsonData,
+            dataType: "json",
+            success: function (data) {
+                if ("SUCCESS" == data.status) {
+                    alert(data.msg);
+                } else if ("FAIL" == data.status) {
+                    alert(data.msg);
+                } else {
+                    alert('실패하였습니다.');
+                }
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+    }
+
+    // super admin 설정
+    function setSuperAdmin(mode) {
+        let jsonData = {
+            memId: $('#modMemId').val().trim()
+            , auth: (mode ? "SUPER" : "")
+        };
+        console.log("jsonData : " + jsonData);
+        $.ajax({
+            url: "/soulGod/admin/user/setSuperAdmin",
+            type: "post",
+            async: false,
+            data: jsonData,
+            dataType: "json",
+            success: function (data) {
+                if ("SUCCESS" == data.status) {
+                    alert(data.msg);
+                    if (mode) {
+                        $('#superSet').hide();
+                        $('#superUnset').show();
+                    } else {
+                        $('#superUnset').hide();
+                        $('#superSet').show();
+                    }
+                } else if ("FAIL" == data.status) {
+                    alert(data.msg);
+                } else {
+                    alert('실패하였습니다.');
+                }
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+    }
+
+    function deleteUser() {
+        let memId = $('#delChkMemId').val();
+        let jsonData = {
+            memId: memId
+            , memModId: $('#sessionMemId').val()
+        };
+        // 사용자 추가 실행
+        ajaxDeleteUser(jsonData);
+    }
+
+    //사용자 비밀번호 초기화
+    function ajaxDeleteUser(jsonData) {
+        layerHide('alertWarning');
+        $.ajax({
+            url: "/soulGod/admin/user/delete",
+            type: "post",
+            async: false,
+            data: jsonData,
+            dataType: "json",
+            success: function (data) {
+                if ("SUCCESS" == data.status) {
+                    alert(data.msg);
+                    searchUser();
+                } else if ("FAIL" == data.status) {
+                    alert(data.msg);
+                } else {
+                    alert('실패하였습니다.');
+                }
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+    }
+
+    // 사용자 등록 데이터 초기화
+    function addUserClear() {
+        // input 초기화
+        $('#addDeptId').val(''); // 부서 ID
+        $('#addDeptName').val('');
+        $('#addDeptCode').val('');
+        $('#addMemId').val(''); // 회원 ID
+        $('#addMemName').val(''); // 회원 이름
+        $('#addMemEmail1').val('');
+        $('#addMemEmail2').val('');
+        $('#addMemBirthday').val(''); // 생년월일 yyyymmdd
+        $('#addMemPhone').val(''); // 전화번호
+        $('#addMemColumn1').val(''); // IP주소
+
+        // radio 초기화 - 첫번째 선택지
+        $("input[name='addMemGender'][value='M']").prop("checked", true);
+        $("input[name='addMemStat'][value='use']").prop("checked", true);
+        $("input[name='addMemColumn2'][value='N']").prop("checked", true);
+
+        // 아이디 중복 관련
+        $('#checkUserId').val(''); // 중복체크된 아이디
+        $('#checkUserYN').val('N'); // 중복체크된 아이디
+    }
+
+    //사용자 추가
+    function modUser() {
+        // 공백제거
+        $('#modDeptId').val($('#modDeptId').val().trim()); // 부서 ID
+        $('#modDeptName').val($('#modDeptName').val().trim());
+        $('#modDeptCode').val($('#modDeptCode').val().trim());
+        $('#modMemId').val($('#modMemId').val().trim()); // 회원 ID
+        $('#modMemName').val($('#modMemName').val().trim()); // 회원 이름
+        $('#modMemEmail1').val($('#modMemEmail1').val().trim());
+        $('#modMemEmail2').val($('#modMemEmail2').val().trim());
+        $('#modMemBirthday').val($('#modMemBirthday').val().trim()); // 생년월일 yyyymmdd
+        $('#modMemPhone').val($('#modMemPhone').val().trim()); // 전화번호
+
+        $('#modMemColumn1').val($('#modMemColumn1').val().trim());//IP 주소
+
+        // value Get
+        let $modDeptId = $('#modDeptId').val();
+        let $modDeptName = $('#modDeptName').val();
+        let $modDeptCode = $('#modDeptCode').val();
+        let $modMemId = $('#modMemId').val();
+        let $modMemName = $('#modMemName').val();
+        let $modMemEmail1 = $('#modMemEmail1').val();
+        let $modMemEmail2 = $('#modMemEmail2').val();
+        let $modMemBirthday = $('#modMemBirthday').val();
+        let $modMemPhone = $('#modMemPhone').val();
+        let $modMemEmail = $modMemEmail1 + "@" + $modMemEmail2;
+
+        let $modMemColumn1 = $('#modMemColumn1').val();
+
+        // radio
+        let $modMemGender = $("input[name='modMemGender']:checked").val(); // 성별
+        let $modMemStat = $("input[name='modMemStat']:checked").val(); // 상태
+        let $modMemRoleId = $("input[name='modMemRoleId']:checked").val(); // 상태
+
+        let $modMemColumn2 = $("input[name='modMemColumn2']:checked").val(); // IP 체크여부
+
+        // 필수조건
+        if ($modDeptId.length < 1) {
+            alert("부서 정보를 입력해주세요.");
+            return;
+        }
+        if ("@" == $modMemEmail) {
+            $modMemEmail = "";
+        } else {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test($modMemEmail)) {
+                showAlert('warning', '올바르지 않은 이메일 주소입니다.');
+                return false;
+            }
+        }
+
+        const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        if ($modMemColumn1.length > 0 && !ipv4Pattern.test($modMemColumn1)) {
+            alert("유효하지 않은 IP 주소입니다.");
+            return;
+        }
+
+        let jsonData = {
+            deptId: $modDeptId
+            , memId: $modMemId
+            , memBirthday: $modMemBirthday
+            , memPhone: $modMemPhone
+            , memGender: $modMemGender
+            , memStat: $modMemStat
+            , memEmail: $modMemEmail
+            , roleId: $modMemRoleId
+            , memColumn1: $modMemColumn1
+            , memColumn2: $modMemColumn2
+            , memModId: $('#sessionMemId').val()
+        };
+        // 사용자 추가 실행
+        ajaxModUser(jsonData);
+    }
+
+    //사용자 데이터 체크 - 사용자 아이디 중복체크
+    function ajaxModUser(jsonData) {
+        $.ajax({
+            url: "/soulGod/admin/user/mod",
+            type: "post",
+            async: false,
+            data: jsonData,
+            dataType: "json",
+            success: function (data) {
+                if ("SUCCESS" == data.status) {
+                    alert(data.msg);
+                    modUserClose();// 사용자 관리 추가 모달 CLOSE
+                    searchUser();
+                } else if ("FAIL" == data.status) {
+                    alert(data.msg);
+                    modUserClose();// 사용자 관리 추가 모달 CLOSE
+                } else {
+                    alert('실패하였습니다.');
+                    modUserClose();// 사용자 관리 추가 모달 CLOSE
+                }
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+    }
+
+    // 사용자 수정 데이터 초기화
+    function modUserClear() {
+        // input 초기화
+        $('#modDeptId').val(''); // 부서 ID
+        $('#modDeptName').val('');
+        $('#modDeptCode').val('');
+        $('#modMemId').val(''); // 회원 ID
+        $('#modMemName').val(''); // 회원 이름
+        $('#modMemIdSpan').html(''); // 회원 ID
+        $('#modMemNameSpan').html(''); // 회원 이름
+        $('#modMemEmail1').val('');
+        $('#modMemEmail2').val('');
+        $('#modMemBirthday').val(''); // 생년월일 yyyymmdd
+        $('#modMemPhone').val(''); // 전화번호
+        $('#modMemColumn1').val(''); // IP주소
+
+        // radio 초기화 - 첫번째 선택지
+        $("input[name='modMemGender']").prop("checked", false);
+        $("input[name='modMemStat']").prop("checked", false);
+        $("input[name='modMemRoleId']").prop("checked", false);
+        $("input[name='modMemColumn2']").prop("checked", false);
+
+    }
+
+    // 추가할 사용자 ID 중복 확인
+    function addCheckUserId() {
+        // 좌우 공백 제거
+        $("#addMemId").val($("#addMemId").val().trim());
+
+        let checkUserId = $("#addMemId").val();
+
+        if (checkUserId.length == 0) {
+            alert("사용자 ID를 입력해주세요.");
+            return;
+        }
+        // 수행
+        ajaxCheckUserId(checkUserId);
+    }
+
+    // 사용자 중복확인 모달
+    function modalOpenClose(modal, type) {
+        if (type == "open") {
+            $("#" + modal).css("display", "block");
+            $("#" + modal + "_background").css("display", "block");
+            $("#" + modal + "_btn_cancle").toggleClass("btn_lyr_close_modal");
+        } else if (type == "close") {
+            $("#" + modal).css("display", "none");
+            $("#" + modal + "_background").css("display", "none");
+            $("#" + modal + "_btn_cancle").toggleClass("btn_lyr_close_modal");
+        }
+    }
+
+    //사용자 데이터 체크 - 사용자 아이디 중복체크
+    function ajaxCheckUserId(checkUserId) {
+        let text = "";
+        let result = "";
+        // 사용자 아이디  검사
+        let jsonData = {
+            "userId": checkUserId
+        };
+
+        $.ajax({
+            url: "/soulGod/admin/user/checkUserId",
+            type: "post",
+            async: false,
+            data: jsonData,
+            dataType: "json",
+            success: function (data) {
+                result = data.cnt; // 조회된 사용자 건수 반환
+                if (result == 0) {
+                    // 조회된 사용자가 없으므로 사용가능
+                    text = "<b>" + checkUserId + "</b> 는 사용 가능한 아이디 입니다.";
+                    $("#id_chk_text").html(text);
+                    $("#checkUserId").val(checkUserId); // 사용 가능 ID 입력
+                    $("#checkUserYN").val("Y"); // 사용 가능 상태  Y
+                    $("#alertIco").attr("class", "ico ico_complete");
+                } else if (result > 0) {
+                    // 조회된 사용자가 있으므로 사용불가
+                    text = "<b>" + checkUserId + "</b> 는 사용중인 아이디 입니다.";
+                    $("#id_chk_text").html(text);
+                    $("#addMemId").val(""); // 중복 확인 정보 초기화
+                    $("#checkUserId").val(""); // 중복 확인 정보 초기화
+                    $("#checkUserYN").val("N"); // 중복된 사용자 : N, 중복되지 않아서 사용가능한 사용자 : Y
+                    $("#alertIco").attr("class", "ico ico_warning");
+                } else {
+                }
+                // modal OPEN
+                //modalOpenClose("id_chk","open");
+                layerShow('alertComplete');
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+        return result;
+    }
+
+    //사용자 정보 조회 및 수정 화면 값 입력
+    function ajaxGetUserInfo(memId) {
+        let text = "";
+        let result = "";
+        // 사용자 아이디  검사
+        let jsonData = {
+            "userId": memId
+        };
+
+        $.ajax({
+            url: "/soulGod/admin/user/getUserInfo",
+            type: "post",
+            async: false,
+            data: jsonData,
+            dataType: "json",
+            success: function (data) {
+                //console.log(data);
+                result = data;
+
+                let info = data.userInfo;
+                let email = info.memEmail;
+                let email1 = '';
+                let email2 = '';
+                if (email != null && email != undefined) {
+                    let emailArr = email.split('@');
+
+                    if (emailArr.length == 1) {
+                        email1 = emailArr[0];
+                    } else if (emailArr.length == 2) {
+                        email1 = emailArr[0];
+                        email2 = emailArr[1];
+                    }
+                }
+
+                // input 값 입력
+                $('#modDeptId').val(info.deptId); // 부서 ID
+                $('#modDeptName').val(info.deptName);
+                $('#modDeptCode').val(info.deptCode);
+                $('#modMemId').val(info.memId); // 회원 ID
+                $('#modMemIdSpan').html(info.memId); // 회원 ID
+                $('#modMemName').val(info.memName); // 회원 이름
+                $('#modMemNameSpan').html(info.memName); // 회원 이름
+                $('#modMemEmail1').val(email1);
+                $('#modMemEmail2').val(email2);
+                $('#modMemBirthday').val(info.memBirthday); // 생년월일 yyyymmdd
+                $('#modMemPhone').val(info.memPhone); // 전화번호
+                $('#modMemColumn1').val(info.memColumn1); // IP
+
+                if ($('#superUnset').length) {
+                    $('#superUnset').hide();
+                }
+                if ($('#superSet').length) {
+                    $('#superSet').hide();
+                }
+
+                if ($('#superUnset').length && 'ADMIN' == info.roleId && 'SUPER' == info.memColumn3) {
+                    $('#superUnset').show();
+                } else if ($('#superSet').length && 'ADMIN' == info.roleId && 'SUPER' != info.memColumn3) {
+                    $('#superSet').show();
+                }
+
+                // radio 값 선택
+                let memGender;
+                let memStat;
+                let roleId;
+                let memColumn2;
+
+                if (info.memGender == null || info.memGender == "") {
+                    memGender = "M";
+                } else {
+                    memGender = info.memGender;
+                }
+                if (info.memStat == null || info.memStat == "") {
+                    memStat = "use";
+                } else {
+                    memStat = info.memStat;
+                }
+                if (info.roleId == null || info.roleId == "") {
+                    roleId = "USER";
+                } else {
+                    roleId = info.roleId;
+                }
+                if (info.memColumn2 == null || info.memColumn2 == "") {
+                    memColumn2 = "N";
+                } else {
+                    memColumn2 = info.memColumn2;
+                }
+                $("input[name='modMemGender'][value='" + memGender + "']").prop("checked", true);
+                $("input[name='modMemStat'][value='" + memStat + "']").prop("checked", true);
+                $("input[name='modMemRoleId'][value='" + roleId + "']").prop("checked", true);
+                $("input[name='modMemColumn2'][value='" + memColumn2 + "']").prop("checked", true);
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+        return result;
+    }
+
+    //부서 조회창 오픈
+    function searchDeptOpen() {
+        // 모달 오픈
+        // 추가될 데이터 초기화
+
+        let type = $('#srch_dptmt_type').val();
+
+        $("#" + type + "DeptId").val("");
+        $("#" + type + "DeptName").val("");
+        $("#" + type + "DeptCode").val("");
+
+        searchDeptClear(); // 신규 조회시 데이터 초기화
+        //modalOpenClose("srch_dptmt",'open');
+        layerShow('popSearch');
+
+        let jsonData = {
+            currentPageNo: $('#dept_currentPageNo').val()
+            , recordsPerPage: $('#h_dept_recordsPerPage').val()
+            , pageSize: $('#h_dept_pageSize').val()
+            , searchType: $('#h_dept_searchType').val()
+            , searchKeyword: $('#h_dept_searchKeyword').val()
+        };
+        ajaxSearchDept(jsonData);
+    }
+
+    //부서 조회(검색)
+    function searchDept() {
+        let jsonData = {
+            currentPageNo: $('#dept_currentPageNo').val()
+            , recordsPerPage: $('#h_dept_recordsPerPage').val()
+            , pageSize: $('#h_dept_pageSize').val()
+            , searchType: $('#dept_searchType').val()
+            , searchKeyword: $('#dept_searchKeyword').val()
+        };
+        ajaxSearchDept(jsonData);
+    }
+
+    // 부서 조회 페이지 이동
+    function searchDeptMove(pageNo) {
+        let jsonData = {
+            currentPageNo: pageNo
+            , recordsPerPage: $('#h_dept_recordsPerPage').val()
+            , pageSize: $('#h_dept_pageSize').val()
+            , searchType: $('#h_dept_searchType').val()
+            , searchKeyword: $('#h_dept_searchKeyword').val()
+        };
+        ajaxSearchDept(jsonData);
+    }
+
+    //부서 조회 닫기
+    function searchDeptClose() {
+        // 모달 클로즈
+        searchDeptClear(); // 닫을 시 데이터 초기화
+        //modalOpenClose("srch_dptmt",'close');
+        layerHide('popSearch');
+    }
+
+    //부서 목록 조회
+    function ajaxSearchDept(jsonData) {
+        // 페이지 및 목록 데이터 초기화
+        $("#srch_dptmt_tbody").html('');
+        $("#deptPagingArea").html('');
+
+        let htmlPagination = '';
+        let htmlDeptList = '';
+        $.ajax({
+            url: "/soulGod/admin/user/getDeptList",
+            type: "post",
+            async: false,
+            data: jsonData,
+            success: function (data) {
+                // 페이지 이동을 위한 데이터  세팅
+                $('#dept_currentPageNo').val('1');      // 신규 검색시에 무조건 1페이지 부터 보여줌
+                $('#h_dept_currentPageNo').val(data.currentPageNo);    // 현재 페이지
+                $('#h_dept_recordsPerPage').val(data.recordsPerPage);   // 한 페이지에 보여질 데이터 갯수 5개(Modal)
+                $('#h_dept_pageSize').val(data.pageSize);        // 한 페이지에 보여질 하단 페이지 블럭 갯수
+                $('#h_dept_searchType').val(data.searchType);     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
+                $('#h_dept_searchKeyword').val(data.searchKeyword);     // 검색어 :
+
+                $('#searchDeptCnt').text(data.totalRecordCount);
+
+                // 부서 목록 - data.deptList | 체크박스, 부서 명, 부서 명(영문), 부서 코드
+                if (data.deptList.length <= 0) {
+                    htmlDeptList += '<tr>';
+                    htmlDeptList += '    <td class="empty" scope="row" colspan="4">데이터가 없습니다.</td>';
+                    htmlDeptList += '</tr>';
+                } else {
+                    for (let i = 0; i < data.deptList.length; i++) {
+                        htmlDeptList += '<tr>';
+                        htmlDeptList += '    <td scope="row">';
+                        htmlDeptList += '        <div class="radio">';
+                        htmlDeptList += '            <input name="chkBoxDept" type="radio" id="chkBoxDept' + i + '" value="chkDept' + i + '">';
+                        htmlDeptList += '            <label for="chkBoxDept' + i + '">';
+                        htmlDeptList += '            	<span class="blind">선택</span>';
+                        htmlDeptList += '            </label>';
+                        htmlDeptList += '        </div>';
+                        htmlDeptList += '    </td>';
+                        htmlDeptList += '    <td>' + data.deptList[i].deptCode + '</td>';
+                        htmlDeptList += '    <td>' + data.deptList[i].deptName + '</td>';
+                        htmlDeptList += '    <td>' + nvl(data.deptList[i].deptEngName, '') + '</td>';
+                        htmlDeptList += '    <input id="chkDept' + i + '_deptId" type="hidden" value="' + data.deptList[i].deptId + '">';
+                        htmlDeptList += '    <input id="chkDept' + i + '_deptCode" type="hidden" value="' + data.deptList[i].deptCode + '">';
+                        htmlDeptList += '    <input id="chkDept' + i + '_deptName" type="hidden" value="' + data.deptList[i].deptName + '">';
+                        htmlDeptList += '    <input id="chkDept' + i + '_deptEngName" type="hidden" value="' + data.deptList[i].deptEngName + '">';
+                        htmlDeptList += '</tr>';
+                    }
+                }
+
+                // 부서 페이지네이션 - data.params
+                htmlPagination += '<div class="pagination">';
+                if (data.hasPreviousPage) {
 //				htmlPagination += '        <a href="javascript:searchDeptMove(1);" class="btn_paging first">';
 //				htmlPagination += '            <span class="hide">처음 페이지</span>';
 //				htmlPagination += '            <em class="fas fa-angle-double-left"></em>';
@@ -1469,145 +1511,146 @@ function ajaxSearchDept(jsonData){
 //				htmlPagination += '            <span class="hide">이전 페이지</span>';
 //				htmlPagination += '            <em class="fas fa-angle-left"></em>';
 //				htmlPagination += '        </a>';
-				htmlPagination += '        <button type="button" class="page_nav prev disabled" onclick="searchDeptMove('+(data.firstPage-1)+');">';
-				htmlPagination += '            <span class="blind">이전</span>';
-				htmlPagination += '        </button>';
-				htmlPagination += '        <button type="button" onclick="searchDeptMove(1);">1</button>';
-          }
-          for(var i = data.firstPage; i <= data.lastPage; i++){
-				if (data.currentPageNo == i){
-					//htmlPagination += '            <a href="javascript:searchDeptMove('+i+');" class="current">'+i+'</a>';
-					htmlPagination += '            <button type="button" onclick="searchDeptMove('+i+');" class="active">'+i+'</button>';
-				} else {
-					//htmlPagination += '            <a href="javascript:searchDeptMove('+i+');">'+i+'</a>';
-					htmlPagination += '            <button type="button" onclick="searchDeptMove('+i+');">'+i+'</button>';
-				}
-          }
-          if (data.hasNextPage){
-				//htmlPagination += '        <a href="javascript:searchDeptMove('+(data.lastPage+1)+');" class="btn_paging next">';
-				//htmlPagination += '            <span class="hide">다음 페이지</span>';
-				//htmlPagination += '            <em class="fas fa-angle-right"></em>';
-				//htmlPagination += '        </a>';
-				//htmlPagination += '        <a href="javascript:searchDeptMove('+data.totalPageCount+');" class="btn_paging last">';
-				//htmlPagination += '            <span class="hide">마지막 페이지</span>';
-				//htmlPagination += '            <em class="fas fa-angle-double-right"></em>';
-				//htmlPagination += '        </a>';
-				htmlPagination += '        <button type="button" onclick="searchDeptMove('+data.totalPageCount+');">'+data.totalPageCount+'</button>';
-				htmlPagination += '        <button type="button" class="page_nav next">';
-        		htmlPagination += '        <span class="blind" onclick="searchDeptMove('+(data.lastPage+1)+');">다음</span>';
-    			htmlPagination += '        </button>';				
-          }
-			htmlPagination += '</div>';
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-	$("#srch_dptmt_tbody").html(htmlDeptList);
-	$("#deptPagingArea").html(htmlPagination);
-}
-
-// 부서 조회 초기화
-function searchDeptClear(){
-	// 부서 검색 초기화
-	$("#dept_searchType").val("all").attr("selected","selected");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
-	$("#dept_searchKeyword").val("");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
-	// 부서 검색 페이지 초기화
-	$("#dept_currentPageNo").val("1");      // 신규 검색시에 무조건 1페이지 부터 보여줌
-	$("#h_dept_currentPageNo").val("1");    // 현재 페이지
-	$("#h_dept_recordsPerPage").val("5");   // 한 페이지에 보여질 데이터 갯수 5개(Modal)
-	$("#h_dept_pageSize").val("10");        // 한 페이지에 보여질 하단 페이지 블럭 갯수
-	$("#h_dept_searchType").val("all");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
-	$("#h_dept_searchKeyword").val("");     // 검색어 : 
-}
-
-//부서 ID 입력
-function chkBoxDeptSave(){
-	//type : add, mod
-	var type = $('#srch_dptmt_type').val();
-	
-	// 체크박스 검사	
-	var chkCnt = $("input[name='chkBoxDept']:checked").length;
-	if (chkCnt<=0){
-		alert("하나의 부서를 선택해주세요.");
-		return;
-	} else if (chkCnt>1){
-		alert("하나의 부서를 선택해주세요.");
-		return;
-	}else if (chkCnt == 1){
-		// 하나의 부서가 선택되었음
-		$("input[name='chkBoxDept']:checked").each(function(){
-			var chkDeptId = $(this).val();
-			console.log($("#"+chkDeptId+"_deptId").val());
-			console.log($("#"+chkDeptId+"_deptCode").val());
-			console.log($("#"+chkDeptId+"_deptName").val());
-			console.log($("#"+chkDeptId+"_deptEngName").val());
-			
-			$("#"+type+"DeptId").val($("#"+chkDeptId+"_deptId").val());
-			$("#"+type+"DeptName").val($("#"+chkDeptId+"_deptName").val());
-			$("#"+type+"DeptCode").val($("#"+chkDeptId+"_deptCode").val());
-			
-			searchDeptClose();
-			return;
-		});
-		
-	}
-}
-
-// 사용자 삭제 체크 확인
-function chkBoxDeleteUser(){
-		
-	// 체크박스 검사	
-	var chkCnt = $("input[name='chkBoxUser']:checked").length;
-	if (chkCnt<=0){
-		alert("하나의 사용자를 선택해주세요.");
-		return;
-	} else if (chkCnt>1){
-		alert("하나의 사용자를 선택해주세요.");
-		return;
-	}else if (chkCnt == 1){
-		// 하나의 부서가 선택되었음
-		$("input[name='chkBoxUser']:checked").each(function(){
-			$('#delChkMemId').val('');
-			
-			var chkMemId = $(this).val();
-
-			//if(confirm("삭제하시겠습니까?")){
-			//	deleteUser(chkMemId);
-			//}
-			
-			$('#delChkMemId').val(chkMemId);
-			layerShow('alertWarning');
-		});
-		
-	}
-}
-// IP 주소 입력..
-function noEnKo(obj){
-	console.log(obj);
-	
-	var id = obj.id;
-	var val = obj.value;
-	
-    var str = val.split(".");
-    str[0] = str[0].replace(/[^-\.0-9]/g,'').replace(/(.)(?=(\d{3})+$)/g,'$1,');
-    var fmStr = str.join('.');
-    
-    var result = fmStr.replace(/[`~!@#$%^&*()_|+\-=?;:'"<>\{\}\[\]\\\|ㄱ-ㅎ|ㅏ-ㅣ-ㅢ|가-힣|a-z|A-Z]/g,'');
-    
-    if(result.length>15){
-    	result = result.substring(0,15);
+                    htmlPagination += '        <button type="button" class="page_nav prev disabled" onclick="searchDeptMove(' + (data.firstPage - 1) + ');">';
+                    htmlPagination += '            <span class="blind">이전</span>';
+                    htmlPagination += '        </button>';
+                    htmlPagination += '        <button type="button" onclick="searchDeptMove(1);">1</button>';
+                }
+                for (let i = data.firstPage; i <= data.lastPage; i++) {
+                    if (data.currentPageNo == i) {
+                        //htmlPagination += '            <a href="javascript:searchDeptMove('+i+');" class="current">'+i+'</a>';
+                        htmlPagination += '            <button type="button" onclick="searchDeptMove(' + i + ');" class="active">' + i + '</button>';
+                    } else {
+                        //htmlPagination += '            <a href="javascript:searchDeptMove('+i+');">'+i+'</a>';
+                        htmlPagination += '            <button type="button" onclick="searchDeptMove(' + i + ');">' + i + '</button>';
+                    }
+                }
+                if (data.hasNextPage) {
+                    //htmlPagination += '        <a href="javascript:searchDeptMove('+(data.lastPage+1)+');" class="btn_paging next">';
+                    //htmlPagination += '            <span class="hide">다음 페이지</span>';
+                    //htmlPagination += '            <em class="fas fa-angle-right"></em>';
+                    //htmlPagination += '        </a>';
+                    //htmlPagination += '        <a href="javascript:searchDeptMove('+data.totalPageCount+');" class="btn_paging last">';
+                    //htmlPagination += '            <span class="hide">마지막 페이지</span>';
+                    //htmlPagination += '            <em class="fas fa-angle-double-right"></em>';
+                    //htmlPagination += '        </a>';
+                    htmlPagination += '        <button type="button" onclick="searchDeptMove(' + data.totalPageCount + ');">' + data.totalPageCount + '</button>';
+                    htmlPagination += '        <button type="button" class="page_nav next">';
+                    htmlPagination += '        <span class="blind" onclick="searchDeptMove(' + (data.lastPage + 1) + ');">다음</span>';
+                    htmlPagination += '        </button>';
+                }
+                htmlPagination += '</div>';
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+        $("#srch_dptmt_tbody").html(htmlDeptList);
+        $("#deptPagingArea").html(htmlPagination);
     }
-    
-    $('#'+id).val(result);
-    //return result
-}
 
-function searchKeywordInit(){
-	$('#searchKeyword').val('');
-	$('#searchType').val('all');
-	$('#searchType').niceSelect('update');
-}
+    // 부서 조회 초기화
+    function searchDeptClear() {
+        // 부서 검색 초기화
+        $("#dept_searchType").val("all").attr("selected", "selected");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
+        $("#dept_searchKeyword").val("");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
+        // 부서 검색 페이지 초기화
+        $("#dept_currentPageNo").val("1");      // 신규 검색시에 무조건 1페이지 부터 보여줌
+        $("#h_dept_currentPageNo").val("1");    // 현재 페이지
+        $("#h_dept_recordsPerPage").val("5");   // 한 페이지에 보여질 데이터 갯수 5개(Modal)
+        $("#h_dept_pageSize").val("10");        // 한 페이지에 보여질 하단 페이지 블럭 갯수
+        $("#h_dept_searchType").val("all");     // 검색 종류 : 부서 코드, 부서 명, 부서 영문명 / default : all
+        $("#h_dept_searchKeyword").val("");     // 검색어 :
+    }
+
+    //부서 ID 입력
+    function chkBoxDeptSave() {
+        //type : add, mod
+        let type = $('#srch_dptmt_type').val();
+
+        // 체크박스 검사
+        let chkCnt = $("input[name='chkBoxDept']:checked").length;
+        if (chkCnt <= 0) {
+            alert("하나의 부서를 선택해주세요.");
+            return;
+        } else if (chkCnt > 1) {
+            alert("하나의 부서를 선택해주세요.");
+            return;
+        } else if (chkCnt == 1) {
+            // 하나의 부서가 선택되었음
+            $("input[name='chkBoxDept']:checked").each(function () {
+                let chkDeptId = $(this).val();
+                console.log($("#" + chkDeptId + "_deptId").val());
+                console.log($("#" + chkDeptId + "_deptCode").val());
+                console.log($("#" + chkDeptId + "_deptName").val());
+                console.log($("#" + chkDeptId + "_deptEngName").val());
+
+                $("#" + type + "DeptId").val($("#" + chkDeptId + "_deptId").val());
+                $("#" + type + "DeptName").val($("#" + chkDeptId + "_deptName").val());
+                $("#" + type + "DeptCode").val($("#" + chkDeptId + "_deptCode").val());
+
+                searchDeptClose();
+                return;
+            });
+
+        }
+    }
+
+    // 사용자 삭제 체크 확인
+    function chkBoxDeleteUser() {
+
+        // 체크박스 검사
+        let chkCnt = $("input[name='chkBoxUser']:checked").length;
+        if (chkCnt <= 0) {
+            alert("하나의 사용자를 선택해주세요.");
+            return;
+        } else if (chkCnt > 1) {
+            alert("하나의 사용자를 선택해주세요.");
+            return;
+        } else if (chkCnt == 1) {
+            // 하나의 부서가 선택되었음
+            $("input[name='chkBoxUser']:checked").each(function () {
+                $('#delChkMemId').val('');
+
+                let chkMemId = $(this).val();
+
+                //if(confirm("삭제하시겠습니까?")){
+                //	deleteUser(chkMemId);
+                //}
+
+                $('#delChkMemId').val(chkMemId);
+                layerShow('alertWarning');
+            });
+
+        }
+    }
+
+    // IP 주소 입력..
+    function noEnKo(obj) {
+        console.log(obj);
+
+        let id = obj.id;
+        let val = obj.value;
+
+        let str = val.split(".");
+        str[0] = str[0].replace(/[^-\.0-9]/g, '').replace(/(.)(?=(\d{3})+$)/g, '$1,');
+        let fmStr = str.join('.');
+
+        let result = fmStr.replace(/[`~!@#$%^&*()_|+\-=?;:'"<>\{\}\[\]\\\|ㄱ-ㅎ|ㅏ-ㅣ-ㅢ|가-힣|a-z|A-Z]/g, '');
+
+        if (result.length > 15) {
+            result = result.substring(0, 15);
+        }
+
+        $('#' + id).val(result);
+        //return result
+    }
+
+    function searchKeywordInit() {
+        $('#searchKeyword').val('');
+        $('#searchType').val('all');
+        $('#searchType').niceSelect('update');
+    }
 </script>
 </body>
 </html>

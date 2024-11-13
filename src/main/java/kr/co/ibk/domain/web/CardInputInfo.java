@@ -15,6 +15,7 @@ public class CardInputInfo {
     private String hdqrBobDcd;
     private String cdn;
     private LocalDateTime frrgTs;
+    private String bdgtTstmUseHms;
     private Integer amslAmt;
     private String afstNm;
     private String bdgtItexFrcsCon;
@@ -25,6 +26,7 @@ public class CardInputInfo {
     private String tstmYmd;
     private String tstmNo;
     private String brcd;
+    private Integer no;
 }
 
 
