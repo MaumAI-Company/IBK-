@@ -446,6 +446,7 @@
                     <colgroup>
                         <col style="width: 2.5%">
                         <col style="width: 4%;">
+                        <col style="width: 4%;">
                         <col style="width: 4.5%;">
                         <col style="width: 11%">
                         <col style="width: 3%;">
@@ -470,6 +471,7 @@
                     <tr>
                         <th scope="col">No</th>
                         <th scope="col">대상</th>
+                        <th scope="col">예산집행년월</th>
                         <th scope="col">부점코드</th>
                         <th scope="col">카드번호</th>
                         <th scope="col">승인시간</th>
@@ -495,6 +497,7 @@
                     <tr th:each="item, idx:${list}">
                         <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
                         <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                        <td th:text="${item.bdgtPrfrYm}"></td>
                         <td th:text="${item.brcd}"></td>
                         <td th:text="${item.cdn}"></td>
                         <td th:text="${item.bdgtTstmUseHms}"></td>
