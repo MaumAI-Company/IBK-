@@ -41,7 +41,7 @@ public class CardInputService extends _BaseService {
                     str = "";
                     strArr = item.getBdgtItexFrcsCon().split("\\|");
                     for (int i = 0; i < strArr.length; i++) {
-                        str += (i + 1) + "순위 " + strArr[i] + "\n";
+                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
                     }
                     item.setBdgtItexFrcsCon(str);
                 }
@@ -49,7 +49,7 @@ public class CardInputService extends _BaseService {
                     str = "";
                     strArr = item.getBdgtBsnsFrcsCon().split("\\|");
                     for (int i = 0; i < strArr.length; i++) {
-                        str += (i + 1) + "순위 " + strArr[i] + "\n";
+                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
                     }
                     item.setBdgtBsnsFrcsCon(str);
                 }
@@ -57,7 +57,7 @@ public class CardInputService extends _BaseService {
                     str = "";
                     strArr = item.getBdgtPrfrRsnFrcsCon().split("\\|");
                     for (int i = 0; i < strArr.length; i++) {
-                        str += (i + 1) + "순위 " + strArr[i] + "\n";
+                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
                     }
                     item.setBdgtPrfrRsnFrcsCon(str);
                 }

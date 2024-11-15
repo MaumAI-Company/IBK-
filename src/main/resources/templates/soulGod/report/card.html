@@ -3,6 +3,7 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <style>
+        .tbl_wrap .tbl_list > tbody > tr > td:nth-child(n+15):nth-child(-n+17){white-space:pre}
         @media screen and (max-width: 1851px) {
             .tbl_wrap{width:100%; overflow-x: auto;white-space: nowrap}
             .tbl_list{width:auto}
@@ -11,7 +12,8 @@
         #popDetail .tbl_write table th,
         #popDetail .tbl_write table td {
             padding-top: 2px;
-            padding-bottom: 2px
+            padding-bottom: 2px;
+            vertical-align: middle;
         }
 
         #popDetail .tbl_write .in_table {
@@ -46,6 +48,22 @@
         #popDetail .tbl_write div + div {
             margin-top: 12px
         }
+
+        #popDetail .tbl_write > thead > tr > th {
+            height: 52px;
+            padding: 14px 16px;
+            font-weight: 400;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            background-color: #f9f9f9
+        }
+        #popDetail .tbl_write > thead > tr > td {
+            padding:2px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+        }
+
     </style>
     <script type="text/javascript">
         $(function () {
@@ -122,7 +140,7 @@
                                     <td>
                                         <table>
                                             <colgroup>
-                                                <col style="width:120px">
+                                                <col style="width:140px">
                                                 <col style="width:auto">
                                             </colgroup>
                                             <tbody>`;
@@ -373,25 +391,25 @@
                         구성
                     </caption>
                     <colgroup>
-                        <col style="width: 3%;min-width: 44px;">
+                        <col style="width: 2%;min-width: 44px;">
+                        <col style="width: 3%;">
+                        <col style="width: 3%;min-width: 65px;">
+                        <col style="width: 6%;">
+                        <col style="width: 3%;">
+                        <col style="width: 3%;">
+                        <col style="width: 3%;">
                         <col style="width: 5%;">
-                        <col style="width: 12%;min-width: 90px;">
+                        <col style="width: 4%;">
+                        <col style="width: 4%;">
+                        <col style="width: 4%;">
+                        <col style="width: 3%;">
+                        <col style="width: 4%;">
+                        <col style="width: 4%;">
                         <col style="width: 8%;">
-                        <col style="width: 5%;">
-                        <col style="width: 5%;">
-                        <col style="width: 7%;">
-                        <col style="width: auto;">
+                        <col style="width: 8%;">
+                        <col style="width: 8%;">
                         <col style="width: 4%;">
-                        <col style="width: 4%;">
-                        <col style="width: 4%;">
-                        <col style="width: 4%;">
-                        <col style="width: 4%;">
-                        <col style="width: 4%;">
-                        <col style="width: 7%;">
-                        <col style="width: 7%;">
-                        <col style="width: 7%;">
-                        <col style="width: 4%;">
-                        <col style="width: 4%;min-width: 104px;">
+                        <col style="width: 3%;min-width: 90px;">
                     </colgroup>
                     <thead>
                     <tr>
@@ -526,9 +544,15 @@
             <table class="tbl_write">
                 <caption>지급결의 AI적용 결과 : 부점, 예산관리비목관리번호, 예산(세부)사업ID, 예산집행사유코드, 예산집행사유내용으로 구성</caption>
                 <colgroup>
-                    <col style="width:80px">
+                    <col style="width:90px">
                     <col style="width:auto">
                 </colgroup>
+                <thead>
+                <tr>
+                    <th>추론 모델</th>
+                    <td>영업점_카드지급결의_학습모델(1)</td>
+                </tr>
+                </thead>
                 <tbody id="inpputBody">
                 </tbody>
 
