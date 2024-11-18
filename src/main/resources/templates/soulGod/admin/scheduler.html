@@ -45,6 +45,10 @@
     <script type="text/javascript">
         $(function () {
         });
+
+        function fn_schedulerOpen() {
+            layerShow('popRegister');
+        }
     </script>
 </head>
 <body>
@@ -59,6 +63,11 @@
                 <div class="tit_area">
                     <h2 class="one_depth">Admin</h2>
                     <h3 class="page_tit">학습 스케줄러 관리</h3>
+                </div>
+                <div class="btn_area">
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_schedulerOpen()">
+                        <span>등록</span>
+                    </button>
                 </div>
             </div>
 
@@ -189,5 +198,70 @@
         </div>
     </div>
 </div>
+
+<!--스케줄러 등록 팝업 : s-->
+<div id="popRegister" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup lg">
+        <div class="pop_head">
+            <strong class="pop_tit">학습 스케줄러 배치 설정</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popRegister')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <table class="tbl_write">
+                <caption>학습 스케줄러 배치 설정 : TODO</caption>
+                <colgroup>
+                    <col style="width:160px">
+                    <col style="width:auto">
+                    <col style="width:160px">
+                    <col style="width:auto">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">
+                        <label for="schedNm">학습 스케줄러명</label>
+                    </th>
+                    <td>
+                        <input type="text" id="schedNm" name="schedNm" class="w250">
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="hdqrBobDcd">학습 대상</label>
+                    </th>
+                    <td>
+                        <select id="hdqrBobDcd">
+                            <option value="1" selected>본부</option>
+                            <option value="2">영업점</option>
+                        </select>
+                    </td>
+                    <th scope="row">
+                        <label for="learningModelId">학습 모델 선택</label>
+                    </th>
+                    <td>
+                        <select id="learningModelId">
+                            <option value="" selected>선택하세요.</option>
+                            <option value="">모델1</option>
+                            <option value="">모델2</option>
+                            <option value="">모델3</option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popRegister')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill" onclick="alert('등록api 구현 필요.')">
+                <span>확인</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--스케줄러 등록 팝업 : e-->
 </body>
 </html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.LearningSchedulerRepository">
+    <select id="getTotalCount" resultType="int" parameterType="LearningSchedulerForm">
+        select
+            count(*)
+        from
+            LEARNING_SCHEDULER ls
+        inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID
+        <include refid="where"></include>
+    </select>
+
+    <select id="getList">
+        select
+            <include refid="columns"></include>
+            , lm.LEARN_NAME
+        from
+            LEARNING_SCHEDULER ls
+        inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID
+            <include refid="where"></include>
+        <if test="pagingAt != null and pagingAt == 'Y'.toString()">
+            <include refid="kr.co.ibk.repository.CommonRepository.paging" />
+        </if>
+    </select>
+
+    <select id="getDetail" resultType="LearningSchedulerInfo" parameterType="int">
+        select
+            <include refid="columns"></include>
+            , lm.LEARN_NAME
+        from
+            LEARNING_SCHEDULER ls
+        inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID
+        where ls.DEL_AT = 'N'
+            and ls.SCHED_ID = #{id}
+    </select>
+
+    <insert id="setInsert" parameterType="LearningSchedulerForm">
+        insert into MaumMcc.LEARNING_SCHEDULER
+        (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, LEARNING_MODEL_ID)
+        values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), 'N', #{learningModelId});
+    </insert>
+
+    <update id="setUpdate" parameterType="LearningSchedulerForm">
+        update MaumMcc.LEARNING_SCHEDULER
+        set
+            SCHED_NM = #{schedNm},
+            HDQR_BOB_DCD = #{hdqrBobDcd},
+            TERM_TY = #{termTy},
+            ST_YMD = #{stYmd},
+            ST_TIME = #{stTime},
+            USE_AT = #{useAt},
+            MOD_ID = #{modId},
+            MOD_DT = current_timestamp(),
+            LEARNING_MODEL_ID = #{learningModelId}
+        where SCHED_ID = #{schedId};
+    </update>
+
+    <update id="setDelete" parameterType="LearningSchedulerForm">
+        update MaumMcc.LEARNING_SCHEDULER
+        set
+            DEL_AT = 'Y',
+            MOD_ID = #{modId},
+            MOD_DT = current_timestamp(),
+        where SCHED_ID = #{schedId};
+    </update>
+
+    <sql id="columns">
+        ls.SCHED_ID
+        , ls.SCHED_NM
+        , ls.HDQR_BOB_DCD
+        , ls.USE_AT
+        , ls.MOD_DT
+        , ls.REG_ID
+        , ls.REG_DT
+        , ls.LEARNING_MODEL_ID
+        , ls.TERM_TY
+        , ls.ST_YMD
+        , ls.ST_TIME
+        , ls.USE_AT
+        , ls.TERM_TY
+        , ls.ST_YMD
+        , ls.ST_TIME
+        , ls.USE_AT
+    </sql>
+
+    <sql id="where">
+        where ls.DEL_AT = 'N'
+    </sql>
+</mapper>
