@@ -727,13 +727,15 @@
                 <colgroup>
                     <col style="width:160px">
                     <col style="width:auto">
+                    <col style="width:160px">
+                    <col style="width:auto">
                 </colgroup>
                 <tbody>
                 <tr>
                     <th scope="row">
                         <label for="hdqrBobDcd">학습 대상</label>
                     </th>
-                    <td>
+                    <td colspan="3">
                         <select id="hdqrBobDcd">
                             <option value="1" selected>본부</option>
                             <option value="2">영업점</option>
@@ -744,7 +746,7 @@
                     <th scope="row">
                         <label for="learnName">학습데이터 명</label>
                     </th>
-                    <td>
+                    <td colspan="3">
                         <div class="input">
                             <input type="text" id="learnName" placeholder="학습데이터 명을 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
@@ -757,7 +759,7 @@
                     <th scope="row">
                         <span>학습데이터 체크</span>
                     </th>
-                    <td>
+                    <td colspan="3">
                         <div class="check_wrap">
                             <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
                                 <div class="checkbox">
@@ -770,14 +772,13 @@
                             </th:block>
                         </div>
                         <div class="txt_guide fc_primary">※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div>
-                        <!--todo : 퍼블-->
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">
                         <span>학습데이터 (output)</span>
                     </th>
-                    <td>
+                    <td colspan="3">
                         <div class="check_wrap">
                             <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnType).values()}">
                                 <div class="checkbox">
@@ -789,8 +790,38 @@
                         </div>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">
+                        <span>선택 조건</span>
+                    </th>
+                    <td colspan="3"></td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <span>템플릿 생성 유무</span>
+                    </th>
+                    <td>
+                        <div class="df">
+                            <div class="radio txt">
+                                <input type="radio" name="templateAt" id="templateAtY">
+                                <label for="templateAtY">사용</label>
+                            </div>
+                            <div class="radio txt">
+                                <input type="radio" name="templateAt" id="templateAtN">
+                                <label for="templateAtN">미사용</label>
+                            </div>
+                        </div>
+                    </td>
+                    <th scope="row">
+                        <span>템플릿 명</span>
+                    </th>
+                    <td>
+                        <input type="text" id="templateName" name="templateName" placeholder="템플릿 명을 입력하세요.">
+                    </td>
+                </tr>
                 </tbody>
             </table>
+            <div class="txt_guide fc_primary">※ 템플릿은 예산집행년월 정보를 저장하지 않습니다. 템플릿을 사용해 학습데이터를 생성할 때 설정해주세요.</div>
         </div>
         <div class="pop_foot">
             <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearnData')">
