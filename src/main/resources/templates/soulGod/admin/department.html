@@ -208,7 +208,7 @@
                 $modDeptCode = null;
             }
 
-            if (confirm("수정하시겠습니까?")) {
+            showConfirm('message', '수정하시겠습니까?', () => {
                 let jsonData = {
                     deptId: $detail_deptId
                     , deptCode: $modDeptCode
@@ -219,7 +219,7 @@
                 };
                 // 부서 수정 실행
                 ajaxModDept(jsonData);
-            }
+            })
             return;
         }
 
@@ -260,13 +260,13 @@
                 return;
             }
 
-            if (confirm("삭제하시겠습니까?")) {
+            showConfirm('message', '삭제하시겠습니까?', () => {
                 let jsonData = {
                     deptId: $deptId
                     , deptModId: $('#sessionMemId').val()
                 };
                 ajaxDeleteDept(jsonData);
-            }
+            })
             return;
         }
 

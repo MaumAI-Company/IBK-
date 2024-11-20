@@ -227,14 +227,14 @@ function changePassword(){
 				, "chkPwd" : rsa.encrypt($chkPwd)
 				, "newPwd" : rsa.encrypt($newPwd)
 		};
-		
-		if (confirm('암호를 변경하시겠습니까?')){
-			ajaxChangePassword(jsonData);
-			// 모달창 close 및 입력한 정보 초기화
-			$('#chkPwd').val('');
-			$('#newPwd').val('');
-			$('#newPwdConfirm').val('');
-		}
+
+        showConfirm('message', '암호를 변경하시겠습니까?', () => {
+            ajaxChangePassword(jsonData);
+            // 모달창 close 및 입력한 정보 초기화
+            $('#chkPwd').val('');
+            $('#newPwd').val('');
+            $('#newPwdConfirm').val('');
+        })
 	}
 }
 
