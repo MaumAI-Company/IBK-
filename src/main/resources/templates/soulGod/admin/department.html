@@ -364,13 +364,15 @@
                 return;
             }
             if ($addDeptCode.length < 1) {
-                showAlert('warning', "부서 코드를 입력해주세요.");
-                $('#addDeptCode').focus();
+                showAlert('warning', "부서 코드를 입력해주세요.", () => {
+                    $('#addDeptCode').focus();
+                });
                 return;
             }
             if ($addDeptName.length < 1) {
-                showAlert('warning', "부서명을 입력해주세요.");
-                $('#addDeptName').focus();
+                showAlert('warning', "부서명을 입력해주세요.", () => {
+                    $('#addDeptName').focus();
+                });
                 return;
             }
 
@@ -397,14 +399,15 @@
                 dataType: "json",
                 success: function (data) {
                     if ("SUCCESS" == data.status) {
-                        showAlert('complete', data.msg);
-                        addDeptClose();
-                        location.href = "/soulGod/admin/department";
-                    } else if ("FAIL" == data.status) {
-                        showAlert('warning', data.msg);
+                        showAlert('complete', data.msg, () => {
+                            addDeptClose();
+                            location.href = "/soulGod/admin/department";
+                        });
                     } else {
+                        showAlert('warning', data.msg);
+                    } /*else {
                         showAlert('warning', '실패하였습니다.');
-                    }
+                    }*/
                 },
                 error: function () {
                     console.log("error");
