@@ -35,14 +35,31 @@ public class CardInputService extends _BaseService {
             list = list(params);
 
             list.forEach(item -> {
+                String[] strArr;
+                String str;
                 if (!ObjectUtils.isEmpty(item.getBdgtItexFrcsCon())) {
-                    item.setBdgtItexFrcsCon(item.getBdgtItexFrcsCon().split("\\|")[0]);
+                    str = "";
+                    strArr = item.getBdgtItexFrcsCon().split("\\|");
+                    for (int i = 0; i < strArr.length; i++) {
+                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
+                    }
+                    item.setBdgtItexFrcsCon(str);
                 }
                 if (!ObjectUtils.isEmpty(item.getBdgtBsnsFrcsCon())) {
-                    item.setBdgtBsnsFrcsCon(item.getBdgtBsnsFrcsCon().split("\\|")[0]);
+                    str = "";
+                    strArr = item.getBdgtBsnsFrcsCon().split("\\|");
+                    for (int i = 0; i < strArr.length; i++) {
+                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
+                    }
+                    item.setBdgtBsnsFrcsCon(str);
                 }
                 if (!ObjectUtils.isEmpty(item.getBdgtPrfrRsnFrcsCon())) {
-                    item.setBdgtPrfrRsnFrcsCon(item.getBdgtPrfrRsnFrcsCon().split("\\|")[0]);
+                    str = "";
+                    strArr = item.getBdgtPrfrRsnFrcsCon().split("\\|");
+                    for (int i = 0; i < strArr.length; i++) {
+                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
+                    }
+                    item.setBdgtPrfrRsnFrcsCon(str);
                 }
             });
         }

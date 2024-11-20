@@ -833,9 +833,9 @@
 
     function fnAddMenuSave() {
         if (fnAddMenuSaveConfirm()) {
-            if (confirm('추가 하시겠습니까?')) {
+            showConfirm('message', '추가 하시겠습니까?', () => {
                 fnCallAddMenuSave();
-            }
+            })
         }
     }
 
@@ -1220,9 +1220,9 @@
     /////////////////////////////////////수정처리 start	
     function fnUpdateMenuSave() {
         if (fnMenuUpdateConfirm()) {
-            if (confirm('수정 하시겠습니까?')) {
+            showConfirm('message', '수정 하시겠습니까?', () => {
                 fnCallUpdateMenuSave();
-            }
+            })
         }
     }
 
@@ -1327,13 +1327,13 @@
         //순번
         let menuOrder = nvl($('#detail_menuMaxOrder').val(), '');
         if (menuOrder == '') {
-            alert('순번은 필수 선택 정보입니다.');
+            showAlert('warning', '순번은 필수 선택 정보입니다.');
             return false;
         }
         //메뉴 이동 유형
         let menuMoveOption = nvl($('#detail_menuMoveOption').val(), '');
         if (menuMoveOption == '') {
-            alert('메뉴 이동 유형 필수 선택 정보입니다.');
+            showAlert('warning', '메뉴 이동 유형 필수 선택 정보입니다.');
             return false;
         }
         //메뉴 URL
@@ -1341,13 +1341,13 @@
         //사용여부
         let menuStat = nvl($('input:radio[name="detail_menuStat"]:checked').val(), '');
         if (menuStat == '') {
-            alert('사용여부는 필수 선택 정보입니다.');
+            showAlert('warning', '사용여부는 필수 선택 정보입니다.');
             return false;
         }
         //메뉴 권한
         let roleId = nvl($('input:radio[name="detail_roleId"]:checked').val(), '');
         if (roleId == '') {
-            alert('메뉴권한은 필수 선택 정보입니다.');
+            showAlert('warning', '메뉴권한은 필수 선택 정보입니다.');
             return false;
         } else {
             //선택한 메뉴ID

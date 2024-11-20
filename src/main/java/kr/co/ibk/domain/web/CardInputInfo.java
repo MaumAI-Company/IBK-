@@ -22,6 +22,13 @@ public class CardInputInfo {
     private String bdgtBsnsFrcsCon;
     private String bdgtPrfrRsnFrcsCon;
     private String bzdyYn;
+    private String tpbsNm;
+    private String afstBzn;
+    private String amslAfstNo;
+    private String afstTpbcd;
+    private String afstDtlAdr;
+    private String brncAdr;
+    private String rsreYmd;
 
     private String tstmYmd;
     private String tstmNo;

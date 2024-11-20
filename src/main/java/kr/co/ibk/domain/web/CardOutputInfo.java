@@ -41,6 +41,8 @@ public class CardOutputInfo {
     private Integer no;
     private Integer prevNo;
     private Integer nextNo;
+
+    private String learnName;
 }
 
 

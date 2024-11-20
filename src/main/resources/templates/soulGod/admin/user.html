@@ -950,14 +950,14 @@
             dataType: "json",
             success: function (data) {
                 if ("SUCCESS" == data.status) {
-                    alert(data.msg);
+                    showAlert('complete', data.msg);
                     addUserClose();// 사용자 관리 추가 모달 CLOSE
                     searchUser();
                 } else if ("FAIL" == data.status) {
-                    alert(data.msg);
+                    showAlert('warning', data.msg);
                     addUserClose();// 사용자 관리 추가 모달 CLOSE
                 } else {
-                    alert('실패하였습니다.');
+                    showAlert('warning', '실패하였습니다.');
                     addUserClose();// 사용자 관리 추가 모달 CLOSE
                 }
             },
@@ -973,9 +973,10 @@
         let jsonData = {
             memId: $modMemId
         };
-        if (confirm('비밀번호 초기화를 하시겠습니까?')) {
+
+        showConfirm('message', '비밀번호 초기화를 하시겠습니까?', () => {
             ajaxResetPassword(jsonData);
-        }
+        })
     }
 
     // 사용자 비밀번호 초기화
@@ -988,11 +989,11 @@
             dataType: "json",
             success: function (data) {
                 if ("SUCCESS" == data.status) {
-                    alert(data.msg);
+                    showAlert('complete', data.msg);
                 } else if ("FAIL" == data.status) {
-                    alert(data.msg);
+                    showAlert('warning', data.msg);
                 } else {
-                    alert('실패하였습니다.');
+                    showAlert('warning', '실패하였습니다.');
                 }
             },
             error: function () {
@@ -1016,7 +1017,7 @@
             dataType: "json",
             success: function (data) {
                 if ("SUCCESS" == data.status) {
-                    alert(data.msg);
+                    showAlert('complete', data.msg);
                     if (mode) {
                         $('#superSet').hide();
                         $('#superUnset').show();
@@ -1025,9 +1026,9 @@
                         $('#superSet').show();
                     }
                 } else if ("FAIL" == data.status) {
-                    alert(data.msg);
+                    showAlert('warning', data.msg);
                 } else {
-                    alert('실패하였습니다.');
+                    showAlert('warning', '실패하였습니다.');
                 }
             },
             error: function () {
@@ -1057,12 +1058,12 @@
             dataType: "json",
             success: function (data) {
                 if ("SUCCESS" == data.status) {
-                    alert(data.msg);
+                    showAlert('complete', data.msg);
                     searchUser();
                 } else if ("FAIL" == data.status) {
-                    alert(data.msg);
+                    showAlert('warning', data.msg);
                 } else {
-                    alert('실패하였습니다.');
+                    showAlert('warning', '실패하였습니다.');
                 }
             },
             error: function () {
@@ -1133,7 +1134,7 @@
 
         // 필수조건
         if ($modDeptId.length < 1) {
-            alert("부서 정보를 입력해주세요.");
+            showAlert("warning", "부서 정보를 입력해주세요.");
             return;
         }
         if ("@" == $modMemEmail) {
@@ -1148,7 +1149,7 @@
 
         const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
         if ($modMemColumn1.length > 0 && !ipv4Pattern.test($modMemColumn1)) {
-            alert("유효하지 않은 IP 주소입니다.");
+            showAlert("warning", "유효하지 않은 IP 주소입니다.");
             return;
         }
 
@@ -1179,14 +1180,14 @@
             dataType: "json",
             success: function (data) {
                 if ("SUCCESS" == data.status) {
-                    alert(data.msg);
+                    showAlert('complete', data.msg);
                     modUserClose();// 사용자 관리 추가 모달 CLOSE
                     searchUser();
                 } else if ("FAIL" == data.status) {
-                    alert(data.msg);
+                    showAlert('warning', data.msg);
                     modUserClose();// 사용자 관리 추가 모달 CLOSE
                 } else {
-                    alert('실패하였습니다.');
+                    showAlert('warning', '실패하였습니다.');
                     modUserClose();// 사용자 관리 추가 모달 CLOSE
                 }
             },
@@ -1228,7 +1229,7 @@
         let checkUserId = $("#addMemId").val();
 
         if (checkUserId.length == 0) {
-            alert("사용자 ID를 입력해주세요.");
+            showAlert("warning", "사용자 ID를 입력해주세요.");
             return;
         }
         // 수행
@@ -1571,10 +1572,10 @@
         // 체크박스 검사
         let chkCnt = $("input[name='chkBoxDept']:checked").length;
         if (chkCnt <= 0) {
-            alert("하나의 부서를 선택해주세요.");
+            showAlert("warning", "하나의 부서를 선택해주세요.");
             return;
         } else if (chkCnt > 1) {
-            alert("하나의 부서를 선택해주세요.");
+            showAlert("warning", "하나의 부서를 선택해주세요.");
             return;
         } else if (chkCnt == 1) {
             // 하나의 부서가 선택되었음
@@ -1602,10 +1603,10 @@
         // 체크박스 검사
         let chkCnt = $("input[name='chkBoxUser']:checked").length;
         if (chkCnt <= 0) {
-            alert("하나의 사용자를 선택해주세요.");
+            showAlert("warning", "하나의 사용자를 선택해주세요.");
             return;
         } else if (chkCnt > 1) {
-            alert("하나의 사용자를 선택해주세요.");
+            showAlert("warning", "하나의 사용자를 선택해주세요.");
             return;
         } else if (chkCnt == 1) {
             // 하나의 부서가 선택되었음

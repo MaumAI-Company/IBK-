@@ -22,6 +22,7 @@
         select
             <include refid="columns"></include>
             , lm.ID as learningModelId
+            , lm.LEARN_NAME
         from
             CARD_INPUT ci
         left join CARD_OUTPUT co ON ci.TSTM_YMD = co.TSTM_YMD

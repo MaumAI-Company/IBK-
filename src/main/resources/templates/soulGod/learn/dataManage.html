@@ -301,7 +301,7 @@
             <div class="page_top">
                 <div class="tit_area">
                     <h2 class="one_depth">학습 관리</h2>
-                    <h3 class="page_tit">데이터 관리</h3>
+                    <h3 class="page_tit">학습 데이터 등록</h3>
                 </div>
                 <div class="btn_area">
                     <!--<button type="button" class="btn line_cool_grey30">
@@ -327,8 +327,8 @@
                 <div class="board_top">
                     <div>
                         <div class="total_num"><b
-                                th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? pagingInfo.totalRecordCount : 0}"></b>
-                            개의 글이 있습니다.
+                                th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? #numbers.formatInteger(pagingInfo.totalRecordCount , '0', 'COMMA') : 0}"></b>
+                            건의 학습데이터가 있습니다.
                         </div>
                     </div>
                     <div class="mla">
@@ -434,10 +434,6 @@
                     </div>
                 </div>
             </form>
-
-            <div class="selected_filter">
-            </div>
-
             <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
             <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
                 <p>검색 결과가 없습니다.</p>
@@ -449,6 +445,7 @@
                     <caption>데이터 관리 : No, 학습 데이터 명, 등록자, 상태, 학습 가능 유무, 등록일시로 구성</caption>
                     <colgroup>
                         <col style="width: 2.5%">
+                        <col style="width: 4%;">
                         <col style="width: 4%;">
                         <col style="width: 4.5%;">
                         <col style="width: 11%">
@@ -474,6 +471,7 @@
                     <tr>
                         <th scope="col">No</th>
                         <th scope="col">대상</th>
+                        <th scope="col">예산집행년월</th>
                         <th scope="col">부점코드</th>
                         <th scope="col">카드번호</th>
                         <th scope="col">승인시간</th>
@@ -499,6 +497,7 @@
                     <tr th:each="item, idx:${list}">
                         <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
                         <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                        <td th:text="${item.bdgtPrfrYm}"></td>
                         <td th:text="${item.brcd}"></td>
                         <td th:text="${item.cdn}"></td>
                         <td th:text="${item.bdgtTstmUseHms}"></td>
