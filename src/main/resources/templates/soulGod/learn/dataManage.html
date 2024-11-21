@@ -90,6 +90,7 @@
             $('#searchStartDate').monthpicker(options);
             $('#searchEndDate').monthpicker(options);
 
+            fn_stopPropagation();
 
             $('#searchEndDate').on('change', function () {
                 let dataArr = $(this).val().split("-");
@@ -102,15 +103,25 @@
                 }
                 console.log(disableMonths);
 
+                $('#searchStartDate').monthpicker("destroy"); // 기존 MonthPicker 제거
                 $('#searchStartDate').monthpicker({
                     startYear: startYear,
                     finalYear: endYear,
                     pattern: 'yyyy-mm',
-                    disableMonths : [disableMonths]
+                    monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월', '11월', '12월'],
+                    disableMonths: endYear === currentYear ? disableMonths : [],
                 });
+
+                fn_stopPropagation();
             })
 
         });
+
+        function fn_stopPropagation() {
+            $('.ui-datepicker').on('click',function(e) {
+                e.stopPropagation();
+            })
+        }
 
         am5.ready(function () {
             var root = am5.Root.new("chartdiv");
