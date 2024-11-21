@@ -25,6 +25,12 @@ public class CardLearningDataService extends _BaseService {
      * @return
      */
     public List<CardLearningDataInfo> page(CardLearningDataForm params) {
+        /*
+        default search condition
+         */
+        if (ObjectUtils.isEmpty(params.getSearchTarget())) {
+            params.setSearchTarget("1");
+        }
 
         int totalCount = cardLearningDataRepository.getTotalCount(params);
 

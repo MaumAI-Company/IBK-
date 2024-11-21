@@ -79,18 +79,35 @@
             });
 
             //필터 - 기간검색
-            var currentYear = (new Date()).getFullYear();
-            var startYear = currentYear-10;
-            var options = {
+            let currentYear = (new Date()).getFullYear();
+            let startYear = currentYear-10;
+            let options = {
                 startYear: startYear,
                 finalYear: currentYear,
                 pattern: 'yyyy-mm',
-                monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
+                monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월', '11월', '12월']
             };
-            $('#searchYMPicker').monthpicker(options);
+            $('#searchStartDate').monthpicker(options);
+            $('#searchEndDate').monthpicker(options);
 
-            $('.ui-datepicker').on('click',function(e) {
-                e.stopPropagation();
+
+            $('#searchEndDate').on('change', function () {
+                let dataArr = $(this).val().split("-");
+                let endYear = dataArr[0];
+                let endMonth = dataArr[1];
+                let disableMonths = [];
+
+                for (let i = (parseInt(endMonth) + 1); i < 13; i++) {
+                    disableMonths.push((i < 10 ? "0" + i : i)  + "월");
+                }
+                console.log(disableMonths);
+
+                $('#searchStartDate').monthpicker({
+                    startYear: startYear,
+                    finalYear: endYear,
+                    pattern: 'yyyy-mm',
+                    disableMonths : [disableMonths]
+                });
             })
 
         });
@@ -342,7 +359,7 @@
                             <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
                             <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
-                        <label for="sortingTarget" class="blind">정렬조건</label>
+                        <!--<label for="sortingTarget" class="blind">정렬조건</label>
                         <select name="sortingTarget" id="sortingTarget" class="sel_board sel_sorting"
                                 onchange="fn_search()">
                             <option value="1" th:selected="${params.sortingTarget == '1'}">부점코드</option>
@@ -356,37 +373,45 @@
                         <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
                             <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
                             <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
-                        </select>
+                        </select>-->
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter active">
                                 <!--TODO : 선택된 조건이 있을 때는 클래스 active 추가, 필터 삭제되면 클래스 active 삭제-->
                                 <i class="ico_filter"></i>
-                                <span>필터</span>
+                                <span>검색</span>
                             </button>
 
                             <div class="filter">
                                 <div class="inner">
                                     <dl>
-                                        <dt>조회기간</dt>
+                                        <dt>결과 등록 기간</dt>
                                         <dd>
                                             <div class="term_form">
-                                                <label for="searchYMPicker" class="blind">조회 날짜</label>
-                                                <input type="text" id="searchYMPicker" name="searchYMPicker" class="datepicker" readonly>
+                                                <label for="searchStartDate" class="blind">조회 시작 날짜</label>
+                                                <input type="text" id="searchStartDate" name="searchStartDate" class="datepicker" readonly>
+                                            </div>
+                                            ~
+                                            <div class="term_form">
+                                                <label for="searchEndDate" class="blind">조회 종료 날짜</label>
+                                                <input type="text" id="searchEndDate" name="searchEndDate" class="datepicker" readonly>
                                             </div>
                                         </dd>
                                     </dl>
                                     <dl>
-                                        <dt>
-                                            <label for="searchTarget">대상</label>
-                                        </dt>
+                                        <dt>대상</dt>
                                         <dd>
-                                            <select name="searchTarget" id="searchTarget">
-                                                <option value="" selected>전체</option>
-                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부
-                                                </option>
-                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점
-                                                </option>
-                                            </select>
+                                            <div class="df">
+                                                <div class="radio txt">
+                                                    <input type="radio" name="searchTarget" id="searchTarget_B" value="1"
+                                                           th:checked="${params.searchTarget == '1'}">
+                                                    <label for="searchTarget_B">본부</label>
+                                                </div>
+                                                <div class="radio txt">
+                                                    <input type="radio" name="searchTarget" id="searchTarget_Y" value="2"
+                                                           th:checked="${params.searchTarget == '2'}">
+                                                    <label for="searchTarget_Y">영업점</label>
+                                                </div>
+                                            </div>
                                         </dd>
                                     </dl>
                                     <dl>
@@ -425,7 +450,7 @@
                                             <span>초기화</span>
                                         </button>
                                         <button type="button" class="btn fill" onclick="fn_search()">
-                                            <span>검색</span>
+                                            <span>검색 조건 추가</span>
                                         </button>
                                     </div>
                                 </div>
