@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,13 @@ public class CardLearningDataService extends _BaseService {
         if (ObjectUtils.isEmpty(params.getSearchTarget())) {
             params.setSearchTarget("1");
         }
+
+        if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+            params.setSearchStartDate(String.valueOf(LocalDate.now().minusYears(2)).substring(0, 7));
+            params.setSearchEndDate(String.valueOf(LocalDate.now()).substring(0, 7));
+        }
+        params.setSearchStartDate(params.getSearchStartDate().replaceAll("-", ""));
+        params.setSearchEndDate(params.getSearchEndDate().replaceAll("-", ""));
 
         int totalCount = cardLearningDataRepository.getTotalCount(params);
 
