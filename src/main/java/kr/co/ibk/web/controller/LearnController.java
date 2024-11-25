@@ -6,10 +6,13 @@ import kr.co.ibk.domain.enums.OutputColumnType;
 import kr.co.ibk.domain.web.CardLearningDataInfo;
 import kr.co.ibk.domain.web.LearningModelInfo;
 import kr.co.ibk.domain.web.MemberInfo;
+import kr.co.ibk.domain.web.TemplateInfo;
 import kr.co.ibk.model.CardLearningDataForm;
 import kr.co.ibk.model.LearningModelForm;
+import kr.co.ibk.model.TemplateForm;
 import kr.co.ibk.service.CardLearningDataService;
 import kr.co.ibk.service.LearningModelService;
+import kr.co.ibk.service.TemplateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +28,7 @@ public class LearnController {
 
     private final LearningModelService learningModelService;
     private final CardLearningDataService cardLearningDataService;
+    private final TemplateService templateService;
 
     @RequestMapping("/soulGod/learn/dataManage")
     public String dataManage(Model model,
@@ -39,6 +43,21 @@ public class LearnController {
 
         return "/soulGod/learn/dataManage";
 
+    }
+
+    @RequestMapping("/soulGod/learn/templateManage")
+    public String templateManage(Model model,
+                                 @ModelAttribute TemplateForm params) {
+
+        List<TemplateInfo> list = templateService.page(params);
+
+        model.addAttribute("list", list);
+        model.addAttribute("pagingInfo", params.getPaginationInfo());
+        model.addAttribute("params", params);
+        model.addAttribute("mc", "ico_database");
+        model.addAttribute("pageTitle", "학습 템플릿 관리");
+
+        return "/soulGod/learn/templateManage";
     }
 
     @RequestMapping("/soulGod/learn/modelManage")
