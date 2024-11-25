@@ -86,7 +86,7 @@
 
 /*** filter ***/
 .filter_area{position:relative}
-.filter{display:none;position:absolute;top:40px;right:0;width:380px;border:2px solid transparent;border-radius:4px;background-image:linear-gradient(#fff, #fff),linear-gradient(93deg, #21c0aa -46.25%, #66f 158.95%);background-origin:border-box;background-clip:content-box,border-box;box-shadow:0 0 5px 0 rgba(0, 0, 0, 0.05), 5px 5px 10px 0 rgba(0, 0, 0, 0.06)}
+.filter{display:none;position:absolute;top:40px;right:0;width:380px;border:2px solid transparent;border-radius:4px;background-image:linear-gradient(#fff, #fff),linear-gradient(93deg, #21c0aa -46.25%, #66f 158.95%);background-origin:border-box;background-clip:content-box,border-box;box-shadow:0 0 5px 0 rgba(0, 0, 0, 0.05), 5px 5px 10px 0 rgba(0, 0, 0, 0.06);z-index:1}
 .filter .inner{padding:23px}
 .filter dl + dl{margin-top:24px}
 .filter dl dt{font-size:12px;font-weight:600;line-height:1}
