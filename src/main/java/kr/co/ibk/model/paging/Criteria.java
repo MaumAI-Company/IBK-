@@ -87,7 +87,7 @@ public class Criteria {
     }
 
     public Criteria() {
-        this(1, 10, 10, null, null);// 없으면 defalut 1번, 10개 씩 , 10페이지
+        this(1, 20, 10, null, null);// 없으면 defalut 1번, 10개 씩 , 10페이지
     }
 
     public Criteria(int currentPageNo, int recordsPerPage, int pageSize, String searchStartDate, String searchEndDate) {
