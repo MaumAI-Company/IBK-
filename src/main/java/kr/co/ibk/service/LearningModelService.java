@@ -211,6 +211,11 @@ public class LearningModelService extends _BaseService {
     public List<LearningModelInfo> getList(LearningModelForm params) {
         List<LearningModelInfo> modelList = Collections.emptyList();
 
+        if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+            params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
+            params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
+        }
+
         int totalCount = learningModelRepository.getTotalCount(params);
 
         PaginationInfo paginationInfo = new PaginationInfo(params);
@@ -221,11 +226,6 @@ public class LearningModelService extends _BaseService {
         if (totalCount > 0) {
             if (ObjectUtils.isEmpty(params.getSorting())) {
                 params.setSorting("desc");
-            }
-
-            if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
-                params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
-                params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
             }
             modelList = learningModelRepository.getList(params);
         }
