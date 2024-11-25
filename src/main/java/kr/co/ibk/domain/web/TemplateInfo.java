@@ -20,6 +20,8 @@ public class TemplateInfo {
     private LocalDateTime regDt; /*등록일자*/
     private String modId; /*수정자*/
     private LocalDateTime modDt; /*수정일자*/
+
+    private String regName; /*등록자*/
 }
 
 

@@ -11,6 +11,7 @@ import lombok.Setter;
 public class TemplateForm extends PageForm {
     /*검색조건*/
     private String searchTarget;
+    private String pagingAt;
 
     /*save*/
     private Integer id;
