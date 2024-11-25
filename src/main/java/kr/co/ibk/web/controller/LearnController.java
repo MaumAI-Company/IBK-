@@ -42,7 +42,7 @@ public class LearnController {
         model.addAttribute("pagingInfo", params.getPaginationInfo());
         model.addAttribute("params", params);
         model.addAttribute("mc", "ico_database");
-        model.addAttribute("pageTitle", "데이터 관리");
+        model.addAttribute("pageTitle", "학습 데이터 등록");
 
         return "/soulGod/learn/dataManage";
 
