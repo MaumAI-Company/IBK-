@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.TemplateRepository">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="TemplateForm">
+        insert into TEMPLATE
+        (TEMPLATE_NAME, SELECT_CON, HDQR_BOB_DCD, REG_ID, REG_DT, MOD_ID, MOD_DT)
+        values (#{templateName}, #{selectCon}, #{hdqrBobDcd}, #{memId}, current_timestamp(), #{memId}, current_timestamp())
+    </insert>
+
+    <select id="getTotalCount" resultType="int" parameterType="TemplateForm">
+        select
+            count(*)
+        from
+            TEMPLATE t
+        inner join HC_MEMBER hm on t.REG_ID = hm.MEM_ID
+        <include refid="where"></include>
+    </select>
+
+    <select id="getList" resultType="TemplateInfo" parameterType="TemplateForm">
+        select
+            <include refid="column"></include>
+            ,hm.MEM_NAME as regName
+        from
+            TEMPLATE t
+        inner join HC_MEMBER hm on t.REG_ID = hm.MEM_ID
+        <include refid="where"></include>
+        <if test="pagingAt != null and 'Y'.toString() == pagingAt">
+            <include refid="kr.co.ibk.repository.CommonRepository.paging" />
+        </if>
+    </select>
+
+    <sql id="where">
+        where t.DEL_YN = 'N'
+        <if test="searchTarget != null and ''.toString != searchTarget">
+            and t.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+        <if test="searchKeyword != null and ''.toString != searchKeyword">
+            and (t.TEMPLATE_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                or hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
+        </if>
+    </sql>
+
+    <sql id="column">
+        t.*
+    </sql>
+</mapper>

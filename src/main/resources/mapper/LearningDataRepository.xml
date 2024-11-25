@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.LearningDataRepository">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="LearningDataForm">
+        insert into LEARNING_DATA
+        (DATA_NAME, SELECT_CON, HDQR_BOB_DCD, REG_ID, REG_DT, MOD_ID, MOD_DT, START_DT, END_DT, TEMPLATE_ID)
+        values (#{dataName}, #{selectCon}, #{hdqrBobDcd}, #{memId}, current_timestamp(), #{memId}, current_timestamp(), #{startDt}, #{endDt}, #{templateId});
+    </insert>
+
+    <update id="update" parameterType="LearningDataForm">
+        update LEARNING_DATA
+        set
+            DATA_NAME = #{dataName},
+            SELECT_CON = #{selectCon},
+            HDQR_BOB_DCD = #{hdqrBobDcd},
+            MOD_ID = #{memId},
+            MOD_DT = current_timestamp(),
+            START_DT = #{startDt},
+            END_DT = #{endDt},
+            TEMPLATE_ID = #{templateId}
+        where ID = #{id};
+    </update>
+</mapper>

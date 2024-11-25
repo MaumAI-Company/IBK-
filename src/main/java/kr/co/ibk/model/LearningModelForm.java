@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LearningModelForm extends PageForm  {
+public class LearningModelForm extends PageForm {
     private Integer id;
     private Integer learningId;  //'학습 키',
     private String regId;  //'등록자',
@@ -36,6 +36,8 @@ public class LearningModelForm extends PageForm  {
     private String[] inputArr;
     private String[] outputArr;
     private Integer[] idArr;
+    private String templateAt;
+    private String templateName;
 
     /*검색조건*/
     private String statusType;

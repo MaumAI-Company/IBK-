@@ -9,10 +9,9 @@ import kr.co.ibk.domain.web.LearningModelInputInfo;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.model.LearningModelForm;
 import kr.co.ibk.model.SearchForm;
+import kr.co.ibk.model.TemplateForm;
 import kr.co.ibk.model.paging.PaginationInfo;
-import kr.co.ibk.repository.CardLearningDataRepository;
-import kr.co.ibk.repository.LearningModelInputRepository;
-import kr.co.ibk.repository.LearningModelRepository;
+import kr.co.ibk.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,8 @@ public class LearningModelService extends _BaseService {
     private final LearningModelRepository learningModelRepository;
     private final LearningModelInputRepository learningModelInputRepository;
     private final CardLearningDataRepository cardLearningDataRepository;
-    private final LLMService llmService;
+    private final TemplateRepository templateRepository;
+    private final TemplateInputRepository templateInputRepository;
 
     public HashMap<String, Object> save(LearningModelForm form, MemberInfo memberInfo) {
         HashMap<String, Object> map = new HashMap<>();
@@ -51,8 +51,10 @@ public class LearningModelService extends _BaseService {
         form.setRegId(memberInfo.getMemId());
         form.setModId(memberInfo.getMemId());
 
+        boolean isInsert = false;
         if (ObjectUtils.isEmpty(form.getId())) {
             //insert
+            isInsert = true;
             learningModelRepository.insert(form);
         } else {
             //update
@@ -63,6 +65,20 @@ public class LearningModelService extends _BaseService {
 
         saveCnt = learningModelInputRepository.insertList(form.getId(), form.getInputArr(), InOutGbnType.INPUT.name());
         saveCnt += learningModelInputRepository.insertList(form.getId(), form.getOutputArr(), InOutGbnType.OUTPUT.name());
+
+        if (isInsert &&
+                !ObjectUtils.isEmpty(form.getTemplateAt()) && "Y".equals(form.getTemplateAt())) {
+            //template save
+            TemplateForm tempForm = new TemplateForm();
+            tempForm.setTemplateName(form.getTemplateName());
+            tempForm.setSelectCon("");
+            tempForm.setHdqrBobDcd(form.getHdqrBobDcd());
+            tempForm.setMemId(memberInfo.getMemId());
+            templateRepository.insert(tempForm);
+
+            saveCnt = templateInputRepository.insertList(tempForm.getId(), form.getInputArr(), InOutGbnType.INPUT.name());
+            saveCnt += templateInputRepository.insertList(tempForm.getId(), form.getOutputArr(), InOutGbnType.OUTPUT.name());
+        }
 
         if (saveCnt > 0) {
             map.put("status", "SUCCESS");
@@ -195,6 +211,11 @@ public class LearningModelService extends _BaseService {
     public List<LearningModelInfo> getList(LearningModelForm params) {
         List<LearningModelInfo> modelList = Collections.emptyList();
 
+        if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+            params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
+            params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
+        }
+
         int totalCount = learningModelRepository.getTotalCount(params);
 
         PaginationInfo paginationInfo = new PaginationInfo(params);
@@ -205,11 +226,6 @@ public class LearningModelService extends _BaseService {
         if (totalCount > 0) {
             if (ObjectUtils.isEmpty(params.getSorting())) {
                 params.setSorting("desc");
-            }
-
-            if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
-                params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
-                params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
             }
             modelList = learningModelRepository.getList(params);
         }

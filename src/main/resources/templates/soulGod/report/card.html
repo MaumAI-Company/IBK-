@@ -141,7 +141,7 @@
                                 <tr>
                                     <th scope="row">input</th>
                                     <td>
-                                        <table>
+                                        <table class="in_table">
                                             <colgroup>
                                                 <col style="width:140px">
                                                 <col style="width:auto">
@@ -451,11 +451,11 @@
                         <th scope="col">매출 가맹점 번호</th>
                         <th scope="col">가맹점 업종코드</th>
                         <th scope="col">가맹점 상세주소</th>
-                        <th scope="col">부점주소</th>
+                        <th scope="col" class="pr">부점주소</th>
                         <th scope="col" style="background-color:#f9f9ff">예산비목정보<span class="dib">(1순위)</span></th>
 
                         <th scope="col" style="background-color:#f9f9ff">예산사업ID<span class="dib">(1순위)</span></th>
-                        <th scope="col" style="background-color:#f9f9ff">비목집행사유<span class="dib">(1순위)</span></th>
+                        <th scope="col" class="pr" style="background-color:#f9f9ff">비목집행사유<span class="dib">(1순위)</span></th>
                         <th scope="col">결과등록년월일</th>
                         <th scope="col">상세보기</th>
                     </tr>
@@ -477,11 +477,11 @@
                         <td th:text="${item.amslAfstNo}"></td>
                         <td th:text="${item.afstTpbcd}"></td>
                         <td th:text="${item.afstDtlAdr}"></td>
-                        <td th:text="${item.brncAdr}"></td>
+                        <td th:text="${item.brncAdr}" class="pr"></td>
                         <td style="background-color:#f9f9ff" th:text="${item.bdgtItexFrcsCon}"></td>
 
                         <td style="background-color:#f9f9ff" th:text="${item.bdgtBsnsFrcsCon}"></td>
-                        <td style="background-color:#f9f9ff" th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
+                        <td style="background-color:#f9f9ff" th:text="${item.bdgtPrfrRsnFrcsCon}" class="pr"></td>
                         <td th:text="${item.rsreYmd != null ? #temporals.format(item.rsreYmd, 'yyyy-MM-dd') : '-'}"></td>
                         <td>
                             <button type="button" class="badge"

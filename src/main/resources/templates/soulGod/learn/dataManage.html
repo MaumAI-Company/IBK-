@@ -47,7 +47,9 @@
             margin-top: 8px
         }
 
-        .mtz-monthpicker-year{background: #fff url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"%3E%3Cpath fill="%236d7175" d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71L8.46 9.17a1 1 0 0 0-1.41 0a1 1 0 0 0 0 1.42l4.24 4.24a1 1 0 0 0 1.42 0L17 10.59a1 1 0 0 0 0-1.42Z"%2F%3E%3C%2Fsvg%3E') no-repeat calc(100% - 11px) 50% / 20px auto}
+        .mtz-monthpicker-year {
+            background: #fff url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"%3E%3Cpath fill="%236d7175" d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71L8.46 9.17a1 1 0 0 0-1.41 0a1 1 0 0 0 0 1.42l4.24 4.24a1 1 0 0 0 1.42 0L17 10.59a1 1 0 0 0 0-1.42Z"%2F%3E%3C%2Fsvg%3E') no-repeat calc(100% - 11px) 50% / 20px auto
+        }
     </style>
     <script type="text/javascript">
         $(function () {
@@ -79,112 +81,109 @@
             });
 
             //필터 - 기간검색
-            var currentYear = (new Date()).getFullYear();
-            var startYear = currentYear-10;
-            var options = {
+            let currentYear = (new Date()).getFullYear();
+            let startYear = currentYear - 10;
+            let options = {
                 startYear: startYear,
                 finalYear: currentYear,
                 pattern: 'yyyy-mm',
-                monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
-            };
-            $('#searchYMPicker').monthpicker(options);
+                monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                onSelect: function (month, year) {
+                    let endDate = $('#searchEndDate').monthpicker('getDate');
+                    let selectedDate = new Date(year, month - 1);
 
-            $('.ui-datepicker').on('click',function(e) {
+                    if (endDate && endDate < selectedDate) {
+                        $('#searchStartDate').monthpicker('setValue', {
+                            selectedYear: year,
+                            selectedMonth: month
+                        });
+                    }
+                }
+            };
+
+            $('#searchStartDate').monthpicker(options);
+            $('#searchEndDate').monthpicker(options);
+
+            fn_stopPropagation();
+
+            $('#searchStartDate').on('monthpicker-click-month', function (e, month) {
+                const year = $(this).monthpicker('getDate').getFullYear();
+                fn_validateDateRange(new Date(year, month - 1), true);
+            });
+
+            $('#searchEndDate').on('monthpicker-click-month', function (e, month) {
+                const year = $(this).monthpicker('getDate').getFullYear();
+                fn_validateDateRange(new Date(year, month - 1), false);
+            });
+
+            fn_settingChip();
+        });
+
+        function fn_validateDateRange(selectedDate, isStart) {
+            const startDate = isStart ? selectedDate : $('#searchStartDate').monthpicker('getDate');
+            const endDate = isStart ? $('#searchEndDate').monthpicker('getDate') : selectedDate;
+
+            if (!startDate || !endDate) {
+                return;
+            }
+
+            if (isStart && startDate > endDate) {
+                // 시작월이 종료월보다 이후인 경우
+                $('#searchStartDate').monthpicker('setValue', {
+                    dateSeparator: '-',
+                    pattern: 'yyyy-mm',
+                    selectedYear: endDate.getFullYear(),
+                    selectedMonth: endDate.getMonth() + 1,
+                });
+            } else if (!isStart && startDate > endDate) {
+                // 종료월이 시작월보다 이전인 경우
+                $('#searchEndDate').monthpicker('setValue', {
+                    dateSeparator: '-',
+                    pattern: 'yyyy-mm',
+                    selectedYear: startDate.getFullYear(),
+                    selectedMonth: startDate.getMonth() + 1
+                });
+            }
+
+            // 선택된 날짜 기준으로 disabled 처리
+            //fn_updateDisabledMonths(startDate, endDate);
+        }
+
+        /*function fn_updateDisabledMonths(startDate, endDate) {
+            // 시작월 선택 시 해당 연도의 종료월 이후의 월들을 disabled
+            const startDisabled = [];
+            const endDisabled = [];
+
+            const currentYear = startDate.getFullYear();
+
+            if (currentYear === endDate.getFullYear()) {
+                // 같은 연도인 경우
+                for (let i = 1; i <= 12; i++) {
+                    if (i > endDate.getMonth() + 1) startDisabled.push(i);
+                    if (i < startDate.getMonth() + 1) endDisabled.push(i);
+                }
+            }
+
+            $('#searchEndDate').monthpicker('disableMonths', startDisabled);
+            $('#searchStartDate').monthpicker('disableMonths', endDisabled);
+        }*/
+
+        function fn_stopPropagation() {
+            $('.ui-datepicker').on('click', function (e) {
                 e.stopPropagation();
             })
-
-        });
-
-        am5.ready(function () {
-            var root = am5.Root.new("chartdiv");
-
-            root.setThemes([
-                am5themes_Animated.new(root)
-            ]);
-
-            var chart = root.container.children.push(am5xy.XYChart.new(root, {
-                panX: true,
-                panY: true,
-                wheelX: "panX",
-                wheelY: "zoomX",
-                pinchZoomX: true,
-                paddingLeft: 0
-            }));
-
-            var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-                behavior: "none"
-            }));
-            cursor.lineY.set("visible", false);
-
-            var date = new Date();
-            date.setHours(0, 0, 0, 0);
-            var value = 100;
-
-            function generateData() {
-                value = Math.round((Math.random() * 10 - 5) + value);
-                am5.time.add(date, "day", 1);
-                return {
-                    date: date.getTime(),
-                    value: value
-                };
-            }
-
-            function generateDatas(count) {
-                var data = [];
-                for (var i = 0; i < count; ++i) {
-                    data.push(generateData());
-                }
-                return data;
-            }
-
-            var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-                maxDeviation: 0.2,
-                baseInterval: {
-                    timeUnit: "day",
-                    count: 1
-                },
-                renderer: am5xy.AxisRendererX.new(root, {
-                    minorGridEnabled: true
-                }),
-                tooltip: am5.Tooltip.new(root, {})
-            }));
-
-            var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-                renderer: am5xy.AxisRendererY.new(root, {
-                    pan: "zoom"
-                })
-            }));
-
-            var series = chart.series.push(am5xy.LineSeries.new(root, {
-                name: "Series",
-                xAxis: xAxis,
-                yAxis: yAxis,
-                valueYField: "value",
-                valueXField: "date",
-                tooltip: am5.Tooltip.new(root, {
-                    labelText: "{valueY}"
-                })
-            }));
-
-            chart.set("scrollbarX", am5.Scrollbar.new(root, {
-                orientation: "horizontal"
-            }));
-
-            var data = generateDatas(1200);
-            series.data.setAll(data);
-
-            series.appear(1000);
-            chart.appear(1000, 100);
-
-        });
+        }
 
         /**
          * 학습데이터 popup 초기화
          */
         function fn_learningDataOpen() {
             $('#learnName').val('');
+            $('#templateAtY').prop('checked', true);
             $('.checkedY').prop('checked', true);
             $('.checkedN').prop('checked', false);
+
+            $('.chipArea').html($('.selected_filter').html());
 
             layerShow('popLearnData');
         }
@@ -197,20 +196,27 @@
          */
         function fn_learnDataSaveChk() {
             let hdqrBobDcd = $('#hdqrBobDcd').val();
-            let learnName = $('#learnName').val();
+            let dataName = $('#dataName').val();
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+            let templateAt = $('[name=templateAt]:checked');
+            let templateName = $('#templateName').val();
 
             if (!$.trim(hdqrBobDcd)) {
                 return false;
             }
 
-            if (!$.trim(learnName)) {
+            if (!$.trim(dataName)) {
                 showAlert('warning', '학습데이터 명 입력은 필수입니다.');
                 return false;
             }
 
             if (inputColumns.length < 1) {
                 showAlert('warning', '학습데이터는 최소 1개 이상 선택해야합니다.');
+                return false;
+            }
+
+            if (templateAt.val() === 'Y' && !$.trim(templateName)) {
+                showAlert('warning', '템플릿 생성 시 템플릿 명 입력은 필수입니다.');
                 return false;
             }
 
@@ -241,9 +247,11 @@
 
             let jsonData = {
                 "hdqrBobDcd": $('#hdqrBobDcd').val(),
-                "learnName": $('#learnName').val(),
+                "dataName": $('#dataName').val(),
                 "inputArr": inputArr,
-                "outputArr": outputArr
+                "outputArr": outputArr,
+                "templateAt": $('[name=templateAt]:checked').val(),
+                "templateName": $('#templateName').val(),
             }
 
             $.ajax({
@@ -288,6 +296,38 @@
             $('#searchKeyword').val('');
         }
 
+        function fn_settingChip() {
+            let tags = '';
+            if ($('#searchStartDate').val() || $('#searchEndDate').val()) {
+                tags += `
+                    <div class="chip">
+                        <div>예산집행년월 : ${$('#searchStartDate').val()} ~ ${$('#searchEndDate').val()}</div>
+                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
+                            <span class="blind">삭제</span>
+                        </button>
+                    </div>
+                `;
+            }
+
+            if ($('input[name=searchTarget]').val()) {
+                tags += `
+                    <div class="chip">
+                        <div>대상 : ${$('input[name=searchTarget]').val() == '1' ? '본부' : '영업점'}</div>
+                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
+                            <span class="blind">삭제</span>
+                        </button>
+                    </div>
+                `;
+            }
+
+            $('.selected_filter').html(tags);
+        }
+
+        function fn_removeChip(obj) {
+            $(obj).parents('.chip').remove();
+            fn_search();
+        }
+
     </script>
 </head>
 <body>
@@ -322,7 +362,7 @@
                 </div>
             </div>
 
-            <form id="form1">
+            <form id="form1" th:object="${params}">
                 <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
                 <div class="board_top">
                     <div>
@@ -342,7 +382,7 @@
                             <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
                             <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
-                        <label for="sortingTarget" class="blind">정렬조건</label>
+                        <!--<label for="sortingTarget" class="blind">정렬조건</label>
                         <select name="sortingTarget" id="sortingTarget" class="sel_board sel_sorting"
                                 onchange="fn_search()">
                             <option value="1" th:selected="${params.sortingTarget == '1'}">부점코드</option>
@@ -356,36 +396,93 @@
                         <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
                             <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
                             <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
-                        </select>
+                        </select>-->
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter active">
                                 <!--TODO : 선택된 조건이 있을 때는 클래스 active 추가, 필터 삭제되면 클래스 active 삭제-->
                                 <i class="ico_filter"></i>
-                                <span>필터</span>
+                                <span>검색</span>
                             </button>
 
                             <div class="filter">
                                 <div class="inner">
                                     <dl>
-                                        <dt>조회기간</dt>
+                                        <dt>결과 등록 기간</dt>
                                         <dd>
                                             <div class="term_form">
-                                                <label for="searchYMPicker" class="blind">조회 날짜</label>
-                                                <input type="text" id="searchYMPicker" name="searchYMPicker" class="datepicker" readonly>
+                                                <label for="searchStartDate" class="blind">조회 시작 날짜</label>
+                                                <input type="text" id="searchStartDate" name="searchStartDate"
+                                                       th:value="*{searchStartDate.substring(0, 4) + '-' + searchStartDate.substring(4, 6)}"
+                                                       class="datepicker" readonly>
+                                            </div>
+                                            ~
+                                            <div class="term_form">
+                                                <label for="searchEndDate" class="blind">조회 종료 날짜</label>
+                                                <input type="text" id="searchEndDate" name="searchEndDate"
+                                                       th:value="*{searchEndDate.substring(0, 4) + '-' + searchEndDate.substring(4, 6)}"
+                                                       class="datepicker" readonly>
                                             </div>
                                         </dd>
                                     </dl>
                                     <dl>
-                                        <dt>
-                                            <label for="searchTarget">대상</label>
-                                        </dt>
+                                        <dt>대상</dt>
                                         <dd>
-                                            <select name="searchTarget" id="searchTarget">
+                                            <div class="df">
+                                                <div class="radio txt">
+                                                    <input type="radio" name="searchTarget" id="searchTarget_B"
+                                                           value="1"
+                                                           th:checked="${params.searchTarget == '1'}">
+                                                    <label for="searchTarget_B">본부</label>
+                                                </div>
+                                                <div class="radio txt">
+                                                    <input type="radio" name="searchTarget" id="searchTarget_Y"
+                                                           value="2"
+                                                           th:checked="${params.searchTarget == '2'}">
+                                                    <label for="searchTarget_Y">영업점</label>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt><label for="searchType" class="blind">검색 대상</label></dt>
+                                        <dd>
+                                            <select name="searchType" id="searchType">
                                                 <option value="" selected>전체</option>
-                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부
-                                                </option>
-                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점
-                                                </option>
+                                                <!--<option value="1" th:selected="${params.searchType == '1'}">부점코드</option>
+                                                <option value="2" th:selected="${params.searchType == '2'}">카드번호</option>
+                                                <option value="3" th:selected="${params.searchType == '3'}">예산비목정보내용</option>
+                                                <option value="4" th:selected="${params.searchType == '4'}">비목집행사유내용</option>
+                                                <option value="5" th:selected="${params.searchType == '5'}">예산사업ID내용</option>-->
+                                                <option value="1">부점코드</option>
+                                                <!--th:selected="${params.searchType == '1'}"-->
+                                                <option value="2">카드번호</option>
+                                                <!--th:selected="${params.searchType == '2'}"-->
+                                                <option value="3">승인시간</option>
+                                                <!--th:selected="${params.searchType == '3'}"-->
+                                                <option value="4">매출금액</option>
+                                                <!--th:selected="${params.searchType == '4'}"-->
+                                                <option value="5">가맹점명</option>
+                                                <!--th:selected="${params.searchType == '5'}"-->
+                                                <option value="6">업종명</option>
+                                                <!--th:selected="${params.searchType == '6'}"-->
+                                                <option value="7">영업일여부</option>
+                                                <!--th:selected="${params.searchType == '7'}"-->
+                                                <option value="8">가맹점상세주소</option>
+                                                <!--th:selected="${params.searchType == '8'}"-->
+                                                <option value="9">부점주소</option>
+                                                <!--th:selected="${params.searchType == '9'}"-->
+                                                <option value="10">가맹점사업자등록번호</option>
+                                                <!--th:selected="${params.searchType == '10'}"-->
+                                                <option value="11">매출가맹점번호</option>
+                                                <!--th:selected="${params.searchType == '11'}"-->
+                                                <option value="12">가맹점업종코드</option>
+                                                <!--th:selected="${params.searchType == '12'}"-->
+                                                <option value="13">예산관리비목관리번호</option>
+                                                <!--th:selected="${params.searchType == '13'}"-->
+                                                <option value="14">예산집행사유코드</option>
+                                                <!--th:selected="${params.searchType == '14'}"-->
+                                                <option value="15">사업세부사업</option>
+                                                <!--th:selected="${params.searchType == '15'}"-->
                                             </select>
                                         </dd>
                                     </dl>
@@ -395,23 +492,8 @@
                                         </dt>
                                         <dd>
                                             <div class="search_form">
-                                                <label for="searchType" class="blind">검색어 타입</label>
-                                                <select name="searchType" id="searchType">
-                                                    <option value="" selected>전체</option>
-                                                    <option value="1" th:selected="${params.searchType == '1'}">부점코드
-                                                    </option>
-                                                    <option value="2" th:selected="${params.searchType == '2'}">카드번호
-                                                    </option>
-                                                    <option value="3" th:selected="${params.searchType == '3'}">
-                                                        예산비목정보내용
-                                                    </option>
-                                                    <option value="4" th:selected="${params.searchType == '4'}">비목집행사유내용
-                                                    </option>
-                                                    <option value="5" th:selected="${params.searchType == '5'}">예산사업ID내용
-                                                    </option>
-                                                </select>
                                                 <div class="search">
-                                                    <input type="search" th:field="${params.searchKeyword}"
+                                                    <input type="search" id="searchKeyword" name="searchKeyword"
                                                            placeholder="검색어를 입력하세요.">
                                                     <button type="button" class="btn_del" tabindex="-1">
                                                         <span class="blind">삭제</span>
@@ -425,7 +507,7 @@
                                             <span>초기화</span>
                                         </button>
                                         <button type="button" class="btn fill" onclick="fn_search()">
-                                            <span>검색</span>
+                                            <span>검색 조건 추가</span>
                                         </button>
                                     </div>
                                 </div>
@@ -434,6 +516,7 @@
                     </div>
                 </div>
             </form>
+            <div class="selected_filter"></div>
             <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
             <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
                 <p>검색 결과가 없습니다.</p>
@@ -446,7 +529,7 @@
                     <colgroup>
                         <col style="width: 2.5%">
                         <col style="width: 4%;">
-                        <col style="width: 4%;">
+                        <col style="width: 5%;">
                         <col style="width: 4.5%;">
                         <col style="width: 11%">
                         <col style="width: 3%;">
@@ -460,7 +543,6 @@
                         <col style="width: 6.5%;">
                         <col style="width: auto">
                         <col style="width: auto">
-                        <col style="width: 7%">
                         <col style="width: 7%">
 
                         <col style="width: 6.5%;">
@@ -485,8 +567,7 @@
                         <th scope="col">부점주소</th>
                         <th scope="col">가맹점사업자등록번호</th>
                         <th scope="col">매출가맹점번호</th>
-                        <th scope="col">가맹점업종코드</th>
-                        <th scope="col">예산집행년월</th>
+                        <th scope="col" class="pr">가맹점업종코드</th>
 
                         <th scope="col" style="background-color:#f9f9ff">예산관리비목관리번호</th>
                         <th scope="col" style="background-color:#f9f9ff">예산집행사유코드</th> <!--예산관리비목관리번호_예산집행사유코드-->
@@ -512,8 +593,7 @@
                         <!--output data : s-->
                         <td th:text="${item.afstBzn}"></td>
                         <td th:text="${item.amslAfstNo}"></td>
-                        <td th:text="${item.afstTpbcd}"></td>
-                        <td th:text="${item.bdgtPrfrYm}"></td>
+                        <td th:text="${item.afstTpbcd}" class="pr"></td>
                         <!--output data : e-->
 
                         <td th:text="${item.bdmnItexMngmNo}" style="background-color:#f9f9ff"></td>
@@ -522,8 +602,8 @@
                     </tr>
                     </tbody>
                 </table>
-                <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
             </div>
+            <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
         </div>
     </div>
 </div>
@@ -730,13 +810,15 @@
                 <colgroup>
                     <col style="width:160px">
                     <col style="width:auto">
+                    <col style="width:160px">
+                    <col style="width:auto">
                 </colgroup>
                 <tbody>
                 <tr>
                     <th scope="row">
                         <label for="hdqrBobDcd">학습 대상</label>
                     </th>
-                    <td>
+                    <td colspan="3">
                         <select id="hdqrBobDcd">
                             <option value="1" selected>본부</option>
                             <option value="2">영업점</option>
@@ -745,11 +827,11 @@
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="learnName">학습데이터 명</label>
+                        <label for="dataName">학습데이터 명</label>
                     </th>
-                    <td>
+                    <td colspan="3">
                         <div class="input">
-                            <input type="text" id="learnName" placeholder="학습데이터 명을 입력하세요.">
+                            <input type="text" id="dataName" placeholder="학습데이터 명을 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -760,7 +842,7 @@
                     <th scope="row">
                         <span>학습데이터 체크</span>
                     </th>
-                    <td>
+                    <td colspan="3">
                         <div class="check_wrap">
                             <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
                                 <div class="checkbox">
@@ -773,14 +855,13 @@
                             </th:block>
                         </div>
                         <div class="txt_guide fc_primary">※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div>
-                        <!--todo : 퍼블-->
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">
                         <span>학습데이터 (output)</span>
                     </th>
-                    <td>
+                    <td colspan="3">
                         <div class="check_wrap">
                             <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnType).values()}">
                                 <div class="checkbox">
@@ -792,8 +873,38 @@
                         </div>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">
+                        <span>선택 조건</span>
+                    </th>
+                    <td colspan="3" class="chipArea"></td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <span>템플릿 생성 유무</span>
+                    </th>
+                    <td>
+                        <div class="df">
+                            <div class="radio txt">
+                                <input type="radio" name="templateAt" id="templateAtY" value="Y">
+                                <label for="templateAtY">사용</label>
+                            </div>
+                            <div class="radio txt">
+                                <input type="radio" name="templateAt" id="templateAtN" value="N">
+                                <label for="templateAtN">미사용</label>
+                            </div>
+                        </div>
+                    </td>
+                    <th scope="row">
+                        <span>템플릿 명</span>
+                    </th>
+                    <td>
+                        <input type="text" id="templateName" name="templateName" placeholder="템플릿 명을 입력하세요.">
+                    </td>
+                </tr>
                 </tbody>
             </table>
+            <div class="txt_guide fc_primary">※ 템플릿은 예산집행년월 정보를 저장하지 않습니다. 템플릿을 사용해 학습데이터를 생성할 때 설정해주세요.</div>
         </div>
         <div class="pop_foot">
             <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearnData')">
