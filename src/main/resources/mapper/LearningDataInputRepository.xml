@@ -3,4 +3,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.ibk.repository.LearningDataInputRepository">
+    <insert id="insertList" parameterType="map">
+        INSERT INTO LEARNING_DATA_INPUT
+        (
+        COL_NAME,
+        DATA_ID,
+        INOUT_GBN
+        )
+        VALUES
+        <foreach collection="dataArr" item="item" separator=",">
+            (
+            #{item},
+            #{id},
+            #{gbn}
+            )
+        </foreach>
+    </insert>
 </mapper>

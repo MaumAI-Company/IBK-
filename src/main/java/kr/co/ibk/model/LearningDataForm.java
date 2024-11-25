@@ -1,0 +1,33 @@
+package kr.co.ibk.model;
+
+import kr.co.ibk.model.paging.PageForm;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class LearningDataForm extends PageForm {
+    /*save*/
+    private Integer id;
+    private String dataName;  //'학습 데이터명',
+    private String selectCon;
+    private String hdqrBobDcd;
+    private String memId;
+    private String startDt;
+    private String endDt;
+    private String templateAt;
+    private Integer templateId;
+    private String templateName;
+    private String[] inputArr;
+    private String[] outputArr;
+
+    /*검색조건*/
+    private String statusType;
+    private String learningType;
+    private String sorting;
+
+}
+
+
