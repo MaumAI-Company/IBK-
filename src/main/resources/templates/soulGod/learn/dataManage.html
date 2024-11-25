@@ -179,6 +179,7 @@
          */
         function fn_learningDataOpen() {
             $('#learnName').val('');
+            $('#templateAtY').prop('checked', true);
             $('.checkedY').prop('checked', true);
             $('.checkedN').prop('checked', false);
 
@@ -195,20 +196,27 @@
          */
         function fn_learnDataSaveChk() {
             let hdqrBobDcd = $('#hdqrBobDcd').val();
-            let learnName = $('#learnName').val();
+            let dataName = $('#dataName').val();
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+            let templateAt = $('[name=templateAt]:checked');
+            let templateName = $('#templateName').val();
 
             if (!$.trim(hdqrBobDcd)) {
                 return false;
             }
 
-            if (!$.trim(learnName)) {
+            if (!$.trim(dataName)) {
                 showAlert('warning', '학습데이터 명 입력은 필수입니다.');
                 return false;
             }
 
             if (inputColumns.length < 1) {
                 showAlert('warning', '학습데이터는 최소 1개 이상 선택해야합니다.');
+                return false;
+            }
+
+            if (templateAt.val() === 'Y' && !$.trim(templateName)) {
+                showAlert('warning', '템플릿 생성 시 템플릿 명 입력은 필수입니다.');
                 return false;
             }
 
@@ -239,9 +247,11 @@
 
             let jsonData = {
                 "hdqrBobDcd": $('#hdqrBobDcd').val(),
-                "learnName": $('#learnName').val(),
+                "dataName": $('#dataName').val(),
                 "inputArr": inputArr,
-                "outputArr": outputArr
+                "outputArr": outputArr,
+                "templateAt": $('[name=templateAt]:checked').val(),
+                "templateName": $('#templateName').val(),
             }
 
             $.ajax({
@@ -817,11 +827,11 @@
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="learnName">학습데이터 명</label>
+                        <label for="dataName">학습데이터 명</label>
                     </th>
                     <td colspan="3">
                         <div class="input">
-                            <input type="text" id="learnName" placeholder="학습데이터 명을 입력하세요.">
+                            <input type="text" id="dataName" placeholder="학습데이터 명을 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -876,11 +886,11 @@
                     <td>
                         <div class="df">
                             <div class="radio txt">
-                                <input type="radio" name="templateAt" id="templateAtY">
+                                <input type="radio" name="templateAt" id="templateAtY" value="Y">
                                 <label for="templateAtY">사용</label>
                             </div>
                             <div class="radio txt">
-                                <input type="radio" name="templateAt" id="templateAtN">
+                                <input type="radio" name="templateAt" id="templateAtN" value="N">
                                 <label for="templateAtN">미사용</label>
                             </div>
                         </div>

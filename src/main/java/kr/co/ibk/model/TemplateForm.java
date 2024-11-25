@@ -11,6 +11,14 @@ import lombok.Setter;
 public class TemplateForm extends PageForm {
     /*검색조건*/
     private String searchTarget;
+
+    /*save*/
+    private Integer id;
+    private String templateName;
+    private String selectCon;
+    private String hdqrBobDcd;
+    private String memId; // reg/mod 함께 사용
+
 }
 
 

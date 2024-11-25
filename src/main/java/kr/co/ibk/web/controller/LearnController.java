@@ -8,9 +8,11 @@ import kr.co.ibk.domain.web.LearningModelInfo;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.domain.web.TemplateInfo;
 import kr.co.ibk.model.CardLearningDataForm;
+import kr.co.ibk.model.LearningDataForm;
 import kr.co.ibk.model.LearningModelForm;
 import kr.co.ibk.model.TemplateForm;
 import kr.co.ibk.service.CardLearningDataService;
+import kr.co.ibk.service.LearningDataService;
 import kr.co.ibk.service.LearningModelService;
 import kr.co.ibk.service.TemplateService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class LearnController {
     private final LearningModelService learningModelService;
     private final CardLearningDataService cardLearningDataService;
     private final TemplateService templateService;
+    private final LearningDataService learningDataService;
 
     @RequestMapping("/soulGod/learn/dataManage")
     public String dataManage(Model model,
@@ -94,9 +97,9 @@ public class LearnController {
 
     @ResponseBody
     @PostMapping(value = {"/soulGod/learnData/save"})
-    public HashMap<String, Object> learnDataSave(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
+    public HashMap<String, Object> learnDataSave(@RequestBody LearningDataForm form, @CurrentUser MemberInfo memberInfo) {
 
-        return learningModelService.save(form, memberInfo);
+        return learningDataService.save(form, memberInfo);
     }
 
     @ResponseBody
