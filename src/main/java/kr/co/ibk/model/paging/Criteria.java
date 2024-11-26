@@ -46,7 +46,9 @@ public class Criteria {
 
     /*조회 대상*/
     private String searchTarget;
-	
+
+    private String searchJson;
+
 	/*public String getSearchStartDate() {
 		if (this.searchStartDate == null || this.searchStartDate.length() < 1) {
 			this.searchStartDate = initialDate("start");

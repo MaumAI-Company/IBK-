@@ -599,3 +599,28 @@ function getCookie(cookieName) {
 function fn_KorEngOnly(obj) {
     obj.value = obj.value.replace(/[^가-힣a-zA-Z\s]/g, '');
 }
+
+function fn_mapToJson(map) {
+    return JSON.stringify(
+        Array.from(map.entries(), ([key, value]) =>
+            value instanceof Map ? [key, Array.from(value)] : [key, value]
+        )
+    );
+}
+
+function fn_jsonToMap(json) {
+    return new Map(
+        JSON.parse(json).map(([key, value]) =>
+            Array.isArray(value) ? [key, fn_jsonToMap(JSON.stringify(value))] : [key, value]
+        )
+    );
+}
+
+function fn_settingChip(searchJson) {
+    let tags = '';
+
+    let searchMap = fn_jsonToMap(searchJson);
+    //searchType
+
+    $('.selected_filter').html(tags);
+}

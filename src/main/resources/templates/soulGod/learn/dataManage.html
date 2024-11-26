@@ -284,7 +284,45 @@
             $('#form1').attr({action: '/soulGod/learn/dataManage', method: 'post'}).unbind('submit').submit();
         }
 
+        function fn_searchConditionSet() {
+            //검색조건 json
+            //map 값 세팅 또는 업데이트 후 다시 json 문자열로 변환해서 submit
+
+            let searchJsonMap = $('#searchJson').val() ? fn_jsonToMap($('#searchJson').val()) : new Map();
+
+            //default condition
+            if ($.trim($('#searchStartDate').val()) || $.trim($('#searchEndDate').val())) {
+                searchJsonMap.set("searchStartDate", $('#searchStartDate').val());
+                searchJsonMap.set("searchEndDate", $('#searchEndDate').val());
+            }
+
+            if ($.trim($('[name=searchTarget]:checked').val())) {
+                searchJsonMap.set("searchTarget", $('[name=searchTarget]:checked').val());
+            }
+
+            //1. 검색어가 있는 경우 값을 넣어줌
+            if ($.trim($('#searchKeyword').val())) {
+                let searchTypeMap = new Map();
+                if (searchJsonMap.get('searchType')) {
+                    searchTypeMap = searchJsonMap.get('searchType');
+                }
+                searchTypeMap.set($('#searchType option:selected').attr('class'), $('#searchKeyword').val());
+                searchJsonMap.set("searchType", searchTypeMap);
+
+                $('#searchKeyword').val('');
+            }
+
+            console.log(searchJsonMap);
+
+            let searchJsonString = fn_mapToJson(searchJsonMap);
+            $('#searchJson').val(searchJsonString);
+
+            //2. map으로 변환 시 이미 있는 키 값이라면
+        }
+
         function fn_search() {
+            fn_searchConditionSet();
+
             let frm = $('#form1');
             frm.prop('action', '?');
             frm.submit();
@@ -296,7 +334,7 @@
             $('#searchKeyword').val('');
         }
 
-        function fn_settingChip() {
+        /*function fn_settingChip() {
             let tags = '';
             if ($('#searchStartDate').val() || $('#searchEndDate').val()) {
                 tags += `
@@ -309,10 +347,10 @@
                 `;
             }
 
-            if ($('input[name=searchTarget]').val()) {
+            if ($('[name=searchTarget]:checked').val()) {
                 tags += `
                     <div class="chip">
-                        <div>대상 : ${$('input[name=searchTarget]').val() == '1' ? '본부' : '영업점'}</div>
+                        <div>대상 : ${$('[name=searchTarget]:checked').val() == '1' ? '본부' : '영업점'}</div>
                         <button type="button" class="btn_del" onclick="fn_removeChip(this)">
                             <span class="blind">삭제</span>
                         </button>
@@ -321,7 +359,7 @@
             }
 
             $('.selected_filter').html(tags);
-        }
+        }*/
 
         function fn_removeChip(obj) {
             $(obj).parents('.chip').remove();
@@ -364,6 +402,7 @@
 
             <form id="form1" th:object="${params}">
                 <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
+                <input type="hidden" th:field="${params.searchJson}">
                 <div class="board_top">
                     <div>
                         <div class="total_num"><b
@@ -448,41 +487,24 @@
                                         <dd>
                                             <select name="searchType" id="searchType">
                                                 <option value="" selected>전체</option>
-                                                <!--<option value="1" th:selected="${params.searchType == '1'}">부점코드</option>
-                                                <option value="2" th:selected="${params.searchType == '2'}">카드번호</option>
-                                                <option value="3" th:selected="${params.searchType == '3'}">예산비목정보내용</option>
-                                                <option value="4" th:selected="${params.searchType == '4'}">비목집행사유내용</option>
-                                                <option value="5" th:selected="${params.searchType == '5'}">예산사업ID내용</option>-->
-                                                <option value="1">부점코드</option>
-                                                <!--th:selected="${params.searchType == '1'}"-->
-                                                <option value="2">카드번호</option>
-                                                <!--th:selected="${params.searchType == '2'}"-->
-                                                <option value="3">승인시간</option>
-                                                <!--th:selected="${params.searchType == '3'}"-->
-                                                <option value="4">매출금액</option>
-                                                <!--th:selected="${params.searchType == '4'}"-->
-                                                <option value="5">가맹점명</option>
-                                                <!--th:selected="${params.searchType == '5'}"-->
-                                                <option value="6">업종명</option>
-                                                <!--th:selected="${params.searchType == '6'}"-->
-                                                <option value="7">영업일여부</option>
-                                                <!--th:selected="${params.searchType == '7'}"-->
-                                                <option value="8">가맹점상세주소</option>
-                                                <!--th:selected="${params.searchType == '8'}"-->
-                                                <option value="9">부점주소</option>
-                                                <!--th:selected="${params.searchType == '9'}"-->
-                                                <option value="10">가맹점사업자등록번호</option>
-                                                <!--th:selected="${params.searchType == '10'}"-->
-                                                <option value="11">매출가맹점번호</option>
-                                                <!--th:selected="${params.searchType == '11'}"-->
-                                                <option value="12">가맹점업종코드</option>
-                                                <!--th:selected="${params.searchType == '12'}"-->
-                                                <option value="13">예산관리비목관리번호</option>
-                                                <!--th:selected="${params.searchType == '13'}"-->
-                                                <option value="14">예산집행사유코드</option>
-                                                <!--th:selected="${params.searchType == '14'}"-->
-                                                <option value="15">사업세부사업</option>
-                                                <!--th:selected="${params.searchType == '15'}"-->
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
+                                                        th:class="${item}"
+                                                        th:value="${item.value}" th:text="${item.name}"></option>
+                                                <!--<option value="1">부점코드</option> th:selected="${params.searchType == '1'}"-->
+                                                <!--<option value="2">카드번호</option> th:selected="${params.searchType == '2'}"-->
+                                                <!--<option value="3">승인시간</option> th:selected="${params.searchType == '3'}"-->
+                                                <!--<option value="4">매출금액</option> th:selected="${params.searchType == '4'}"-->
+                                                <!--<option value="5">가맹점명</option> th:selected="${params.searchType == '5'}"-->
+                                                <!--<option value="6">업종명</option> th:selected="${params.searchType == '6'}"-->
+                                                <!--<option value="7">영업일여부</option> th:selected="${params.searchType == '7'}"-->
+                                                <!--<option value="8">가맹점상세주소</option> th:selected="${params.searchType == '8'}"-->
+                                                <!--<option value="9">부점주소</option> th:selected="${params.searchType == '9'}"-->
+                                                <!--<option value="10">가맹점사업자등록번호</option> th:selected="${params.searchType == '10'}"-->
+                                                <!--<option value="11">매출가맹점번호</option> th:selected="${params.searchType == '11'}"-->
+                                                <!--<option value="12">가맹점업종코드</option> th:selected="${params.searchType == '12'}"-->
+                                                <!--<option value="13">예산관리비목관리번호</option> th:selected="${params.searchType == '13'}"-->
+                                                <!--<option value="14">예산집행사유코드</option> th:selected="${params.searchType == '14'}"-->
+                                                <!--<option value="15">사업세부사업</option> th:selected="${params.searchType == '15'}"-->
                                             </select>
                                         </dd>
                                     </dl>
