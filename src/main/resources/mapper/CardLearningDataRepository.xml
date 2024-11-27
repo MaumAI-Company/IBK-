@@ -22,7 +22,8 @@
             cld.BRCD is not null
             <include refid="where"></include>
         order by
-        <choose>
+            cld.BDGT_PRFR_YM desc
+        <!--<choose>
             <when test="sortingTarget != null and sortingTarget == 1">
                 cld.BRCD
             </when>
@@ -52,7 +53,7 @@
             <otherwise>
                 DESC
             </otherwise>
-        </choose>
+        </choose>-->
         <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
     </select>
 
