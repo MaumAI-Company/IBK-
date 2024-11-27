@@ -116,7 +116,7 @@
                 fn_validateDateRange(new Date(year, month - 1), false);
             });
 
-            fn_settingChip();
+            fn_settingChip($('#searchJson').val());
         });
 
         function fn_validateDateRange(selectedDate, isStart) {
@@ -334,38 +334,6 @@
             $('#searchKeyword').val('');
         }
 
-        /*function fn_settingChip() {
-            let tags = '';
-            if ($('#searchStartDate').val() || $('#searchEndDate').val()) {
-                tags += `
-                    <div class="chip">
-                        <div>예산집행년월 : ${$('#searchStartDate').val()} ~ ${$('#searchEndDate').val()}</div>
-                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
-                            <span class="blind">삭제</span>
-                        </button>
-                    </div>
-                `;
-            }
-
-            if ($('[name=searchTarget]:checked').val()) {
-                tags += `
-                    <div class="chip">
-                        <div>대상 : ${$('[name=searchTarget]:checked').val() == '1' ? '본부' : '영업점'}</div>
-                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
-                            <span class="blind">삭제</span>
-                        </button>
-                    </div>
-                `;
-            }
-
-            $('.selected_filter').html(tags);
-        }*/
-
-        function fn_removeChip(obj) {
-            $(obj).parents('.chip').remove();
-            fn_search();
-        }
-
     </script>
 </head>
 <body>
@@ -488,23 +456,7 @@
                                             <select name="searchType" id="searchType">
                                                 <option value="" selected>전체</option>
                                                 <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
-                                                        th:class="${item}"
-                                                        th:value="${item.value}" th:text="${item.name}"></option>
-                                                <!--<option value="1">부점코드</option> th:selected="${params.searchType == '1'}"-->
-                                                <!--<option value="2">카드번호</option> th:selected="${params.searchType == '2'}"-->
-                                                <!--<option value="3">승인시간</option> th:selected="${params.searchType == '3'}"-->
-                                                <!--<option value="4">매출금액</option> th:selected="${params.searchType == '4'}"-->
-                                                <!--<option value="5">가맹점명</option> th:selected="${params.searchType == '5'}"-->
-                                                <!--<option value="6">업종명</option> th:selected="${params.searchType == '6'}"-->
-                                                <!--<option value="7">영업일여부</option> th:selected="${params.searchType == '7'}"-->
-                                                <!--<option value="8">가맹점상세주소</option> th:selected="${params.searchType == '8'}"-->
-                                                <!--<option value="9">부점주소</option> th:selected="${params.searchType == '9'}"-->
-                                                <!--<option value="10">가맹점사업자등록번호</option> th:selected="${params.searchType == '10'}"-->
-                                                <!--<option value="11">매출가맹점번호</option> th:selected="${params.searchType == '11'}"-->
-                                                <!--<option value="12">가맹점업종코드</option> th:selected="${params.searchType == '12'}"-->
-                                                <!--<option value="13">예산관리비목관리번호</option> th:selected="${params.searchType == '13'}"-->
-                                                <!--<option value="14">예산집행사유코드</option> th:selected="${params.searchType == '14'}"-->
-                                                <!--<option value="15">사업세부사업</option> th:selected="${params.searchType == '15'}"-->
+                                                        th:class="${item}" th:text="${item.name}"></option>
                                             </select>
                                         </dd>
                                     </dl>

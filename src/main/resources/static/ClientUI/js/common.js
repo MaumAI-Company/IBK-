@@ -619,8 +619,58 @@ function fn_jsonToMap(json) {
 function fn_settingChip(searchJson) {
     let tags = '';
 
-    let searchMap = fn_jsonToMap(searchJson);
-    //searchType
+    let searchMap = fn_jsonToMap(searchJson) ?? '';
+
+    if ($('#searchStartDate').val() || $('#searchEndDate').val()) {
+        tags += `
+                    <div class="chip">
+                        <div>예산집행년월 : ${$('#searchStartDate').val()} ~ ${$('#searchEndDate').val()}</div>
+                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
+                            <span class="blind">삭제</span>
+                        </button>
+                    </div>
+                `;
+    }
+
+    if ($('[name=searchTarget]:checked').val()) {
+        tags += `
+                    <div class="chip">
+                        <div>대상 : ${$('[name=searchTarget]:checked').val() == '1' ? '본부' : '영업점'}</div>
+                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
+                            <span class="blind">삭제</span>
+                        </button>
+                    </div>
+                `;
+    }
+
+    if (searchMap.get("searchType")) {
+        searchMap.get("searchType").forEach((value, key) => {
+            let keyNm = $('.' + key).text();
+            tags += `
+                    <div class="chip">
+                        <div class="chip_${key}">${keyNm} : ${value}</div>
+                        <button type="button" class="btn_del" onclick="fn_removeChip(this, true)">
+                            <span class="blind">삭제</span>
+                        </button>
+                    </div>
+                `;
+        });
+    }
 
     $('.selected_filter').html(tags);
+}
+
+function fn_removeChip(obj, srchTyAt) {
+    if (srchTyAt) {
+        let findKey = $(obj).siblings('div').attr('class');
+
+        let searchJsonMap = fn_jsonToMap($('#searchJson').val());
+        searchJsonMap.get("searchType").delete(findKey.replaceAll('chip_', ''));
+
+        let searchJsonString = fn_mapToJson(searchJsonMap);
+        $('#searchJson').val(searchJsonString);
+    }
+
+    $(obj).parents('.chip').remove();
+    fn_search();
 }

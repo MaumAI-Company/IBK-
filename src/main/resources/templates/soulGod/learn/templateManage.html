@@ -71,39 +71,6 @@
             $('#searchTarget_B').prop('checked', true);
             $('#searchKeyword').val('');
         }
-
-        function fn_settingChip() {
-            let tags = '';
-            if ($('#searchStartDate').val() || $('#searchEndDate').val()) {
-                tags += `
-                    <div class="chip">
-                        <div>예산집행년월 : ${$('#searchStartDate').val()} ~ ${$('#searchEndDate').val()}</div>
-                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
-                            <span class="blind">삭제</span>
-                        </button>
-                    </div>
-                `;
-            }
-
-            if ($('input[name=searchTarget]').val()) {
-                tags += `
-                    <div class="chip">
-                        <div>대상 : ${$('input[name=searchTarget]').val() == '1' ? '본부' : '영업점'}</div>
-                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
-                            <span class="blind">삭제</span>
-                        </button>
-                    </div>
-                `;
-            }
-
-            $('.selected_filter').html(tags);
-        }
-
-        function fn_removeChip(obj) {
-            $(obj).parents('.chip').remove();
-            fn_search();
-        }
-
     </script>
 </head>
 <body>

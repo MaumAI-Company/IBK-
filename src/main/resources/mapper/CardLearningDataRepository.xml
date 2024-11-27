@@ -105,6 +105,11 @@
             AND cld.HDQR_BOB_DCD = #{searchTarget}
         </if>
 
+        <!--<foreach collection="">
+            AND ${} LIKE CONCAT('%', #{searchKeyword}, '%')
+        </foreach>-->
+
+
         /*검색어 검색*/
         <if test="searchKeyword != null  and searchKeyword != ''">
             <choose>
