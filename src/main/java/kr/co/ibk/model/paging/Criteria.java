@@ -8,6 +8,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 @Getter
@@ -48,6 +49,8 @@ public class Criteria {
     private String searchTarget;
 
     private String searchJson;
+    private HashMap<String, String> searchJsonMap;
+    private String searchTypeJson;
 
 	/*public String getSearchStartDate() {
 		if (this.searchStartDate == null || this.searchStartDate.length() < 1) {

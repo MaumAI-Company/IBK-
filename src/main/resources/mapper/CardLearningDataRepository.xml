@@ -105,10 +105,11 @@
             AND cld.HDQR_BOB_DCD = #{searchTarget}
         </if>
 
-        <!--<foreach collection="">
-            AND ${} LIKE CONCAT('%', #{searchKeyword}, '%')
-        </foreach>-->
-
+        <if test="searchJsonMap != null">
+            <foreach collection="searchJsonMap" item="value" index="key">
+                AND cld.${key} LIKE CONCAT('%', #{value}, '%')
+            </foreach>
+        </if>
 
         /*검색어 검색*/
         <if test="searchKeyword != null  and searchKeyword != ''">

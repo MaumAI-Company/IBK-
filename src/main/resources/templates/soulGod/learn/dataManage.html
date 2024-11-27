@@ -284,42 +284,6 @@
             $('#form1').attr({action: '/soulGod/learn/dataManage', method: 'post'}).unbind('submit').submit();
         }
 
-        function fn_searchConditionSet() {
-            //검색조건 json
-            //map 값 세팅 또는 업데이트 후 다시 json 문자열로 변환해서 submit
-
-            let searchJsonMap = $('#searchJson').val() ? fn_jsonToMap($('#searchJson').val()) : new Map();
-
-            //default condition
-            if ($.trim($('#searchStartDate').val()) || $.trim($('#searchEndDate').val())) {
-                searchJsonMap.set("searchStartDate", $('#searchStartDate').val());
-                searchJsonMap.set("searchEndDate", $('#searchEndDate').val());
-            }
-
-            if ($.trim($('[name=searchTarget]:checked').val())) {
-                searchJsonMap.set("searchTarget", $('[name=searchTarget]:checked').val());
-            }
-
-            //1. 검색어가 있는 경우 값을 넣어줌
-            if ($.trim($('#searchKeyword').val())) {
-                let searchTypeMap = new Map();
-                if (searchJsonMap.get('searchType')) {
-                    searchTypeMap = searchJsonMap.get('searchType');
-                }
-                searchTypeMap.set($('#searchType option:selected').attr('class'), $('#searchKeyword').val());
-                searchJsonMap.set("searchType", searchTypeMap);
-
-                $('#searchKeyword').val('');
-            }
-
-            console.log(searchJsonMap);
-
-            let searchJsonString = fn_mapToJson(searchJsonMap);
-            $('#searchJson').val(searchJsonString);
-
-            //2. map으로 변환 시 이미 있는 키 값이라면
-        }
-
         function fn_search() {
             fn_searchConditionSet();
 

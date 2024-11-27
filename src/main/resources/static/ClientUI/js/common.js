@@ -619,8 +619,6 @@ function fn_jsonToMap(json) {
 function fn_settingChip(searchJson) {
     let tags = '';
 
-    let searchMap = fn_jsonToMap(searchJson) ?? '';
-
     if ($('#searchStartDate').val() || $('#searchEndDate').val()) {
         tags += `
                     <div class="chip">
@@ -643,10 +641,13 @@ function fn_settingChip(searchJson) {
                 `;
     }
 
-    if (searchMap.get("searchType")) {
-        searchMap.get("searchType").forEach((value, key) => {
-            let keyNm = $('.' + key).text();
-            tags += `
+    if (searchJson) {
+        let searchMap = fn_jsonToMap(searchJson);
+
+        if (searchMap.get("searchType")) {
+            searchMap.get("searchType").forEach((value, key) => {
+                let keyNm = $('.' + key).text();
+                tags += `
                     <div class="chip">
                         <div class="chip_${key}">${keyNm} : ${value}</div>
                         <button type="button" class="btn_del" onclick="fn_removeChip(this, true)">
@@ -654,7 +655,8 @@ function fn_settingChip(searchJson) {
                         </button>
                     </div>
                 `;
-        });
+            });
+        }
     }
 
     $('.selected_filter').html(tags);
@@ -673,4 +675,63 @@ function fn_removeChip(obj, srchTyAt) {
 
     $(obj).parents('.chip').remove();
     fn_search();
+}
+
+/*
+    default column {
+     예산집행년월 : searchStartDate / searchEndDate
+     대상 : searchTarget
+     검색어타입 : searchKeyword (enum 사용)
+    }
+
+    json 문자열 id : searchJson
+
+    * chip & and 조건 필요 시 사용
+    1. 공통 함수명 및 id명 통일
+    2. form 내부에 input id=searchJson 태그 생성
+ */
+function fn_searchConditionSet(frmNm) {
+    frmNm = frmNm ? frmNm : 'form1';
+    //검색조건 json
+    //map 값 세팅 또는 업데이트 후 다시 json 문자열로 변환해서 submit
+
+    let searchJsonMap = $('#searchJson').val() ? fn_jsonToMap($('#searchJson').val()) : new Map();
+
+    //default condition
+    if ($.trim($('#searchStartDate').val()) || $.trim($('#searchEndDate').val())) {
+        searchJsonMap.set("searchStartDate", $('#searchStartDate').val());
+        searchJsonMap.set("searchEndDate", $('#searchEndDate').val());
+    }
+
+    if ($.trim($('[name=searchTarget]:checked').val())) {
+        searchJsonMap.set("searchTarget", $('[name=searchTarget]:checked').val());
+    }
+
+    //검색어가 있는 경우
+    if ($.trim($('#searchKeyword').val())) {
+        let searchTypeMap = new Map();
+        if (searchJsonMap.get('searchType')) {
+            searchTypeMap = searchJsonMap.get('searchType');
+        }
+        searchTypeMap.set($('#searchType option:selected').attr('class'), $('#searchKeyword').val());
+        searchJsonMap.set("searchType", searchTypeMap);
+
+        $('#searchKeyword').val('');
+    }
+
+    //필요 시 코드 수정 및 추가 ...
+
+    //searchType은 따로 또 전달.
+    let searchTypeJsonString = fn_mapToJson(searchJsonMap.get('searchType'));
+    let input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'searchTypeJson';
+    input.value = searchTypeJsonString;
+    document.forms[frmNm].appendChild(input);
+//    append(`<input type="hidden" name="searchTypeJson" value="${searchTypeJsonString}">`)
+    console.log(searchTypeJsonString);
+
+    let searchJsonString = fn_mapToJson(searchJsonMap);
+    $('#searchJson').val(searchJsonString);
+    console.log(searchJsonString);
 }
