@@ -39,7 +39,7 @@ public class LearningDataService extends _BaseService {
             if (!ObjectUtils.isEmpty(form.getTemplateAt()) && "Y".equals(form.getTemplateAt())) {
                 //template save
                 tempForm.setTemplateName(form.getTemplateName());
-                tempForm.setSelectCon("");
+                tempForm.setSelectCon(form.getSearchTypeJson());
                 tempForm.setHdqrBobDcd(form.getHdqrBobDcd());
                 tempForm.setMemId(memberInfo.getMemId());
                 templateRepository.insert(tempForm);

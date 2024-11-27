@@ -718,20 +718,12 @@ function fn_searchConditionSet(frmNm) {
 
         $('#searchKeyword').val('');
     }
-
     //필요 시 코드 수정 및 추가 ...
-
-    //searchType은 따로 또 전달.
-    let searchTypeJsonString = fn_mapToJson(searchJsonMap.get('searchType'));
-    let input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'searchTypeJson';
-    input.value = searchTypeJsonString;
-    document.forms[frmNm].appendChild(input);
-//    append(`<input type="hidden" name="searchTypeJson" value="${searchTypeJsonString}">`)
-    console.log(searchTypeJsonString);
 
     let searchJsonString = fn_mapToJson(searchJsonMap);
     $('#searchJson').val(searchJsonString);
-    console.log(searchJsonString);
+
+    //searchType은 따로 또 전달.
+    let searchTypeJsonString = fn_mapToJson(searchJsonMap.get('searchType'));
+    $('#searchTypeJson').val(searchTypeJsonString);
 }

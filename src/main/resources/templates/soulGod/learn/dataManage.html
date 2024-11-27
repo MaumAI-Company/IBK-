@@ -185,6 +185,8 @@
 
             $('.chipArea').html($('.selected_filter').html());
 
+            $('.chipArea .chip button').remove();
+
             layerShow('popLearnData');
         }
 
@@ -195,15 +197,10 @@
          * 학습데이터 유효성 검사
          */
         function fn_learnDataSaveChk() {
-            let hdqrBobDcd = $('#hdqrBobDcd').val();
             let dataName = $('#dataName').val();
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
             let templateAt = $('[name=templateAt]:checked');
             let templateName = $('#templateName').val();
-
-            if (!$.trim(hdqrBobDcd)) {
-                return false;
-            }
 
             if (!$.trim(dataName)) {
                 showAlert('warning', '학습데이터 명 입력은 필수입니다.');
@@ -246,12 +243,14 @@
             })
 
             let jsonData = {
-                "hdqrBobDcd": $('#hdqrBobDcd').val(),
+                "hdqrBobDcd" : $('[name=searchTarget]:checked').val(),
                 "dataName": $('#dataName').val(),
                 "inputArr": inputArr,
                 "outputArr": outputArr,
                 "templateAt": $('[name=templateAt]:checked').val(),
                 "templateName": $('#templateName').val(),
+                "selectCon": $('#searchJson').val(),
+                "searchTypeJson": $('#searchTypeJson').val(),
             }
 
             $.ajax({
@@ -335,6 +334,7 @@
             <form id="form1" th:object="${params}">
                 <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
                 <input type="hidden" th:field="${params.searchJson}">
+                <input type="hidden" th:field="${params.searchTypeJson}">
                 <div class="board_top">
                     <div>
                         <div class="total_num"><b
@@ -752,7 +752,7 @@
                     <col style="width:auto">
                 </colgroup>
                 <tbody>
-                <tr>
+                <!--<tr>
                     <th scope="row">
                         <label for="hdqrBobDcd">학습 대상</label>
                     </th>
@@ -762,7 +762,7 @@
                             <option value="2">영업점</option>
                         </select>
                     </td>
-                </tr>
+                </tr>-->
                 <tr>
                     <th scope="row">
                         <label for="dataName">학습데이터 명</label>
