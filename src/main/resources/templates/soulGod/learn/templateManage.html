@@ -71,6 +71,48 @@
             $('#searchTarget_B').prop('checked', true);
             $('#searchKeyword').val('');
         }
+
+        function fn_templateDelete() {
+            let checked = $("[id^='chk_']:checked");
+            if (checked.length < 1) {
+                showAlert('warning', '1개 이상의 템플릿을 선택해주세요.');
+                return false;
+            }
+
+            let idArr = [];
+            $.each(checked, function () {
+                idArr.push($(this).val());
+            });
+            console.log(idArr);
+            let jsonData = {
+                "idArr": idArr,
+            }
+
+            $.ajax({
+                url: "/soulGod/template/delete",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    if ("SUCCESS" === data.status) {
+                        showAlert('complete', '저장되었습니다.', () => {
+                            location.reload();
+                        })
+                    } else {
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        })
+                    }
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+
+        }
     </script>
 </head>
 <body>
@@ -87,8 +129,8 @@
                     <h3 class="page_tit">학습 템플릿 관리</h3>
                 </div>
                 <div class="btn_area">
-                    <button type="button" class="btn line_cool_grey30" onclick="fn_learningDataOpen()">
-                        <span>등록</span>
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_templateDelete()">
+                        <span>삭제</span>
                     </button>
                 </div>
             </div>
@@ -210,8 +252,9 @@
                     <tr th:each="item, idx:${list}">
                         <td>
                             <div class="checkbox">
-                                <input type="checkbox" name="chk" th:id="${'chk' + item.id}">
-                                <label th:for="${'chk' + item.id}">
+                                <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
+                                       th:disabled="${item.schedulerCnt > 0}">
+                                <label th:for="${'chk_' + item.id}">
                                     <span class="blind">선택</span>
                                 </label>
                             </div>

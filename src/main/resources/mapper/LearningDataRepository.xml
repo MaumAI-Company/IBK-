@@ -22,4 +22,15 @@
             TEMPLATE_ID = #{templateId}
         where ID = #{id};
     </update>
+
+    <update id="updateNullAllByTemplateId">
+        update LEARNING_DATA ld
+        set
+            TEMPLATE_ID = null
+        where
+            ld.TEMPLATE_ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
 </mapper>

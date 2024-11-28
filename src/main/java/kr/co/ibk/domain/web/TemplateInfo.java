@@ -22,6 +22,7 @@ public class TemplateInfo {
     private LocalDateTime modDt; /*수정일자*/
 
     private String regName; /*등록자*/
+    private Integer schedulerCnt;
 }
 
 

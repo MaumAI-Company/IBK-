@@ -8,4 +8,6 @@ public interface LearningDataRepository {
     void insert(LearningDataForm form);
 
     void update(LearningDataForm form);
+
+    void updateNullAllByTemplateId(Integer[] idArr);
 }

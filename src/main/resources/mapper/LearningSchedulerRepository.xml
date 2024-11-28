@@ -88,4 +88,16 @@
     <sql id="where">
         where ls.DEL_AT = 'N'
     </sql>
+
+    <select id="countByInTemplateId" resultType="int">
+        select
+            count(*)
+        from
+            LEARNING_SCHEDULER ls
+        where
+            ls.TEMPLATE_ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

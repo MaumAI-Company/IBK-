@@ -63,6 +63,12 @@ public class LearnController {
         return "/soulGod/learn/templateManage";
     }
 
+    @ResponseBody
+    @PostMapping(value = {"soulGod/template/delete"})
+    public HashMap<String, Object> templateDelete(@RequestBody TemplateForm form, @CurrentUser MemberInfo memberInfo) {
+        return templateService.delete(form, memberInfo);
+    }
+
     @RequestMapping("/soulGod/learn/modelManage")
     public String modelManage(Model model,
                               @ModelAttribute LearningModelForm form,
