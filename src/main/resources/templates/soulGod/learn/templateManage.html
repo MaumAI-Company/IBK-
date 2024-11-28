@@ -164,9 +164,16 @@
                             <div class="filter">
                                 <div class="inner">
                                     <dl>
-                                        <dt>대상</dt>
+                                        <dt>
+                                            <label for="searchTarget">대상</label>
+                                        </dt>
                                         <dd>
-                                            <div class="df">
+                                            <select name="searchTarget" id="searchTarget">
+                                                <option value="" selected>전체</option>
+                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부</option>
+                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점</option>
+                                            </select>
+                                            <!--<div class="df">
                                                 <div class="radio txt">
                                                     <input type="radio" name="searchTarget" id="searchTarget_B"
                                                            value="1"
@@ -179,7 +186,7 @@
                                                            th:checked="${params.searchTarget == '2'}">
                                                     <label for="searchTarget_Y">영업점</label>
                                                 </div>
-                                            </div>
+                                            </div>-->
                                         </dd>
                                     </dl>
                                     <dl>

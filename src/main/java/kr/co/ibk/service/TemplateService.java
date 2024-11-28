@@ -28,9 +28,6 @@ public class TemplateService extends _BaseService {
          /*
         default search condition
          */
-        if (ObjectUtils.isEmpty(params.getSearchTarget())) {
-            params.setSearchTarget("1");
-        }
 
         int totalCount = templateRepository.getTotalCount(params);
 
