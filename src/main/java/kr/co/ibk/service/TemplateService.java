@@ -1,11 +1,13 @@
 package kr.co.ibk.service;
 
+import kr.co.ibk.domain.enums.InOutGbnType;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.domain.web.TemplateInfo;
 import kr.co.ibk.model.TemplateForm;
 import kr.co.ibk.model.paging.PaginationInfo;
 import kr.co.ibk.repository.LearningDataRepository;
 import kr.co.ibk.repository.LearningSchedulerRepository;
+import kr.co.ibk.repository.TemplateInputRepository;
 import kr.co.ibk.repository.TemplateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class TemplateService extends _BaseService {
     private final TemplateRepository templateRepository;
     private final LearningSchedulerRepository learningSchedulerRepository;
     private final LearningDataRepository learningDataRepository;
+    private final TemplateInputRepository templateInputRepository;
 
     public List<TemplateInfo> page(TemplateForm params) {
          /*
@@ -73,5 +76,11 @@ public class TemplateService extends _BaseService {
             }
         }
         return map;
+    }
+
+    public TemplateInfo getLoad(TemplateForm form) {
+        TemplateInfo info = templateRepository.getLoad(form.getId());
+        info.setInputList(templateInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name()));
+        return info;
     }
 }

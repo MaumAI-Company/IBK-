@@ -16,4 +16,6 @@ public interface TemplateRepository {
     List<TemplateInfo> getList(TemplateForm form);
 
     Long deleteAllById(Integer[] idArr, @Param("memId") String memId);
+
+    TemplateInfo getLoad(Integer id);
 }

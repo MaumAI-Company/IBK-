@@ -70,4 +70,13 @@
             #{item}
         </foreach>
     </update>
+
+    <select id="getLoad" resultType="TemplateInfo" parameterType="Integer">
+        select
+            <include refid="column"></include>
+        from
+            TEMPLATE t
+        where
+            t.ID = #{id}
+    </select>
 </mapper>
