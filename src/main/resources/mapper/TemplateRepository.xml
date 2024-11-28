@@ -26,6 +26,8 @@
             TEMPLATE t
         inner join HC_MEMBER hm on t.REG_ID = hm.MEM_ID
         <include refid="where"></include>
+        order by
+            REG_DT desc
         <if test="pagingAt != null and 'Y'.toString() == pagingAt">
             <include refid="kr.co.ibk.repository.CommonRepository.paging" />
         </if>
