@@ -618,36 +618,28 @@ function fn_jsonToMap(json) {
 
 function fn_settingChip(searchJson) {
     let tags = '';
+    let searchTypeTags = '';
 
-    if ($('#searchStartDate').val() || $('#searchEndDate').val()) {
-        tags += `
-                    <div class="chip">
-                        <div>예산집행년월 : ${$('#searchStartDate').val()} ~ ${$('#searchEndDate').val()}</div>
-                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
-                            <span class="blind">삭제</span>
-                        </button>
-                    </div>
-                `;
-    }
-
-    if ($('[name=searchTarget]:checked').val()) {
-        tags += `
-                    <div class="chip">
-                        <div>대상 : ${$('[name=searchTarget]:checked').val() == '1' ? '본부' : '영업점'}</div>
-                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
-                            <span class="blind">삭제</span>
-                        </button>
-                    </div>
-                `;
-    }
+    let startDate = $('#searchStartDate').val();
+    let endDate = $('#searchEndDate').val();
+    let target = $('[name=searchTarget]:checked').val();
 
     if (searchJson) {
         let searchMap = fn_jsonToMap(searchJson);
 
+        if (searchMap.get("searchStartDate") || searchMap.get("searchStartDate")) {
+            startDate = searchMap.get("searchStartDate");
+            endDate = searchMap.get("searchStartDate");
+        }
+
+        if (searchMap.get("searchTarget")) {
+            target = searchMap.get("searchTarget");
+        }
+
         if (searchMap.get("searchType")) {
             searchMap.get("searchType").forEach((value, key) => {
                 let keyNm = $('.' + key).text();
-                tags += `
+                searchTypeTags += `
                     <div class="chip">
                         <div class="chip_${key}">${keyNm} : ${value}</div>
                         <button type="button" class="btn_del" onclick="fn_removeChip(this, true)">
@@ -658,6 +650,27 @@ function fn_settingChip(searchJson) {
             });
         }
     }
+
+    if (startDate || endDate) { //템플릿은 기간이 없기때문에 체크
+        tags += `
+                    <div class="chip">
+                        <div>예산집행년월 : ${startDate} ~ ${endDate}</div>
+                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
+                            <span class="blind">삭제</span>
+                        </button>
+                    </div>
+                `;
+    }
+    tags += `
+                <div class="chip">
+                    <div>대상 : ${target == '1' ? '본부' : '영업점'}</div>
+                    <button type="button" class="btn_del" onclick="fn_removeChip(this)">
+                        <span class="blind">삭제</span>
+                    </button>
+                </div>
+            `;
+
+    tags += searchTypeTags;
 
     $('.selected_filter').html(tags);
 }
@@ -690,8 +703,7 @@ function fn_removeChip(obj, srchTyAt) {
     1. 공통 함수명 및 id명 통일
     2. form 내부에 input id=searchJson 태그 생성
  */
-function fn_searchConditionSet(frmNm) {
-    frmNm = frmNm ? frmNm : 'form1';
+function fn_searchConditionSet() {
     //검색조건 json
     //map 값 세팅 또는 업데이트 후 다시 json 문자열로 변환해서 submit
 
@@ -724,6 +736,102 @@ function fn_searchConditionSet(frmNm) {
     $('#searchJson').val(searchJsonString);
 
     //searchType은 따로 또 전달.
-    let searchTypeJsonString = fn_mapToJson(searchJsonMap.get('searchType'));
-    $('#searchTypeJson').val(searchTypeJsonString);
+    if (searchJsonMap.get('searchType')) {
+        let searchTypeJsonString = fn_mapToJson(searchJsonMap.get('searchType'));
+        $('#searchTypeJson').val(searchTypeJsonString);
+    }
 }
+
+function fn_setMonthPicker(st, ed) {
+    st = st ? st : '#searchStartDate';
+    ed = ed ? ed : '#searchEndDate';
+    let currentYear = (new Date()).getFullYear();
+    let startYear = currentYear - 10;
+    let options = {
+        startYear: startYear,
+        finalYear: currentYear,
+        pattern: 'yyyy-mm',
+        monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        onSelect: function (month, year) {
+            let endDate = $('#searchEndDate').monthpicker('getDate');
+            let selectedDate = new Date(year, month - 1);
+
+            if (endDate && endDate < selectedDate) {
+                $('#searchStartDate').monthpicker('setValue', {
+                    selectedYear: year,
+                    selectedMonth: month
+                });
+            }
+        }
+    };
+
+    $(st).monthpicker(options);
+    $(ed).monthpicker(options);
+
+    fn_stopPropagation();
+
+    $(st).on('monthpicker-click-month', function (e, month) {
+        const year = $(this).monthpicker('getDate').getFullYear();
+        fn_validateDateRange(new Date(year, month - 1), true);
+    });
+
+    $(ed).on('monthpicker-click-month', function (e, month) {
+        const year = $(this).monthpicker('getDate').getFullYear();
+        fn_validateDateRange(new Date(year, month - 1), false);
+    });
+}
+
+function fn_stopPropagation() {
+    $('.ui-datepicker').on('click', function (e) {
+        e.stopPropagation();
+    })
+}
+
+function fn_validateDateRange(selectedDate, isStart) {
+    const startDate = isStart ? selectedDate : $('#searchStartDate').monthpicker('getDate');
+    const endDate = isStart ? $('#searchEndDate').monthpicker('getDate') : selectedDate;
+
+    if (!startDate || !endDate) {
+        return;
+    }
+
+    if (isStart && startDate > endDate) {
+        // 시작월이 종료월보다 이후인 경우
+        $('#searchStartDate').monthpicker('setValue', {
+            dateSeparator: '-',
+            pattern: 'yyyy-mm',
+            selectedYear: endDate.getFullYear(),
+            selectedMonth: endDate.getMonth() + 1,
+        });
+    } else if (!isStart && startDate > endDate) {
+        // 종료월이 시작월보다 이전인 경우
+        $('#searchEndDate').monthpicker('setValue', {
+            dateSeparator: '-',
+            pattern: 'yyyy-mm',
+            selectedYear: startDate.getFullYear(),
+            selectedMonth: startDate.getMonth() + 1
+        });
+    }
+
+    // 선택된 날짜 기준으로 disabled 처리
+    //fn_updateDisabledMonths(startDate, endDate);
+}
+
+/*function fn_updateDisabledMonths(startDate, endDate) {
+    // 시작월 선택 시 해당 연도의 종료월 이후의 월들을 disabled
+    const startDisabled = [];
+    const endDisabled = [];
+
+    const currentYear = startDate.getFullYear();
+
+    if (currentYear === endDate.getFullYear()) {
+        // 같은 연도인 경우
+        for (let i = 1; i <= 12; i++) {
+            if (i > endDate.getMonth() + 1) startDisabled.push(i);
+            if (i < startDate.getMonth() + 1) endDisabled.push(i);
+        }
+    }
+
+    $('#searchEndDate').monthpicker('disableMonths', startDisabled);
+    $('#searchStartDate').monthpicker('disableMonths', endDisabled);
+}*/

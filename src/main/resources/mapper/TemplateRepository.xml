@@ -22,10 +22,22 @@
         select
             <include refid="column"></include>
             ,hm.MEM_NAME as regName
+            ,scheduler.schedulerCnt
         from
             TEMPLATE t
         inner join HC_MEMBER hm on t.REG_ID = hm.MEM_ID
+        left join (
+                select
+                    count(*) schedulerCnt ,
+                    ls.TEMPLATE_ID
+                from
+                    LEARNING_SCHEDULER ls
+                group by
+                    ls.TEMPLATE_ID
+            ) scheduler on t.ID = scheduler.TEMPLATE_ID
         <include refid="where"></include>
+        order by
+            REG_DT desc
         <if test="pagingAt != null and 'Y'.toString() == pagingAt">
             <include refid="kr.co.ibk.repository.CommonRepository.paging" />
         </if>
@@ -45,4 +57,26 @@
     <sql id="column">
         t.*
     </sql>
+
+    <update id="deleteAllById">
+        update TEMPLATE t
+        set
+            t.DEL_YN = 'Y',
+            t.MOD_ID = #{memId},
+            t.MOD_DT = current_timestamp()
+        where
+            t.ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="getLoad" resultType="TemplateInfo" parameterType="Integer">
+        select
+            <include refid="column"></include>
+        from
+            TEMPLATE t
+        where
+            t.ID = #{id}
+    </select>
 </mapper>

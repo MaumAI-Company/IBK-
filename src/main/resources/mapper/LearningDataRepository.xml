@@ -22,4 +22,56 @@
             TEMPLATE_ID = #{templateId}
         where ID = #{id};
     </update>
+
+    <update id="updateNullAllByTemplateId">
+        update LEARNING_DATA ld
+        set
+            TEMPLATE_ID = null
+        where
+            ld.TEMPLATE_ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="getTotalCount" resultType="int" parameterType="LearningDataForm">
+        select
+            count(*)
+        from
+            LEARNING_DATA ld
+        inner join HC_MEMBER hm on ld.REG_ID = hm.MEM_ID
+        <include refid="where"></include>
+    </select>
+
+    <select id="getList" resultType="LearningDataInfo" parameterType="LearningDataForm">
+        select
+        <include refid="column"></include>
+            , t.TEMPLATE_NAME
+            ,hm.MEM_NAME as regName
+        from
+            LEARNING_DATA ld
+        inner join HC_MEMBER hm on ld.REG_ID = hm.MEM_ID
+        left join TEMPLATE t on ld.TEMPLATE_ID = t.ID
+        <include refid="where"></include>
+        order by
+            REG_DT desc
+        <if test="pagingAt != null and 'Y'.toString() == pagingAt">
+            <include refid="kr.co.ibk.repository.CommonRepository.paging" />
+        </if>
+    </select>
+
+    <sql id="where">
+        where ld.DATA_NAME is not null
+        <if test="searchTarget != null and searchTarget != ''">
+            AND ld.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND (ld.DATA_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    or hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
+        </if>
+    </sql>
+    <sql id="column">
+        ld.*
+    </sql>
 </mapper>

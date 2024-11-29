@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,6 +23,10 @@ public class TemplateInfo {
     private LocalDateTime modDt; /*수정일자*/
 
     private String regName; /*등록자*/
+    private Integer schedulerCnt;
+
+    /*deail*/
+    private List<TemplateInputInfo> inputList;
 }
 
 

@@ -20,6 +20,8 @@ public class TemplateForm extends PageForm {
     private String hdqrBobDcd;
     private String memId; // reg/mod 함께 사용
 
+    /*delete*/
+    private Integer[] idArr;
 }
 
 

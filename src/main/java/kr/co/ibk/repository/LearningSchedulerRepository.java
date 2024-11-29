@@ -20,4 +20,6 @@ public interface LearningSchedulerRepository {
     int setUpdate(LearningSchedulerForm params);
 
     int setDelete(LearningSchedulerForm params);
+
+    int countByInTemplateId(Integer[] idArr);
 }

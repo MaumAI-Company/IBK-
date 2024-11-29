@@ -19,4 +19,23 @@
             )
         </foreach>
     </insert>
+
+    <select id="getPartList" resultType="TemplateInputInfo" parameterType="map">
+        select
+        ti.COL_NAME
+        ,ti.TEMPLATE_ID
+        ,ti.INOUT_GBN
+        <if test="gbn != null and gbn != '' and gbn == 'INPUT'">
+            ,ti.COL_NAME as inputColumnType
+        </if>
+        <if test="gbn != null and gbn != '' and gbn == 'OUTPUT'">
+            ,ti.COL_NAME as outputColumnType
+        </if>
+        from TEMPLATE_INPUT ti
+        where ti.TEMPLATE_ID = #{id}
+        <if test="gbn != null and gbn != ''">
+            and ti.INOUT_GBN = #{gbn}
+        </if>
+        order by ti.INOUT_GBN asc
+    </select>
 </mapper>
