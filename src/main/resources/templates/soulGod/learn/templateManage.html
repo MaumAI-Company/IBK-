@@ -53,7 +53,7 @@
     </style>
     <script type="text/javascript">
         $(function () {
-
+            fn_setMonthPicker();
         })
 
         function movePage(url, pageNo) {
@@ -83,7 +83,7 @@
             $.each(checked, function () {
                 idArr.push($(this).val());
             });
-            console.log(idArr);
+
             let jsonData = {
                 "idArr": idArr,
             }
@@ -114,6 +114,7 @@
         }
 
         const inPrefix = 'input_';
+        const outPrefix = 'output_';
 
         function fn_templateDetailOpen(id, nm) {
             $('#templateId').val(id);
@@ -142,6 +143,12 @@
                                 })
                             })
                         }
+                        $('#hdqrBobDcd').val(item.hdqrBobDcd);
+                        $('#searchJson').val(item.selectCon);
+
+                        fn_settingChip(item.selectCon); //템플릿의 선택조건
+                        $('.chipArea').html($('.selected_filter').html());
+                        $('.chipArea .chip button').remove();
                         layerShow('templateDetail');
                     } else {
                         showAlert('warning', '학습 데이터가 존재하지 않습니다.');
@@ -158,22 +165,16 @@
          */
         function fn_learnDataSaveChk() {
             let dataName = $('#dataName').val();
-            let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
-            let templateAt = $('[name=templateAt]:checked');
-            let templateName = $('#templateName').val();
+            let searchStartDate = $('#searchStartDate').val();
+            let searchEndDate = $('#searchEndDate').val();
 
             if (!$.trim(dataName)) {
                 showAlert('warning', '학습데이터 명 입력은 필수입니다.');
                 return false;
             }
 
-            if (inputColumns.length < 1) {
-                showAlert('warning', '학습데이터는 최소 1개 이상 선택해야합니다.');
-                return false;
-            }
-
-            if (templateAt.val() === 'Y' && !$.trim(templateName)) {
-                showAlert('warning', '템플릿 생성 시 템플릿 명 입력은 필수입니다.');
+            if (!searchStartDate || !searchEndDate) {
+                showAlert('warning', '예산집행기간 선택은 필수입니다.');
                 return false;
             }
 
@@ -187,7 +188,7 @@
             if (!fn_learnDataSaveChk()) {
                 return false;
             }
-
+            fn_searchConditionSet();
 
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
             let outputColumns = $(':checkbox[id^="' + outPrefix + '"]');
@@ -203,15 +204,13 @@
             })
 
             let jsonData = {
-                "hdqrBobDcd": $('[name=searchTarget]:checked').val(),
+                "templateId": $('#templateId').val(),
+                "hdqrBobDcd": $('#hdqrBobDcd').val(),
                 "dataName": $('#dataName').val(),
                 "inputArr": inputArr,
                 "outputArr": outputArr,
-                "templateAt": $('[name=templateAt]:checked').val(),
-                "templateName": $('#templateName').val(),
-                "selectCon": $('#searchJson').val(),
-                "searchTypeJson": $('#searchTypeJson').val(),
-            }
+                "selectCon": $('#searchJson').val()
+            } //todo 학습데이터 선택조건 set 필요
 
             $.ajax({
                 url: "/soulGod/learnData/save",
@@ -262,6 +261,7 @@
 
             <form id="form1" th:object="${params}">
                 <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
+                <input type="hidden" th:field="${params.searchJson}">
                 <div class="board_top">
                     <div>
                         <div class="total_num"><b
@@ -338,7 +338,7 @@
                                             <span>초기화</span>
                                         </button>
                                         <button type="button" class="btn fill" onclick="fn_search()">
-                                            <span>검색 조건 추가</span>
+                                            <span>검색</span>
                                         </button>
                                     </div>
                                 </div>
@@ -347,7 +347,7 @@
                     </div>
                 </div>
             </form>
-            <div class="selected_filter"></div>
+            <div class="selected_filter" style="display: none"></div>
             <!--데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
             <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
                 <p>검색 결과가 없습니다.</p>
@@ -422,6 +422,7 @@
         </div>
         <div class="pop_cont">
             <input type="hidden" id="templateId">
+            <input type="hidden" id="hdqrBobDcd">
             <table class="tbl_write">
                 <caption>템플릿 상세정보 : 템플릿 명, 학습데이터, 선택 조건, 학습데이터 명, 예산집행기간으로 구성</caption>
                 <colgroup>
@@ -470,7 +471,7 @@
                     <th scope="row">
                         <span>선택 조건</span>
                     </th>
-                    <td></td>
+                    <td class="chipArea"></td>
                 </tr>
                 </tbody>
             </table>
@@ -484,11 +485,11 @@
                 <tr>
                     <th scope="row">
                         <span class="aster"></span>
-                        <label for="learnName">학습데이터 명</label>
+                        <label for="dataName">학습데이터 명</label>
                     </th>
                     <td>
                         <div class="input">
-                            <input type="text" id="learnName" placeholder="학습데이터 명을 입력하세요.">
+                            <input type="text" id="dataName" placeholder="학습데이터 명을 입력하세요.">
                             <button type="button" class="btn_del" tabindex="-1">
                                 <span class="blind">삭제</span>
                             </button>
@@ -521,7 +522,7 @@
             <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearnData')">
                 <span>취소</span>
             </button>
-            <button type="button" class="btn fill" onclick="fn_learnDataSaveChk()">
+            <button type="button" class="btn fill" onclick="fn_learnDataSave()">
                 <span>등록</span>
             </button>
             <button type="button" class="btn line_cool_grey30" onclick="showAlert('warning', '작업중', () => {})">
@@ -529,6 +530,13 @@
             </button>
         </div>
     </div>
+</div>
+
+<div style="display: none">
+    <select>
+        <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
+                th:class="${item}" th:text="${item.name}"></option>
+    </select>
 </div>
 
 </body>
