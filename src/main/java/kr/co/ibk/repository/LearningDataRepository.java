@@ -1,7 +1,10 @@
 package kr.co.ibk.repository;
 
+import kr.co.ibk.domain.web.LearningDataInfo;
 import kr.co.ibk.model.LearningDataForm;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface LearningDataRepository {
@@ -10,4 +13,8 @@ public interface LearningDataRepository {
     void update(LearningDataForm form);
 
     void updateNullAllByTemplateId(Integer[] idArr);
+
+    int getTotalCount(LearningDataForm params);
+
+    List<LearningDataInfo> getList(LearningDataForm form);
 }

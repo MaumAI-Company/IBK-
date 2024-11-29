@@ -23,6 +23,10 @@ public class LearningDataInfo {
     private LocalDateTime startDt;
     private LocalDateTime endDt;
     private Integer templateId; //템플릿ID
+
+    /*list*/
+    private String templateName;
+    private String regName;
 }
 
 

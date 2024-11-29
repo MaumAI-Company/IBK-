@@ -3,10 +3,7 @@ package kr.co.ibk.web.controller;
 import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.domain.enums.InputColumnType;
 import kr.co.ibk.domain.enums.OutputColumnType;
-import kr.co.ibk.domain.web.CardLearningDataInfo;
-import kr.co.ibk.domain.web.LearningModelInfo;
-import kr.co.ibk.domain.web.MemberInfo;
-import kr.co.ibk.domain.web.TemplateInfo;
+import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.CardLearningDataForm;
 import kr.co.ibk.model.LearningDataForm;
 import kr.co.ibk.model.LearningModelForm;
@@ -75,6 +72,21 @@ public class LearnController {
     @PostMapping(value = {"/soulGod/template/delete"})
     public HashMap<String, Object> templateDelete(@RequestBody TemplateForm form, @CurrentUser MemberInfo memberInfo) {
         return templateService.delete(form, memberInfo);
+    }
+
+    @RequestMapping("/soulGod/learn/learningDataManage")
+    public String learningDataManage(Model model,
+                                     @ModelAttribute LearningDataForm params) {
+
+        List<LearningDataInfo> list = learningDataService.page(params);
+
+        model.addAttribute("list", list);
+        model.addAttribute("pagingInfo", params.getPaginationInfo());
+        model.addAttribute("params", params);
+        model.addAttribute("mc", "ico_database");
+        model.addAttribute("pageTitle", "학습 데이터 관리");
+
+        return "/soulGod/learn/learningDataManage";
     }
 
     @RequestMapping("/soulGod/learn/modelManage")

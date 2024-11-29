@@ -27,6 +27,7 @@ public class LearningDataForm extends PageForm {
     private String statusType;
     private String learningType;
     private String sorting;
+    private String pagingAt;
 
 }
 
