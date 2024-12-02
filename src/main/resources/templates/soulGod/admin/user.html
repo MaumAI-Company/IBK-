@@ -750,7 +750,7 @@
     <div class="dim"></div>
     <div class="popup">
         <div class="pop_cont">
-            <i class="ico ico_warning"></i>
+            <i class="ico ico_message"></i>
             <strong class="pop_tit">삭제하시겠습니까?</strong>
         </div>
         <div class="pop_foot">
@@ -1058,8 +1058,9 @@
             dataType: "json",
             success: function (data) {
                 if ("SUCCESS" == data.status) {
-                    showAlert('complete', data.msg);
-                    searchUser();
+                    showAlert('complete', data.msg, () => {
+                        searchUser();
+                    });
                 } else if ("FAIL" == data.status) {
                     showAlert('warning', data.msg);
                 } else {
