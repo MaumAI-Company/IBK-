@@ -97,10 +97,12 @@
          * 학습데이터 popup 초기화
          */
         function fn_learningDataOpen() {
-            $('#learnName').val('');
+            $('#dataName').val('');
             $('#templateAtY').prop('checked', true);
+            $('#templateName').prop('disabled', false);
             $('.checkedY').prop('checked', true);
             $('.checkedN').prop('checked', false);
+            $('#templateName').val('');
 
             $('.chipArea').html($('.selected_filter').html());
 
