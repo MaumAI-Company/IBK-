@@ -330,10 +330,10 @@
                                         </dd>
                                     </dl>
                                     <dl>
-                                        <dt><label for="searchType" class="blind">검색 대상</label></dt>
+                                        <dt><label for="searchType">검색 대상</label></dt>
                                         <dd>
-                                            <select name="searchType" id="searchType">
-                                                <option value="" selected>전체</option>
+                                            <select name="searchType" id="searchType" onchange="fn_openKeywordArea(this.value)">
+                                                <option value="" selected>선택</option>
                                                 <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
                                                         th:class="${item}" th:text="${item.name}"></option>
                                             </select>
@@ -347,7 +347,7 @@
                                             <div class="search_form">
                                                 <div class="search">
                                                     <input type="search" id="searchKeyword" name="searchKeyword"
-                                                           placeholder="검색어를 입력하세요.">
+                                                           placeholder="검색어를 입력하세요." disabled>
                                                     <button type="button" class="btn_del" tabindex="-1">
                                                         <span class="blind">삭제</span>
                                                     </button>
