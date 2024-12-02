@@ -80,6 +80,14 @@
                 }
             });
 
+            $('[name=templateAt]').on('change', function (e) {
+                if ($(this).val() === 'N') {
+                    $('#templateName').prop('disabled', true);
+                } else {
+                    $('#templateName').prop('disabled', false);
+                }
+            })
+
             fn_setMonthPicker();
 
             fn_settingChip($('#searchJson').val());
