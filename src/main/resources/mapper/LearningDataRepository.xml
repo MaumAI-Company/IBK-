@@ -74,4 +74,12 @@
     <sql id="column">
         ld.*
     </sql>
+
+    <select id="learnDataNmCount" resultType="int">
+        select
+            count(*)
+        from
+            LEARNING_DATA ld
+        where ld.DATA_NAME = #{dataName}
+    </select>
 </mapper>

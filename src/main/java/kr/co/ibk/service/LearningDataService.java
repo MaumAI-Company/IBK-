@@ -89,4 +89,8 @@ public class LearningDataService extends _BaseService {
     public List<LearningDataInfo> getList(LearningDataForm form) {
         return learningDataRepository.getList(form);
     }
+
+    public int learnDataNmCount(LearningDataForm form) {
+        return learningDataRepository.learnDataNmCount(form.getDataName());
+    }
 }
