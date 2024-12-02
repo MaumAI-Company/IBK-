@@ -616,20 +616,20 @@ function fn_jsonToMap(json) {
     );
 }
 
-function fn_settingChip(searchJson) {
+function fn_settingChip(searchJson, isRadio) {
     let tags = '';
     let searchTypeTags = '';
 
     let startDate = $('#searchStartDate').val();
     let endDate = $('#searchEndDate').val();
-    let target = $('[name=searchTarget]:checked').val();
+    let target = isRadio ? $('[name=searchTarget]:checked').val() : $('[name=searchTarget]').val();
 
     if (searchJson) {
         let searchMap = fn_jsonToMap(searchJson);
 
-        if (searchMap.get("searchStartDate") || searchMap.get("searchStartDate")) {
+        if (searchMap.get("searchStartDate") || searchMap.get("searchEndDate")) {
             startDate = searchMap.get("searchStartDate");
-            endDate = searchMap.get("searchStartDate");
+            endDate = searchMap.get("searchEndDate");
         }
 
         if (searchMap.get("searchTarget")) {
@@ -661,14 +661,17 @@ function fn_settingChip(searchJson) {
                     </div>
                 `;
     }
-    tags += `
+
+    if (target !== '') {
+        tags += `
                 <div class="chip">
-                    <div>대상 : ${target == '1' ? '본부' : '영업점'}</div>
+                    <div>대상 : ${target === '1' ? '본부' : '영업점'}</div>
                     <button type="button" class="btn_del" onclick="fn_removeChip(this)">
                         <span class="blind">삭제</span>
                     </button>
                 </div>
             `;
+    }
 
     tags += searchTypeTags;
 
@@ -835,3 +838,11 @@ function fn_validateDateRange(selectedDate, isStart) {
     $('#searchEndDate').monthpicker('disableMonths', startDisabled);
     $('#searchStartDate').monthpicker('disableMonths', endDisabled);
 }*/
+
+function fn_openKeywordArea(value) {
+    if (value === '') {
+        $('#searchKeyword').prop('disabled', true);
+    } else {
+        $('#searchKeyword').prop('disabled', false);
+    }
+}

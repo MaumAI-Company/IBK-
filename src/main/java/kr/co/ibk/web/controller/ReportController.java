@@ -7,6 +7,7 @@ import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.model.CardInputForm;
 import kr.co.ibk.service.CardInputService;
 import kr.co.ibk.service.CardOutputService;
+import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +19,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-public class ReportController {
+public class ReportController extends BaseCont {
 
     private final CardInputService cardInputService;
     private final CardOutputService cardOutputService;
@@ -29,6 +30,10 @@ public class ReportController {
         if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
             params.setSearchStartDate(String.valueOf(LocalDate.now().minusYears(2)).replaceAll("-", "."));
             params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
+        }
+
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
         }
 
         List<CardInputInfo> excelList = cardInputService.list(params);

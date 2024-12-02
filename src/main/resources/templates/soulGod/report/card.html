@@ -3,10 +3,20 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <style>
-        .tbl_wrap .tbl_list > tbody > tr > td:nth-child(n+15):nth-child(-n+17){white-space:pre}
+        .tbl_wrap .tbl_list > tbody > tr > td:nth-child(n+15):nth-child(-n+17) {
+            white-space: pre
+        }
+
         @media screen and (max-width: 1851px) {
-            .tbl_wrap{width:100%; overflow-x: auto;white-space: nowrap}
-            .tbl_list{width:auto}
+            .tbl_wrap {
+                width: 100%;
+                overflow-x: auto;
+                white-space: nowrap
+            }
+
+            .tbl_list {
+                width: auto
+            }
         }
 
         #popDetail .tbl_write table th,
@@ -58,8 +68,9 @@
             border-bottom: 1px solid #ebeff2;
             background-color: #f9f9f9
         }
+
         #popDetail .tbl_write > thead > tr > td {
-            padding:2px 16px;
+            padding: 2px 16px;
             vertical-align: middle;
             border-bottom: 1px solid #ebeff2;
         }
@@ -82,10 +93,12 @@
                 }
             });
 
-            fn_settingChip();
+            fn_settingChip($('#searchJson').val());
         });
 
         function fn_search() {
+            fn_searchConditionSet();
+
             let frm = $('#form1');
             frm.prop('action', '?');
             frm.submit();
@@ -97,7 +110,13 @@
         }
 
         function fn_reset() {
+            $('#searchStartDate').val('');
+            $('#searchEndDate').val('');
+            $('#searchTarget').val('').niceSelect('update');
+            $('#searchType').val('').niceSelect('update');
+            $('#searchKeyword').val('');
 
+            fn_search();
         }
 
         function fn_detail(no, type) { //(카드 증빙 일자 , 카드 증빙번호, 부점코드 )=> pk
@@ -125,7 +144,6 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
-                    console.log(data);
                     let contents;
                     if (data.learningModelId) {
                         $('#popHead').html(`
@@ -175,7 +193,7 @@
                     }
 
                     $('#inpputBody').html(contents);
-                    console.log(data.no);
+
                     //btn onclick function set
                     if (data.prevNo) {
                         $('.prevBtn').off('click').on('click', function () {
@@ -248,6 +266,8 @@
 
             <form id="form1">
                 <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
+                <input type="hidden" th:field="${params.searchJson}">
+                <input type="hidden" th:field="${params.searchTypeJson}">
                 <div class="board_top">
                     <div>
                         <div class="total_num"><b
@@ -266,11 +286,15 @@
                             <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
                             <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
-                        <!--<label for="sorting" class="blind">정렬조건</label>
+                        <label for="sorting" class="blind">정렬대상</label>
+                        <select name="" id="" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="asc" th:selected="${params.sortingTarget == '1'}">예산집행년월</option>
+                        </select>
+                        <label for="sorting" class="blind">정렬조건</label>
                         <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
                             <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
                             <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
-                        </select>-->
+                        </select>
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter active">
                                 <!--TODO : 선택된 조건이 있을 때는 클래스 active 추가, 필터 삭제되면 클래스 active 삭제-->
@@ -315,12 +339,11 @@
                                             <label for="searchType">검색구분</label>
                                         </dt>
                                         <dd>
-                                            <select name="searchType" id="searchType">
-                                                <option value="" selected>전체</option>
-                                                <option value="1">예산비목정보내용</option>
-                                                <option value="2">비목집행사유내용</option>
-                                                <option value="3">예산사업ID내용</option>
-                                                <option value="4">부점코드</option>
+                                            <select name="searchType" id="searchType"
+                                                    onchange="fn_openKeywordArea(this.value)">
+                                                <option value="" selected>선택</option>
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
+                                                        th:class="${item}" th:text="${item.name}"></option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -330,22 +353,9 @@
                                         </dt>
                                         <dd>
                                             <div class="search_form">
-                                                <!--<label for="searchType" class="blind">검색어 타입</label>
-                                                <select name="searchType" id="searchType">
-                                                    <option value="" selected>전체</option>
-                                                    <option value="1" th:selected="${params.searchType == '1'}">카드번호
-                                                    </option>
-                                                    <option value="2" th:selected="${params.searchType == '2'}">가맹점명
-                                                    </option>
-                                                    <option value="3" th:selected="${params.searchType == '3'}">
-                                                        예산비목정보내용
-                                                    </option>
-                                                    <option value="4" th:selected="${params.searchType == '4'}">집행사유내용
-                                                    </option>
-                                                </select>-->
                                                 <div class="search">
                                                     <input type="search" th:field="${params.searchKeyword}"
-                                                           placeholder="검색어를 입력하세요.">
+                                                           placeholder="검색어를 입력하세요." disabled>
                                                     <button type="button" class="btn_del" tabindex="-1">
                                                         <span class="blind">삭제</span>
                                                     </button>
@@ -358,7 +368,7 @@
                                             <span>초기화</span>
                                         </button>
                                         <button type="button" class="btn fill" onclick="fn_search()">
-                                            <span>검색</span>
+                                            <span>검색 조건 추가</span>
                                         </button>
                                     </div>
                                 </div>
@@ -406,7 +416,7 @@
                         <col style="width: 3%;">
                         <col style="width: 4%;">
                         <col style="width: 4%;">
-                        <col style="width: 8%;">
+                        <col style="width: 9%;">
                         <col style="width: 8%;">
                         <col style="width: 8%;">
                         <col style="width: 4%;">
@@ -430,10 +440,11 @@
                         <th scope="col">가맹점 업종코드</th>
                         <th scope="col">가맹점 상세주소</th>
                         <th scope="col" class="pr">부점주소</th>
-                        <th scope="col" style="background-color:#f9f9ff">예산비목정보<span class="dib">(1순위)</span></th>
+                        <th scope="col" style="background-color:#f9f9ff">예산관리비목관리번호<span class="dib">(1순위)</span></th>
 
-                        <th scope="col" style="background-color:#f9f9ff">예산사업ID<span class="dib">(1순위)</span></th>
-                        <th scope="col" class="pr" style="background-color:#f9f9ff">비목집행사유<span class="dib">(1순위)</span></th>
+                        <th scope="col" style="background-color:#f9f9ff">예산집행사유코드<span class="dib">(1순위)</span></th>
+                        <th scope="col" class="pr" style="background-color:#f9f9ff">사업세부사업<span class="dib">(1순위)</span>
+                        </th>
                         <th scope="col">결과등록년월일</th>
                         <th scope="col">상세보기</th>
                     </tr>
@@ -476,54 +487,74 @@
 
             <table class="tbl_list" style="display: none" id="excelTable">
                 <colgroup>
-                    <!--                    <col style="width: 3.5%;min-width: 44px;">-->
-                    <!--                    <col style="width: 8%;">-->
-                    <!--                    <col style="width: 9%;min-width: 90px;">-->
-                    <!--                    <col style="width: 7%;">-->
-                    <!--                    <col style="width: 7%;">-->
-                    <!--                    <col style="width: auto;">-->
-                    <!--                    <col style="width: 10%;">-->
-                    <!--                    <col style="width: 11%;">-->
-                    <!--                    <col style="width: 10%;">-->
-                    <!--                    <col style="width: 7.5%;min-width: 104px;">-->
-                    <col style="width: 3%;min-width: 44px;">
+                    <col style="width: 2%;min-width: 44px;">
+                    <col style="width: 3%;">
+                    <col style="width: 3%;min-width: 65px;">
+                    <col style="width: 6%;">
+                    <col style="width: 3%;">
+                    <col style="width: 3%;">
+                    <col style="width: 3%;">
                     <col style="width: 5%;">
-                    <col style="width: 12%;min-width: 90px;">
+                    <col style="width: 4%;">
+                    <col style="width: 4%;">
+                    <col style="width: 4%;">
+                    <col style="width: 3%;">
+                    <col style="width: 4%;">
+                    <col style="width: 4%;">
+                    <col style="width: 9%;">
                     <col style="width: 8%;">
-                    <col style="width: 5%;">
-                    <col style="width: 5%;">
-                    <col style="width: 7%;">
-                    <col style="width: auto;">
-                    <col style="width: 14%;">
-                    <col style="width: auto;">
+                    <col style="width: 8%;">
+                    <col style="width: 4%;">
                 </colgroup>
                 <thead>
                 <tr>
                     <th scope="col">No</th>
                     <th scope="col">대상</th>
+                    <th scope="col">부점코드</th>
                     <th scope="col">카드번호</th>
                     <th scope="col">승인시간</th>
+
+                    <th scope="col">영업일여부</th>
                     <th scope="col">매출금액</th>
                     <th scope="col">가맹점명</th>
-                    <th scope="col">영업일여부</th>
-                    <th scope="col">예산비목<span class="dib">정보내용</span></th>
-                    <th scope="col">예산사업<span class="dib">ID내용</span></th>
-                    <th scope="col">비목집행<span class="dib">사유내용</span></th>
+                    <th scope="col">업종명</th>
+                    <th scope="col">가맹점 사업자 등록번호</th>
+
+                    <th scope="col">매출 가맹점 번호</th>
+                    <th scope="col">가맹점 업종코드</th>
+                    <th scope="col">가맹점 상세주소</th>
+                    <th scope="col" class="pr">부점주소</th>
+                    <th scope="col" style="background-color:#f9f9ff">예산관리비목관리번호<span class="dib">(1순위)</span></th>
+
+                    <th scope="col" style="background-color:#f9f9ff">예산집행사유코드<span class="dib">(1순위)</span></th>
+                    <th scope="col" class="pr" style="background-color:#f9f9ff">사업세부사업<span class="dib">(1순위)</span>
+                    </th>
+                    <th scope="col">결과등록년월일</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="item, idx:${excelList}">
                     <td th:text="${idx.count}"></td>
                     <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td th:text="${item.brcd}"></td>
                     <td th:text="${item.cdn}"></td>
-                    <!--                    <td th:text="${#temporals.format(item.frrgTs, 'yyyy-MM-dd')}"></td>-->
                     <td th:text="${item.bdgtTstmUseHms}"></td>
+
+                    <td th:text="${item.bzdyYn}"></td>
                     <td th:text="${item.amslAmt}"></td>
                     <td th:text="${item.afstNm}"></td>
-                    <td th:text="${item.bzdyYn}"></td>
-                    <td th:text="${item.bdgtItexFrcsCon}"></td>
-                    <td th:text="${item.bdgtBsnsFrcsCon}"></td>
-                    <td th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
+                    <td th:text="${item.tpbsNm}"></td>
+                    <td th:text="${item.afstBzn}"></td>
+
+                    <td th:text="${item.amslAfstNo}"></td>
+                    <td th:text="${item.afstTpbcd}"></td>
+                    <td th:text="${item.afstDtlAdr}"></td>
+                    <td th:text="${item.brncAdr}" class="pr"></td>
+                    <td style="background-color:#f9f9ff" th:text="${item.bdgtItexFrcsCon}"></td>
+
+                    <td style="background-color:#f9f9ff" th:text="${item.bdgtBsnsFrcsCon}"></td>
+                    <td style="background-color:#f9f9ff" th:text="${item.bdgtPrfrRsnFrcsCon}" class="pr"></td>
+                    <td th:text="${item.rsreYmd != null ? #temporals.format(item.rsreYmd, 'yyyy-MM-dd') : '-'}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -634,6 +665,11 @@
                                                 <col style="width:auto">
                                             </colgroup>
                                             <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">사업 ID</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
                                             <tr>
                                                 <td>1순위</td>
                                                 <td id="bdgtPrfrRsnFrcsCon0"></td>

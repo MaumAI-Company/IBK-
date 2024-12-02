@@ -12,9 +12,11 @@ import kr.co.ibk.service.CardLearningDataService;
 import kr.co.ibk.service.LearningDataService;
 import kr.co.ibk.service.LearningModelService;
 import kr.co.ibk.service.TemplateService;
+import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-public class LearnController {
+public class LearnController extends BaseCont {
 
     private final LearningModelService learningModelService;
     private final CardLearningDataService cardLearningDataService;
@@ -33,6 +35,10 @@ public class LearnController {
     @RequestMapping("/soulGod/learn/dataManage")
     public String dataManage(Model model,
                              @ModelAttribute CardLearningDataForm params) {
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+
         List<CardLearningDataInfo> list = cardLearningDataService.page(params);
 
         model.addAttribute("list", list);
