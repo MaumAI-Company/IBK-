@@ -163,6 +163,7 @@
         /**
          * 학습데이터 유효성 검사
          */
+        let learnDataNmCount  = 0;
         function fn_learnDataSaveChk() {
             let dataName = $('#dataName').val();
             let searchStartDate = $('#searchStartDate').val();
@@ -170,6 +171,12 @@
 
             if (!$.trim(dataName)) {
                 showAlert('warning', '학습데이터 명 입력은 필수입니다.');
+                return false;
+            }
+
+            fn_learnDataNmCount();
+            if (learnDataNmCount > 0) {
+                showAlert('warning', '이미 존재하는 학습데이터 명 입니다.');
                 return false;
             }
 
@@ -228,6 +235,28 @@
                             location.reload();
                         })
                     }
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
+
+        function fn_learnDataNmCount() {
+            let jsonData = {
+                "dataName": $('#dataName').val()
+            }
+
+            $.ajax({
+                url: "/soulGod/learnData/nmCount",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    learnDataNmCount = data;
                 },
                 error: function () {
                     showAlert('warning', '실패하였습니다.', () => {
