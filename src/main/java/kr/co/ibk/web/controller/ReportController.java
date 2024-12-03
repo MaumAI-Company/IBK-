@@ -75,7 +75,10 @@ public class ReportController extends BaseCont {
 
     @ResponseBody
     @PostMapping(value = {"/soulGod/report/card/detail"})
-    public CardOutputInfo cardDtail(@RequestBody CardInputForm form) {
-        return cardOutputService.detail(form);
+    public CardOutputInfo cardDtail(@RequestBody CardInputForm params) {
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+        return cardOutputService.detail(params);
     }
 }
