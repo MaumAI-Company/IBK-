@@ -83,4 +83,8 @@ public class TemplateService extends _BaseService {
         info.setInputList(templateInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name()));
         return info;
     }
+
+    public int templateNmCount(TemplateForm form) {
+        return templateRepository.templateNmCount(form.getTemplateName());
+    }
 }

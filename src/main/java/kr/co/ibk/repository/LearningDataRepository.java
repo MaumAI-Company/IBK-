@@ -2,6 +2,7 @@ package kr.co.ibk.repository;
 
 import kr.co.ibk.domain.web.LearningDataInfo;
 import kr.co.ibk.model.LearningDataForm;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface LearningDataRepository {
     int getTotalCount(LearningDataForm params);
 
     List<LearningDataInfo> getList(LearningDataForm form);
+
+    int learnDataNmCount(@Param("dataName") String dataName);
 }

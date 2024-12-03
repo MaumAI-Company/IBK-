@@ -17,6 +17,7 @@ public class CardInputForm extends PageForm {
     private String brcd;
     private Integer no;
     private String loadType;
+    private String sortingTarget;
 }
 
 

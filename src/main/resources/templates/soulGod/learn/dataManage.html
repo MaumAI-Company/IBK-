@@ -80,6 +80,14 @@
                 }
             });
 
+            $('[name=templateAt]').on('change', function (e) {
+                if ($(this).val() === 'N') {
+                    $('#templateName').prop('disabled', true);
+                } else {
+                    $('#templateName').prop('disabled', false);
+                }
+            })
+
             fn_setMonthPicker();
 
             fn_settingChip($('#searchJson').val());
@@ -89,10 +97,12 @@
          * 학습데이터 popup 초기화
          */
         function fn_learningDataOpen() {
-            $('#learnName').val('');
+            $('#dataName').val('');
             $('#templateAtY').prop('checked', true);
+            $('#templateName').prop('disabled', false);
             $('.checkedY').prop('checked', true);
             $('.checkedN').prop('checked', false);
+            $('#templateName').val('');
 
             $('.chipArea').html($('.selected_filter').html());
 
@@ -107,6 +117,8 @@
         /**
          * 학습데이터 유효성 검사
          */
+        let learnDataNmCount  = 0;
+        let templateNmCount  = 0;
         function fn_learnDataSaveChk() {
             let dataName = $('#dataName').val();
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
@@ -117,15 +129,28 @@
                 showAlert('warning', '학습데이터 명 입력은 필수입니다.');
                 return false;
             }
+            fn_learnDataNmCount();
+            if (learnDataNmCount > 0) {
+                showAlert('warning', '이미 존재하는 학습데이터 명 입니다.');
+                return false;
+            }
 
             if (inputColumns.length < 1) {
                 showAlert('warning', '학습데이터는 최소 1개 이상 선택해야합니다.');
                 return false;
             }
 
-            if (templateAt.val() === 'Y' && !$.trim(templateName)) {
-                showAlert('warning', '템플릿 생성 시 템플릿 명 입력은 필수입니다.');
-                return false;
+            if (templateAt.val() === 'Y') {
+                if (!$.trim(templateName)) {
+                    showAlert('warning', '템플릿 생성 시 템플릿 명 입력은 필수입니다.');
+                    return false;
+                }
+
+                fn_templateNmCount();
+                if (templateNmCount > 0) {
+                    showAlert('warning', '이미 존재하는 템플릿 명 입니다.');
+                    return false;
+                }
             }
 
             return true;
@@ -153,12 +178,17 @@
                 outputArr.push($(item).val());
             })
 
-            let searchTypeMap = fn_jsonToMap($('#searchJson').val());
+            let searchTypeMap;
+            if (!$('#searchJson').val()) {
+                fn_searchConditionSet();
+            }
+            searchTypeMap = fn_jsonToMap($('#searchJson').val());
+
             searchTypeMap.delete('searchStartDate');
             searchTypeMap.delete('searchEndDate');
 
             let jsonData = {
-                "hdqrBobDcd" : $('[name=searchTarget]:checked').val(),
+                "hdqrBobDcd": $('[name=searchTarget]:checked').val(),
                 "dataName": $('#dataName').val(),
                 "inputArr": inputArr,
                 "outputArr": outputArr,
@@ -184,6 +214,50 @@
                             location.reload();
                         })
                     }
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
+
+        function fn_learnDataNmCount() {
+            let jsonData = {
+                "dataName": $('#dataName').val()
+            }
+
+            $.ajax({
+                url: "/soulGod/learnData/nmCount",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    learnDataNmCount = data;
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
+
+        function fn_templateNmCount() {
+            let jsonData = {
+                "templateName": $('#templateName').val()
+            }
+
+            $.ajax({
+                url: "/soulGod/template/nmCount",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    templateNmCount = data;
                 },
                 error: function () {
                     showAlert('warning', '실패하였습니다.', () => {
@@ -330,10 +404,11 @@
                                         </dd>
                                     </dl>
                                     <dl>
-                                        <dt><label for="searchType" class="blind">검색 대상</label></dt>
+                                        <dt><label for="searchType">검색 대상</label></dt>
                                         <dd>
-                                            <select name="searchType" id="searchType">
-                                                <option value="" selected>전체</option>
+                                            <select name="searchType" id="searchType"
+                                                    onchange="fn_openKeywordArea(this.value)">
+                                                <option value="" selected>선택</option>
                                                 <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
                                                         th:class="${item}" th:text="${item.name}"></option>
                                             </select>
@@ -347,7 +422,7 @@
                                             <div class="search_form">
                                                 <div class="search">
                                                     <input type="search" id="searchKeyword" name="searchKeyword"
-                                                           placeholder="검색어를 입력하세요.">
+                                                           placeholder="검색어를 입력하세요." disabled>
                                                     <button type="button" class="btn_del" tabindex="-1">
                                                         <span class="blind">삭제</span>
                                                     </button>

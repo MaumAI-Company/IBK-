@@ -280,8 +280,9 @@
                 dataType: "json",
                 success: function (data) {
                     if ("SUCCESS" == data.status) {
-                        showAlert('complete', data.msg);
-                        location.href = "/soulGod/admin/department";
+                        showAlert('complete', data.msg, () => {
+                            location.href = "/soulGod/admin/department";
+                        });
                     } else if ("PARDEPT" == data.status) {
                         showAlert('warning', data.msg);
                     } else if ("FAIL" == data.status) {

@@ -79,4 +79,13 @@
         where
             t.ID = #{id}
     </select>
+
+    <select id="templateNmCount" resultType="int">
+        select
+            count(*)
+        from
+            TEMPLATE t
+        where t.DEL_YN = 'N'
+            and t.TEMPLATE_NAME = #{templateName}
+    </select>
 </mapper>

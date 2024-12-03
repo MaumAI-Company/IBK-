@@ -18,4 +18,6 @@ public interface TemplateRepository {
     Long deleteAllById(Integer[] idArr, @Param("memId") String memId);
 
     TemplateInfo getLoad(Integer id);
+
+    int templateNmCount(@Param("templateName") String templateName);
 }

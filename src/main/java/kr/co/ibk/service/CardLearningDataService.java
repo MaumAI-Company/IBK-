@@ -40,10 +40,6 @@ public class CardLearningDataService extends _BaseService {
         params.setSearchStartDate(params.getSearchStartDate().replaceAll("-", ""));
         params.setSearchEndDate(params.getSearchEndDate().replaceAll("-", ""));
 
-        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
-            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
-        }
-
         int totalCount = cardLearningDataRepository.getTotalCount(params);
 
         PaginationInfo paginationInfo = new PaginationInfo(params);
