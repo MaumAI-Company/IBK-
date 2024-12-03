@@ -281,9 +281,15 @@
         }
 
         function fn_reset() {
+            $('#searchStartDate').val('');
+            $('#searchEndDate').val('');
             $('#searchTarget').val('').niceSelect('update');
             $('#searchType').val('').niceSelect('update');
             $('#searchKeyword').val('');
+            $('#searchJson').val('');
+            $('#searchTypeJson').val('');
+
+            fn_search()
         }
 
     </script>
