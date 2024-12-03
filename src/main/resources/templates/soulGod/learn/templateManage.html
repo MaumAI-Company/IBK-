@@ -21,7 +21,7 @@
             padding: 0 8px
         }
 
-        .tbl_list tbody td .link{
+        .tbl_list tbody td .link {
             text-decoration: underline;
             color: #004c9d !important;
         }
@@ -64,8 +64,9 @@
         }
 
         #templateDetail .check_wrap .checkbox {
-            width:calc((100% - 8px) / 3);
+            width: calc((100% - 8px) / 3);
         }
+
         #templateDetail .tbl_tit {
             display: block;
             font-weight: 700;
@@ -168,6 +169,7 @@
                         }
                         $('#hdqrBobDcd').val(item.hdqrBobDcd);
                         $('#searchJson').val(item.selectCon);
+                        $('#searchTypeJson').val('');
 
                         fn_settingChip(item.selectCon); //템플릿의 선택조건
                         $('.chipArea').html($('.selected_filter').html());
@@ -186,7 +188,8 @@
         /**
          * 학습데이터 유효성 검사
          */
-        let learnDataNmCount  = 0;
+        let learnDataNmCount = 0;
+
         function fn_learnDataSaveChk() {
             let dataName = $('#dataName').val();
             let searchStartDate = $('#searchStartDate').val();
@@ -289,6 +292,29 @@
             });
         }
 
+        function fn_learnDataList() {
+            if (!$('#searchStartDate').val() || !$('#searchEndDate').val()) {
+                showAlert('warning', '예산집행기간 선택 후 조회 가능합니다.');
+                return false;
+            }
+            fn_searchConditionSet();
+
+            let form = document.getElementById('templateForm');
+            let formData = new FormData(form);
+
+            // 쿼리 문자열 생성
+            let queryString = Object.entries(Object.fromEntries(formData.entries()))
+                .filter(([_, value]) => value) // 빈 값 제외
+                .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+                .join('&');
+
+            queryString += '&searchTarget=' + $('#hdqrBobDcd').val();
+
+            // 새 창 열기
+            let url = '/soulGod/learn/dataManage' + (queryString ? '?' + queryString : '');
+            window.open(url, '_blank'); // 새 창 열기
+        }
+
     </script>
 </head>
 <body>
@@ -313,7 +339,6 @@
 
             <form id="form1" th:object="${params}">
                 <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
-                <input type="hidden" th:field="${params.searchJson}">
                 <div class="board_top">
                     <div>
                         <div class="total_num"><b
@@ -352,20 +377,6 @@
                                                 <option value="2" th:selected="${params.searchTarget == '2'}">영업점
                                                 </option>
                                             </select>
-                                            <!--<div class="df">
-                                                <div class="radio txt">
-                                                    <input type="radio" name="searchTarget" id="searchTarget_B"
-                                                           value="1"
-                                                           th:checked="${params.searchTarget == '1'}">
-                                                    <label for="searchTarget_B">본부</label>
-                                                </div>
-                                                <div class="radio txt">
-                                                    <input type="radio" name="searchTarget" id="searchTarget_Y"
-                                                           value="2"
-                                                           th:checked="${params.searchTarget == '2'}">
-                                                    <label for="searchTarget_Y">영업점</label>
-                                                </div>
-                                            </div>-->
                                         </dd>
                                     </dl>
                                     <dl>
@@ -473,114 +484,119 @@
             </button>
         </div>
         <div class="pop_cont">
-            <input type="hidden" id="templateId">
-            <input type="hidden" id="hdqrBobDcd">
-            <table class="tbl_write">
-                <caption>템플릿 상세정보 : 템플릿 명, 학습데이터, 선택 조건, 학습데이터 명, 예산집행기간으로 구성</caption>
-                <colgroup>
-                    <col style="width:160px">
-                    <col style="width:auto">
-                </colgroup>
-                <tbody>
-                <tr>
-                    <th scope="row">템플릿 명</th>
-                    <td id="templateName"></td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <span>학습데이터 체크</span>
-                    </th>
-                    <td>
-                        <div class="check_wrap">
-                            <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
-                                <div class="checkbox">
-                                    <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
-                                           disabled>
-                                    <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
-                                </div>
-                            </th:block>
-                        </div>
-                        <div class="txt_guide fc_primary">※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <span>학습데이터 (output)</span>
-                    </th>
-                    <td>
-                        <div class="check_wrap">
-                            <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnType).values()}">
-                                <div class="checkbox">
-                                    <input type="checkbox" th:id="${'output_' + item.camelColumn}" th:value="${item}"
-                                           checked disabled>
-                                    <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
-                                </div>
-                            </th:block>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <span>선택 조건</span>
-                    </th>
-                    <td class="chipArea"></td>
-                </tr>
-                </tbody>
-            </table>
-            <strong class="tbl_tit">학습데이터 등록</strong>
-            <table class="tbl_write">
-                <caption>학습데이터 : 학습데이터 명, 예산집행기간으로 구성</caption>
-                <colgroup>
-                    <col style="width:160px">
-                    <col style="width:auto">
-                </colgroup>
-                <tbody>
-                <tr>
-                    <th scope="row">
-                        <span class="aster"></span>
-                        <label for="dataName">학습데이터 명</label>
-                    </th>
-                    <td>
-                        <div class="input">
-                            <input type="text" id="dataName" placeholder="학습데이터 명을 입력하세요.">
-                            <button type="button" class="btn_del" tabindex="-1">
-                                <span class="blind">삭제</span>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <span class="aster"></span>
-                        <label>예산집행기간</label>
-                    </th>
-                    <td>
-                        <div class="term_form">
-                            <label for="searchStartDate" class="blind">조회 시작 날짜</label>
-                            <input type="text" id="searchStartDate" name="searchStartDate"
-                                   class="datepicker" readonly>
-                        </div>
-                        ~
-                        <div class="term_form">
-                            <label for="searchEndDate" class="blind">조회 종료 날짜</label>
-                            <input type="text" id="searchEndDate" name="searchEndDate"
-                                   class="datepicker" readonly>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <form id="templateForm">
+                <input type="hidden" id="templateId">
+                <input type="hidden" id="hdqrBobDcd">
+                <input type="hidden" th:field="${params.searchJson}">
+                <input type="hidden" th:field="${params.searchTypeJson}">
+                <table class="tbl_write">
+                    <caption>템플릿 상세정보 : 템플릿 명, 학습데이터, 선택 조건, 학습데이터 명, 예산집행기간으로 구성</caption>
+                    <colgroup>
+                        <col style="width:160px">
+                        <col style="width:auto">
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">템플릿 명</th>
+                        <td id="templateName"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <span>학습데이터 체크</span>
+                        </th>
+                        <td>
+                            <div class="check_wrap">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                               disabled>
+                                        <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
+                                    </div>
+                                </th:block>
+                            </div>
+                            <div class="txt_guide fc_primary">※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <span>학습데이터 (output)</span>
+                        </th>
+                        <td>
+                            <div class="check_wrap">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnType).values()}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" th:id="${'output_' + item.camelColumn}"
+                                               th:value="${item}"
+                                               checked disabled>
+                                        <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
+                                    </div>
+                                </th:block>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <span>선택 조건</span>
+                        </th>
+                        <td class="chipArea"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <strong class="tbl_tit">학습데이터 등록</strong>
+                <table class="tbl_write">
+                    <caption>학습데이터 : 학습데이터 명, 예산집행기간으로 구성</caption>
+                    <colgroup>
+                        <col style="width:160px">
+                        <col style="width:auto">
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">
+                            <span class="aster"></span>
+                            <label for="dataName">학습데이터 명</label>
+                        </th>
+                        <td>
+                            <div class="input">
+                                <input type="text" id="dataName" placeholder="학습데이터 명을 입력하세요.">
+                                <button type="button" class="btn_del" tabindex="-1">
+                                    <span class="blind">삭제</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <span class="aster"></span>
+                            <label>예산집행기간</label>
+                        </th>
+                        <td>
+                            <div class="term_form">
+                                <label for="searchStartDate" class="blind">조회 시작 날짜</label>
+                                <input type="text" id="searchStartDate" name="searchStartDate"
+                                       class="datepicker" readonly>
+                            </div>
+                            ~
+                            <div class="term_form">
+                                <label for="searchEndDate" class="blind">조회 종료 날짜</label>
+                                <input type="text" id="searchEndDate" name="searchEndDate"
+                                       class="datepicker" readonly>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
         </div>
         <div class="pop_foot">
-            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearnData')">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('templateDetail')">
                 <span>취소</span>
             </button>
             <button type="button" class="btn fill" onclick="fn_learnDataSave()">
                 <span>등록</span>
             </button>
-            <!--<button type="button" class="btn line_cool_grey30" onclick="showAlert('warning', '작업중', () => {})">
+            <button type="button" class="btn line_cool_grey30" onclick="fn_learnDataList()">
                 <span>조회</span>
-            </button>-->
+            </button>
         </div>
     </div>
 </div>
