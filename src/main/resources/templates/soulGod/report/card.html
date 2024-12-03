@@ -115,6 +115,8 @@
             $('#searchTarget').val('').niceSelect('update');
             $('#searchType').val('').niceSelect('update');
             $('#searchKeyword').val('');
+            $('#searchJson').val('');
+            $('#searchTypeJson').val('');
 
             fn_search();
         }
@@ -134,7 +136,8 @@
                 "searchEndDate": $('#searchEndDate').val(),
                 "searchTarget": $('#searchTarget').val(),
                 "searchType": $('#searchType').val(),
-                "searchKeyword": $('#searchKeyword').val()
+                "searchKeyword": $('#searchKeyword').val(),
+                "searchTypeJson" : $('#searchTypeJson').val()
             }
 
             $.ajax({
@@ -288,7 +291,7 @@
                         </select>
                         <label for="sorting" class="blind">정렬대상</label>
                         <select name="" id="" class="sel_board sel_sorting" onchange="fn_search()">
-                            <option value="asc" th:selected="${params.sortingTarget == '1'}">예산집행년월</option>
+                            <option value="asc" th:selected="${params.sortingTarget == '1'}">결과등록년월일</option>
                         </select>
                         <label for="sorting" class="blind">정렬조건</label>
                         <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">

@@ -663,7 +663,8 @@ function fn_settingChip(searchJson, isRadio) {
     }
 
     if (target !== '') {
-        tags += `
+        if (isRadio) {
+            tags += `
                 <div class="chip">
                     <div>대상 : ${target === '1' ? '본부' : '영업점'}</div>
                     <button type="button" class="btn_del" onclick="fn_removeChip(this)">
@@ -671,6 +672,16 @@ function fn_settingChip(searchJson, isRadio) {
                     </button>
                 </div>
             `;
+        } else {
+            tags += `
+                <div class="chip">
+                    <div>대상 : ${target === '1' ? '본부' : '영업점'}</div>
+                    <button type="button" class="btn_del" onclick="fn_selectBoxReset('searchTarget'), fn_removeChip(this)">
+                        <span class="blind">삭제</span>
+                    </button>
+                </div>
+            `;
+        }
     }
 
     tags += searchTypeTags;
@@ -844,5 +855,11 @@ function fn_openKeywordArea(value) {
         $('#searchKeyword').prop('disabled', true);
     } else {
         $('#searchKeyword').prop('disabled', false);
+    }
+}
+
+function fn_selectBoxReset(id) {
+    if (id) {
+        $('#'  + id).val('').niceSelect('update');
     }
 }
