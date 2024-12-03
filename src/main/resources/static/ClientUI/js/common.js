@@ -784,7 +784,7 @@ function fn_setMonthPicker(st, ed) {
 
     fn_stopPropagation();
 
-    $(st).on('monthpicker-click-month', function (e, month) {
+    /*$(st).on('monthpicker-click-month', function (e, month) {
         const year = $(this).monthpicker('getDate').getFullYear();
         fn_validateDateRange(new Date(year, month - 1), true);
     });
@@ -792,7 +792,7 @@ function fn_setMonthPicker(st, ed) {
     $(ed).on('monthpicker-click-month', function (e, month) {
         const year = $(this).monthpicker('getDate').getFullYear();
         fn_validateDateRange(new Date(year, month - 1), false);
-    });
+    });*/
 }
 
 function fn_stopPropagation() {

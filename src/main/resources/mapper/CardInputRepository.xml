@@ -28,10 +28,10 @@
         ORDER BY
         <choose>
             <when test="sortingTarget != null and sortingTarget == 1">
-                co.RSRE_YMD
+                ci.NO
             </when>
             <otherwise>
-                co.RSRE_YMD
+                ci.NO
             </otherwise>
         </choose>
         <choose>
@@ -90,10 +90,13 @@
          /*검색어 검색*/
         <if test="searchJsonMap != null">
             <foreach collection="searchJsonMap" item="value" index="key">
+                <if test="key == 'BDMN_ITEX_MNGM_NO'">
+                    AND co.BDGT_BSNS_FRCS_CON LIKE CONCAT('%', #{value}, '%')
+                </if>
                 <if test="key != 'BDMN_ITEX_MNGM_NO' and key != 'BDGT_PRFR_RSN_FRCS_CON' and key != 'BDGT_BSNS_FRCS_CON'">
                     AND ci.${key} LIKE CONCAT('%', #{value}, '%')
                 </if>
-                <if test="key == 'BDMN_ITEX_MNGM_NO' or key == 'BDGT_PRFR_RSN_FRCS_CON' or key == 'BDGT_BSNS_FRCS_CON'">
+                <if test="key != 'BDMN_ITEX_MNGM_NO' and (key == 'BDGT_PRFR_RSN_FRCS_CON' or key == 'BDGT_BSNS_FRCS_CON')">
                     AND co.${key} LIKE CONCAT('%', #{value}, '%')
                 </if>
             </foreach>

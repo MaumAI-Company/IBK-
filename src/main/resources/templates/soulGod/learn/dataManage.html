@@ -273,6 +273,10 @@
         }
 
         function fn_search() {
+            if ($('#searchStartDate').val() > $('#searchEndDate').val()) {
+                showAlert('warning', '시작 월이 종료 월보다 이후일 수 없습니다. 입력하신 월을 다시 확인해주세요.');
+                return false;
+            }
             fn_searchConditionSet();
 
             let frm = $('#form1');
@@ -289,7 +293,7 @@
             $('#searchJson').val('');
             $('#searchTypeJson').val('');
 
-            fn_search()
+            fn_search();
         }
 
     </script>
