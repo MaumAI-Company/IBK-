@@ -28,10 +28,10 @@
         ORDER BY
         <choose>
             <when test="sortingTarget != null and sortingTarget == 1">
-                co.RSRE_YMD
+                ci.NO
             </when>
             <otherwise>
-                co.RSRE_YMD
+                ci.NO
             </otherwise>
         </choose>
         <choose>
