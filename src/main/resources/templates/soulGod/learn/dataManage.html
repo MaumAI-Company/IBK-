@@ -43,8 +43,13 @@
             width: calc((100% - 16px) / 3)
         }
 
+        .filter .inner dl + .fc_error{
+            margin-top: 8px;
+            margin-bottom: 24px;
+        }
+
         .txt_guide {
-            margin-top: 8px
+            margin-top: 8px;
         }
 
         .mtz-monthpicker-year {
@@ -394,6 +399,7 @@
                                             </div>
                                         </dd>
                                     </dl>
+                                    <p class="fc_error">* 시작 월이 종료 월보다 이후일 수 없습니다.</p>
                                     <dl>
                                         <dt>대상</dt>
                                         <dd>
