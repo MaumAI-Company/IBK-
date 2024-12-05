@@ -43,14 +43,6 @@
             width: calc((100% - 16px) / 3)
         }
 
-        .filter .inner dl + .fc_error{
-            margin-top: 8px;
-            margin-bottom: 24px;
-        }
-        .filter .inner .fc_error + dl {
-            margin-top:24px
-        }
-
         .txt_guide {
             margin-top: 8px;
         }
@@ -386,6 +378,7 @@
                                 <div class="inner">
                                     <dl>
                                         <dt>결과 등록 기간</dt>
+                                        <dd class="fc_error">* 시작 월이 종료 월보다 이후일 수 없습니다.</dd>
                                         <dd>
                                             <div class="term_form">
                                                 <label for="searchStartDate" class="blind">조회 시작 날짜</label>
@@ -402,7 +395,6 @@
                                             </div>
                                         </dd>
                                     </dl>
-                                    <p class="fc_error">* 시작 월이 종료 월보다 이후일 수 없습니다.</p>
                                     <dl>
                                         <dt>대상</dt>
                                         <dd>
