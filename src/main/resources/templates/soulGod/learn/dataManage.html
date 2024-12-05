@@ -189,11 +189,11 @@
 
             let jsonData = {
                 "hdqrBobDcd": $('[name=searchTarget]:checked').val(),
-                "dataName": $('#dataName').val(),
+                "dataName": $.trim($('#dataName').val()),
                 "inputArr": inputArr,
                 "outputArr": outputArr,
                 "templateAt": $('[name=templateAt]:checked').val(),
-                "templateName": $('#templateName').val(),
+                "templateName": $.trim($('#templateName').val()),
                 "selectCon": $('#searchJson').val(),
                 "searchTypeJson": fn_mapToJson(searchTypeMap),
             }
@@ -225,7 +225,7 @@
 
         function fn_learnDataNmCount() {
             let jsonData = {
-                "dataName": $('#dataName').val()
+                "dataName": $.trim($('#dataName').val())
             }
 
             $.ajax({
@@ -247,7 +247,7 @@
 
         function fn_templateNmCount() {
             let jsonData = {
-                "templateName": $('#templateName').val()
+                "templateName": $.trim($('#templateName').val())
             }
 
             $.ajax({

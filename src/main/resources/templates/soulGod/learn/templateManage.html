@@ -252,7 +252,7 @@
             let jsonData = {
                 "templateId": $('#templateId').val(),
                 "hdqrBobDcd": $('#hdqrBobDcd').val(),
-                "dataName": $('#dataName').val(),
+                "dataName": $.trim($('#dataName').val()),
                 "inputArr": inputArr,
                 "outputArr": outputArr,
                 "selectCon": $('#searchJson').val()
@@ -285,7 +285,7 @@
 
         function fn_learnDataNmCount() {
             let jsonData = {
-                "dataName": $('#dataName').val()
+                "dataName": $.trim($('#dataName').val())
             }
 
             $.ajax({
