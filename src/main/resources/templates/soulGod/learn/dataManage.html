@@ -91,6 +91,9 @@
             fn_setMonthPicker();
 
             fn_settingChip($('#searchJson').val());
+
+            //검색일자 경고 문구
+            $('.fc_error').hide();
         });
 
         /**
@@ -274,7 +277,8 @@
 
         function fn_search() {
             if ($('#searchStartDate').val() > $('#searchEndDate').val()) {
-                showAlert('warning', '시작 월이 종료 월보다 이후일 수 없습니다. 입력하신 월을 다시 확인해주세요.');
+                $('.fc_error').show();
+                $('#searchStartDate').focus();
                 return false;
             }
             fn_searchConditionSet();
