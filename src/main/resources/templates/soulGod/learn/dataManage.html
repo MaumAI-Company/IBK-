@@ -44,7 +44,7 @@
         }
 
         .txt_guide {
-            margin-top: 8px
+            margin-top: 8px;
         }
 
         .mtz-monthpicker-year {
@@ -91,6 +91,9 @@
             fn_setMonthPicker();
 
             fn_settingChip($('#searchJson').val());
+
+            //검색일자 경고 문구
+            $('.fc_error').hide();
         });
 
         /**
@@ -189,11 +192,11 @@
 
             let jsonData = {
                 "hdqrBobDcd": $('[name=searchTarget]:checked').val(),
-                "dataName": $('#dataName').val(),
+                "dataName": $.trim($('#dataName').val()),
                 "inputArr": inputArr,
                 "outputArr": outputArr,
                 "templateAt": $('[name=templateAt]:checked').val(),
-                "templateName": $('#templateName').val(),
+                "templateName": $.trim($('#templateName').val()),
                 "selectCon": $('#searchJson').val(),
                 "searchTypeJson": fn_mapToJson(searchTypeMap),
             }
@@ -225,7 +228,7 @@
 
         function fn_learnDataNmCount() {
             let jsonData = {
-                "dataName": $('#dataName').val()
+                "dataName": $.trim($('#dataName').val())
             }
 
             $.ajax({
@@ -247,7 +250,7 @@
 
         function fn_templateNmCount() {
             let jsonData = {
-                "templateName": $('#templateName').val()
+                "templateName": $.trim($('#templateName').val())
             }
 
             $.ajax({
@@ -274,7 +277,8 @@
 
         function fn_search() {
             if ($('#searchStartDate').val() > $('#searchEndDate').val()) {
-                showAlert('warning', '시작 월이 종료 월보다 이후일 수 없습니다. 입력하신 월을 다시 확인해주세요.');
+                $('.fc_error').show();
+                $('#searchStartDate').focus();
                 return false;
             }
             fn_searchConditionSet();
@@ -378,6 +382,7 @@
                                 <div class="inner">
                                     <dl>
                                         <dt>결과 등록 기간</dt>
+                                        <dd class="fc_error">* 시작 월이 종료 월보다 이후일 수 없습니다.</dd>
                                         <dd>
                                             <div class="term_form">
                                                 <label for="searchStartDate" class="blind">조회 시작 날짜</label>
