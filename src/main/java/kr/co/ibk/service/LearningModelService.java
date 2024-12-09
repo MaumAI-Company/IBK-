@@ -199,7 +199,7 @@ public class LearningModelService extends _BaseService {
             update.setBatchSize(form.getBatchSize());
             learningModelRepository.updateFile(update);
 
-            //llmService.trainModel(form.getId());
+            //mccService.trainModel(form.getId());
 
             map.put("status", "SUCCESS");
         } catch (Exception e) {

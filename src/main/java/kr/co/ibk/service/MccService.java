@@ -20,10 +20,10 @@ import java.nio.charset.StandardCharsets;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class LLMService {
+public class MccService {
 
-    @Value("${Globals.domain.llm}")
-    private String llmDomain;
+    @Value("${Globals.domain.mcc}")
+    private String mccDomain;
 
     private final LearningModelRepository learningModelRepository;
 
@@ -85,7 +85,7 @@ public class LLMService {
     private String sendPost(String path, JSONObject params) {
         BufferedReader in = null;
         try {
-            URL url = new URL(llmDomain + path);
+            URL url = new URL(mccDomain + path);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
