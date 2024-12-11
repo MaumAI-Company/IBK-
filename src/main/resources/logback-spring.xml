@@ -31,6 +31,14 @@
         </root>
     </springProfile>
 
+    <springProfile name="maum">
+        <logger name="org.springframework.web" level="WARN" />
+        <logger name="kr.co.ibk" level="WARN" />
+        <root level="INFO">
+            <appender-ref ref="STDOUT" />
+        </root>
+    </springProfile>
+
     <springProfile name="dev">
         <logger name="org.springframework.web" level="WARN" />
         <logger name="kr.co.ibk" level="WARN" />
