@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.ibk.repository.LearningModelRepository">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="LearningModelForm">
-        INSERT INTO MaumMcc.LEARNING_MODEL
+        INSERT INTO maummcc.LEARNING_MODEL
         (LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM, HDQR_BOB_DCD)
         VALUES (#{learningId}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), #{learnName}, '0',
                 'SUCCESS', current_timestamp(), #{hdqrBobDcd});
@@ -16,7 +16,7 @@
         where ID = #{id}
     </select>
     <update id="updateFile" parameterType="LearningModelForm">
-        UPDATE MaumMcc.LEARNING_MODEL
+        UPDATE maummcc.LEARNING_MODEL
         SET FILE_PATH     = #{filePath},
             FILE_NAME     = #{fileName},
             EPOCH         = #{epoch},
@@ -25,7 +25,7 @@
         WHERE ID = #{id}
     </update>
     <update id="updateStatus" parameterType="LearningModelForm">
-        UPDATE MaumMcc.LEARNING_MODEL
+        UPDATE maummcc.LEARNING_MODEL
         SET DEPLOY_STATUS = #{deployStatus}
         WHERE ID = #{id}
     </update>
@@ -99,7 +99,7 @@
     </select>
 
     <update id="update" parameterType="LearningModelForm">
-        update MaumMcc.LEARNING_MODEL
+        update maummcc.LEARNING_MODEL
         set MOD_ID = #{modId},
             MOD_DT = current_timestamp(),
             LEARN_NAME = #{learnName},

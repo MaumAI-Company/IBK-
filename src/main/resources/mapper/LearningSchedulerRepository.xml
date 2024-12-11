@@ -37,13 +37,13 @@
     </select>
 
     <insert id="setInsert" parameterType="LearningSchedulerForm">
-        insert into MaumMcc.LEARNING_SCHEDULER
+        insert into maummcc.LEARNING_SCHEDULER
         (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, LEARNING_MODEL_ID)
         values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), 'N', #{learningModelId});
     </insert>
 
     <update id="setUpdate" parameterType="LearningSchedulerForm">
-        update MaumMcc.LEARNING_SCHEDULER
+        update maummcc.LEARNING_SCHEDULER
         set
             SCHED_NM = #{schedNm},
             HDQR_BOB_DCD = #{hdqrBobDcd},
@@ -58,7 +58,7 @@
     </update>
 
     <update id="setDelete" parameterType="LearningSchedulerForm">
-        update MaumMcc.LEARNING_SCHEDULER
+        update maummcc.LEARNING_SCHEDULER
         set
             DEL_AT = 'Y',
             MOD_ID = #{modId},
