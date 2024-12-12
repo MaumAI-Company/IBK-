@@ -30,7 +30,7 @@ public class ReportController extends BaseCont {
     public String card(Model model,
                        @ModelAttribute CardInputForm params) {
         if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
-            params.setSearchStartDate(String.valueOf(LocalDate.now().minusYears(2)).replaceAll("-", "."));
+            params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
             params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
         }
 
