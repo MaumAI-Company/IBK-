@@ -121,7 +121,12 @@
             fn_search();
         }
 
-        function fn_detail(no, type) { //(카드 증빙 일자 , 카드 증빙번호, 부점코드 )=> pk
+        function fn_detail(idx) { //(카드 증빙 일자 , 카드 증빙번호, 부점코드 )=> pk
+
+            let input = $('input[id^=' + idx + '_]');
+            let no = input.attr('id').split('_')[1];
+            let type = $(input).val();
+
             if (!$.trim(no)) {
                 showAlert('warning', '잘못된 접근입니다.');
                 return false;
@@ -130,7 +135,6 @@
 
             let jsonData = {
                 "no": no,
-                "loadType": type,
                 "sorting": $('#sorting').val(),
                 "searchStartDate": $('#searchStartDate').val(),
                 "searchEndDate": $('#searchEndDate').val(),
@@ -148,17 +152,17 @@
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
                     let contents;
-                    if (data.learningModelId) {
-                        $('#popHead').html(`
+
+                    $('#popHead').html(`
                             <tr>
                                 <th>추론 모델</th>
-                                <td>${data.learnName}</td>
+                                <td>${data.learnName ?? '-'}</td>
                             </tr>
                         `);
 
-                        //input
-                        if (data.inputList) {
-                            let inputContents = `
+                    //input
+                    if (data.inputList) {
+                        let inputContents = `
                                 <tr>
                                     <th scope="row">input</th>
                                     <td>
@@ -168,50 +172,50 @@
                                                 <col style="width:auto">
                                             </colgroup>
                                             <tbody>`;
-                            $.each(data.inputList, function (idx, item) {
-                                inputContents += '<tr> ' +
-                                    '                        <th scope="row">' + item.inputColumnNm + '</th> ' +
-                                    '                        <td>' + item.inputColumnVal + '</td> ' +
-                                    '                    </tr>';
-                            })
-                            inputContents += `</tbody>
+                        $.each(data.inputList, function (idx, item) {
+                            inputContents += '<tr> ' +
+                                '                        <th scope="row">' + item.inputColumnNm + '</th> ' +
+                                '                        <td>' + item.inputColumnVal + '</td> ' +
+                                '                    </tr>';
+                        })
+                        inputContents += `</tbody>
                                         </table>
                                     </td>
                                 </tr>
                             `;
 
-                            contents = inputContents;
-                        }
-                        //output text set
-                        makeOutputText('bdgtItexFrcsCon', data.bdgtItexFrcsCon);
-                        makeOutputText('bdgtItexFrcsPrbCon', data.bdgtItexFrcsPrbCon);
-                        makeOutputText('bdgtBsnsFrcsCon', data.bdgtBsnsFrcsCon);
-                        makeOutputText('bdgtBsnsFrcsPrbCon', data.bdgtBsnsFrcsPrbCon);
-                        makeOutputText('bdgtPrfrRsnFrcsCon', data.bdgtPrfrRsnFrcsCon);
-                        makeOutputText('bdgtPrfrRsnFrcsPrbCon', data.bdgtPrfrRsnFrcsPrbCon);
-                        $('#outputBody').show();
-                    } else {
-                        $('#popHead').html('');
-                        contents = '<tr><td colspan="2">해당 데이터에 대한 AI 추론 결과가 없습니다.</td></tr>';
+                        contents = inputContents;
                     }
+
+                    //output text set
+                    makeOutputText('bdgtItexFrcsCon', data.bdgtItexFrcsCon);
+                    makeOutputText('bdgtItexFrcsPrbCon', data.bdgtItexFrcsPrbCon);
+                    makeOutputText('bdgtBsnsFrcsCon', data.bdgtBsnsFrcsCon);
+                    makeOutputText('bdgtBsnsFrcsPrbCon', data.bdgtBsnsFrcsPrbCon);
+                    makeOutputText('bdgtPrfrRsnFrcsCon', data.bdgtPrfrRsnFrcsCon);
+                    makeOutputText('bdgtPrfrRsnFrcsPrbCon', data.bdgtPrfrRsnFrcsPrbCon);
+                    $('#outputBody').show();
+
+                    /*$('#popHead').html('');
+                    contents = '<tr><td colspan="2">해당 데이터에 대한 AI 추론 결과가 없습니다.</td></tr>';*/
 
                     $('#inpputBody').html(contents);
 
                     //btn onclick function set
-                    if (data.prevNo) {
-                        $('.prevBtn').off('click').on('click', function () {
-                            fn_detail(data.prevNo);
-                        }).prop('disabled', false);
-                    } else {
+                    if (type === 'first') {
                         $('.prevBtn').prop('disabled', true);
+                    } else {
+                        $('.prevBtn').off('click').on('click', function () {
+                            fn_detail(idx - 1);
+                        }).prop('disabled', false);
                     }
 
-                    if (data.nextNo) {
-                        $('.nextBtn').off('click').on('click', function () {
-                            fn_detail(data.nextNo);
-                        }).prop('disabled', false);
-                    } else {
+                    if (type === 'final') {
                         $('.nextBtn').prop('disabled', true);
+                    } else {
+                        $('.nextBtn').off('click').on('click', function () {
+                            fn_detail(idx + 1);
+                        }).prop('disabled', false);
                     }
 
                     layerShow('popDetail');
@@ -225,24 +229,19 @@
         }
 
         function makeOutputText(columnNm, columnValue) {
-            let valueArray = columnValue.split('|');
+            let valueArray = '-';
 
-            for (let i = 0; i < valueArray.length; i++) {
-                $('#' + columnNm + i).text(valueArray[i]);
-            }
+            if (columnValue) {
+                valueArray = columnValue.split('|');
 
-            /*let arrayA = primaryStr.split('|');
-            let arrayB = secondaryStr ? secondaryStr.split('|') : null;
-
-            let text = '';
-            for (let i = 0; i < arrayA.length; i++) {
-                if (arrayB && arrayB[i]) {
-                    text += `${i + 1}순위는 ${arrayA[i]}이며, ${arrayB[i]}의 확률을 가집니다. \n`;
-                } else {
-                    text += `${i + 1}순위는 ${arrayA[i]}입니다. \n`;
+                for (let i = 0; i < valueArray.length; i++) {
+                    $('#' + columnNm + i).text(valueArray[i]);
+                }
+            } else {
+                for (let i = 0; i < 3; i++) {
+                    $('#' + columnNm + i).text(valueArray);
                 }
             }
-            return text;*/
         }
 
         function fn_excelDownload() {
@@ -494,7 +493,9 @@
                         <td th:text="${item.rsreYmd != null ? #temporals.format(item.rsreYmd, 'yyyy-MM-dd') : '-'}"></td>
                         <td>
                             <button type="button" class="badge"
-                                    th:onclick="fn_detail([[${item.no}]])">
+                                    th:onclick="fn_detail([[${idx.index}]])">
+                                <input type="hidden" th:id="${idx.index + '_' + item.no}"
+                                       th:value="${(idx.index == 0 or idx.index == list.size() - 1) ? (idx.index == 0 ? 'first' : 'final') : ''}">
                                 <i class="ico_plus"></i>
                                 <span>상세보기</span>
                             </button>
