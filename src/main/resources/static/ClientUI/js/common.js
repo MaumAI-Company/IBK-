@@ -654,7 +654,7 @@ function fn_settingChip(searchJson, isRadio) {
     if (startDate || endDate) { //템플릿은 기간이 없기때문에 체크
         tags += `
                     <div class="chip">
-                        <div>예산집행년월 : ${startDate} ~ ${endDate}</div>
+                        <div>결과등록년월일 : ${startDate} ~ ${endDate}</div>
                         <button type="button" class="btn_del" onclick="fn_removeChip(this)">
                             <span class="blind">삭제</span>
                         </button>
