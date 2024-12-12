@@ -14,6 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,16 +30,13 @@ public class ReportController extends BaseCont {
     public String card(Model model,
                        @ModelAttribute CardInputForm params) {
         if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
-            params.setSearchStartDate(String.valueOf(LocalDate.now().minusYears(2)).replaceAll("-", "."));
+            params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
             params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
         }
 
         if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
             params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
         }
-
-        List<CardInputInfo> excelList = cardInputService.list(params);
-        model.addAttribute("excelList", excelList);
 
         List<CardInputInfo> list = cardInputService.page(params);
 
@@ -50,6 +49,27 @@ public class ReportController extends BaseCont {
         return "/soulGod/report/card";
 
     }
+
+    @GetMapping("/soulGod/report/card/xlsDown")
+    public void reportCardExcelDown(@RequestParam(name = "searchStartDate") String searchStartDate,
+                                    @RequestParam(name = "searchEndDate") String searchEndDate,
+                                    @RequestParam(name = "searchTarget", required = false) String searchTarget,
+                                    @RequestParam(name = "searchTypeJson", required = false) String searchTypeJson,
+                                    HttpServletResponse response) throws UnsupportedEncodingException {
+
+        CardInputForm params = new CardInputForm();
+        params.setSearchStartDate(searchStartDate);
+        params.setSearchEndDate(searchEndDate);
+        params.setSearchTarget(searchTarget);
+
+        if (!ObjectUtils.isEmpty(searchTypeJson)) {
+            params.setSearchJsonMap(jsonToHashMap(searchTypeJson));
+        }
+
+        List<CardInputInfo> excelList = cardInputService.list(params);
+        cardInputService.reportCardExcelDown(response, excelList);
+    }
+
 
     @RequestMapping("/soulGod/report/taxInvoice")
     public String taxInvoice(Model model,

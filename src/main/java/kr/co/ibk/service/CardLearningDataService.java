@@ -34,7 +34,7 @@ public class CardLearningDataService extends _BaseService {
         }
 
         if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
-            params.setSearchStartDate(String.valueOf(LocalDate.now().minusYears(2)).substring(0, 7));
+            params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).substring(0, 7));
             params.setSearchEndDate(String.valueOf(LocalDate.now()).substring(0, 7));
         }
         params.setSearchStartDate(params.getSearchStartDate().replaceAll("-", ""));
