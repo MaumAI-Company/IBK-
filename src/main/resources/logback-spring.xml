@@ -32,21 +32,42 @@
     </springProfile>
 
     <springProfile name="maum">
-        <logger name="org.springframework.web" level="DEBUG" />
+        <logger name="org.springframework.web" level="INFO" />
         <logger name="kr.co.ibk" level="DEBUG" />
-        <root level="DEBUG">
+        <root level="INFO">
+            <appender-ref ref="FILE" />
             <appender-ref ref="STDOUT" />
         </root>
     </springProfile>
 
     <springProfile name="dev">
-        <logger name="org.springframework.web" level="WARN" />
-        <logger name="kr.co.ibk" level="WARN" />
+        <logger name="org.springframework.web" level="INFO" />
+        <logger name="kr.co.ibk" level="DEBUG" />
         <root level="INFO">
             <appender-ref ref="STDOUT" />
+            <appender-ref ref="FILE" />
         </root>
 	</springProfile>
-	
+
+    <springProfile name="test">
+        <logger name="org.springframework.web" level="INFO" />
+        <logger name="kr.co.ibk" level="DEBUG" />
+        <root level="INFO">
+            <appender-ref ref="STDOUT" />
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+
+
+    <springProfile name="real">
+        <logger name="org.springframework.web" level="INFO" />
+        <logger name="kr.co.ibk" level="DEBUG" />
+        <root level="INFO">
+            <appender-ref ref="STDOUT" />
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+
     <springProfile name="prod">
         <logger name="org.springframework.web" level="ERROR" />
         <logger name="kr.co.ibk" level="ERROR" />
