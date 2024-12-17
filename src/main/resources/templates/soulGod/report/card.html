@@ -314,14 +314,14 @@
                             <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
                             <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
-                        <label for="sorting" class="blind">정렬대상</label>
+                        <!--<label for="sorting" class="blind">정렬대상</label>
                         <select name="" id="" class="sel_board sel_sorting" onchange="fn_search()">
                             <option value="asc" th:selected="${params.sortingTarget == '1'}">결과등록년월일</option>
-                        </select>
+                        </select>-->
                         <label for="sorting" class="blind">정렬조건</label>
                         <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
-                            <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
-                            <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">과거순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">최신순</option>\
                         </select>
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter active">
