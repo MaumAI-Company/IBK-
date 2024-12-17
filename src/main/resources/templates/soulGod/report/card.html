@@ -499,7 +499,7 @@
 
                         <td style="background-color:#f9f9ff" th:text="${item.bdgtBsnsFrcsCon}"></td>
                         <td style="background-color:#f9f9ff" th:text="${item.bdgtPrfrRsnFrcsCon}" class="pr"></td>
-                        <td th:text="${item.rsreYmd != null ? #temporals.format(item.rsreYmd, 'yyyy-MM-dd') : '-'}"></td>
+                        <td th:text="${item.rsreYmd != null and item.rsreYmd != '' ? #temporals.format(item.rsreYmd, 'yyyy-MM-dd') : '-'}"></td>
                         <td>
                             <button type="button" class="badge"
                                     th:onclick="fn_detail([[${idx.index}]])">
