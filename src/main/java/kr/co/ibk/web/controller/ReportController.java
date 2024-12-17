@@ -29,7 +29,8 @@ public class ReportController extends BaseCont {
     @RequestMapping("/soulGod/report/card")
     public String card(Model model,
                        @ModelAttribute CardInputForm params) {
-        if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+        if (!"Y".equals(params.getSearchAllDateAt()) &&
+                (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate()))) {
             params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
             params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
         }
