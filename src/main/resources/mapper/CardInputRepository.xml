@@ -71,23 +71,25 @@
 
     <sql id="where">
         /*일자 검색*/
-        <if test="searchStartDate != null and searchStartDate != ''">
-            <![CDATA[
-				AND DATE_FORMAT( ci.FRRG_TS, '%Y.%m.%d') >= #{searchStartDate}
-			 ]]>
-        </if>
-        <if test="searchEndDate != null and searchEndDate != ''">
-            <![CDATA[
-				AND DATE_FORMAT( ci.FRRG_TS, '%Y.%m.%d') <= #{searchEndDate}
-			 ]]>
+        <if test="'Y'.toString() != searchAllDateAt">
+            <if test="searchStartDate != null and searchStartDate != ''">
+                <![CDATA[
+                    AND DATE_FORMAT( co.RSRE_YMD, '%Y.%m.%d') >= #{searchStartDate}
+                 ]]>
+            </if>
+            <if test="searchEndDate != null and searchEndDate != ''">
+                <![CDATA[
+                    AND DATE_FORMAT( co.RSRE_YMD, '%Y.%m.%d') <= #{searchEndDate}
+                 ]]>
+            </if>
         </if>
 
         /*대상 검색*/
-         <if test="searchTarget != null and searchTarget != ''">
-             AND ci.HDQR_BOB_DCD = #{searchTarget}
-         </if>
-         
-         /*검색어 검색*/
+        <if test="searchTarget != null and searchTarget != ''">
+            AND ci.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+
+        /*검색어 검색*/
         <if test="searchJsonMap != null">
             <foreach collection="searchJsonMap" item="value" index="key">
                 <if test="key == 'BDMN_ITEX_MNGM_NO'">

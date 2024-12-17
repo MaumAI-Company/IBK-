@@ -620,6 +620,7 @@ function fn_settingChip(searchJson, isRadio) {
     let tags = '';
     let searchTypeTags = '';
 
+    let allDateAt = $('#searchAllDateAt').is(':checked');
     let startDate = $('#searchStartDate').val();
     let endDate = $('#searchEndDate').val();
     let target = isRadio ? $('[name=searchTarget]:checked').val() : $('[name=searchTarget]').val();
@@ -651,7 +652,7 @@ function fn_settingChip(searchJson, isRadio) {
         }
     }
 
-    if (startDate || endDate) { //템플릿은 기간이 없기때문에 체크
+    if (!allDateAt && (startDate || endDate)) { //템플릿은 기간이 없기때문에 체크
         tags += `
                     <div class="chip">
                         <div>결과등록년월일 : ${startDate} ~ ${endDate}</div>
@@ -860,6 +861,6 @@ function fn_openKeywordArea(value) {
 
 function fn_selectBoxReset(id) {
     if (id) {
-        $('#'  + id).val('').niceSelect('update');
+        $('#' + id).val('').niceSelect('update');
     }
 }

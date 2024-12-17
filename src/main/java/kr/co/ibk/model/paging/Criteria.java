@@ -44,6 +44,7 @@ public class Criteria {
      */
     private String searchStartDate;
     private String searchEndDate;
+    private String searchAllDateAt;
 
     /*조회 대상*/
     private String searchTarget;
