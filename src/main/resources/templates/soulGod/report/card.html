@@ -94,11 +94,18 @@
             });
 
             fn_settingChip($('#searchJson').val());
-            fn_allDateBtn();
         });
+
+        function fn_removeChipCallBack() {
+            $('#searchAllDateAt').val('Y');
+        }
 
         function fn_search() {
             fn_searchConditionSet();
+
+            if ($.trim($('#searchStartDate').val()) || $.trim($('#searchEndDate').val())) {
+                $('#searchAllDateAt').val('N');
+            }
 
             let frm = $('#form1');
             frm.prop('action', '?');
@@ -261,20 +268,6 @@
             location.href = '/soulGod/report/card/xlsDown' + (queryString ? '?' + queryString : '');
         }
 
-        function fn_allDateBtn() {
-            let value = 'N';
-            if ($('#searchAllDateAt').is(':checked')) {
-                $('#searchStartDate').prop('disabled', true);
-                $('#searchEndDate').prop('disabled', true);
-
-                value = 'Y';
-            } else {
-                $('#searchStartDate').prop('disabled', false);
-                $('#searchEndDate').prop('disabled', false);
-            }
-            $('#searchAllDateAt').val(value);
-        }
-
     </script>
 </head>
 <body>
@@ -302,6 +295,7 @@
                 <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
                 <input type="hidden" th:field="${params.searchJson}">
                 <input type="hidden" th:field="${params.searchTypeJson}">
+                <input type="hidden" th:field="${params.searchAllDateAt}">
                 <div class="board_top">
                     <div>
                         <div class="total_num"><b
@@ -351,14 +345,6 @@
                                                 <input type="text" id="searchEndDate" name="searchEndDate"
                                                        class="datepicker" th:value="${params.searchEndDate}"
                                                        readonly>
-                                            </div>
-                                            <div class="checkbox">
-                                                <input type="checkbox" name="searchAllDateAt" id="searchAllDateAt"
-                                                       onclick="fn_allDateBtn()"
-                                                       th:checked="${params.searchAllDateAt == 'Y'}">
-                                                <label for="searchAllDateAt">
-                                                    <span>전체</span>
-                                                </label>
                                             </div>
                                         </dd>
                                     </dl>

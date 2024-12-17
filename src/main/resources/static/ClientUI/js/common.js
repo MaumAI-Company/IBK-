@@ -643,7 +643,7 @@ function fn_settingChip(searchJson, isRadio) {
                 searchTypeTags += `
                     <div class="chip">
                         <div class="chip_${key}">${keyNm} : ${value}</div>
-                        <button type="button" class="btn_del" onclick="fn_removeChip(this, true)">
+                        <button type="button" class="btn_del" onclick="fn_removeChip(this, 'searchType')">
                             <span class="blind">삭제</span>
                         </button>
                     </div>
@@ -656,7 +656,7 @@ function fn_settingChip(searchJson, isRadio) {
         tags += `
                     <div class="chip">
                         <div>결과등록년월일 : ${startDate} ~ ${endDate}</div>
-                        <button type="button" class="btn_del" onclick="fn_removeChip(this)">
+                        <button type="button" class="btn_del" onclick="fn_removeChip(this, 'searchDate')">
                             <span class="blind">삭제</span>
                         </button>
                     </div>
@@ -668,7 +668,7 @@ function fn_settingChip(searchJson, isRadio) {
             tags += `
                 <div class="chip">
                     <div>대상 : ${target === '1' ? '본부' : '영업점'}</div>
-                    <button type="button" class="btn_del" onclick="fn_removeChip(this)">
+                    <button type="button" class="btn_del" onclick="fn_removeChip(this, 'target')">
                         <span class="blind">삭제</span>
                     </button>
                 </div>
@@ -677,7 +677,7 @@ function fn_settingChip(searchJson, isRadio) {
             tags += `
                 <div class="chip">
                     <div>대상 : ${target === '1' ? '본부' : '영업점'}</div>
-                    <button type="button" class="btn_del" onclick="fn_selectBoxReset('searchTarget'), fn_removeChip(this)">
+                    <button type="button" class="btn_del" onclick="fn_selectBoxReset('searchTarget'), fn_removeChip(this, 'target')">
                         <span class="blind">삭제</span>
                     </button>
                 </div>
@@ -690,18 +690,32 @@ function fn_settingChip(searchJson, isRadio) {
     $('.selected_filter').html(tags);
 }
 
-function fn_removeChip(obj, srchTyAt) {
-    if (srchTyAt) {
+function fn_removeChip(obj, id) {
+    let searchJsonMap = $('#searchJson').val() ? fn_jsonToMap($('#searchJson').val()) : new Map;
+
+    if (id === 'searchType') {
         let findKey = $(obj).siblings('div').attr('class');
 
-        let searchJsonMap = fn_jsonToMap($('#searchJson').val());
         searchJsonMap.get("searchType").delete(findKey.replaceAll('chip_', ''));
-
-        let searchJsonString = fn_mapToJson(searchJsonMap);
-        $('#searchJson').val(searchJsonString);
     }
 
+    if (id === 'searchDate') {
+        $('#searchStartDate').val('');
+        $('#searchEndDate').val('');
+
+        searchJsonMap.delete('searchStartDate');
+        searchJsonMap.delete('searchEndDate');
+
+        if (fn_removeChipCallBack && typeof fn_removeChipCallBack === 'function') {
+            fn_removeChipCallBack();
+        }
+    }
+
+    let searchJsonString = fn_mapToJson(searchJsonMap);
+    $('#searchJson').val(searchJsonString);
+
     $(obj).parents('.chip').remove();
+
     fn_search();
 }
 
