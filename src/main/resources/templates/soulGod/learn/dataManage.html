@@ -340,9 +340,12 @@
                 <input type="hidden" th:field="${params.searchTypeJson}">
                 <div class="board_top">
                     <div>
-                        <div class="total_num"><b
-                                th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? #numbers.formatInteger(pagingInfo.totalRecordCount , '0', 'COMMA') : 0}"></b>
-                            건의 학습데이터가 있습니다.
+                        <div class="total_num">
+                            <p>
+                                <b th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? #numbers.formatInteger(pagingInfo.totalRecordCount , '0', 'COMMA') : 0}"></b>
+                                건의 학습데이터가 있습니다.
+                            </p>
+                            <div>※ 검색조건 추가 후 검색이 가능합니다.</div>
                         </div>
                     </div>
                     <div class="mla">
@@ -860,5 +863,19 @@
     </div>
 </div>
 <!--학습데이터 팝업 : e-->
+
+<!--로딩중 : s-->
+<div class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
+    <div class="loading">
+        <p>Loading</p>
+        <div class="loading_circle_rotate">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+    </div>
+</div>
+<!--로딩중 : e-->
 </body>
 </html>
