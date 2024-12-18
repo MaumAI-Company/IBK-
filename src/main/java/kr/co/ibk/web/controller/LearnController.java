@@ -51,6 +51,24 @@ public class LearnController extends BaseCont {
         return "/soulGod/learn/dataManage";
     }
 
+    @RequestMapping("/soulGod/learn/dataManageView")
+    public String dataManagePop(Model model,
+                             @ModelAttribute CardLearningDataForm params) {
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+
+        List<CardLearningDataInfo> list = cardLearningDataService.page(params);
+
+        model.addAttribute("list", list);
+        model.addAttribute("pagingInfo", params.getPaginationInfo());
+        model.addAttribute("params", params);
+        model.addAttribute("mc", "ico_database");
+        model.addAttribute("pageTitle", "학습 데이터 등록");
+
+        return "/soulGod/learn/dataManageView";
+    }
+
     /**
      * 학습데이터명 중복 체크
      * @param form
