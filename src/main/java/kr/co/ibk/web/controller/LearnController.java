@@ -102,7 +102,6 @@ public class LearnController extends BaseCont {
         );
     }
 
-
     /**
      * 학습데이터명 중복 체크
      * @param form
@@ -113,9 +112,6 @@ public class LearnController extends BaseCont {
     public int learnDataNmCount(@RequestBody LearningDataForm form) {
         return learningDataService.learnDataNmCount(form);
     }
-    //물을 넣고 4분 익히기
-    //B스프 데우기
-    //4분 후에 ABC 스프 다 넣기
 
     @ResponseBody
     @PostMapping(value = {"/soulGod/learnData/save"})
