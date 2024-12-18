@@ -20,6 +20,7 @@ public class CardLearningDataForm extends PageForm {
     private String pagingAt;
     private String sorting;
     private String sortingTarget;
+    private String limitCnt;
 }
 
 
