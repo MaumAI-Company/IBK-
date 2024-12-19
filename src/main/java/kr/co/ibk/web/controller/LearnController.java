@@ -64,7 +64,7 @@ public class LearnController extends BaseCont {
     }
 
     @RequestMapping("/soulGod/learn/dataManageView")
-    public String dataManagePop(Model model,
+    public String dataManageView(Model model,
                              @ModelAttribute CardLearningDataForm params) {
         if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
             params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));

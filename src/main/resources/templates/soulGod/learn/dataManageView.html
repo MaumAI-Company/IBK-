@@ -32,24 +32,6 @@
                 width: auto
             }
         }
-
-        #popLearnData .check_wrap {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px
-        }
-
-        #popLearnData .check_wrap .checkbox {
-            width: calc((100% - 16px) / 3)
-        }
-
-        .txt_guide {
-            margin-top: 8px;
-        }
-
-        .mtz-monthpicker-year {
-            background: #fff url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"%3E%3Cpath fill="%236d7175" d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71L8.46 9.17a1 1 0 0 0-1.41 0a1 1 0 0 0 0 1.42l4.24 4.24a1 1 0 0 0 1.42 0L17 10.59a1 1 0 0 0 0-1.42Z"%2F%3E%3C%2Fsvg%3E') no-repeat calc(100% - 11px) 50% / 20px auto
-        }
     </style>
     <script type="text/javascript">
         $(function () {
@@ -68,46 +50,16 @@
                 }
             });
 
-            //학습 팝업 도움말
-            $('.btn_help').each(function () {
-                $(this).on('click', function () {
-                    $(this).parent('.th_help_area').toggleClass('active').parents('.tr').siblings('.tr').find('.th_help_area').removeClass('active');
-                });
-            });
-            $(document).on('click', function (e) {
-                if (!$(e.target).parents('div').hasClass('th_help_area')) {
-                    $('.th_help_area').removeClass('active');
-                }
-            });
-
-            $('[name=templateAt]').on('change', function (e) {
-                if ($(this).val() === 'N') {
-                    $('#templateName').prop('disabled', true);
-                } else {
-                    $('#templateName').prop('disabled', false);
-                }
-            })
-
-            fn_setMonthPicker();
-
             fn_settingChip($('#searchJson').val());
-            // TODO : chip 삭제 버튼 제거
-
-            //검색일자 경고 문구
-            $('.fc_error').hide();
+            $('.selected_filter .btn_del').remove(); // 조회 페이지 > 칩 제거 불가능
         });
 
         function movePage(url, pageNo) {
             $('#currentPageNo').val(pageNo);
-            $('#form1').attr({action: '/soulGod/learn/dataManage', method: 'post'}).unbind('submit').submit();
+            $('#form1').attr({action: '/soulGod/learn/dataManageView', method: 'post'}).unbind('submit').submit();
         }
 
         function fn_search() {
-            if ($('#searchStartDate').val() > $('#searchEndDate').val()) {
-                $('.fc_error').show();
-                $('#searchStartDate').focus();
-                return false;
-            }
             fn_searchConditionSet();
 
             let frm = $('#form1');
@@ -115,46 +67,17 @@
             frm.submit();
         }
 
-        function fn_reset() {
-            $('#searchStartDate').val('');
-            $('#searchEndDate').val('');
-            $('#searchTarget').val('').niceSelect('update');
-            $('#searchType').val('').niceSelect('update');
-            $('#searchKeyword').val('');
-            $('#searchJson').val('');
-            $('#searchTypeJson').val('');
-
-            fn_search();
-        }
-
     </script>
 </head>
 <body>
 <div id="wrap">
-    <div id="container">
+    <div id="container" style="padding-left:0">
         <div class="contents">
             <div class="page_top">
                 <div class="tit_area">
                     <h2 class="one_depth">학습 관리</h2>
-                    <h3 class="page_tit">학습 데이터 등록</h3>
+                    <h3 class="page_tit">학습 데이터 조회</h3>
                 </div>
-                <!--<div class="btn_area">
-                    &lt;!&ndash;<button type="button" class="btn line_cool_grey30">
-                        <span>템플릿 다운로드</span>
-                    </button>
-                    <button type="button" class="btn line_cool_grey30" onclick="layerShow('popRegister')">
-                        <span>등록</span>
-                    </button>
-                    <button type="button" class="btn line_cool_grey30" onclick="layerShow('alertWarning')">
-                        <span>삭제</span>
-                    </button>
-                    <button type="button" class="btn line_cool_grey30" onclick="layerShow('popLearn')">
-                        <span>학습</span>
-                    </button>&ndash;&gt;
-                    <button type="button" class="btn line_cool_grey30" onclick="fn_learningDataOpen()">
-                        <span>등록</span>
-                    </button>
-                </div>-->
             </div>
 
             <form id="form1" th:object="${params}">
@@ -168,7 +91,6 @@
                                 <b th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? #numbers.formatInteger(pagingInfo.totalRecordCount , '0', 'COMMA') : 0}"></b>
                                 건의 학습데이터가 있습니다.
                             </p>
-                            <!--<div>※ 검색조건 추가 후 검색이 가능합니다.</div>-->
                         </div>
                     </div>
                     <div class="mla">
@@ -182,106 +104,24 @@
                             <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
                             <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
-                        <!--<label for="sortingTarget" class="blind">정렬조건</label>
-                        <select name="sortingTarget" id="sortingTarget" class="sel_board sel_sorting"
-                                onchange="fn_search()">
-                            <option value="1" th:selected="${params.sortingTarget == '1'}">부점코드</option>
-                            <option value="2" th:selected="${params.sortingTarget == '2'}">카드번호</option>
-                            <option value="3" th:selected="${params.sortingTarget == '3'}">가맹점명</option>
-                            <option value="4" th:selected="${params.sortingTarget == '4'}">예산관리비목관리번호</option>
-                            <option value="5" th:selected="${params.sortingTarget == '5'}">예산집행사유코드</option>
-                            <option value="6" th:selected="${params.sortingTarget == '6'}">사업세부사업</option>
-                        </select>
-                        <label for="sorting" class="blind">정렬조건</label>
-                        <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
-                            <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
-                            <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
-                        </select>-->
-                        <!--<div class="filter_area">
-                            <button type="button" class="btn btn_text btn_filter active">
-                                &lt;!&ndash;TODO : 선택된 조건이 있을 때는 클래스 active 추가, 필터 삭제되면 클래스 active 삭제&ndash;&gt;
-                                <i class="ico_filter"></i>
-                                <span>검색</span>
-                            </button>
-
+                        <div class="filter_area" style="display: none">
                             <div class="filter">
-                                <div class="inner">
-                                    <dl>
-                                        <dt>결과 등록 기간</dt>
-                                        <dd class="fc_error">* 시작 월이 종료 월보다 이후일 수 없습니다.</dd>
-                                        <dd>
-                                            <div class="term_form">
-                                                <label for="searchStartDate" class="blind">조회 시작 날짜</label>
-                                                <input type="text" id="searchStartDate" name="searchStartDate"
-                                                       th:value="*{searchStartDate.substring(0, 4) + '-' + searchStartDate.substring(4, 6)}"
-                                                       class="datepicker" readonly>
-                                            </div>
-                                            ~
-                                            <div class="term_form">
-                                                <label for="searchEndDate" class="blind">조회 종료 날짜</label>
-                                                <input type="text" id="searchEndDate" name="searchEndDate"
-                                                       th:value="*{searchEndDate.substring(0, 4) + '-' + searchEndDate.substring(4, 6)}"
-                                                       class="datepicker" readonly>
-                                            </div>
-                                        </dd>
-                                    </dl>
-                                    <dl>
-                                        <dt>대상</dt>
-                                        <dd>
-                                            <div class="df">
-                                                <div class="radio txt">
-                                                    <input type="radio" name="searchTarget" id="searchTarget_B"
-                                                           value="1"
-                                                           th:checked="${params.searchTarget == '1'}">
-                                                    <label for="searchTarget_B">본부</label>
-                                                </div>
-                                                <div class="radio txt">
-                                                    <input type="radio" name="searchTarget" id="searchTarget_Y"
-                                                           value="2"
-                                                           th:checked="${params.searchTarget == '2'}">
-                                                    <label for="searchTarget_Y">영업점</label>
-                                                </div>
-                                            </div>
-                                        </dd>
-                                    </dl>
-                                    <dl>
-                                        <dt><label for="searchType">검색 대상</label></dt>
-                                        <dd>
-                                            <select name="searchType" id="searchType"
-                                                    onchange="fn_openKeywordArea(this.value)">
-                                                <option value="" selected>선택</option>
-                                                <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
-                                                        th:class="${item}" th:text="${item.name}"></option>
-                                            </select>
-                                        </dd>
-                                    </dl>
-                                    <dl>
-                                        <dt>
-                                            <label>검색어</label>
-                                        </dt>
-                                        <dd>
-                                            <div class="search_form">
-                                                <div class="search">
-                                                    <input type="search" id="searchKeyword" name="searchKeyword"
-                                                           placeholder="검색어를 입력하세요." disabled>
-                                                    <button type="button" class="btn_del" tabindex="-1">
-                                                        <span class="blind">삭제</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </dd>
-                                    </dl>
-                                    <div class="btn_area">
-                                        <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
-                                            <span>초기화</span>
-                                        </button>
-                                        <button type="button" class="btn fill" onclick="fn_search()">
-                                            <span>검색 조건 추가</span>
-                                        </button>
-                                    </div>
-                                </div>
+                                <input type="text" id="searchStartDate" name="searchStartDate"
+                                       th:value="*{searchStartDate.substring(0, 4) + '-' + searchStartDate.substring(4, 6)}"
+                                       class="datepicker" readonly>
+                                <input type="text" id="searchEndDate" name="searchEndDate"
+                                       th:value="*{searchEndDate.substring(0, 4) + '-' + searchEndDate.substring(4, 6)}"
+                                       class="datepicker" readonly>
+                                <input type="radio" name="searchTarget" id="searchTarget_B"
+                                       value="1"
+                                       th:checked="${params.searchTarget == '1'}">
+                                <input type="radio" name="searchTarget" id="searchTarget_Y"
+                                       value="2"
+                                       th:checked="${params.searchTarget == '2'}">
+                                <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
+                                        th:class="${item}" th:text="${item.name}"></option>
                             </div>
-                        </div>-->
+                        </div>
                     </div>
                 </div>
             </form>
@@ -377,43 +217,6 @@
     </div>
 </div>
 
-<!--학습중 팝업 : s-->
-<div id="popLearnDetail" class="pop_layer">
-    <div class="dim"></div>
-    <div class="popup lg">
-        <div class="pop_head">
-            <strong class="pop_tit">학습중</strong>
-            <button type="button" class="btn_close" onclick="layerHide('popLearnDetail')">
-                <span class="blind">닫기</span>
-            </button>
-        </div>
-        <div class="pop_cont">
-            <div id="chartdiv" style="height: 430px;"></div>
-        </div>
-    </div>
-</div>
-<!--학습중 팝업 : e-->
-
-<!--얼럿 : s-->
-<div id="alertWarning" class="system_alert">
-    <div class="dim"></div>
-    <div class="popup">
-        <div class="pop_cont">
-            <i class="ico ico_warning"></i>
-            <strong class="pop_tit">삭제하시겠습니까?</strong>
-        </div>
-        <div class="pop_foot">
-            <button type="button" class="btn line_cool_grey30" onclick="layerHide('alertWarning')">
-                <span>취소</span>
-            </button>
-            <button type="button" class="btn fill" onclick="layerHide('alertWarning')">
-                <span>확인</span>
-            </button>
-        </div>
-    </div>
-</div>
-<!--얼럿 : e-->
-
 <!--로딩중 : s-->
 <div class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
     <div class="loading">
@@ -427,5 +230,6 @@
     </div>
 </div>
 <!--로딩중 : e-->
+
 </body>
 </html>
