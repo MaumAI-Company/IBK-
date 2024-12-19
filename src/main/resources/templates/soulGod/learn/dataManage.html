@@ -358,7 +358,7 @@
                         $('#searchType').val('').niceSelect('update');
                         $('#searchKeyword').val('');
                     }
-                    $('tbody').html(contents);
+                    $('#contents').html(contents);
                     $('.totalCnt').text(data.list.length);
                     fn_settingChip($('#searchJson').val(), true);
 
@@ -559,7 +559,7 @@
                             <th scope="col" style="background-color:#f9f9ff">사업세부사업</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="contents">
                         </tbody>
                     </table>
                 </div>
