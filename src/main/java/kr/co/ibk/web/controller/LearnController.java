@@ -94,11 +94,12 @@ public class LearnController extends BaseCont {
         }
 
         params.setPagingAt("N");
-        params.setLimitCnt("50");
+        params.setLimitCnt(50);
         List<CardLearningDataInfo> list = cardLearningDataService.getList(params);
 
         return Map.of(
-                "list", list
+                "list", list,
+                "params", params
         );
     }
 

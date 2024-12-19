@@ -291,7 +291,10 @@
             frm.prop('action', '?');
             frm.submit();*/
 
+            $('#loading').addClass('active');
+
             let jsonData = {
+                'searchJson': $('#searchJson').val(),
                 'searchTypeJson': $('#searchTypeJson').val(),
                 'searchTarget': $('[name=searchTarget]:checked').val(),
                 'searchStartDate': searchStartDate,
@@ -305,7 +308,7 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
-                    console.log(data);
+                    $('.selected_filter').html('');
                     let contents;
                     if (data.list.length > 0) {
                         $.each(data.list, function (idx, item) {
@@ -344,8 +347,22 @@
                         $('.nodata').show();
                         $('.contentsArea').hide();
                     }
+
+                    if (data.params) {
+                        let params = data.params;
+                        $('#searchJson').val(params.searchJson);
+                        $('#searchTypeJson').val(params.searchTypeJson);
+                        $('#searchStartDate').val(params.searchStartDate);
+                        $('#searchEndDate').val(params.searchEndDate);
+                        $('#searchTarget').val(params.searchTarget).prop('checked', true);
+                        $('#searchType').val('').niceSelect('update');
+                        $('#searchKeyword').val('');
+                    }
                     $('tbody').html(contents);
-                    fn_settingChip($('#searchJson').val());
+                    $('.totalCnt').text(data.list.length);
+                    fn_settingChip($('#searchJson').val(), true);
+
+                    $('#loading').removeClass('active');
                 },
                 error: function (error) {
                     console.log(error);
@@ -387,6 +404,8 @@
             </div>
 
             <form id="form1" th:object="${params}">
+                <input type="hidden" th:field="*{searchJson}">
+                <input type="hidden" th:field="*{searchTypeJson}">
                 <div class="board_top">
                     <div>
                         <div class="total_num">
@@ -860,7 +879,7 @@
 <!--학습데이터 팝업 : e-->
 
 <!--로딩중 : s-->
-<div class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
+<div id="loading" class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
     <div class="loading">
         <p>Loading</p>
         <div class="loading_circle_rotate">

@@ -54,7 +54,12 @@
                 DESC
             </otherwise>
         </choose>-->
-        <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
+        <if test="pagingAt != null and pagingAt == 'Y'.toString()">
+            <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
+        </if>
+        <if test="limitCnt != null and limitCnt != ''">
+            limit #{limitCnt}
+        </if>
     </select>
 
     <sql id="columns">
