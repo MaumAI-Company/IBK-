@@ -76,7 +76,7 @@ public class LearnController extends BaseCont {
         model.addAttribute("pagingInfo", params.getPaginationInfo());
         model.addAttribute("params", params);
         model.addAttribute("mc", "ico_database");
-        model.addAttribute("pageTitle", "학습 데이터 등록");
+        model.addAttribute("pageTitle", "학습 데이터 조회");
 
         return "/soulGod/learn/dataManageView";
     }
