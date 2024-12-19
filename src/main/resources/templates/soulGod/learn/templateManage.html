@@ -143,6 +143,8 @@
         function fn_templateDetailOpen(id, nm) {
             $('#templateId').val(id);
             $('#templateName').text(nm);
+            $('#searchStartDate').val('');
+            $('#searchEndDate').val('');
 
             let jsonData = {
                 "id": id
