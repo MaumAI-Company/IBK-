@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <link rel="stylesheet" href="/ClientUI/plugins/jquery-ui/jquery-ui.min.css">
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/index.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/monthpicker/jquery.mtz.monthpicker.js"></script>
+    <style>
+        .tbl_list {
+            overflow: hidden
+        }
+
+        .tbl_list > thead > tr > th {
+            padding: 0 8px
+        }
+
+        .tbl_list > tbody > tr > td {
+            padding: 0 8px
+        }
+
+        @media screen and (max-width: 1851px) {
+            .tbl_wrap {
+                width: 100%;
+                overflow-x: auto;
+                white-space: nowrap
+            }
+
+            .tbl_list {
+                width: auto
+            }
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            fn_setDatePicker('#stDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        maxDate: $('#edDt').val() ? $('#edDt').val() : false
+                    })
+                }
+            });
+            fn_setDatePicker('#edDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        minDate: $('#stDt').val() ? $('#stDt').val() : false
+                    })
+                }
+            });
+
+            fn_settingChip($('#searchJson').val());
+            $('.selected_filter .btn_del').remove(); // 조회 페이지 > 칩 제거 불가능
+        });
+
+        function movePage(url, pageNo) {
+            $('#currentPageNo').val(pageNo);
+            $('#form1').attr({action: '/soulGod/learn/dataManageView', method: 'post'}).unbind('submit').submit();
+        }
+
+        function fn_search() {
+            fn_searchConditionSet();
+
+            let frm = $('#form1');
+            frm.prop('action', '?');
+            frm.submit();
+        }
+
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <div id="container" style="padding-left:0">
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">학습 관리</h2>
+                    <h3 class="page_tit">학습 데이터 조회</h3>
+                </div>
+            </div>
+
+            <form id="form1" th:object="${params}">
+                <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
+                <input type="hidden" th:field="${params.searchJson}">
+                <input type="hidden" th:field="${params.searchTypeJson}">
+                <div class="board_top">
+                    <div>
+                        <div class="total_num">
+                            <p>
+                                <b th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? #numbers.formatInteger(pagingInfo.totalRecordCount , '0', 'COMMA') : 0}"></b>
+                                건의 학습데이터가 있습니다.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mla">
+                        <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
+                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
+                                onchange="fn_search()">
+                            <option value="10" th:selected="${pagingInfo.criteria.recordsPerPage == 10}" selected>10개
+                            </option>
+                            <option value="20" th:selected="${pagingInfo.criteria.recordsPerPage == 20}">20개</option>
+                            <option value="30" th:selected="${pagingInfo.criteria.recordsPerPage == 30}">30개</option>
+                            <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
+                            <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
+                        </select>
+                        <div class="filter_area" style="display: none">
+                            <div class="filter">
+                                <input type="text" id="searchStartDate" name="searchStartDate"
+                                       th:value="*{searchStartDate.substring(0, 4) + '-' + searchStartDate.substring(4, 6)}"
+                                       class="datepicker" readonly>
+                                <input type="text" id="searchEndDate" name="searchEndDate"
+                                       th:value="*{searchEndDate.substring(0, 4) + '-' + searchEndDate.substring(4, 6)}"
+                                       class="datepicker" readonly>
+                                <input type="radio" name="searchTarget" id="searchTarget_B"
+                                       value="1"
+                                       th:checked="${params.searchTarget == '1'}">
+                                <input type="radio" name="searchTarget" id="searchTarget_Y"
+                                       value="2"
+                                       th:checked="${params.searchTarget == '2'}">
+                                <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
+                                        th:class="${item}" th:text="${item.name}"></option>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="selected_filter"></div>
+            <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
+            <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
+                <p>검색 결과가 없습니다.</p>
+            </div>
+            <!--데이터가 없을 때 : e-->
+
+            <div class="tbl_wrap">
+                <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
+                    <caption>데이터 관리 : No, 학습 데이터 명, 등록자, 상태, 학습 가능 유무, 등록일시로 구성</caption>
+                    <colgroup>
+                        <col style="width: 2.5%">
+                        <col style="width: 4%;">
+                        <col style="width: 5%;">
+                        <col style="width: 4.5%;">
+                        <col style="width: 11%">
+                        <col style="width: 3%;">
+
+                        <col style="width: 4.5%;">
+                        <col style="width: 6%;">
+                        <col style="width: 4.5%;">
+                        <col style="width: 3.5%;">
+                        <col style="width: 6.5%;">
+
+                        <col style="width: 6.5%;">
+                        <col style="width: auto">
+                        <col style="width: auto">
+                        <col style="width: 7%">
+
+                        <col style="width: 6.5%;">
+                        <col style="width: 7%;">
+                        <col style="width: 5.5%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">대상</th>
+                        <th scope="col">예산집행년월</th>
+                        <th scope="col">부점코드</th>
+                        <th scope="col">카드번호</th>
+                        <th scope="col">승인시간</th>
+
+                        <th scope="col">매출금액</th>
+                        <th scope="col">가맹점명</th>
+                        <th scope="col">업종명</th>
+                        <th scope="col">영업일여부</th>
+                        <th scope="col">가맹점상세주소</th>
+
+                        <th scope="col">부점주소</th>
+                        <th scope="col">가맹점사업자등록번호</th>
+                        <th scope="col">매출가맹점번호</th>
+                        <th scope="col" class="pr">가맹점업종코드</th>
+
+                        <th scope="col" style="background-color:#f9f9ff">예산관리비목관리번호</th>
+                        <th scope="col" style="background-color:#f9f9ff">예산집행사유코드</th> <!--예산관리비목관리번호_예산집행사유코드-->
+                        <th scope="col" style="background-color:#f9f9ff">사업세부사업</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item, idx:${list}">
+                        <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                        <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                        <td th:text="${item.bdgtPrfrYm}"></td>
+                        <td th:text="${item.brcd}"></td>
+                        <td th:text="${item.cdn}"></td>
+                        <td th:text="${item.bdgtTstmUseHms}"></td>
+
+                        <td th:text="${item.amslAmt}"></td>
+                        <td th:text="${item.afstNm}"></td>
+                        <td th:text="${item.tpbsNm}"></td>
+                        <td th:text="${item.bzdyYn}"></td>
+                        <td th:text="${item.afstDtlAdr}"></td>
+
+                        <td th:text="${item.brncAdr}"></td>
+                        <!--output data : s-->
+                        <td th:text="${item.afstBzn}"></td>
+                        <td th:text="${item.amslAfstNo}"></td>
+                        <td th:text="${item.afstTpbcd}" class="pr"></td>
+                        <!--output data : e-->
+
+                        <td th:text="${item.bdmnItexMngmNo}" style="background-color:#f9f9ff"></td>
+                        <td th:text="${item.bdgtPrfrRsnFrcsCon}" style="background-color:#f9f9ff"></td>
+                        <td th:text="${item.bdgtBsnsFrcsCon}" style="background-color:#f9f9ff"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
+        </div>
+    </div>
+</div>
+
+<!--로딩중 : s-->
+<div class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
+    <div class="loading">
+        <p>Loading</p>
+        <div class="loading_circle_rotate">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+    </div>
+</div>
+<!--로딩중 : e-->
+
+</body>
+</html>

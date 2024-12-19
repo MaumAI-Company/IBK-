@@ -19,9 +19,11 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,6 +38,34 @@ public class LearnController extends BaseCont {
     @RequestMapping("/soulGod/learn/dataManage")
     public String dataManage(Model model,
                              @ModelAttribute CardLearningDataForm params) {
+        /*if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+
+        List<CardLearningDataInfo> list = cardLearningDataService.page(params);
+
+        model.addAttribute("list", list);
+        model.addAttribute("pagingInfo", params.getPaginationInfo());*/
+
+        if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+            params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).substring(0, 7));
+            params.setSearchEndDate(String.valueOf(LocalDate.now()).substring(0, 7));
+        }
+
+        if (ObjectUtils.isEmpty(params.getSearchTarget())) {
+            params.setSearchTarget("1");
+        }
+
+        model.addAttribute("params", params);
+        model.addAttribute("mc", "ico_database");
+        model.addAttribute("pageTitle", "학습 데이터 등록");
+
+        return "/soulGod/learn/dataManage";
+    }
+
+    @RequestMapping("/soulGod/learn/dataManageView")
+    public String dataManageView(Model model,
+                             @ModelAttribute CardLearningDataForm params) {
         if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
             params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
         }
@@ -46,9 +76,31 @@ public class LearnController extends BaseCont {
         model.addAttribute("pagingInfo", params.getPaginationInfo());
         model.addAttribute("params", params);
         model.addAttribute("mc", "ico_database");
-        model.addAttribute("pageTitle", "학습 데이터 등록");
+        model.addAttribute("pageTitle", "학습 데이터 조회");
 
-        return "/soulGod/learn/dataManage";
+        return "/soulGod/learn/dataManageView";
+    }
+
+    /**
+     * 학습 데이터 목록 조회
+     * @param params
+     * @return1
+     */
+    @ResponseBody
+    @PostMapping("/soulGod/learn/dataManage/list")
+    public Map<String, Object> learnDataList(@RequestBody CardLearningDataForm params) {
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+
+        params.setPagingAt("N");
+        params.setLimitCnt(50);
+        List<CardLearningDataInfo> list = cardLearningDataService.getList(params);
+
+        return Map.of(
+                "list", list,
+                "params", params
+        );
     }
 
     /**
@@ -61,9 +113,6 @@ public class LearnController extends BaseCont {
     public int learnDataNmCount(@RequestBody LearningDataForm form) {
         return learningDataService.learnDataNmCount(form);
     }
-    //물을 넣고 4분 익히기
-    //B스프 데우기
-    //4분 후에 ABC 스프 다 넣기
 
     @ResponseBody
     @PostMapping(value = {"/soulGod/learnData/save"})
