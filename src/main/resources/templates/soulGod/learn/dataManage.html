@@ -291,7 +291,7 @@
             frm.prop('action', '?');
             frm.submit();*/
 
-            $('#loading').addClass('active');
+            layerShow('loading');
 
             let jsonData = {
                 'searchJson': $('#searchJson').val(),
@@ -304,7 +304,6 @@
             $.ajax({
                 url: "/soulGod/learn/dataManage/list",
                 type: "post",
-                async: false,
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
@@ -361,11 +360,12 @@
                     $('#contents').html(contents);
                     $('.totalCnt').text(data.list.length);
                     fn_settingChip($('#searchJson').val(), true);
-
-                    $('#loading').removeClass('active');
                 },
                 error: function (error) {
                     console.log(error);
+                },
+                complete :  function() {
+                    layerHide('loading');
                 }
             });
         }
