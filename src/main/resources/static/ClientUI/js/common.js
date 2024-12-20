@@ -656,9 +656,11 @@ function fn_settingChip(searchJson, isRadio) {
         tags += `
                     <div class="chip">
                         <div>${isRadio ? '예산집행년월' : '결과등록년월일'} : ${startDate} ~ ${endDate}</div>
-                        <button type="button" class="btn_del" onclick="fn_removeChip(this, 'searchDate')">
-                            <span class="blind">삭제</span>
-                        </button>
+                         ${!isRadio ? `
+                                <button type="button" class="btn_del" onclick="fn_removeChip(this, 'searchDate')">
+                                    <span class="blind">삭제</span>
+                                </button>
+                            ` : ''}
                     </div>
                 `;
     }
@@ -692,6 +694,17 @@ function fn_settingChip(searchJson, isRadio) {
 
 function fn_removeChip(obj, id) {
     let searchJsonMap = $('#searchJson').val() ? fn_jsonToMap($('#searchJson').val()) : new Map;
+
+    // 검색필터가 라디오로 설정된 target인 경우 검색 칩 변경 / 검색 필터 변경
+    if (id === 'target' && $('[name=searchTarget]').attr("type") === 'radio') {
+        let currentTarget = searchJsonMap.get("searchTarget");
+        let newTarget = $('[name=searchTarget]').filter(function () {
+            return $(this).val() !== currentTarget;
+        }).val();
+
+        searchJsonMap.set("searchTarget", newTarget);
+        $(`[name=searchTarget][value=${newTarget}]`).prop('checked', true);
+    }
 
     if (id === 'searchType') {
         let findKey = $(obj).siblings('div').attr('class');
