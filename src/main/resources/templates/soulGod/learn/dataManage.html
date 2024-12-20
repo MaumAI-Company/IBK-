@@ -129,6 +129,11 @@
             let templateAt = $('[name=templateAt]:checked');
             let templateName = $('#templateName').val();
 
+            if (!$('#searchJson').val()) {
+                showAlert('warning', '검색 조건 추가 후 진행해주세요.');
+                return false;
+            }
+
             if (!$.trim(dataName)) {
                 showAlert('warning', '학습데이터 명 입력은 필수입니다.');
                 return false;
@@ -360,6 +365,9 @@
                     $('#contents').html(contents);
                     $('.totalCnt').text(data.list.length);
                     fn_settingChip($('#searchJson').val(), true);
+
+                    // 검색 조건 있는 경우 등록버튼 활성화
+                    $('#saveBtn').attr('disabled', !$('#searchJson').val());
                 },
                 error: function (error) {
                     console.log(error);
@@ -397,7 +405,7 @@
                     <h3 class="page_tit">학습 데이터 등록</h3>
                 </div>
                 <div class="btn_area">
-                    <button type="button" class="btn line_cool_grey30" onclick="fn_learningDataOpen()">
+                    <button type="button" id="saveBtn" class="btn line_cool_grey30" onclick="fn_learningDataOpen()" disabled>
                         <span>등록</span>
                     </button>
                 </div>
