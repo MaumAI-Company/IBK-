@@ -77,7 +77,7 @@
     </style>
     <script type="text/javascript">
         $(function () {
-            fn_setMonthPicker();
+            //fn_setMonthPicker();
         })
 
         function movePage(url, pageNo) {
@@ -184,6 +184,7 @@
                         $('#searchStartDate').val(`${year - 2}-${month}`);
                         $('#searchEndDate').val(`${year}-${month}`);
 
+                        fn_setMonthPicker();
                         layerShow('templateDetail');
                     } else {
                         showAlert('warning', '학습 데이터가 존재하지 않습니다.');

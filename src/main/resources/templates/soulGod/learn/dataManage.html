@@ -348,7 +348,7 @@
                         $('.nodata').hide();
                         $('.contentsArea').show();
                     } else {
-                        $('.nodata').show();
+                        $('.nodata').show().find('p').text('검색 결과가 없습니다.');
                         $('.contentsArea').hide();
                     }
 
@@ -421,7 +421,7 @@
                                 <b class="totalCnt">0</b>
                                 건의 학습데이터가 있습니다.
                             </p>
-                            <div>※ 검색조건 추가 후 검색이 가능합니다. <br>※ 20개의 샘플데이터만 보여집니다</div>
+                            <div>※ 20개의 샘플데이터만 보여집니다</div>
                         </div>
                     </div>
                     <div class="mla">
@@ -513,7 +513,7 @@
 
             <span>
                 <div class="nodata">
-                    <p>검색 결과가 없습니다.</p>
+                    <p>검색조건 추가 후 검색이 가능합니다.</p>
                 </div>
 
                 <div class="tbl_wrap contentsArea">
@@ -889,7 +889,7 @@
 <!--로딩중 : s-->
 <div id="loading" class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
     <div class="loading">
-        <p>Loading</p>
+        <p>데이터 추출중 ..</p>
         <div class="loading_circle_rotate">
             <div class="circle"></div>
             <div class="circle"></div>
