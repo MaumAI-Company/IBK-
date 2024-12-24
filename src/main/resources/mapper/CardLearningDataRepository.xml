@@ -147,7 +147,7 @@
 
         /*일자 검색*/
         <if test="searchStartDate != null and searchEndDate != null">
-            AND cld.BDGT_PRFR_YM between #{searchStartDate} and #{searchEndDate}
+            AND cld.BDGT_PRFR_YM BETWEEN REPLACE(#{searchStartDate}, '-', '') AND REPLACE(#{searchEndDate}, '-', '')
         </if>
     </sql>
 </mapper>
