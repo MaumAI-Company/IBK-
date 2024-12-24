@@ -55,12 +55,15 @@
         });
 
         function movePage(url, pageNo) {
+            layerShow('loading');
             $('#currentPageNo').val(pageNo);
             $('#form1').attr({action: '/soulGod/learn/dataManageView', method: 'post'}).unbind('submit').submit();
         }
 
         function fn_search() {
             fn_searchConditionSet();
+
+            layerShow('loading');
 
             let frm = $('#form1');
             frm.prop('action', '?');
@@ -218,9 +221,10 @@
 </div>
 
 <!--로딩중 : s-->
-<div class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
+<div id="loading" class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
     <div class="loading">
-        <p>Loading</p>
+        <p>학습 데이터를 불러오고 있습니다</p>
+        <p>잠시만 기다려 주세요.</p>
         <div class="loading_circle_rotate">
             <div class="circle"></div>
             <div class="circle"></div>
