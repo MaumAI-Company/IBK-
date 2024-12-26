@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LearningDataInputInfo {
     private String colName;
-    private Integer templateId;
+    private Integer dataId;
     private String inoutGbn;
 }
 

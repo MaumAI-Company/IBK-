@@ -66,7 +66,7 @@ public class LearningModelService extends _BaseService {
         saveCnt = learningModelInputRepository.insertList(form.getId(), form.getInputArr(), InOutGbnType.INPUT.name());
         saveCnt += learningModelInputRepository.insertList(form.getId(), form.getOutputArr(), InOutGbnType.OUTPUT.name());
 
-        if (isInsert &&
+        /*if (isInsert &&
                 !ObjectUtils.isEmpty(form.getTemplateAt()) && "Y".equals(form.getTemplateAt())) {
             //template save
             TemplateForm tempForm = new TemplateForm();
@@ -78,7 +78,7 @@ public class LearningModelService extends _BaseService {
 
             saveCnt = templateInputRepository.insertList(tempForm.getId(), form.getInputArr(), InOutGbnType.INPUT.name());
             saveCnt += templateInputRepository.insertList(tempForm.getId(), form.getOutputArr(), InOutGbnType.OUTPUT.name());
-        }
+        }*/
 
         if (saveCnt > 0) {
             map.put("status", "SUCCESS");

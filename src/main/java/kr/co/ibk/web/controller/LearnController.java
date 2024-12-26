@@ -177,6 +177,21 @@ public class LearnController extends BaseCont {
 
         return "/soulGod/learn/learningDataManage";
     }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/learningDataManage/detail"})
+    public HashMap<String, Object> learningDataManageDetail(@RequestBody TemplateForm form) {
+        HashMap<String, Object> returnMap = new HashMap<>();
+        returnMap.put("data", learningDataService.getLoad(form));
+        return returnMap;
+    }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/learningDataManage/save"})
+    public HashMap<String, Object> learningDataManageSave(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
+
+        return learningModelService.save(form, memberInfo);
+    }
     //학습데이터관리 : e
 
 
