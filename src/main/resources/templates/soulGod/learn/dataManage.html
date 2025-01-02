@@ -53,17 +53,17 @@
     </style>
     <script type="text/javascript">
         $(function () {
-            fn_setDatePicker('#stDt', {
+            fn_setDatePicker('#searchStartDate', {
                 onShow: function (ct) {
                     this.setOptions({
-                        maxDate: $('#edDt').val() ? $('#edDt').val() : false
+                        maxDate: $('#searchEndDate').val() ? $('#searchEndDate').val() : false
                     })
                 }
             });
-            fn_setDatePicker('#edDt', {
+            fn_setDatePicker('#searchEndDate', {
                 onShow: function (ct) {
                     this.setOptions({
-                        minDate: $('#stDt').val() ? $('#stDt').val() : false
+                        minDate: $('#searchStartDate').val() ? $('#searchStartDate').val() : false
                     })
                 }
             });
@@ -86,9 +86,7 @@
                 } else {
                     $('#templateName').prop('disabled', false);
                 }
-            })
-
-            fn_setMonthPicker();
+            });
 
             //검색일자 경고 문구
             $('.fc_error').hide();
@@ -322,7 +320,7 @@
                             <td>${idx + 1}</td>
 
                             <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
-                            <td>${item.bdgtPrfrYm}</td>
+                            <td>${item.tstmYmd}</td>
                             <td>${item.brcd}</td>
                             <td>${item.cdn}</td>
                             <td>${item.bdgtTstmUseHms}</td>
@@ -433,7 +431,7 @@
                             <div class="filter">
                                 <div class="inner">
                                     <dl>
-                                        <dt>예산집행기간</dt>
+                                        <dt>카드증빙기간</dt>
                                         <dd class="fc_error">* 검색 일자가 없거나, 시작 월이 종료 월보다 이후일 수 없습니다.</dd>
                                         <dd>
                                             <div class="term_form">
@@ -546,7 +544,7 @@
                         <tr>
                             <th scope="col">No</th>
                             <th scope="col">대상</th>
-                            <th scope="col">예산집행년월</th>
+                            <th scope="col">카드증빙년월일</th>
                             <th scope="col">부점코드</th>
                             <th scope="col">카드번호</th>
                             <th scope="col">승인시간</th>

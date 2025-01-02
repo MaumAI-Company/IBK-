@@ -34,7 +34,10 @@
         }
     </style>
     <script type="text/javascript">
+
         $(function () {
+            layerHide('loading');
+
             fn_setDatePicker('#stDt', {
                 onShow: function (ct) {
                     this.setOptions({
@@ -165,7 +168,7 @@
                     <tr>
                         <th scope="col">No</th>
                         <th scope="col">대상</th>
-                        <th scope="col">예산집행년월</th>
+                        <th scope="col">카드증빙년월일</th>
                         <th scope="col">부점코드</th>
                         <th scope="col">카드번호</th>
                         <th scope="col">승인시간</th>
@@ -190,7 +193,7 @@
                     <tr th:each="item, idx:${list}">
                         <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
                         <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
-                        <td th:text="${item.bdgtPrfrYm}"></td>
+                        <td th:text="${item.tstmYmd}"></td>
                         <td th:text="${item.brcd}"></td>
                         <td th:text="${item.cdn}"></td>
                         <td th:text="${item.bdgtTstmUseHms}"></td>
@@ -221,7 +224,7 @@
 </div>
 
 <!--로딩중 : s-->
-<div id="loading" class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
+<div id="loading" class="loading_layer active"> <!--노출 원할 시 클래스 active 추가-->
     <div class="loading">
         <p>학습 데이터를 불러오고 있습니다</p>
         <p>잠시만 기다려 주세요.</p>
