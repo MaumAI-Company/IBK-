@@ -52,8 +52,8 @@ public class ReportController extends BaseCont {
     }
 
     @GetMapping("/soulGod/report/card/xlsDown")
-    public void reportCardExcelDown(@RequestParam(name = "searchStartDate") String searchStartDate,
-                                    @RequestParam(name = "searchEndDate") String searchEndDate,
+    public void reportCardExcelDown(@RequestParam(name = "searchStartDate", required = false) String searchStartDate,
+                                    @RequestParam(name = "searchEndDate", required = false) String searchEndDate,
                                     @RequestParam(name = "searchTarget", required = false) String searchTarget,
                                     @RequestParam(name = "searchTypeJson", required = false) String searchTypeJson,
                                     HttpServletResponse response) throws UnsupportedEncodingException {
