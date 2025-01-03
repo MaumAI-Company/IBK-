@@ -34,9 +34,9 @@
         }
     </style>
     <script type="text/javascript">
-
         $(function () {
-            layerHide('loading');
+            $('.nodata').hide();
+            $('.contentsArea').hide();
 
             fn_setDatePicker('#stDt', {
                 onShow: function (ct) {
@@ -52,9 +52,10 @@
                     })
                 }
             });
+        });
 
-            fn_settingChip($('#searchJson').val(), true);
-            $('.selected_filter .btn_del').remove(); // 조회 페이지 > 칩 제거 불가능
+        $(window).on('load', function () {
+            fn_search();
         });
 
         function movePage(url, pageNo) {
@@ -63,14 +64,122 @@
             $('#form1').attr({action: '/soulGod/learn/dataManageView', method: 'post'}).unbind('submit').submit();
         }
 
-        function fn_search() {
+        function fn_search(pageNo) {
+
+            let searchStartDate = $('#searchStartDate').val();
+            let searchEndDate = $('#searchEndDate').val();
+            pageNo && $('#currentPageNo').val(pageNo);
+            let recordsPerPage = $('#recordsPerPage').val();
             fn_searchConditionSet();
 
-            layerShow('loading');
+            $('#loading').addClass('active');
 
-            let frm = $('#form1');
-            frm.prop('action', '?');
-            frm.submit();
+            let jsonData = {
+                'searchJson': $('#searchJson').val(),
+                'searchTypeJson': $('#searchTypeJson').val(),
+                'searchTarget': $('[name=searchTarget]:checked').val(),
+                'searchStartDate': searchStartDate,
+                'searchEndDate': searchEndDate,
+                'currentPageNo': $('#currentPageNo').val(),
+                'recordsPerPage': recordsPerPage
+            }
+
+            $.ajax({
+                url: "/soulGod/learn/dataManageView/list",
+                type: "post",
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    $('.selected_filter').html('');
+                    let contents;
+                    if (data.list.length > 0) {
+                        $.each(data.list, function (idx, item) {
+                            contents += '<tr>';
+
+                            contents += `
+                            <td>${data.pageInfo.totalRecordCount - ((data.pageInfo.currentPage - 1) * data.pageInfo.recordsPerPage + idx)}</td>
+                            <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
+                            <td>${item.tstmYmd != null ? item.tstmYmd.replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3') : '-'}</td>
+                            <td>${item.brcd}</td>
+                            <td>${item.cdn}</td>
+                            <td>${item.bdgtTstmUseHms}</td>
+
+                            <td>${item.amslAmt}</td>
+                            <td>${item.afstNm}</td>
+                            <td>${item.tpbsNm}</td>
+                            <td>${item.bzdyYn}</td>
+                            <td>${item.afstDtlAdr}</td>
+
+                            <td>${item.brncAdr}</td>
+                            <td>${item.afstBzn}</td>
+                            <td>${item.amslAfstNo}</td>
+                            <td>${item.afstTpbcd}</td>
+
+                            <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo}</td>
+                            <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon}</td>
+                            <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon}</td>
+                            `;
+
+                            contents += '</tr>';
+                        })
+                        $('.nodata').hide();
+                        $('.contentsArea').show();
+                    } else {
+                        $('.nodata').show();
+                        $('.contentsArea').hide();
+                    }
+
+                    fn_settingChip($('#searchJson').val(), true);
+                    $('.selected_filter .btn_del').remove(); // 조회 페이지 > 칩 제거 불가능
+
+                    $('tbody').html(contents);
+                    $('.totalCnt').text(data.list.length);
+
+                    // pagination
+                    let paginationHtml = '';
+                    const pageInfo = data.pageInfo;
+                    $('#recordsPerPage').val(pageInfo.recordsPerPage).niceSelect('update');
+                    $('#totalNum').text(fn_setCommas(pageInfo.totalRecordCount));
+
+                    if (pageInfo.hasPreviousPage) {
+                        paginationHtml += `
+                            <button type="button" class="page_nav prev" onclick="fn_search(${pageInfo.firstPage - 1})">
+                                <span class="blind">이전</span>
+                            </button>
+                            <button type="button" onclick="fn_search(1)">1</button>
+                            <span>...</span>
+                        `;
+                    }
+
+                    for (let i = pageInfo.firstPage; i <= pageInfo.lastPage; i++) {
+                        if (i === pageInfo.currentPage) {
+                            paginationHtml += `
+                                <button type="button" class="active" onclick="fn_search(${i})">${i}</button>
+                            `;
+                        } else {
+                            paginationHtml += `
+                                <button type="button" onclick="fn_search(${i})">${i}</button>
+                            `;
+                        }
+                    }
+
+                    if (pageInfo.hasNextPage) {
+                        paginationHtml += `
+                            <span>...</span>
+                            <button type="button" onclick="fn_search(${pageInfo.totalPageCount})">${pageInfo.totalPageCount}</button>
+                            <button type="button" class="page_nav next" onclick="fn_search(${pageInfo.lastPage + 1})">
+                                <span class="blind">다음</span>
+                            </button>
+                        `;
+                    }
+
+                    $('.pagination').html(paginationHtml);
+                    $('#loading').removeClass('active');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
         }
 
     </script>
@@ -94,8 +203,7 @@
                     <div>
                         <div class="total_num">
                             <p>
-                                <b th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? #numbers.formatInteger(pagingInfo.totalRecordCount , '0', 'COMMA') : 0}"></b>
-                                건의 학습데이터가 있습니다.
+                                <b id="totalNum"></b>건의 학습데이터가 있습니다.
                             </p>
                         </div>
                     </div>
@@ -103,20 +211,19 @@
                         <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
                         <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
                                 onchange="fn_search()">
-                            <option value="10" th:selected="${pagingInfo.criteria.recordsPerPage == 10}" selected>10개
-                            </option>
-                            <option value="20" th:selected="${pagingInfo.criteria.recordsPerPage == 20}">20개</option>
-                            <option value="30" th:selected="${pagingInfo.criteria.recordsPerPage == 30}">30개</option>
-                            <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
-                            <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
+                            <option value="10">10개</option>
+                            <option value="20" selected>20개</option>
+                            <option value="30">30개</option>
+                            <option value="40">40개</option>
+                            <option value="50">50개</option>
                         </select>
                         <div class="filter_area" style="display: none">
                             <div class="filter">
                                 <input type="text" id="searchStartDate" name="searchStartDate"
-                                       th:value="*{searchStartDate.substring(0, 4) + '-' + searchStartDate.substring(4, 6)}"
+                                       th:value="*{searchStartDate}"
                                        class="datepicker" readonly>
                                 <input type="text" id="searchEndDate" name="searchEndDate"
-                                       th:value="*{searchEndDate.substring(0, 4) + '-' + searchEndDate.substring(4, 6)}"
+                                       th:value="*{searchEndDate}"
                                        class="datepicker" readonly>
                                 <input type="radio" name="searchTarget" id="searchTarget_B"
                                        value="1"
@@ -132,14 +239,11 @@
                 </div>
             </form>
             <div class="selected_filter"></div>
-            <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
-            <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
+            <div class="nodata">
                 <p>검색 결과가 없습니다.</p>
             </div>
-            <!--데이터가 없을 때 : e-->
-
-            <div class="tbl_wrap">
-                <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
+            <div class="tbl_wrap contentsArea">
+                <table class="tbl_list">
                     <caption>데이터 관리 : No, 학습 데이터 명, 등록자, 상태, 학습 가능 유무, 등록일시로 구성</caption>
                     <colgroup>
                         <col style="width: 2.5%">
@@ -189,40 +293,14 @@
                         <th scope="col" style="background-color:#f9f9ff">사업세부사업</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr th:each="item, idx:${list}">
-                        <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
-                        <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
-                        <td th:text="${item.tstmYmd}"></td>
-                        <td th:text="${item.brcd}"></td>
-                        <td th:text="${item.cdn}"></td>
-                        <td th:text="${item.bdgtTstmUseHms}"></td>
-
-                        <td th:text="${item.amslAmt}"></td>
-                        <td th:text="${item.afstNm}"></td>
-                        <td th:text="${item.tpbsNm}"></td>
-                        <td th:text="${item.bzdyYn}"></td>
-                        <td th:text="${item.afstDtlAdr}"></td>
-
-                        <td th:text="${item.brncAdr}"></td>
-                        <!--output data : s-->
-                        <td th:text="${item.afstBzn}"></td>
-                        <td th:text="${item.amslAfstNo}"></td>
-                        <td th:text="${item.afstTpbcd}" class="pr"></td>
-                        <!--output data : e-->
-
-                        <td th:text="${item.bdmnItexMngmNo}" style="background-color:#f9f9ff"></td>
-                        <td th:text="${item.bdgtPrfrRsnFrcsCon}" style="background-color:#f9f9ff"></td>
-                        <td th:text="${item.bdgtBsnsFrcsCon}" style="background-color:#f9f9ff"></td>
-                    </tr>
+                    <tbody id="contents">
                     </tbody>
                 </table>
             </div>
-            <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
+            <div class="pagination" id="pagination"></div>
         </div>
     </div>
 </div>
-
 <!--로딩중 : s-->
 <div id="loading" class="loading_layer active"> <!--노출 원할 시 클래스 active 추가-->
     <div class="loading">
@@ -237,6 +315,5 @@
     </div>
 </div>
 <!--로딩중 : e-->
-
 </body>
 </html>

@@ -8,6 +8,7 @@ import kr.co.ibk.model.CardLearningDataForm;
 import kr.co.ibk.model.LearningDataForm;
 import kr.co.ibk.model.LearningModelForm;
 import kr.co.ibk.model.TemplateForm;
+import kr.co.ibk.model.paging.PageDto;
 import kr.co.ibk.service.CardLearningDataService;
 import kr.co.ibk.service.LearningDataService;
 import kr.co.ibk.service.LearningModelService;
@@ -65,15 +66,8 @@ public class LearnController extends BaseCont {
 
     @RequestMapping("/soulGod/learn/dataManageView")
     public String dataManageView(Model model,
-                             @ModelAttribute CardLearningDataForm params) {
-        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
-            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
-        }
+                                 @ModelAttribute CardLearningDataForm params) {
 
-        List<CardLearningDataInfo> list = cardLearningDataService.page(params);
-
-        model.addAttribute("list", list);
-        model.addAttribute("pagingInfo", params.getPaginationInfo());
         model.addAttribute("params", params);
         model.addAttribute("mc", "ico_database");
         model.addAttribute("pageTitle", "학습 데이터 조회");
@@ -83,6 +77,29 @@ public class LearnController extends BaseCont {
 
     /**
      * 학습 데이터 목록 조회
+     *
+     * @param params
+     * @return1
+     */
+    @ResponseBody
+    @PostMapping("/soulGod/learn/dataManageView/list")
+    public Map<String, Object> learnDataListView(@RequestBody CardLearningDataForm params){
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+        List<CardLearningDataInfo> list = cardLearningDataService.page(params);
+
+        PageDto pageDto = new PageDto(params.getPaginationInfo(), params.getRecordsPerPage());
+
+        return Map.of(
+                "list", list,
+                "pageInfo", pageDto
+        );
+    }
+
+    /**
+     * 학습 데이터 목록 조회
+     *
      * @param params
      * @return1
      */
@@ -105,6 +122,7 @@ public class LearnController extends BaseCont {
 
     /**
      * 학습데이터명 중복 체크
+     *
      * @param form
      * @return
      */

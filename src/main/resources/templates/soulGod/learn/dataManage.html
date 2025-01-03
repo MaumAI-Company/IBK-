@@ -320,7 +320,7 @@
                             <td>${idx + 1}</td>
 
                             <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
-                            <td>${item.tstmYmd}</td>
+                            <td>${item.tstmYmd != null ? item.tstmYmd.replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3') : '-'}</td>
                             <td>${item.brcd}</td>
                             <td>${item.cdn}</td>
                             <td>${item.bdgtTstmUseHms}</td>
