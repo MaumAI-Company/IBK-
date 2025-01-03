@@ -5,9 +5,9 @@
 <mapper namespace="kr.co.ibk.repository.LearningModelRepository">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="LearningModelForm">
         INSERT INTO maummcc.LEARNING_MODEL
-        (LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM, HDQR_BOB_DCD)
+        (LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM, HDQR_BOB_DCD, EPOCH, LEARNING_RATE, BATCH_SIZE)
         VALUES (#{learningId}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), #{learnName}, '0',
-                'SUCCESS', current_timestamp(), #{hdqrBobDcd});
+                'SUCCESS', current_timestamp(), #{hdqrBobDcd}, #{epoch}, #{learningRate}, #{batchSize});
     </insert>
     <select id="getLoad" resultType="LearningModelInfo" parameterType="Integer">
         select
@@ -45,6 +45,11 @@
 			 ]]>
         </if>
 
+        /*대상 검색*/
+        <if test="searchTarget != null and searchTarget != ''">
+            AND lm.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+
         /*상태 검색*/
         <if test="statusType != null and statusType != ''">
             AND lm.DEPLOY_STATUS = #{statusType}
@@ -52,9 +57,10 @@
 
         /*학습 가능 유무*/
 
-
+        /*키워드 검색*/
         <if test="searchKeyword != null and searchKeyword != ''">
-            AND lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+            AND (lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
         </if>
     </sql>
     <select id="getList" resultType="LearningModelInfo" parameterType="LearningModelForm">
@@ -95,6 +101,7 @@
         SELECT
             COUNT(*)
         from LEARNING_MODEL lm
+        inner join HC_MEMBER hm on lm.REG_ID = hm.MEM_ID
         <include refid="where"></include>
     </select>
 

@@ -305,7 +305,7 @@
 
                             <div class="filter">
                                 <div class="inner">
-                                    <dl>
+                                    <!--<dl>
                                         <dt>조회기간</dt>
                                         <dd>
                                             <div class="term_form">
@@ -319,6 +319,20 @@
                                                        class="datepicker" th:value="${params.searchEndDate}"
                                                        readonly>
                                             </div>
+                                        </dd>
+                                    </dl>-->
+                                    <dl>
+                                        <dt>
+                                            <label for="searchTarget">대상</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchTarget" id="searchTarget">
+                                                <option value="" selected>전체</option>
+                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부
+                                                </option>
+                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
+                                            </select>
                                         </dd>
                                     </dl>
                                     <dl>
@@ -341,7 +355,7 @@
                                             </select>
                                         </dd>
                                     </dl>
-                                    <dl>
+                                    <!--<dl>
                                         <dt>
                                             <label for="learningType">학습 가능 유무</label>
                                         </dt>
@@ -352,23 +366,22 @@
                                                 <option value="">학습 불가</option>
                                             </select>
                                         </dd>
-                                    </dl>
-                                    <!--<dl>
+                                    </dl>-->
+                                    <dl>
                                         <dt>
                                             <label>검색어</label>
                                         </dt>
                                         <dd>
                                             <div class="search_form">
                                                 <div class="search">
-                                                    <input type="search" th:field="${params.searchKeyword}"
-                                                           placeholder="검색어를 입력하세요.">
+                                                    <input type="search" th:field="${params.searchKeyword}" placeholder="검색어를 입력하세요.">
                                                     <button type="button" class="btn_del" tabindex="-1">
                                                         <span class="blind">삭제</span>
                                                     </button>
                                                 </div>
                                             </div>
                                         </dd>
-                                    </dl>-->
+                                    </dl>
                                     <div class="btn_area">
                                         <button type="button" class="btn line_cool_grey30">
                                             <span>초기화</span>

@@ -40,6 +40,7 @@ public class CardLearningDataInfo {
     private String jobYn; //작업여부
     private String frrgEmn; //최초등록번호
     private LocalDateTime lsmdTs; //최종변경일시
+    private String tstmYmd; // 카드증빙년월일
 }
 
 

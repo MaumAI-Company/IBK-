@@ -655,12 +655,10 @@ function fn_settingChip(searchJson, isRadio) {
     if (!allDateAt && (startDate || endDate)) { //템플릿은 기간이 없기때문에 체크
         tags += `
                     <div class="chip">
-                        <div>${isRadio ? '예산집행년월' : '결과등록년월일'} : ${startDate} ~ ${endDate}</div>
-                         ${!isRadio ? `
-                                <button type="button" class="btn_del" onclick="fn_removeChip(this, 'searchDate')">
-                                    <span class="blind">삭제</span>
-                                </button>
-                            ` : ''}
+                        <div>${isRadio ? '카드증빙년월일' : '결과등록년월일'} : ${startDate} ~ ${endDate}</div>
+                        <button type="button" class="btn_del" onclick="fn_removeChip(this, 'searchDate', ${isRadio})">
+                            <span class="blind">삭제</span>
+                        </button>
                     </div>
                 `;
     }
@@ -692,7 +690,7 @@ function fn_settingChip(searchJson, isRadio) {
     $('.selected_filter').html(tags);
 }
 
-function fn_removeChip(obj, id) {
+function fn_removeChip(obj, id, isReset) {
     let searchJsonMap = $('#searchJson').val() ? fn_jsonToMap($('#searchJson').val()) : new Map;
 
     // 검색필터가 라디오로 설정된 target인 경우 검색 칩 변경 / 검색 필터 변경
@@ -719,7 +717,18 @@ function fn_removeChip(obj, id) {
         searchJsonMap.delete('searchStartDate');
         searchJsonMap.delete('searchEndDate');
 
-        if (fn_removeChipCallBack && typeof fn_removeChipCallBack === 'function') {
+        if (isReset) {
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = String(today.getMonth() + 1).padStart(2, '0');
+            let date = String(today.getDate()).padStart(2, '0');
+
+            $('#searchStartDate').val(`${year - 2}.${month}.${date}`);
+            $('#searchEndDate').val(`${year}.${month}.${date}`);
+        }
+
+
+        if (typeof fn_removeChipCallBack === 'function') {
             fn_removeChipCallBack();
         }
     }

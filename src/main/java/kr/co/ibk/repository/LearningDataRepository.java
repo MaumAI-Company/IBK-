@@ -20,4 +20,6 @@ public interface LearningDataRepository {
     List<LearningDataInfo> getList(LearningDataForm form);
 
     int learnDataNmCount(@Param("dataName") String dataName);
+
+    LearningDataInfo getLoad(Integer id);
 }

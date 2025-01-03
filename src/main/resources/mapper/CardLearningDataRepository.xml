@@ -22,7 +22,7 @@
             cld.BRCD is not null
             <include refid="where"></include>
         order by
-            cld.BDGT_PRFR_YM desc
+            cld.TSTM_YMD desc
         <!--<choose>
             <when test="sortingTarget != null and sortingTarget == 1">
                 cld.BRCD
@@ -83,7 +83,8 @@
         cld.AFST_BZN, /*가맹점사업자등록번호*/
         cld.AMSL_AFST_NO, /*매출가맹점번호*/
         cld.AFST_TPBCD, /*가맹점업종코드*/
-        cld.BDGT_PRFR_YM /*예산집행년월*/
+        cld.BDGT_PRFR_YM, /*예산집행년월*/
+        cld.TSTM_YMD /*카드증빙년월일*/
     </sql>
 
     <select id="getLearningList" resultType="CardLearningDataInfo" parameterType="SearchForm">
@@ -147,7 +148,7 @@
 
         /*일자 검색*/
         <if test="searchStartDate != null and searchEndDate != null">
-            AND cld.BDGT_PRFR_YM BETWEEN REPLACE(#{searchStartDate}, '-', '') AND REPLACE(#{searchEndDate}, '-', '')
+            AND cld.TSTM_YMD BETWEEN REPLACE(#{searchStartDate}, '\.', '') AND REPLACE(#{searchEndDate}, '\.', '')
         </if>
     </sql>
 </mapper>

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,6 +28,9 @@ public class LearningDataInfo {
     /*list*/
     private String templateName;
     private String regName;
+
+    /*detail*/
+    private List<LearningDataInputInfo> inputList;
 }
 
 

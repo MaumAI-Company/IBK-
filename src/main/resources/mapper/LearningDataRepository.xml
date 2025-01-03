@@ -60,6 +60,15 @@
         </if>
     </select>
 
+    <select id="getLoad" resultType="LearningDataInfo" parameterType="Integer">
+        select
+        <include refid="column"></include>
+        from
+        LEARNING_DATA ld
+        where
+        ld.ID = #{id}
+    </select>
+
     <sql id="where">
         where ld.DATA_NAME is not null
         <if test="searchTarget != null and searchTarget != ''">
