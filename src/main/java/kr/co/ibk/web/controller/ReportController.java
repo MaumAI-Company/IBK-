@@ -56,6 +56,7 @@ public class ReportController extends BaseCont {
                                     @RequestParam(name = "searchEndDate", required = false) String searchEndDate,
                                     @RequestParam(name = "searchTarget", required = false) String searchTarget,
                                     @RequestParam(name = "searchTypeJson", required = false) String searchTypeJson,
+                                    @RequestParam(name = "sorting", required = false) String sorting,
                                     HttpServletResponse response) throws UnsupportedEncodingException {
 
         CardInputForm params = new CardInputForm();
@@ -67,6 +68,9 @@ public class ReportController extends BaseCont {
             params.setSearchJsonMap(jsonToHashMap(searchTypeJson));
         }
 
+        if (!ObjectUtils.isEmpty(sorting)) {
+            params.setSorting(sorting);
+        }
         List<CardInputInfo> excelList = cardInputService.list(params);
         cardInputService.reportCardExcelDown(response, excelList);
     }

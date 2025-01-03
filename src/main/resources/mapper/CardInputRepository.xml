@@ -147,7 +147,7 @@
         WHERE ci.BRCD is not null
             <include refid="where"></include>
         ORDER BY
-            ci.FRRG_TS
+            ci.NO
         <choose>
             <when test="sorting != null and sorting == 'asc'">
                 ASC
