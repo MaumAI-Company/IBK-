@@ -204,6 +204,7 @@ public class LearningModelService extends _BaseService {
                     }
                     first = false;
                 }
+                outputFirst = true;
                 body.append("\n");
             }
 
