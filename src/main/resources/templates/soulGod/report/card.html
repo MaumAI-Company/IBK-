@@ -321,7 +321,8 @@
                         <label for="sorting" class="blind">정렬조건</label>
                         <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
                             <option value="asc" th:selected="${params.sorting == 'asc'}">과거순</option>
-                            <option value="desc" th:selected="${params.sorting == 'desc'}">최신순</option>\
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">최신순</option>
+                            \
                         </select>
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter active">
@@ -500,9 +501,8 @@
                         <td th:text="${item.afstDtlAdr}"></td>
                         <td th:text="${item.brncAdr}" class="pr"></td>
                         <td style="background-color:#f9f9ff" th:text="${item.bdgtItexFrcsCon}"></td>
-
-                        <td style="background-color:#f9f9ff" th:text="${item.bdgtBsnsFrcsCon}"></td>
                         <td style="background-color:#f9f9ff" th:text="${item.bdgtPrfrRsnFrcsCon}" class="pr"></td>
+                        <td style="background-color:#f9f9ff" th:text="${item.bdgtBsnsFrcsCon}"></td>
                         <td th:text="${item.rsreYmd != null and item.rsreYmd != '' ?
                             (item.rsreYmd.length() == 8 ? item.rsreYmd.substring(0, 4) + '.' + item.rsreYmd.substring(4, 6) + '.' + item.rsreYmd.substring(6, 8) : '')
                              : ''}"></td>
@@ -555,7 +555,7 @@
                             <tr>
                                 <td>
                                     <div>
-                                        <strong class="tit">예산비목정보내용</strong>
+                                        <strong class="tit">예산관리비목관리번호</strong>
                                         <table class="in_table">
                                             <colgroup>
                                                 <col style="width:25%">
@@ -587,7 +587,7 @@
                                         </table>
                                     </div>
                                     <div>
-                                        <strong class="tit">예산사업ID내용</strong>
+                                        <strong class="tit">사업세부사업</strong>
                                         <table class="in_table">
                                             <colgroup>
                                                 <col style="width:25%">
@@ -597,7 +597,7 @@
                                             <tbody>
                                             <tr>
                                                 <th scope="col">순위</th>
-                                                <th scope="col">사업 ID</th>
+                                                <th scope="col">부점코드-사업-세부사업</th>
                                                 <th scope="col">확률 (%)</th>
                                             </tr>
                                             <tr>
@@ -619,7 +619,7 @@
                                         </table>
                                     </div>
                                     <div>
-                                        <strong class="tit">비목집행사유내용</strong>
+                                        <strong class="tit">예산집행사유코드</strong>
                                         <table class="in_table">
                                             <colgroup>
                                                 <col style="width:25%">
@@ -629,7 +629,7 @@
                                             <tbody>
                                             <tr>
                                                 <th scope="col">순위</th>
-                                                <th scope="col">사업 ID</th>
+                                                <th scope="col">비목-집행사유코드</th>
                                                 <th scope="col">확률 (%)</th>
                                             </tr>
                                             <tr>

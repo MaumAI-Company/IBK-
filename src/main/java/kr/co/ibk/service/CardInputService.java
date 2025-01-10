@@ -57,14 +57,6 @@ public class CardInputService extends _BaseService {
                     }
                     item.setBdgtItexFrcsCon(str);
                 }
-                if (!ObjectUtils.isEmpty(item.getBdgtBsnsFrcsCon())) {
-                    str = "";
-                    strArr = item.getBdgtBsnsFrcsCon().split("\\|");
-                    for (int i = 0; i < strArr.length; i++) {
-                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
-                    }
-                    item.setBdgtBsnsFrcsCon(str);
-                }
                 if (!ObjectUtils.isEmpty(item.getBdgtPrfrRsnFrcsCon())) {
                     str = "";
                     strArr = item.getBdgtPrfrRsnFrcsCon().split("\\|");
@@ -72,6 +64,14 @@ public class CardInputService extends _BaseService {
                         str += (i + 1) + "순위 " + strArr[i] + "\r\n";
                     }
                     item.setBdgtPrfrRsnFrcsCon(str);
+                }
+                if (!ObjectUtils.isEmpty(item.getBdgtBsnsFrcsCon())) {
+                    str = "";
+                    strArr = item.getBdgtBsnsFrcsCon().split("\\|");
+                    for (int i = 0; i < strArr.length; i++) {
+                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
+                    }
+                    item.setBdgtBsnsFrcsCon(str);
                 }
             });
         }
