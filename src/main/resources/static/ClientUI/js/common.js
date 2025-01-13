@@ -655,7 +655,7 @@ function fn_settingChip(searchJson, isRadio) {
     if (!allDateAt && (startDate || endDate)) { //템플릿은 기간이 없기때문에 체크
         tags += `
                     <div class="chip">
-                        <div>${isRadio ? '카드증빙년월일' : '결과등록년월일'} : ${startDate} ~ ${endDate}</div>
+                        <div>${isRadio ? '예산집행년월' : '결과등록년월일'} : ${startDate} ~ ${endDate}</div>
                         <button type="button" class="btn_del" onclick="fn_removeChip(this, 'searchDate', ${isRadio})">
                             <span class="blind">삭제</span>
                         </button>
@@ -721,10 +721,9 @@ function fn_removeChip(obj, id, isReset) {
             let today = new Date();
             let year = today.getFullYear();
             let month = String(today.getMonth() + 1).padStart(2, '0');
-            let date = String(today.getDate()).padStart(2, '0');
 
-            $('#searchStartDate').val(`${year - 2}.${month}.${date}`);
-            $('#searchEndDate').val(`${year}.${month}.${date}`);
+            $('#searchStartDate').val(`${year - 2}-${month}`);
+            $('#searchEndDate').val(`${year}-${month}`);
         }
 
 
