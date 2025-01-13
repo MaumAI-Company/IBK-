@@ -180,25 +180,11 @@
                         let today = new Date();
                         let year = today.getFullYear();
                         let month = String(today.getMonth() + 1).padStart(2, '0');
-                        let date = String(today.getDate()).padStart(2, '0');
 
-                        $('#searchStartDate').val(`${year - 2}.${month}.${date}`);
-                        $('#searchEndDate').val(`${year}.${month}.${date}`);
+                        $('#searchStartDate').val(`${year - 2}-${month}`);
+                        $('#searchEndDate').val(`${year}-${month}`);
 
-                        fn_setDatePicker('#searchStartDate', {
-                            onShow: function (ct) {
-                                this.setOptions({
-                                    maxDate: $('#searchEndDate').val() ? $('#searchEndDate').val() : false
-                                })
-                            }
-                        });
-                        fn_setDatePicker('#searchEndDate', {
-                            onShow: function (ct) {
-                                this.setOptions({
-                                    minDate: $('#searchStartDate').val() ? $('#searchStartDate').val() : false
-                                })
-                            }
-                        });
+                        fn_setMonthPicker();
 
                         layerShow('templateDetail');
                     } else {
@@ -218,8 +204,8 @@
 
         function fn_learnDataSaveChk() {
             let dataName = $('#dataName').val();
-            let searchStartDate = $('#searchStartDate').val().replaceAll('.', '');
-            let searchEndDate = $('#searchEndDate').val().replaceAll('.', '');
+            let searchStartDate = $('#searchStartDate').val();
+            let searchEndDate = $('#searchEndDate').val();
 
             if (!$.trim(dataName)) {
                 showAlert('warning', '학습데이터 명 입력은 필수입니다.');
@@ -233,16 +219,16 @@
             }
 
             if (!searchStartDate || !searchEndDate) {
-                showAlert('warning', '카드증빙기간 선택은 필수입니다.');
+                showAlert('warning', '예산집행기간 선택은 필수입니다.');
                 return false;
             }
 
             if (searchStartDate > searchEndDate) {
-                showAlert('warning', '시작 일자가 종료 일자보다 이후일 수 없습니다. <br> 입력하신 일자를 다시 확인해주세요.');
+                showAlert('warning', '시작 월이 종료 월보다 이후일 수 없습니다. <br> 입력하신 월을 다시 확인해주세요.');
                 return false;
             }
 
-            return false;
+            return true;
         }
 
         /**
@@ -528,7 +514,7 @@
                 <input type="hidden" th:field="${params.searchJson}">
                 <input type="hidden" th:field="${params.searchTypeJson}">
                 <table class="tbl_write">
-                    <caption>템플릿 상세정보 : 템플릿 명, 학습데이터, 선택 조건, 학습데이터 명, 카드증빙기간으로 구성</caption>
+                    <caption>템플릿 상세정보 : 템플릿 명, 학습데이터, 선택 조건, 학습데이터 명, 예산집행기간으로 구성</caption>
                     <colgroup>
                         <col style="width:160px">
                         <col style="width:auto">
@@ -582,7 +568,7 @@
                 </table>
                 <strong class="tbl_tit">학습데이터 등록</strong>
                 <table class="tbl_write">
-                    <caption>학습데이터 : 학습데이터 명, 카드증빙기간으로 구성</caption>
+                    <caption>학습데이터 : 학습데이터 명, 예산집행기간으로 구성</caption>
                     <colgroup>
                         <col style="width:160px">
                         <col style="width:auto">
@@ -605,7 +591,7 @@
                     <tr>
                         <th scope="row">
                             <span class="aster"></span>
-                            <label>카드증빙기간</label>
+                            <label>예산집행기간</label>
                         </th>
                         <td>
                             <div class="term_form">

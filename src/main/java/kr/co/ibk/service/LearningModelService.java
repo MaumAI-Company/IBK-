@@ -95,38 +95,63 @@ public class LearningModelService extends _BaseService {
             List<LearningModelInputInfo> list = learningModelInputRepository.getList(form.getId());
             List<CardLearningDataInfo> dataList = cardLearningDataRepository.getLearningList(new SearchForm());
 
+            String sep = "<<|SEP|>>AMSL_AMT";
             // 헤더
-            StringBuffer header = new StringBuffer();
+            StringBuilder header = new StringBuilder();
             String separator = " ";
+            boolean isAmslAmt = false;
+            boolean outputFirst = true;
             for (LearningModelInputInfo info : list) {
-                String colNm;
+                String colNm = null;
                 if (InOutGbnType.INPUT.equals(info.getInoutGbn())) {
-                    separator = " ";
-                    colNm = InputColumnType.valueOf(info.getColName()).getName();
+                    separator = " || ";
+                    InputColumnType inputColumnType = InputColumnType.valueOf(info.getColName());
+                    if (InputColumnType.AMSL_AMT.equals(inputColumnType)) {
+                        isAmslAmt = true;
+                    } else {
+                        colNm = inputColumnType.name();
+                    }
                 } else {
+                    if (outputFirst) {
+                        header.append(sep);
+                        outputFirst = false;
+                    }
                     separator = "\t";
-                    colNm = OutputColumnType.valueOf(info.getColName()).getName();
+                    OutputColumnType outputColumnType = OutputColumnType.valueOf(info.getColName());
+                    if (OutputColumnType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
+                        colNm = InputColumnType.BRCD.name() + "-" + outputColumnType.name();
+                    } else {
+                        colNm = outputColumnType.name();
+                    }
                 }
-                if (!header.toString().isEmpty()) {
+                if (!header.toString().isEmpty() && colNm != null) {
                     header.append(separator);
                 }
-                header.append(colNm);
+                if (colNm != null) {
+                    header.append(colNm);
+                }
+            }
+            if (!isAmslAmt) {
+                String replace = header.toString().replace(sep, "");
+                header = new StringBuilder();
+                header.append(replace);
             }
             header.append("\n");
 
             // 바디
-            StringBuffer body = new StringBuffer();
+            StringBuilder body = new StringBuilder();
+            outputFirst = true;
             separator = " || ";
             for (CardLearningDataInfo data : dataList) {
                 boolean first = true;
                 for (LearningModelInputInfo info : list) {
                     if (InOutGbnType.INPUT.equals(info.getInoutGbn())) {
+                        InputColumnType inputColumnType = InputColumnType.valueOf(info.getColName());
                         separator = " || ";
-                        if (!first) {
+                        if (!first && !InputColumnType.AMSL_AMT.equals(inputColumnType)) {
                             body.append(separator);
                         }
                         String value = null;
-                        InputColumnType inputColumnType = InputColumnType.valueOf(info.getColName());
                         if (InputColumnType.BRCD.equals(inputColumnType)) {
                             value = data.getBrcd();
                         } else if (InputColumnType.CDN.equals(inputColumnType)) {
@@ -134,7 +159,7 @@ public class LearningModelService extends _BaseService {
                         } else if (InputColumnType.BDGT_TSTM_USE_HMS.equals(inputColumnType)) {
                             value = data.getBdgtTstmUseHms();
                         } else if (InputColumnType.AMSL_AMT.equals(inputColumnType)) {
-                            value = String.valueOf(data.getAmslAmt());
+//                            value = String.valueOf(data.getAmslAmt());
                         } else if (InputColumnType.AFST_NM.equals(inputColumnType)) {
                             value = data.getAfstNm();
                         } else if (InputColumnType.TPBS_NM.equals(inputColumnType)) {
@@ -152,10 +177,16 @@ public class LearningModelService extends _BaseService {
                         } else if (InputColumnType.AFST_TPBCD.equals(inputColumnType)) {
                             value = data.getAfstTpbcd();
                         }
-                        body.append(inputColumnType.getName())
-                                .append(" : ")
-                                .append(value);
+                        if (value != null) {
+                            body.append(inputColumnType.name())
+                                    .append(" : ")
+                                    .append(value);
+                        }
                     } else {
+                        if (outputFirst && isAmslAmt) {
+                            body.append(sep.replace("AMSL_AMT", String.valueOf(data.getAmslAmt())));
+                            outputFirst = false;
+                        }
                         separator = "\t";
                         if (!first) {
                             body.append(separator);
@@ -167,12 +198,13 @@ public class LearningModelService extends _BaseService {
                         } else if (OutputColumnType.BDGT_PRFR_RSN_FRCS_CON.equals(outputColumnType)) {
                             value = data.getBdgtPrfrRsnFrcsCon();
                         } else if (OutputColumnType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
-                            value = data.getBdgtBsnsFrcsCon();
+                            value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
                         }
                         body.append(value);
                     }
                     first = false;
                 }
+                outputFirst = true;
                 body.append("\n");
             }
 
