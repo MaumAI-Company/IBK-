@@ -22,7 +22,7 @@
             cld.BRCD is not null
             <include refid="where"></include>
         order by
-            cld.TSTM_YMD desc
+            cld.BDGT_PRFR_YM desc
         <!--<choose>
             <when test="sortingTarget != null and sortingTarget == 1">
                 cld.BRCD
@@ -148,7 +148,7 @@
 
         /*일자 검색*/
         <if test="searchStartDate != null and searchEndDate != null">
-            AND cld.TSTM_YMD BETWEEN REPLACE(#{searchStartDate}, '\.', '') AND REPLACE(#{searchEndDate}, '\.', '')
+            AND cld.BDGT_PRFR_YM BETWEEN REPLACE(#{searchStartDate}, '-', '') AND REPLACE(#{searchEndDate}, '-', '')
         </if>
     </sql>
 </mapper>

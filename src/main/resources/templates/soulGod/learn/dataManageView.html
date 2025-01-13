@@ -99,7 +99,7 @@
                             contents += `
                             <td>${data.pageInfo.totalRecordCount - ((data.pageInfo.currentPage - 1) * data.pageInfo.recordsPerPage + idx)}</td>
                             <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
-                            <td>${item.tstmYmd != null ? item.tstmYmd.replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3') : '-'}</td>
+                            <td>${item.bdgtPrfrYm}</td>
                             <td>${item.brcd}</td>
                             <td>${item.cdn}</td>
                             <td>${item.bdgtTstmUseHms}</td>
@@ -272,7 +272,7 @@
                     <tr>
                         <th scope="col">No</th>
                         <th scope="col">대상</th>
-                        <th scope="col">카드증빙년월일</th>
+                        <th scope="col">예산집행년월</th>
                         <th scope="col">부점코드</th>
                         <th scope="col">카드번호</th>
                         <th scope="col">승인시간</th>
