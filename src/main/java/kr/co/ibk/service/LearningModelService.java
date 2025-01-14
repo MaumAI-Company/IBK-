@@ -211,7 +211,11 @@ public class LearningModelService extends _BaseService {
             System.out.println(header.toString());
             System.out.println(body.toString());
 
-            String filePath = filepath + "/learning";
+            String filePath = filepath + File.separator + "learning" + File.separator + form.getId();
+            File dir = new File(filePath);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
             String fileName = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".txt";
             File file = new File(filePath + File.separator + fileName);
             if (!file.exists()) {
