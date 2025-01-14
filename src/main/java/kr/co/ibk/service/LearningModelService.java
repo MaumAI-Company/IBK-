@@ -211,7 +211,7 @@ public class LearningModelService extends _BaseService {
             System.out.println(header.toString());
             System.out.println(body.toString());
 
-            String filePath = filepath + "/learning";
+            String filePath = filepath + File.separator + "learning" + File.separator + form.getId();
             File dir = new File(filePath);
             if (!dir.exists()) {
                 dir.mkdirs();
