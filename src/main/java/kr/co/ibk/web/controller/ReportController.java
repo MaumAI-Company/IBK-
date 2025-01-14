@@ -1,10 +1,13 @@
 package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
+import kr.co.ibk.domain.web.BillInputInfo;
 import kr.co.ibk.domain.web.CardInputInfo;
 import kr.co.ibk.domain.web.CardOutputInfo;
 import kr.co.ibk.domain.web.MemberInfo;
+import kr.co.ibk.model.BillInputForm;
 import kr.co.ibk.model.CardInputForm;
+import kr.co.ibk.service.BillInputService;
 import kr.co.ibk.service.CardInputService;
 import kr.co.ibk.service.CardOutputService;
 import kr.co.ibk.web.BaseCont;
@@ -25,7 +28,9 @@ public class ReportController extends BaseCont {
 
     private final CardInputService cardInputService;
     private final CardOutputService cardOutputService;
+    private final BillInputService billInputService;
 
+    // BC카드 지급결의 내역 조회 : s
     @RequestMapping("/soulGod/report/card")
     public String card(Model model,
                        @ModelAttribute CardInputForm params) {
@@ -75,18 +80,6 @@ public class ReportController extends BaseCont {
         cardInputService.reportCardExcelDown(response, excelList);
     }
 
-
-    @RequestMapping("/soulGod/report/taxInvoice")
-    public String taxInvoice(Model model,
-                             @CurrentUser MemberInfo memberInfo) {
-
-        model.addAttribute("mc", "ico_chart");
-        model.addAttribute("pageTitle", "세금계산서 지급결의 내역 조회");
-
-        return "/soulGod/report/taxInvoice";
-
-    }
-
     @RequestMapping("/soulGod/report/statistic")
     public String statistic(Model model,
                             @CurrentUser MemberInfo memberInfo) {
@@ -106,4 +99,31 @@ public class ReportController extends BaseCont {
         }
         return cardOutputService.detail(params);
     }
+    // BC카드 지급결의 내역 조회 : e
+
+    // 세금계산서 지급결의 내역 조회 : s
+    @RequestMapping("/soulGod/report/taxInvoice")
+    public String taxInvoice(Model model,
+                             @ModelAttribute BillInputForm params) {
+        if (!"Y".equals(params.getSearchAllDateAt()) &&
+                (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate()))) {
+            params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
+            params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
+        }
+
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+
+        List<BillInputInfo> list = billInputService.page(params);
+
+        model.addAttribute("list", list);
+        model.addAttribute("pagingInfo", params.getPaginationInfo());
+        model.addAttribute("params", params);
+        model.addAttribute("mc", "ico_chart");
+        model.addAttribute("pageTitle", "세금계산서 지급결의 내역 조회");
+
+        return "/soulGod/report/taxInvoice";
+    }
+    // 세금계산서 지급결의 내역 조회 : e
 }
