@@ -5,8 +5,8 @@
 <mapper namespace="kr.co.ibk.repository.TemplateRepository">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="TemplateForm">
         insert into TEMPLATE
-        (TEMPLATE_NAME, SELECT_CON, HDQR_BOB_DCD, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_YN)
-        values (#{templateName}, #{selectCon}, #{hdqrBobDcd}, #{memId}, current_timestamp(), #{memId}, current_timestamp(), 'N')
+        (TEMPLATE_NAME, SELECT_CON, HDQR_BOB_DCD, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_YN, LEARNING_TYPE)
+        values (#{templateName}, #{selectCon}, #{hdqrBobDcd}, #{memId}, current_timestamp(), #{memId}, current_timestamp(), 'N', #{learningType})
     </insert>
 
     <select id="getTotalCount" resultType="int" parameterType="TemplateForm">

@@ -2,17 +2,13 @@ package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.domain.enums.InputColumnType;
+import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.enums.OutputColumnType;
+import kr.co.ibk.domain.enums.SearchType;
 import kr.co.ibk.domain.web.*;
-import kr.co.ibk.model.CardLearningDataForm;
-import kr.co.ibk.model.LearningDataForm;
-import kr.co.ibk.model.LearningModelForm;
-import kr.co.ibk.model.TemplateForm;
+import kr.co.ibk.model.*;
 import kr.co.ibk.model.paging.PageDto;
-import kr.co.ibk.service.CardLearningDataService;
-import kr.co.ibk.service.LearningDataService;
-import kr.co.ibk.service.LearningModelService;
-import kr.co.ibk.service.TemplateService;
+import kr.co.ibk.service.*;
 import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -32,6 +28,7 @@ public class LearnController extends BaseCont {
 
     private final LearningModelService learningModelService;
     private final CardLearningDataService cardLearningDataService;
+    private final BillLearningDataService billLearningDataService;
     private final TemplateService templateService;
     private final LearningDataService learningDataService;
 
@@ -47,6 +44,8 @@ public class LearnController extends BaseCont {
 
         model.addAttribute("list", list);
         model.addAttribute("pagingInfo", params.getPaginationInfo());*/
+
+        params.setLearningType(LearningType.CARD);
 
         if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
             params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).substring(0, 7));
@@ -83,7 +82,7 @@ public class LearnController extends BaseCont {
      */
     @ResponseBody
     @PostMapping("/soulGod/learn/dataManageView/list")
-    public Map<String, Object> learnDataListView(@RequestBody CardLearningDataForm params){
+    public Map<String, Object> learnDataListView(@RequestBody CardLearningDataForm params) {
         if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
             params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
         }
@@ -138,8 +137,54 @@ public class LearnController extends BaseCont {
 
         return learningDataService.save(form, memberInfo);
     }
-
     //학습데이터등록 : e
+
+    // 세금계산서 학습데이터등록 : s
+    @GetMapping("/soulGod/learn/billManage")
+    public String billManage(Model model,
+                                 @ModelAttribute BillLearningDataForm params) {
+
+        params.setLearningType(LearningType.BILL);
+
+        if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+            params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).substring(0, 7));
+            params.setSearchEndDate(String.valueOf(LocalDate.now()).substring(0, 7));
+        }
+
+        if (ObjectUtils.isEmpty(params.getSearchTarget())) {
+            params.setSearchTarget("1");
+        }
+
+        model.addAttribute("params", params);
+        model.addAttribute("mc", "ico_database");
+        model.addAttribute("pageTitle", "세금계산서 학습 데이터 등록");
+
+        return "/soulGod/learn/billManage";
+    }
+
+    /**
+     * 세금계산서 학습데이터 등록 > 학습 데이터 목록 조회
+     *
+     * @param params
+     * @return1
+     */
+    @ResponseBody
+    @PostMapping("/soulGod/learn/billManage/list")
+    public Map<String, Object> billLearnDataList(@RequestBody BillLearningDataForm params) {
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+
+        params.setPagingAt("N");
+        params.setLimitCnt(20);
+        List<BillLearningDataInfo> list = billLearningDataService.getList(params);
+
+        return Map.of(
+                "list", list,
+                "params", params
+        );
+    }
+    // 세금계산서 학습데이터등록 : e
 
 
     //학습템플릿관리 : s

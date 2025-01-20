@@ -5,8 +5,10 @@
 <mapper namespace="kr.co.ibk.repository.LearningDataRepository">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="LearningDataForm">
         insert into LEARNING_DATA
-        (DATA_NAME, SELECT_CON, HDQR_BOB_DCD, REG_ID, REG_DT, MOD_ID, MOD_DT, START_DT, END_DT, TEMPLATE_ID)
-        values (#{dataName}, #{selectCon}, #{hdqrBobDcd}, #{memId}, current_timestamp(), #{memId}, current_timestamp(), #{startDt}, #{endDt}, #{templateId});
+        (DATA_NAME, SELECT_CON, HDQR_BOB_DCD, REG_ID, REG_DT, MOD_ID, MOD_DT, START_DT, END_DT, TEMPLATE_ID,
+         LEARNING_TYPE)
+        values (#{dataName}, #{selectCon}, #{hdqrBobDcd}, #{memId}, current_timestamp(), #{memId}, current_timestamp(),
+                #{startDt}, #{endDt}, #{templateId}, #{learningType});
     </insert>
 
     <update id="update" parameterType="LearningDataForm">

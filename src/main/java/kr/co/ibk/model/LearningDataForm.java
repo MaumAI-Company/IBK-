@@ -1,5 +1,6 @@
 package kr.co.ibk.model;
 
+import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.model.paging.PageForm;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ public class LearningDataForm extends PageForm {
     private String memId;
     private String startDt;
     private String endDt;
+    private LearningType learningType;
     private String templateAt;
     private Integer templateId;
     private String templateName;
@@ -25,7 +27,7 @@ public class LearningDataForm extends PageForm {
 
     /*검색조건*/
     private String statusType;
-    private String learningType;
+    //private String learningType;
     private String sorting;
     private String pagingAt;
 

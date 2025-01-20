@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CardLearningDataForm extends PageForm {
+public class BillLearningDataForm extends PageForm {
     /*검색조건*/
     private String searchKeyword;
     private String searchType;
