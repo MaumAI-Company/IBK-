@@ -371,7 +371,7 @@
                                             <select name="searchType" id="searchType"
                                                     onchange="fn_openKeywordArea(this.value)">
                                                 <option value="" selected>선택</option>
-                                                <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.SearchBillType).values()}"
                                                         th:class="${item}" th:text="${item.name}"></option>
                                             </select>
                                         </dd>
