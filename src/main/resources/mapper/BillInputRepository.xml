@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.BillInputRepository">
+    <select id="getTotalCount" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            BILL_INPUT bi
+        LEFT JOIN BILL_OUTPUT bo ON
+            bi.ISS_SRN = bo.ISS_SRN
+            AND bi.BRCD = bo.BRCD
+        <include refid="where"></include>
+    </select>
+
+    <select id="getList" resultType="BillInputInfo" parameterType="BillInputForm">
+        SELECT
+            <include refid="columns"></include>
+        FROM
+            BILL_INPUT bi
+        LEFT JOIN BILL_OUTPUT bo ON bi.ISS_SRN = bi.ISS_SRN
+            AND bo.BRCD = bi.BRCD
+        <include refid="where"></include>
+        ORDER BY
+            bi.NO
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
+        <include refid="kr.co.ibk.repository.CommonRepository.paging" />
+    </select>
+
+    <sql id="columns">
+        bi.ISS_SRN,
+        bi.BRCD,
+        bi.HDQR_BOB_DCD,
+        bi.TXBL_DCD,
+        bi.SPLR_BSNN_NO,
+        bi.SPLR_FRM,
+        bi.SPLR_BZST_NM,
+        bi.SPLR_ITMS_NM,
+        bi.ISS_AMT,
+        bi.TXBL_LSAR_NM,
+        bi.RCV_YMD,
+        bi.JOB_YMD,
+        bi.JOB_YN,
+        bi.FRRG_TS,
+        bi.FRRG_EMN,
+        bi.LSMD_TS,
+        bi.LSMD_EMN,
+        bi.NO,
+        bo.BDGT_ITEX_FRCS_PRB_CON ,
+        bo.BDGT_BSNS_FRCS_PRB_CON ,
+        bo.BDGT_PRFR_RSN_FRCS_CON ,
+        bo.RSRE_YMD
+    </sql>
+
+    <sql id="where">
+        /*일자 검색*/
+        <if test="'Y'.toString() != searchAllDateAt">
+            <if test="searchStartDate != null and searchStartDate != ''">
+                <![CDATA[
+                    AND DATE_FORMAT( bo.RSRE_YMD, '%Y.%m.%d') >= #{searchStartDate}
+                 ]]>
+            </if>
+            <if test="searchEndDate != null and searchEndDate != ''">
+                <![CDATA[
+                    AND DATE_FORMAT( bo.RSRE_YMD, '%Y.%m.%d') <= #{searchEndDate}
+                 ]]>
+            </if>
+        </if>
+
+        /*대상 검색*/
+        <if test="searchTarget != null and searchTarget != ''">
+            AND bi.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+
+        /*검색어 검색*/
+        <if test="searchJsonMap != null">
+            <foreach collection="searchJsonMap" item="value" index="key">
+                <if test="key == 'BDMN_ITEX_MNGM_NO'">
+                    AND bo.BDGT_BSNS_FRCS_CON LIKE CONCAT('%', #{value}, '%')
+                </if>
+                <if test="key != 'BDMN_ITEX_MNGM_NO' and key != 'BDGT_PRFR_RSN_FRCS_CON' and key != 'BDGT_BSNS_FRCS_CON'">
+                    AND bi.${key} LIKE CONCAT('%', #{value}, '%')
+                </if>
+                <if test="key != 'BDMN_ITEX_MNGM_NO' and (key == 'BDGT_PRFR_RSN_FRCS_CON' or key == 'BDGT_BSNS_FRCS_CON')">
+                    AND bo.${key} LIKE CONCAT('%', #{value}, '%')
+                </if>
+            </foreach>
+        </if>
+    </sql>
+
+    <select id="getDetail" resultType="BillInputInfo" parameterType="BillInputForm">
+        SELECT
+            <include refid="columns"></include>
+        FROM
+            BILL_INPUT bi
+        LEFT JOIN BILL_OUTPUT bo ON bi.ISS_SRN = bo.ISS_SRN
+            AND bi.BRCD = bo.BRCD
+        WHERE bi.ISS_SRN = #{issSrn}
+            AND bi.BRCD = #{brcd}
+    </select>
+
+    <select id="getAllList" resultType="BillInputInfo" parameterType="BillInputForm">
+        SELECT
+            <include refid="columns"></include>
+        FROM
+            BILL_INPUT bi
+        LEFT JOIN BILL_OUTPUT bo ON bi.ISS_SRN = bo.ISS_SRN
+            AND bi.BRCD = bo.BRCD
+        WHERE ci.BRCD is not null
+            <include refid="where"></include>
+        ORDER BY
+            bi.NO
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getInputKey" resultType="BillInputInfo" parameterType="BillInputForm">
+        SELECT
+            bi.ISS_SRN ,
+            bi.BRCD
+        FROM
+            BILL_INPUT bi
+        LEFT JOIN BILL_OUTPUT bo ON bi.ISS_SRN = bo.ISS_SRN
+            AND ci.BRCD = bo.BRCD
+        WHERE
+            bi.BRCD is not null
+        <include refid="where"></include>
+        <choose>
+            <when test="(sorting == 'asc' and loadType == 'prev') or (sorting == 'desc' and loadType == 'next')">
+                and ci.NO &lt; #{no} <!--ci.NO < #{no}-->
+            </when>
+            <when test="(sorting == 'asc' and loadType == 'next') or (sorting == 'desc' and loadType == 'prev')">
+                and ci.NO &gt; #{no} <!--ci.NO > #{no}-->
+            </when>
+        </choose>
+        ORDER BY
+        ci.NO
+        <choose>
+            <when test="(sorting == 'asc' and loadType == 'next') or (sorting == 'desc' and loadType == 'prev')">
+                ASC
+            </when>
+            <when test="(sorting == 'asc' and loadType == 'prev') or (sorting == 'desc' and loadType == 'next')">
+                DESC
+            </when>
+        </choose>
+        limit 1
+    </select>
+</mapper>

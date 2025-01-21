@@ -46,6 +46,7 @@ public class LearningDataService extends _BaseService {
                 tempForm.setSelectCon(form.getSearchTypeJson());
                 tempForm.setHdqrBobDcd(form.getHdqrBobDcd());
                 tempForm.setMemId(memberInfo.getMemId());
+                tempForm.setLearningType(form.getLearningType());
                 templateRepository.insert(tempForm);
 
                 saveCnt += templateInputRepository.insertList(tempForm.getId(), form.getInputArr(), InOutGbnType.INPUT.name());

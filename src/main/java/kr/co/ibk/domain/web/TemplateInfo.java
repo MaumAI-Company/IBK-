@@ -1,5 +1,6 @@
 package kr.co.ibk.domain.web;
 
+import kr.co.ibk.domain.enums.LearningType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class TemplateInfo {
     private LocalDateTime regDt; /*등록일자*/
     private String modId; /*수정자*/
     private LocalDateTime modDt; /*수정일자*/
+    private LearningType learningType;
 
     private String regName; /*등록자*/
     private Integer schedulerCnt;

@@ -91,8 +91,10 @@
         }
 
         function fn_reset() {
-            $('#searchTarget_B').prop('checked', true);
+            $('#searchTarget').val('').niceSelect('update');
+            $('#searchLearningType').val('').niceSelect('update');
             $('#searchKeyword').val('');
+            fn_search();
         }
 
         function fn_templateDelete() {
@@ -139,7 +141,8 @@
         const inPrefix = 'input_';
         const outPrefix = 'output_';
 
-        function fn_templateDetailOpen(id, nm) {
+        function fn_templateDetailOpen(id, nm, learningTyNm) {
+            $('#learningTyNm').text(learningTyNm);
             $('#templateId').val(id);
             $('#templateName').text(nm);
             $('#searchStartDate').val('');
@@ -176,15 +179,22 @@
                         $('.chipArea').html($('.selected_filter').html());
                         $('.chipArea .chip button').remove();
 
-                        // default 날짜 설정
+                        if (item.learningType === 'CARD') {
+                            $('#cardInputColumnType').show();
+                            $('#billInputColumnType').hide();
+                        } else {
+                            $('#cardInputColumnType').hide();
+                            $('#billInputColumnType').show();
+                        }
+
+                        // default 날짜 설정 : s
                         let today = new Date();
                         let year = today.getFullYear();
                         let month = String(today.getMonth() + 1).padStart(2, '0');
-
                         $('#searchStartDate').val(`${year - 2}-${month}`);
                         $('#searchEndDate').val(`${year}-${month}`);
-
                         fn_setMonthPicker();
+                        // default 날짜 설정 : e
 
                         layerShow('templateDetail');
                     } else {
@@ -391,6 +401,18 @@
                                 <div class="inner">
                                     <dl>
                                         <dt>
+                                            <label for="searchLearningType">구분</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchLearningType" id="searchLearningType">
+                                                <option value="" selected>전체</option>
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.LearningType).values()}"
+                                                        th:class="${item}" th:text="${item.name}" th:value="${item}" th:selected="${item eq params.learningType}"></option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
                                             <label for="searchTarget">대상</label>
                                         </dt>
                                         <dd>
@@ -445,12 +467,13 @@
                 <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
                     <caption>학습 템플릿 관리 : No, 대상, 템플릿 명, 등록자, 등록일시</caption>
                     <colgroup>
-                        <col style="width: 10%">
-                        <col style="width: 12%">
-                        <col style="width: 22%;">
-                        <col style="width: 22%;">
-                        <col style="width: 22%;">
-                        <col style="width: 22%">
+                        <col style="width: 5%">
+                        <col style="width: 8%">
+                        <col style="width: 8%">
+                        <col style="width: 9%;">
+                        <col style="width: 30%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%">
                     </colgroup>
                     <thead>
                     <tr>
@@ -463,6 +486,7 @@
                             </div>
                         </th>
                         <th scope="col">No</th>
+                        <th scope="col">구분</th>
                         <th scope="col">대상</th>
                         <th scope="col">템플릿 명</th>
                         <th scope="col">등록자</th>
@@ -481,11 +505,12 @@
                             </div>
                         </td>
                         <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                        <td th:text="${item.learningType == null ? '-' : item.learningType.getName()}"></td>
                         <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
                         <td>
                             <a href="javascript:" th:class="${'link templateName' + item.id}"
                                th:text="${item.templateName}"
-                               th:onclick="fn_templateDetailOpen([[${item.id}]], [[${item.templateName}]])">admin</a>
+                               th:onclick="fn_templateDetailOpen([[${item.id}]], [[${item.templateName}]], [[${item.learningType.getName()}]])">admin</a>
                         </td>
                         <td th:text="${item.regName}"></td>
                         <td th:text="${#temporals.format(item.regDt, 'yyyy-MM-dd hh:mm:ss')}"></td>
@@ -514,12 +539,16 @@
                 <input type="hidden" th:field="${params.searchJson}">
                 <input type="hidden" th:field="${params.searchTypeJson}">
                 <table class="tbl_write">
-                    <caption>템플릿 상세정보 : 템플릿 명, 학습데이터, 선택 조건, 학습데이터 명, 예산집행기간으로 구성</caption>
+                    <caption>템플릿 상세정보 : 구분, 템플릿 명, 학습데이터, 선택 조건, 학습데이터 명, 예산집행기간으로 구성</caption>
                     <colgroup>
                         <col style="width:160px">
                         <col style="width:auto">
                     </colgroup>
                     <tbody>
+                    <tr>
+                        <th scope="row">구분</th>
+                        <td id="learningTyNm"></td>
+                    </tr>
                     <tr>
                         <th scope="row">템플릿 명</th>
                         <td id="templateName"></td>
@@ -529,8 +558,17 @@
                             <span>학습데이터 체크</span>
                         </th>
                         <td>
-                            <div class="check_wrap">
+                            <div class="check_wrap" id="cardInputColumnType">
                                 <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                               disabled>
+                                        <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
+                                    </div>
+                                </th:block>
+                            </div>
+                            <div class="check_wrap" id="billInputColumnType">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnBillType).values()}">
                                     <div class="checkbox">
                                         <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
                                                disabled>
