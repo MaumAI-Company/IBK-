@@ -48,8 +48,8 @@
         <if test="searchTarget != null and ''.toString != searchTarget">
             and t.HDQR_BOB_DCD = #{searchTarget}
         </if>
-        <if test="learningType != null and ''.toString != learningType">
-            and t.LEARNING_TYPE = #{learningType}
+        <if test="searchLearningType != null and ''.toString != searchLearningType">
+            and t.LEARNING_TYPE = #{searchLearningType}
         </if>
         <if test="searchKeyword != null and ''.toString != searchKeyword">
             and (t.TEMPLATE_NAME LIKE CONCAT('%', #{searchKeyword}, '%')

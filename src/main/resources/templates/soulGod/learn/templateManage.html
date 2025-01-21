@@ -91,8 +91,10 @@
         }
 
         function fn_reset() {
-            $('#searchTarget_B').prop('checked', true);
+            $('#searchTarget').val('').niceSelect('update');
+            $('#searchLearningType').val('').niceSelect('update');
             $('#searchKeyword').val('');
+            fn_search();
         }
 
         function fn_templateDelete() {
@@ -177,15 +179,22 @@
                         $('.chipArea').html($('.selected_filter').html());
                         $('.chipArea .chip button').remove();
 
-                        // default 날짜 설정
+                        if (item.learningType === 'CARD') {
+                            $('#cardInputColumnType').show();
+                            $('#billInputColumnType').hide();
+                        } else {
+                            $('#cardInputColumnType').hide();
+                            $('#billInputColumnType').show();
+                        }
+
+                        // default 날짜 설정 : s
                         let today = new Date();
                         let year = today.getFullYear();
                         let month = String(today.getMonth() + 1).padStart(2, '0');
-
                         $('#searchStartDate').val(`${year - 2}-${month}`);
                         $('#searchEndDate').val(`${year}-${month}`);
-
                         fn_setMonthPicker();
+                        // default 날짜 설정 : e
 
                         layerShow('templateDetail');
                     } else {
@@ -392,13 +401,13 @@
                                 <div class="inner">
                                     <dl>
                                         <dt>
-                                            <label for="learningType">구분</label>
+                                            <label for="searchLearningType">구분</label>
                                         </dt>
                                         <dd>
-                                            <select name="learningType" id="learningType">
+                                            <select name="searchLearningType" id="searchLearningType">
                                                 <option value="" selected>전체</option>
                                                 <option th:each="item :${T(kr.co.ibk.domain.enums.LearningType).values()}"
-                                                        th:class="${item}" th:text="${item.name}" th:selected="${item eq params.learningType}"></option>
+                                                        th:class="${item}" th:text="${item.name}" th:value="${item}" th:selected="${item eq params.learningType}"></option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -549,15 +558,23 @@
                             <span>학습데이터 체크</span>
                         </th>
                         <td>
-                            <div class="check_wrap">
-                                <!-- TODO : bc카드/세금계산서 피처 구분 필요 -->
-                                <!--<th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
+                            <div class="check_wrap" id="cardInputColumnType">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
                                     <div class="checkbox">
                                         <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
                                                disabled>
                                         <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
                                     </div>
-                                </th:block>-->
+                                </th:block>
+                            </div>
+                            <div class="check_wrap" id="billInputColumnType">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnBillType).values()}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                               disabled>
+                                        <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
+                                    </div>
+                                </th:block>
                             </div>
                             <div class="txt_guide fc_primary">※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div>
                         </td>
