@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -27,7 +24,13 @@ public class MccService {
 
     private final LearningModelRepository learningModelRepository;
 
-    /* 0: 등록완료, 1: 오류, 2: 학습완료 3: 학습중 4: 배포완료, 5: 롤백완료, 6: 배포중, 7:학습중지 */
+    /* 0 : 등록 완료, 1 : 학습 데이터 생성 오류, 2 : 학습 중, 3 : 학습 완료, 4 : 학습 오류, 5 : 배포 중, 6 : 배포 완료, 7 : 배포 중지, 8 : 배포 실패 */
+
+    /**
+     * 학습 API
+     * 해당옵션으로 학습
+     * @param modelId
+     */
     public void trainModel(Integer modelId) {
         LearningModelInfo info = learningModelRepository.getLoad(modelId);
         if (info == null) {
@@ -35,10 +38,10 @@ public class MccService {
         }
 
         try {
-            LearningModelForm form = new LearningModelForm();
+            /*LearningModelForm form = new LearningModelForm();
             form.setId(modelId);
             form.setDeployStatus("3");
-            learningModelRepository.updateStatus(form);
+            learningModelRepository.updateStatus(form);*/
 
             JSONObject params = new JSONObject();
             params.put("model_id", modelId);
@@ -47,8 +50,8 @@ public class MccService {
             modelCfg.put("batch_size", info.getBatchSize());
             modelCfg.put("epochs", info.getEpoch());
             params.put("model_cfg", modelCfg);
-            //params.put("file_name", info.getFileName());
-            params.put("file_name", "test.txt");
+            params.put("file_name", info.getFilePath() + File.separator + info.getFileName());
+//            params.put("file_name", "test.txt");
 
             new Thread(new Runnable() {
                 @Override
@@ -61,12 +64,17 @@ public class MccService {
         }
     }
 
+    /**
+     * 학습 중지 API
+     * 학습중인 모델 중지
+     * @param modelId
+     */
     public void stopModel(Integer modelId) {
         try {
-            LearningModelForm form = new LearningModelForm();
+            /*LearningModelForm form = new LearningModelForm();
             form.setId(modelId);
             form.setDeployStatus("0");
-            learningModelRepository.updateStatus(form);
+            learningModelRepository.updateStatus(form);*/
 
             JSONObject params = new JSONObject();
             params.put("model_id", modelId);
@@ -75,6 +83,32 @@ public class MccService {
                 @Override
                 public void run() {
                     sendPost("/stop-model", params);
+                }
+            }).start();
+        } catch (Exception e) {
+            return;
+        }
+    }
+
+    /**
+     * 배포 API
+     * 지정된 모델로 배포
+     * @param modelId
+     */
+    public void replaceModel(Integer modelId) {
+        try {
+            /*LearningModelForm form = new LearningModelForm();
+            form.setId(modelId);
+            form.setDeployStatus("0");
+            learningModelRepository.updateStatus(form);*/
+
+            JSONObject params = new JSONObject();
+            params.put("model_id", modelId);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    sendPost("/replace-model", params);
                 }
             }).start();
         } catch (Exception e) {
