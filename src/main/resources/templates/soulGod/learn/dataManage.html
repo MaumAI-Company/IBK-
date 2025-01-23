@@ -808,7 +808,7 @@
                             <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnCardType).values()}">
                                 <div class="checkbox">
                                     <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
-                                           th:data-name="${item.name}"
+                                           th:data-name="${item}"
                                            th:data-sno="${item.sno}"
                                            th:disabled="${T(kr.co.ibk.domain.enums.InputColumnCardType).BRCD == item ? true : false}"
                                            th:checked="${item.isChecked}"
@@ -829,7 +829,7 @@
                             <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnCardType).values()}">
                                 <div class="checkbox">
                                     <input type="checkbox" th:id="${'output_' + item.camelColumn}" th:value="${item}"
-                                           th:data-name="${item.name}"
+                                           th:data-name="${item}"
                                            th:data-sno="${item.sno}"
                                            checked disabled>
                                     <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
