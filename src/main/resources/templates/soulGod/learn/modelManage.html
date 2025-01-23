@@ -374,7 +374,8 @@
                                         <dd>
                                             <div class="search_form">
                                                 <div class="search">
-                                                    <input type="search" th:field="${params.searchKeyword}" placeholder="검색어를 입력하세요.">
+                                                    <input type="search" th:field="${params.searchKeyword}"
+                                                           placeholder="검색어를 입력하세요.">
                                                     <button type="button" class="btn_del" tabindex="-1">
                                                         <span class="blind">삭제</span>
                                                     </button>
@@ -690,10 +691,10 @@
                     </th>
                     <td>
                         <div class="check_wrap">
-                            <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
+                            <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnCardType).values()}">
                                 <div class="checkbox">
                                     <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
-                                           th:disabled="${T(kr.co.ibk.domain.enums.InputColumnType).BRCD == item ? true : false}">
+                                           th:disabled="${T(kr.co.ibk.domain.enums.InputColumnCardType).BRCD == item ? true : false}">
                                     <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
                                 </div>
                             </th:block>
@@ -707,7 +708,7 @@
                     </th>
                     <td>
                         <div class="check_wrap">
-                            <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnType).values()}">
+                            <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnCardType).values()}">
                                 <div class="checkbox">
                                     <input type="checkbox" th:id="${'output_' + item.camelColumn}" th:value="${item}"
                                            checked disabled>

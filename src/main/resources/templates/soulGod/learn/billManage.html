@@ -159,18 +159,21 @@
                 return false;
             }
 
-
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
             let outputColumns = $(':checkbox[id^="' + outPrefix + '"]');
 
             let inputArr = [];
             $.each(inputColumns, function (idx, item) {
-                inputArr.push($(item).val());
+                let name = $(item).data('name');
+                let sno = $(item).data('sno');
+                inputArr.push({name: name, sno: sno});
             })
 
             let outputArr = [];
             $.each(outputColumns, function (idx, item) {
-                outputArr.push($(item).val());
+                let name = $(item).data('name');
+                let sno = $(item).data('sno');
+                outputArr.push({name: name, sno: sno});
             })
 
             let searchTypeMap;
@@ -297,32 +300,30 @@
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
                     $('.selected_filter').html('');
-                    let contents;
+                    let contents = [];
                     if (data.list.length > 0) {
                         $.each(data.list, function (idx, item) {
-                            contents += '<tr>';
+                            contents.push(`
+                                <tr>
+                                    <td>${idx + 1}</td>
 
-                            contents += `
-                            <td>${idx + 1}</td>
+                                    <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
+                                    <td>${item.bdgtPrfrYm}</td>
+                                    <td>${item.brcd}</td>
+                                    <td>${item.txblDcd}</td>
+                                    <td>${item.splrBsnnNo}</td>
 
-                            <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
-                            <td>${item.bdgtPrfrYm}</td>
-                            <td>${item.brcd}</td>
-                            <td>${item.txblDcd}</td>
-                            <td>${item.splrBsnnNo}</td>
+                                    <td>${item.splrFrm}</td>
+                                    <td>${item.splrBzstNm}</td>
+                                    <td>${item.splrItmsNm}</td>
+                                    <td>${item.issAmt}</td>
+                                    <td>${item.txblLsarNm}</td>
 
-                            <td>${item.splrFrm}</td>
-                            <td>${item.splrBzstNm}</td>
-                            <td>${item.splrItmsNm}</td>
-                            <td>${item.bzdyYn}</td>
-                            <td>${item.issAmt}</td>
-
-                            <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo}</td>
-                            <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon}</td>
-                            <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon}</td>
-                            `;
-
-                            contents += '</tr>';
+                                    <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon}</td>
+                                </tr>
+                            `);
                         })
                         $('.nodata').hide();
                         $('.contentsArea').show();
@@ -336,7 +337,8 @@
                         $('#searchJson').val(params.searchJson);
                         $('#searchTypeJson').val(params.searchTypeJson);
                         $('#searchStartDate').val(params.searchStartDate);
-                        $('#searchEndDate').val(params.searchEndDate);
+                        +
+                            $('#searchEndDate').val(params.searchEndDate);
                         $('#searchTarget').val(params.searchTarget).prop('checked', true);
                         $('#searchType').val('').niceSelect('update');
                         $('#searchKeyword').val('');
@@ -505,15 +507,13 @@
                             <col style="width: 4%;">
                             <col style="width: 5%;">
                             <col style="width: 4.5%;">
-                            <col style="width: 11%">
+                            <col style="width: 5%">
 
-                            <col style="width: 3%;">
-                            <col style="width: 4.5%;">
+                            <col style="width: 5%;">
+                            <col style="width: 8%;">
                             <col style="width: 6%;">
-                            <col style="width: 4.5%;">
+                            <col style="width: 6%;">
                             <col style="width: 3.5%;">
-
-                            <col style="width: 6.5%;">
                             <col style="width: 6.5%;">
 
                             <col style="width: 6.5%;">
@@ -788,6 +788,8 @@
                             <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnBillType).values()}">
                                 <div class="checkbox">
                                     <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                           th:data-name="${item.name}"
+                                           th:data-sno="${item.sno}"
                                            th:disabled="${T(kr.co.ibk.domain.enums.InputColumnBillType).BRCD == item ? true : false}"
                                            th:checked="${item.isChecked}"
                                            th:class="${'checked' + (item.isChecked ? 'Y' : 'N')}">
@@ -807,6 +809,8 @@
                             <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnBillType).values()}">
                                 <div class="checkbox">
                                     <input type="checkbox" th:id="${'output_' + item.camelColumn}" th:value="${item}"
+                                           th:data-name="${item.name}"
+                                           th:data-sno="${item.sno}"
                                            checked disabled>
                                     <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
                                 </div>

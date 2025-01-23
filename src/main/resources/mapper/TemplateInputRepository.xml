@@ -8,14 +8,16 @@
         (
         COL_NAME,
         TEMPLATE_ID,
-        INOUT_GBN
+        INOUT_GBN,
+        SNO
         )
         VALUES
         <foreach collection="dataArr" item="item" separator=",">
             (
-            #{item},
+            #{item.name},
             #{id},
-            #{gbn}
+            #{gbn},
+            #{item.sno}
             )
         </foreach>
     </insert>

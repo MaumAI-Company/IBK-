@@ -1,10 +1,9 @@
 package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
-import kr.co.ibk.domain.enums.InputColumnType;
+import kr.co.ibk.domain.enums.InputColumnCardType;
 import kr.co.ibk.domain.enums.LearningType;
-import kr.co.ibk.domain.enums.OutputColumnType;
-import kr.co.ibk.domain.enums.SearchType;
+import kr.co.ibk.domain.enums.OutputColumnCardType;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.*;
 import kr.co.ibk.model.paging.PageDto;
@@ -140,9 +139,13 @@ public class LearnController extends BaseCont {
     //학습데이터등록 : e
 
     // 세금계산서 학습데이터등록 : s
+
+    /**
+     * 세금계산서 학습데이터 등록
+     */
     @GetMapping("/soulGod/learn/billManage")
     public String billManage(Model model,
-                                 @ModelAttribute BillLearningDataForm params) {
+                             @ModelAttribute BillLearningDataForm params) {
 
         params.setLearningType(LearningType.BILL);
 
@@ -164,9 +167,6 @@ public class LearnController extends BaseCont {
 
     /**
      * 세금계산서 학습데이터 등록 > 학습 데이터 목록 조회
-     *
-     * @param params
-     * @return1
      */
     @ResponseBody
     @PostMapping("/soulGod/learn/billManage/list")
@@ -296,8 +296,8 @@ public class LearnController extends BaseCont {
         HashMap<String, Object> returnMap = new HashMap<>();
 
         returnMap.put("data", learningModelService.getLoad(form));
-        returnMap.put("inputArr", InputColumnType.values());
-        returnMap.put("outputArr", OutputColumnType.values());
+        returnMap.put("inputArr", InputColumnCardType.values());
+        returnMap.put("outputArr", OutputColumnCardType.values());
 
         return returnMap;
     }
