@@ -1,17 +1,21 @@
 package kr.co.ibk.model;
 
+import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.model.paging.PageForm;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class LearningModelForm extends PageForm {
     private Integer id;
+    private Integer dataId;
     private Integer learningId;  //'학습 키',
     private String regId;  //'등록자',
     private LocalDateTime regDt;  //'등록일자',
@@ -32,16 +36,17 @@ public class LearningModelForm extends PageForm {
     private String filePath;    //학습파일 경로
     private String fileName;    //학습파일명
     private String hdqrBobDcd;    //학습대상
+    private LearningType learningType;
 
-    private String[] inputArr;
-    private String[] outputArr;
+    List<Map<String, Object>> inputArr;
+    List<Map<String, Object>> outputArr;
     private Integer[] idArr;
     private String templateAt;
     private String templateName;
 
     /*검색조건*/
     private String statusType;
-    private String learningType;
+    private String searchLearningType;
     private String sorting;
 
 }

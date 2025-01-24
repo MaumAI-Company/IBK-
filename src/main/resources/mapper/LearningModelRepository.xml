@@ -5,9 +5,11 @@
 <mapper namespace="kr.co.ibk.repository.LearningModelRepository">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="LearningModelForm">
         INSERT INTO maummcc.LEARNING_MODEL
-        (LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM, HDQR_BOB_DCD, EPOCH, LEARNING_RATE, BATCH_SIZE)
-        VALUES (#{learningId}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), #{learnName}, '0',
-                'SUCCESS', current_timestamp(), #{hdqrBobDcd}, #{epoch}, #{learningRate}, #{batchSize});
+        (LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM, HDQR_BOB_DCD,
+         EPOCH, LEARNING_RATE, BATCH_SIZE, LEARNING_TYPE)
+        VALUES (#{dataId}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), #{learnName}, '0',
+                'SUCCESS', current_timestamp(), #{hdqrBobDcd}, #{epoch}, #{learningRate}, #{batchSize},
+                #{learningType});
     </insert>
     <select id="getLoad" resultType="LearningModelInfo" parameterType="Integer">
         select
@@ -113,4 +115,24 @@
             HDQR_BOB_DCD = #{hdqrBobDcd}
         where ID = #{id}
     </update>
+
+    <select id="countByInLearningId" resultType="int">
+        select
+            count(*)
+        from
+            LEARNING_MODEL lm
+        where
+            lm.LEARNING_ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="modelNmCount" resultType="int">
+        select
+            count(*)
+        from
+            LEARNING_MODEL lm
+        where lm.LEARN_NAME = #{learnName}
+    </select>
 </mapper>

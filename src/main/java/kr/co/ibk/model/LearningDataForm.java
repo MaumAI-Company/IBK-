@@ -30,7 +30,7 @@ public class LearningDataForm extends PageForm {
 
     /*검색조건*/
     private String statusType;
-    //private String learningType;
+    private String searchLearningType;
     private String sorting;
     private String pagingAt;
 

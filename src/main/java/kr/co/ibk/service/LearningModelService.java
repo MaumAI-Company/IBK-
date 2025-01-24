@@ -32,6 +32,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class LearningModelService extends _BaseService {
 
+    private final LearningDataRepository learningDataRepository;
     @Value("${Globals.fileStorePath}")
     private String filepath;
 
@@ -276,5 +277,9 @@ public class LearningModelService extends _BaseService {
         info.setInputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name()));
         info.setOutputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.OUTPUT.name()));
         return info;
+    }
+
+    public int modelNmCount(LearningModelForm form) {
+        return learningModelRepository.modelNmCount(form.getLearnName());
     }
 }

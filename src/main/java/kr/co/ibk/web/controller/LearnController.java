@@ -276,6 +276,18 @@ public class LearnController extends BaseCont {
 
         return learningModelService.save(form, memberInfo);
     }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/learningDataManage/delete"})
+    public HashMap<String, Object> learningDataManageDelete(@RequestBody LearningModelForm form) {
+        return learningDataService.delete(form);
+    }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/learningDataManage/nmCount"})
+    public int learningDataManageNmCount(@RequestBody LearningModelForm form) {
+        return learningModelService.modelNmCount(form);
+    }
     //학습데이터관리 : e
 
 
