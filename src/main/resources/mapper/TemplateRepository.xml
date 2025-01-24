@@ -37,7 +37,15 @@
             ) scheduler on t.ID = scheduler.TEMPLATE_ID
         <include refid="where"></include>
         order by
-            REG_DT desc
+            REG_DT
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
         <if test="pagingAt != null and 'Y'.toString() == pagingAt">
             <include refid="kr.co.ibk.repository.CommonRepository.paging" />
         </if>

@@ -104,49 +104,67 @@
                 return false;
             }
 
-            let idArr = [];
-            $.each(checked, function () {
-                idArr.push($(this).val());
-            });
+            showConfirm('message', checked.length + '건의 템플릿이 선택되었습니다. <br> 삭제하시겠습니까?', () => {
+                let idArr = [];
+                $.each(checked, function () {
+                    idArr.push($(this).val());
+                });
 
-            let jsonData = {
-                "idArr": idArr,
-            }
+                let jsonData = {
+                    "idArr": idArr,
+                }
 
-            $.ajax({
-                url: "/soulGod/template/delete",
-                type: "post",
-                async: false,
-                data: JSON.stringify(jsonData),
-                contentType: 'application/json;charset=utf-8',
-                success: function (data) {
-                    if ("SUCCESS" === data.status) {
-                        showAlert('complete', '저장되었습니다.', () => {
-                            location.reload();
-                        })
-                    } else {
+                $.ajax({
+                    url: "/soulGod/template/delete",
+                    type: "post",
+                    async: false,
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        if ("SUCCESS" === data.status) {
+                            showAlert('complete', '삭제되었습니다.', () => {
+                                location.reload();
+                            })
+                        } else {
+                            showAlert('warning', '실패하였습니다.', () => {
+                                location.reload();
+                            })
+                        }
+                    },
+                    error: function () {
                         showAlert('warning', '실패하였습니다.', () => {
                             location.reload();
                         })
                     }
-                },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
-                        location.reload();
-                    })
-                }
+                });
             });
+
         }
 
         const inPrefix = 'input_';
         const outPrefix = 'output_';
 
-        function fn_templateDetailOpen(id, nm, learningTyNm) {
-            $('#learningTyNm').text(learningTyNm);
+        function fn_templateDetailOpen(el) {
+            let id = $(el).data('id');
+            let learningTy = $(el).data('learning-ty');
+            let learningTyNm = $(el).data('learning-ty-nm');
+            let templateName = $(el).data('nm');
+            let isCard = $(el).data('is-card');
+
+            $('#learningType').val(learningTy);
+            $('#isCard').val(isCard);
             $('#templateId').val(id);
-            $('#templateName').text(nm);
+            $('#learningTyNm').text(learningTyNm);
+            $('#templateName').text(templateName);
             $('#searchStartDate').val('');
             $('#searchEndDate').val('');
+
+            $(':checkbox[id^="' + inPrefix + '"]').prop('checked', false);
+            $(':checkbox[id^="' + outPrefix + '"]').prop('checked', false);
+            $((isCard ? '.cardCon' : '.billCon') + ' :checkbox[id^="' + outPrefix + '"]').prop('checked', true);
+
+            $('.cardCon').toggle(isCard);
+            $('.billCon').toggle(!isCard);
 
             let jsonData = {
                 "id": id
@@ -164,7 +182,7 @@
 
                         if (item.inputList) {
                             $.each(item.inputList, function (idx, item) {
-                                $(':checkbox[id^="' + inPrefix + '"]').each(function () {
+                                $((isCard ? '.cardCon' : '.billCon') + ' :checkbox[id^="' + inPrefix + '"]').each(function () {
                                     if ($(this).val() === item.colName) {
                                         $(this).prop('checked', true);
                                     }
@@ -179,22 +197,13 @@
                         $('.chipArea').html($('.selected_filter').html());
                         $('.chipArea .chip button').remove();
 
-                        if (item.learningType === 'CARD') {
-                            $('#cardInputColumnType').show();
-                            $('#billInputColumnType').hide();
-                        } else {
-                            $('#cardInputColumnType').hide();
-                            $('#billInputColumnType').show();
-                        }
-
-                        // default 날짜 설정 : s
+                        // default 날짜 설정
                         let today = new Date();
                         let year = today.getFullYear();
                         let month = String(today.getMonth() + 1).padStart(2, '0');
                         $('#searchStartDate').val(`${year - 2}-${month}`);
                         $('#searchEndDate').val(`${year}-${month}`);
                         fn_setMonthPicker();
-                        // default 날짜 설정 : e
 
                         layerShow('templateDetail');
                     } else {
@@ -251,17 +260,21 @@
             fn_searchConditionSet();
 
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
-            let outputColumns = $(':checkbox[id^="' + outPrefix + '"]');
+            let outputColumns = $(':checkbox[id^="' + outPrefix + '"]:checked');
 
             let inputArr = [];
             $.each(inputColumns, function (idx, item) {
-                inputArr.push($(item).val());
-            })
+                let name = $(item).data('name');
+                let sno = $(item).data('sno');
+                inputArr.push({name: name, sno: sno});
+            });
 
             let outputArr = [];
             $.each(outputColumns, function (idx, item) {
-                outputArr.push($(item).val());
-            })
+                let name = $(item).data('name');
+                let sno = $(item).data('sno');
+                outputArr.push({name: name, sno: sno});
+            });
 
             let jsonData = {
                 "templateId": $('#templateId').val(),
@@ -269,7 +282,8 @@
                 "dataName": $.trim($('#dataName').val()),
                 "inputArr": inputArr,
                 "outputArr": outputArr,
-                "selectCon": $('#searchJson').val()
+                "selectCon": $('#searchJson').val(),
+                "learningType": $('#learningType').val()
             } //todo 학습데이터 선택조건 set 필요
 
             $.ajax({
@@ -344,8 +358,14 @@
 
             queryString += '&searchTarget=' + $('#hdqrBobDcd').val();
 
+            let url;
+            if ($('#isCard').val() === 'true') {
+                url = '/soulGod/learn/cardManageView' + (queryString ? '?' + queryString : '');
+            } else {
+                url = '/soulGod/learn/billManageView' + (queryString ? '?' + queryString : '');
+            }
+
             // 새 창 열기
-            let url = '/soulGod/learn/dataManageView' + (queryString ? '?' + queryString : '');
             window.open(url, '_blank', 'width=1000,height=800,top=200,left=1000'); // 새 창 열기
         }
 
@@ -391,6 +411,12 @@
                             <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
                             <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
+                        <label for="sorting" class="blind">정렬조건</label>
+                        <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">과거순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">최신순</option>
+                            \
+                        </select>
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter active">
                                 <i class="ico_filter"></i>
@@ -407,7 +433,8 @@
                                             <select name="searchLearningType" id="searchLearningType">
                                                 <option value="" selected>전체</option>
                                                 <option th:each="item :${T(kr.co.ibk.domain.enums.LearningType).values()}"
-                                                        th:class="${item}" th:text="${item.name}" th:value="${item}" th:selected="${item eq params.learningType}"></option>
+                                                        th:class="${item}" th:text="${item.name}" th:value="${item}"
+                                                        th:selected="${item.name() eq params.searchLearningType}"></option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -510,7 +537,12 @@
                         <td>
                             <a href="javascript:" th:class="${'link templateName' + item.id}"
                                th:text="${item.templateName}"
-                               th:onclick="fn_templateDetailOpen([[${item.id}]], [[${item.templateName}]], [[${item.learningType.getName()}]])">admin</a>
+                               th:data-id="${item.id}"
+                               th:data-nm="${item.templateName}"
+                               th:data-learning-ty="${item.learningType}"
+                               th:data-learning-ty-nm="${item.learningType.getName()}"
+                               th:data-is-card="${item.learningType eq T(kr.co.ibk.domain.enums.LearningType).CARD}"
+                               onclick="fn_templateDetailOpen(this)">admin</a>
                         </td>
                         <td th:text="${item.regName}"></td>
                         <td th:text="${#temporals.format(item.regDt, 'yyyy-MM-dd hh:mm:ss')}"></td>
@@ -536,6 +568,8 @@
             <form id="templateForm">
                 <input type="hidden" id="templateId">
                 <input type="hidden" id="hdqrBobDcd">
+                <input type="hidden" id="isCard">
+                <input type="hidden" id="learningType">
                 <input type="hidden" th:field="${params.searchJson}">
                 <input type="hidden" th:field="${params.searchTypeJson}">
                 <table class="tbl_write">
@@ -558,19 +592,25 @@
                             <span>학습데이터 체크</span>
                         </th>
                         <td>
-                            <div class="check_wrap" id="cardInputColumnType">
-                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
+                            <div class="check_wrap cardCon">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnCardType).values()}">
                                     <div class="checkbox">
-                                        <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                        <input type="checkbox" th:id="${'input_' + item.camelColumn}"
+                                               th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
                                                disabled>
                                         <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
                                     </div>
                                 </th:block>
                             </div>
-                            <div class="check_wrap" id="billInputColumnType">
+                            <div class="check_wrap billCon">
                                 <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnBillType).values()}">
                                     <div class="checkbox">
-                                        <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                        <input type="checkbox" th:id="${'input_' + item.camelColumn}"
+                                               th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
                                                disabled>
                                         <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
                                     </div>
@@ -584,11 +624,25 @@
                             <span>학습데이터 (output)</span>
                         </th>
                         <td>
-                            <div class="check_wrap">
-                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnType).values()}">
+                            <div class="check_wrap cardCon">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnCardType).values()}">
                                     <div class="checkbox">
                                         <input type="checkbox" th:id="${'output_' + item.camelColumn}"
                                                th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
+                                               checked disabled>
+                                        <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
+                                    </div>
+                                </th:block>
+                            </div>
+                            <div class="check_wrap billCon">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnBillType).values()}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" th:id="${'output_' + item.camelColumn}"
+                                               th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
                                                checked disabled>
                                         <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
                                     </div>
@@ -666,6 +720,8 @@
 <div style="display: none">
     <select>
         <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
+                th:class="${item}" th:text="${item.name}"></option>
+        <option th:each="item :${T(kr.co.ibk.domain.enums.SearchBillType).values()}"
                 th:class="${item}" th:text="${item.name}"></option>
     </select>
 </div>

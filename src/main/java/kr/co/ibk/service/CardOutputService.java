@@ -1,8 +1,7 @@
 package kr.co.ibk.service;
 
 import kr.co.ibk.domain.enums.InOutGbnType;
-import kr.co.ibk.domain.enums.InputColumnType;
-import kr.co.ibk.domain.web.CardInputInfo;
+import kr.co.ibk.domain.enums.InputColumnCardType;
 import kr.co.ibk.domain.web.CardOutputInfo;
 import kr.co.ibk.domain.web.LearningModelInputInfo;
 import kr.co.ibk.model.CardInputForm;
@@ -38,7 +37,7 @@ public class CardOutputService extends _BaseService {
         if (ObjectUtils.isEmpty(inputInfos)) {
             List<LearningModelInputInfo> defaultInputList = new ArrayList<>();
 
-            for (InputColumnType value : InputColumnType.values()) {
+            for (InputColumnCardType value : InputColumnCardType.values()) {
                 LearningModelInputInfo defaultInput = new LearningModelInputInfo();
                 defaultInput.setInputColumnType(value);
                 defaultInputList.add(defaultInput);

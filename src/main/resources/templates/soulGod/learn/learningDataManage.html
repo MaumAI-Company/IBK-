@@ -78,13 +78,13 @@
     <script type="text/javascript">
         $(function () {
             //학습 팝업 도움말
-            $('.btn_help').each(function(){
-                $(this).on('click', function(){
+            $('.btn_help').each(function () {
+                $(this).on('click', function () {
                     $(this).parent('.th_help_area').toggleClass('active').parents('.tr').siblings('.tr').find('.th_help_area').removeClass('active');
                 });
             });
             $(document).on('click', function (e) {
-                if(!$(e.target).parents('div').hasClass('th_help_area')){
+                if (!$(e.target).parents('div').hasClass('th_help_area')) {
                     $('.th_help_area').removeClass('active');
                 }
             });
@@ -160,7 +160,7 @@
         /**
          * 학습 모델 저장
          */
-        function fn_learnModelSave(){
+        function fn_learnModelSave() {
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
             let outputColumns = $(':checkbox[id^="' + outPrefix + '"]');
 
@@ -413,7 +413,7 @@
                         </th>
                         <td>
                             <div class="check_wrap">
-                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnType).values()}">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnCardType).values()}">
                                     <div class="checkbox">
                                         <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
                                                disabled>
@@ -430,7 +430,7 @@
                         </th>
                         <td>
                             <div class="check_wrap">
-                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnType).values()}">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnCardType).values()}">
                                     <div class="checkbox">
                                         <input type="checkbox" th:id="${'output_' + item.camelColumn}"
                                                th:value="${item}"

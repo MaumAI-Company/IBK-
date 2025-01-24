@@ -61,7 +61,7 @@
         function movePage(url, pageNo) {
             layerShow('loading');
             $('#currentPageNo').val(pageNo);
-            $('#form1').attr({action: '/soulGod/learn/dataManageView', method: 'post'}).unbind('submit').submit();
+            $('#form1').attr({action: '/soulGod/learn/billManageView', method: 'post'}).unbind('submit').submit();
         }
 
         function fn_search(pageNo) {
@@ -85,42 +85,36 @@
             }
 
             $.ajax({
-                url: "/soulGod/learn/dataManageView/list",
+                url: "/soulGod/learn/billManageView/list",
                 type: "post",
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
                     $('.selected_filter').html('');
-                    let contents;
+                    let contents = [];
                     if (data.list.length > 0) {
                         $.each(data.list, function (idx, item) {
-                            contents += '<tr>';
+                            contents.push(`
+                                <tr>
+                                    <td>${idx + 1}</td>
 
-                            contents += `
-                            <td>${data.pageInfo.totalRecordCount - ((data.pageInfo.currentPage - 1) * data.pageInfo.recordsPerPage + idx)}</td>
-                            <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
-                            <td>${item.bdgtPrfrYm}</td>
-                            <td>${item.brcd}</td>
-                            <td>${item.cdn}</td>
-                            <td>${item.bdgtTstmUseHms}</td>
+                                    <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
+                                    <td>${item.bdgtPrfrYm}</td>
+                                    <td>${item.brcd}</td>
+                                    <td>${item.txblDcd}</td>
+                                    <td>${item.splrBsnnNo}</td>
 
-                            <td>${item.amslAmt}</td>
-                            <td>${item.afstNm}</td>
-                            <td>${item.tpbsNm}</td>
-                            <td>${item.bzdyYn}</td>
-                            <td>${item.afstDtlAdr}</td>
+                                    <td>${item.splrFrm}</td>
+                                    <td>${item.splrBzstNm}</td>
+                                    <td>${item.splrItmsNm}</td>
+                                    <td>${item.issAmt}</td>
+                                    <td>${item.txblLsarNm}</td>
 
-                            <td>${item.brncAdr}</td>
-                            <td>${item.afstBzn}</td>
-                            <td>${item.amslAfstNo}</td>
-                            <td>${item.afstTpbcd}</td>
-
-                            <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo}</td>
-                            <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon}</td>
-                            <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon}</td>
-                            `;
-
-                            contents += '</tr>';
+                                    <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon}</td>
+                                </tr>
+                            `);
                         })
                         $('.nodata').hide();
                         $('.contentsArea').show();
@@ -233,6 +227,8 @@
                                        th:checked="${params.searchTarget == '2'}">
                                 <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
                                         th:class="${item}" th:text="${item.name}"></option>
+                                <option th:each="item :${T(kr.co.ibk.domain.enums.SearchBillType).values()}"
+                                        th:class="${item}" th:text="${item.name}"></option>
                             </div>
                         </div>
                     </div>
@@ -244,25 +240,22 @@
             </div>
             <div class="tbl_wrap contentsArea">
                 <table class="tbl_list">
-                    <caption>데이터 관리 : No, 학습 데이터 명, 등록자, 상태, 학습 가능 유무, 등록일시로 구성</caption>
+                    <caption>데이터 관리 : No, 대상, 예산집행년월, 부점코드, 세금계산서구분코드, 공급자사업자번호, 공급자상호명, 공급자업태명, 공급자종목명, 발행금액, 세금계산서품목명,
+                        예산관리비목관리번호, 사업세부사업, 예산집행사유코드로 구성
+                    </caption>
                     <colgroup>
                         <col style="width: 2.5%">
                         <col style="width: 4%;">
                         <col style="width: 5%;">
                         <col style="width: 4.5%;">
-                        <col style="width: 11%">
-                        <col style="width: 3%;">
+                        <col style="width: 5%">
 
-                        <col style="width: 4.5%;">
+                        <col style="width: 5%;">
+                        <col style="width: 8%;">
                         <col style="width: 6%;">
-                        <col style="width: 4.5%;">
+                        <col style="width: 6%;">
                         <col style="width: 3.5%;">
                         <col style="width: 6.5%;">
-
-                        <col style="width: 6.5%;">
-                        <col style="width: auto">
-                        <col style="width: auto">
-                        <col style="width: 7%">
 
                         <col style="width: 6.5%;">
                         <col style="width: 7%;">
@@ -274,23 +267,18 @@
                         <th scope="col">대상</th>
                         <th scope="col">예산집행년월</th>
                         <th scope="col">부점코드</th>
-                        <th scope="col">카드번호</th>
-                        <th scope="col">승인시간</th>
+                        <th scope="col">세금계산서구분코드</th>
+                        <th scope="col">공급자사업자번호</th>
 
-                        <th scope="col">매출금액</th>
-                        <th scope="col">가맹점명</th>
-                        <th scope="col">업종명</th>
-                        <th scope="col">영업일여부</th>
-                        <th scope="col">가맹점상세주소</th>
+                        <th scope="col">공급자상호명</th>
+                        <th scope="col">공급자업태명</th>
+                        <th scope="col">공급자종목명</th>
+                        <th scope="col">발행금액</th>
+                        <th scope="col">세금계산서품목명</th>
 
-                        <th scope="col">부점주소</th>
-                        <th scope="col">가맹점사업자등록번호</th>
-                        <th scope="col">매출가맹점번호</th>
-                        <th scope="col" class="pr">가맹점업종코드</th>
-
-                        <th scope="col" style="background-color:#f9f9ff">예산관리비목관리번호</th>
-                        <th scope="col" style="background-color:#f9f9ff">예산집행사유코드</th> <!--예산관리비목관리번호_예산집행사유코드-->
-                        <th scope="col" style="background-color:#f9f9ff">사업세부사업</th>
+                        <th scope="col">예산관리비목관리번호</th>
+                        <th scope="col">사업세부사업</th>
+                        <th scope="col">예산집행사유코드</th>
                     </tr>
                     </thead>
                     <tbody id="contents">

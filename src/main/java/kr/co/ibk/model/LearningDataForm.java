@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+import java.util.Map;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,8 +25,8 @@ public class LearningDataForm extends PageForm {
     private String templateAt;
     private Integer templateId;
     private String templateName;
-    private String[] inputArr;
-    private String[] outputArr;
+    List<Map<String, Object>> inputArr;
+    List<Map<String, Object>> outputArr;
 
     /*검색조건*/
     private String statusType;
