@@ -14,6 +14,7 @@ public class TemplateForm extends PageForm {
     private String searchTarget;
     private String searchLearningType;
     private String pagingAt;
+    private String sorting;
 
     /*save*/
     private Integer id;
