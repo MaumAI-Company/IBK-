@@ -12,8 +12,21 @@
                 #{learningType});
     </insert>
     <select id="getLoad" resultType="LearningModelInfo" parameterType="Integer">
-        select
-         ID, LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM, HDQR_BOB_DCD
+        select ID,
+               LEARNING_ID,
+               REG_ID,
+               REG_DT,
+               MOD_ID,
+               MOD_DT,
+               LEARN_NAME,
+               RESULT_CODE,
+               RESULT_MSG,
+               CREATE_DTM,
+               HDQR_BOB_DCD,
+               EPOCH,
+               LEARNING_RATE,
+               BATCH_SIZE,
+               LEARNING_TYPE
         from LEARNING_MODEL
         where ID = #{id}
     </select>
@@ -41,6 +54,7 @@
 				AND DATE_FORMAT( lm.CREATE_DTM, '%Y.%m.%d') >= #{searchStartDate}
 			 ]]>
         </if>
+
         <if test="searchEndDate != null and searchEndDate != ''">
             <![CDATA[
 				AND DATE_FORMAT( lm.CREATE_DTM, '%Y.%m.%d') <= #{searchEndDate}
@@ -57,7 +71,10 @@
             AND lm.DEPLOY_STATUS = #{statusType}
         </if>
 
-        /*학습 가능 유무*/
+        /*구분 검색*/
+        <if test="searchLearningType != null and ''.toString != searchLearningType">
+            and t.LEARNING_TYPE = #{searchLearningType}
+        </if>
 
         /*키워드 검색*/
         <if test="searchKeyword != null and searchKeyword != ''">
@@ -68,6 +85,7 @@
     <select id="getList" resultType="LearningModelInfo" parameterType="LearningModelForm">
         select lm.ID,
                lm.LEARNING_ID,
+               lm.HDQR_BOB_DCD,
                lm.REG_ID,
                lm.REG_DT,
                lm.MOD_ID,
@@ -83,6 +101,7 @@
                lm.ROLLBACK_DT,
                lm.LEARNING_RESULT,
                lm.DEPLOY_STATUS,
+               lm.LEARNING_TYPE,
                hm.MEM_NAME as REG_NAME
         from LEARNING_MODEL lm
         inner join HC_MEMBER hm on lm.REG_ID = hm.MEM_ID

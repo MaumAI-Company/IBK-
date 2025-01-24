@@ -1,5 +1,6 @@
 package kr.co.ibk.domain.web;
 
+import kr.co.ibk.domain.enums.LearningType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,7 @@ public class LearningModelInfo {
     private String fileName;    //학습파일명
     private String regName;
     private String hdqrBobDcd;
+    private LearningType learningType;
 
     private List<LearningModelInputInfo> inputList;
     private List<LearningModelInputInfo> outputList;

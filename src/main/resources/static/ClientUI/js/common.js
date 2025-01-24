@@ -135,7 +135,8 @@ function showConfirm(icon, msg, confirmFunc, dismissFunc) {
  * input text에 사용
  * ex) onkeyup="fn_numberOnly(this)"
  ***************************************************************************/
-function fn_numberOnly(obj, max) {
+
+/*function fn_numberOnly(obj, max) {
     let regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;	//정규식 구문
     if (regExp.test(obj.value)) {
         // 특수문자 모두 제거
@@ -149,28 +150,23 @@ function fn_numberOnly(obj, max) {
     if (parseInt(obj.value, 10) > max) {
         obj.value = max;
     }
-}
+}*/
 
-
-function fn_numberOnly2(obj, max) {
-    let regExp = /[^\d.]/g; // 숫자와 소수점을 제외한 모든 문자 제거
+function fn_numberOnly(obj, max) {
+    let regExp = /[^\d.]/g;
     if (regExp.test(obj.value)) {
-        // 특수문자 제거
         obj.value = obj.value.replace(regExp, '');
     }
 
-    // 소수점이 두 번 이상 포함되었을 경우 첫 번째만 유지
     let parts = obj.value.split('.');
     if (parts.length > 2) {
         obj.value = parts[0] + '.' + parts[1];
     }
 
-    // 숫자 변환 후 max 값 초과 방지
     if (parseFloat(obj.value) > max) {
         obj.value = max;
     }
 }
-
 
 
 function validFile(selector) {

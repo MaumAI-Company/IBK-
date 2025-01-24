@@ -2,6 +2,7 @@ package kr.co.ibk.service;
 
 import kr.co.ibk.domain.enums.InOutGbnType;
 import kr.co.ibk.domain.enums.InputColumnCardType;
+import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.CardOutputInfo;
 import kr.co.ibk.domain.web.LearningModelInputInfo;
 import kr.co.ibk.model.CardInputForm;
@@ -32,23 +33,23 @@ public class CardOutputService extends _BaseService {
         List<LearningModelInputInfo> inputInfos = new ArrayList<>();
 
         if (!ObjectUtils.isEmpty(info.getLearningModelId())) {
-            inputInfos = learningModelInputRepository.getPartList(info.getLearningModelId(), InOutGbnType.INPUT.name());
+            inputInfos = learningModelInputRepository.getPartList(info.getLearningModelId(), InOutGbnType.INPUT.name(), LearningType.CARD.getName());
         }
         if (ObjectUtils.isEmpty(inputInfos)) {
             List<LearningModelInputInfo> defaultInputList = new ArrayList<>();
 
             for (InputColumnCardType value : InputColumnCardType.values()) {
                 LearningModelInputInfo defaultInput = new LearningModelInputInfo();
-                defaultInput.setInputColumnType(value);
+                defaultInput.setInputColumnCardType(value);
                 defaultInputList.add(defaultInput);
             }
             inputInfos = defaultInputList;
         }
 
         inputInfos.forEach(input -> {
-            input.setInputColumnNm(input.getInputColumnType().getName());
+            input.setInputColumnNm(input.getInputColumnCardType().getName());
 
-            String columnName = input.getInputColumnType().getCamelColumn();
+            String columnName = input.getInputColumnCardType().getCamelColumn();
 
             // info 객체의 해당 메서드 호출
             try {

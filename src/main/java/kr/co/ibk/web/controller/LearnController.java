@@ -1,9 +1,7 @@
 package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
-import kr.co.ibk.domain.enums.InputColumnCardType;
 import kr.co.ibk.domain.enums.LearningType;
-import kr.co.ibk.domain.enums.OutputColumnCardType;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.*;
 import kr.co.ibk.model.paging.PageDto;
@@ -294,13 +292,14 @@ public class LearnController extends BaseCont {
     //모델관리 : s
     @RequestMapping("/soulGod/learn/modelManage")
     public String modelManage(Model model,
-                              @ModelAttribute LearningModelForm form,
+                              @ModelAttribute LearningModelForm params,
                               @CurrentUser MemberInfo memberInfo) {
 
-        List<LearningModelInfo> list = learningModelService.getList(form);
+        List<LearningModelInfo> list = learningModelService.getList(params);
 
+        model.addAttribute("pagingInfo", params.getPaginationInfo());
         model.addAttribute("list", list);
-        model.addAttribute("params", form);
+        model.addAttribute("params", params);
         model.addAttribute("mc", "ico_database");
         model.addAttribute("pageTitle", "모델 관리");
 
@@ -327,11 +326,7 @@ public class LearnController extends BaseCont {
     @PostMapping(value = {"/soulGod/learnData/detail"})
     public HashMap<String, Object> learnDataDetail(@RequestBody LearningModelForm form) {
         HashMap<String, Object> returnMap = new HashMap<>();
-
         returnMap.put("data", learningModelService.getLoad(form));
-        returnMap.put("inputArr", InputColumnCardType.values());
-        returnMap.put("outputArr", OutputColumnCardType.values());
-
         return returnMap;
     }
     //모델관리 : e
