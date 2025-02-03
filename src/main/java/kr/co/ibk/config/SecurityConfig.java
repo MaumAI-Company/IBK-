@@ -65,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .mvcMatchers("/ClientUI/**","/node_modules/**","/loginFailure","/message","/error","/ssoLoginAction"
                         ,"/fragments/**","/api/v1/common/download","/","/index","/login","/healthcheck","/coding/**").permitAll()
-                .mvcMatchers("/api/member/**","/api/openData/**").permitAll()
+                .mvcMatchers("/api/v1/o/**").permitAll()
 //                .mvcMatchers("/api/v1/**").hasAnyRole("USER, ADMIN")
 //                .mvcMatchers("/pages/**").hasAnyRole("USER, ADMIN")
                 .mvcMatchers("/soulGod/**").authenticated()
