@@ -61,7 +61,7 @@
         function movePage(url, pageNo) {
             layerShow('loading');
             $('#currentPageNo').val(pageNo);
-            $('#form1').attr({action: '/soulGod/learn/dataManageView', method: 'post'}).unbind('submit').submit();
+            $('#form1').attr({action: '/soulGod/learn/cardManageView', method: 'post'}).unbind('submit').submit();
         }
 
         function fn_search(pageNo) {
@@ -85,42 +85,41 @@
             }
 
             $.ajax({
-                url: "/soulGod/learn/dataManageView/list",
+                url: "/soulGod/learn/cardManageView/list",
                 type: "post",
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
                     $('.selected_filter').html('');
-                    let contents;
+                    let contents = [];
                     if (data.list.length > 0) {
                         $.each(data.list, function (idx, item) {
-                            contents += '<tr>';
 
-                            contents += `
-                            <td>${data.pageInfo.totalRecordCount - ((data.pageInfo.currentPage - 1) * data.pageInfo.recordsPerPage + idx)}</td>
-                            <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
-                            <td>${item.bdgtPrfrYm}</td>
-                            <td>${item.brcd}</td>
-                            <td>${item.cdn}</td>
-                            <td>${item.bdgtTstmUseHms}</td>
+                            contents.push(`
+                                <tr>
+                                    <td>${data.pageInfo.totalRecordCount - ((data.pageInfo.currentPage - 1) * data.pageInfo.recordsPerPage + idx)}</td>
+                                    <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
+                                    <td>${item.bdgtPrfrYm}</td>
+                                    <td>${item.brcd}</td>
+                                    <td>${item.cdn}</td>
+                                    <td>${item.bdgtTstmUseHms}</td>
 
-                            <td>${item.amslAmt}</td>
-                            <td>${item.afstNm}</td>
-                            <td>${item.tpbsNm}</td>
-                            <td>${item.bzdyYn}</td>
-                            <td>${item.afstDtlAdr}</td>
+                                    <td>${item.amslAmt}</td>
+                                    <td>${item.afstNm}</td>
+                                    <td>${item.tpbsNm}</td>
+                                    <td>${item.bzdyYn}</td>
+                                    <td>${item.afstDtlAdr}</td>
 
-                            <td>${item.brncAdr}</td>
-                            <td>${item.afstBzn}</td>
-                            <td>${item.amslAfstNo}</td>
-                            <td>${item.afstTpbcd}</td>
+                                    <td>${item.brncAdr}</td>
+                                    <td>${item.afstBzn}</td>
+                                    <td>${item.amslAfstNo}</td>
+                                    <td>${item.afstTpbcd}</td>
 
-                            <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo}</td>
-                            <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon}</td>
-                            <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon}</td>
-                            `;
-
-                            contents += '</tr>';
+                                    <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon}</td>
+                                </tr>
+                            `);
                         })
                         $('.nodata').hide();
                         $('.contentsArea').show();

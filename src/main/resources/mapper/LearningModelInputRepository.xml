@@ -8,14 +8,16 @@
         (
         COL_NAME,
         MODEL_ID,
-        INOUT_GBN
+        INOUT_GBN,
+        SNO
         )
         VALUES
         <foreach collection="dataArr" item="item" separator=",">
             (
-            #{item},
+            #{item.name},
             #{id},
-            #{gbn}
+            #{gbn},
+            #{item.sno}
             )
         </foreach>
     </insert>
@@ -34,12 +36,20 @@
         lmi.COL_NAME
         ,lmi.MODEL_ID
         ,lmi.INOUT_GBN
-        <if test="gbn != null and gbn != '' and gbn == 'INPUT'">
-            ,lmi.COL_NAME as inputColumnType
-        </if>
-        <if test="gbn != null and gbn != '' and gbn == 'OUTPUT'">
-            ,lmi.COL_NAME as outputColumnType
-        </if>
+        <choose>
+            <when test="gbn == 'INPUT' and learningType == 'CARD'">
+                , lmi.COL_NAME AS inputColumnCardType
+            </when>
+            <when test="gbn == 'INPUT' and learningType == 'BILL'">
+                , lmi.COL_NAME AS inputColumnBillType
+            </when>
+            <when test="gbn == 'OUTPUT' and learningType == 'CARD'">
+                , lmi.COL_NAME AS outputColumnCardType
+            </when>
+            <when test="gbn == 'OUTPUT' and learningType == 'BILL'">
+                , lmi.COL_NAME AS outputColumnBillType
+            </when>
+        </choose>
         from LEARNING_MODEL_INPUT lmi
         where lmi.MODEL_ID = #{id}
         <if test="gbn != null and gbn != ''">

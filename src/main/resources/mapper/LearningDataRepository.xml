@@ -48,17 +48,35 @@
     <select id="getList" resultType="LearningDataInfo" parameterType="LearningDataForm">
         select
         <include refid="column"></include>
-            , t.TEMPLATE_NAME
-            ,hm.MEM_NAME as regName
+        , t.TEMPLATE_NAME
+        , hm.MEM_NAME as regName
+        , model.modelCnt
         from
-            LEARNING_DATA ld
+        LEARNING_DATA ld
         inner join HC_MEMBER hm on ld.REG_ID = hm.MEM_ID
         left join TEMPLATE t on ld.TEMPLATE_ID = t.ID
+        LEFT JOIN (
+        SELECT
+        count(*) AS modelCnt,
+        lm.LEARNING_ID
+        FROM
+        LEARNING_MODEL lm
+        GROUP BY
+        lm.LEARNING_ID
+        ) model ON ld.ID = model.LEARNING_ID
         <include refid="where"></include>
         order by
-            REG_DT desc
+        REG_DT
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
         <if test="pagingAt != null and 'Y'.toString() == pagingAt">
-            <include refid="kr.co.ibk.repository.CommonRepository.paging" />
+            <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
         </if>
     </select>
 
@@ -76,7 +94,9 @@
         <if test="searchTarget != null and searchTarget != ''">
             AND ld.HDQR_BOB_DCD = #{searchTarget}
         </if>
-
+        <if test="searchLearningType != null and searchLearningType != ''">
+            AND ld.LEARNING_TYPE = #{searchLearningType}
+        </if>
         <if test="searchKeyword != null and searchKeyword != ''">
             AND (ld.DATA_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
                     or hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
@@ -93,4 +113,11 @@
             LEARNING_DATA ld
         where ld.DATA_NAME = #{dataName}
     </select>
+
+    <delete id="deleteAllById">
+        DELETE FROM LEARNING_DATA WHERE ID IN
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>

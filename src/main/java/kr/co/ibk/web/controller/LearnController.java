@@ -1,9 +1,7 @@
 package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
-import kr.co.ibk.domain.enums.InputColumnCardType;
 import kr.co.ibk.domain.enums.LearningType;
-import kr.co.ibk.domain.enums.OutputColumnCardType;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.*;
 import kr.co.ibk.model.paging.PageDto;
@@ -31,19 +29,14 @@ public class LearnController extends BaseCont {
     private final TemplateService templateService;
     private final LearningDataService learningDataService;
 
-    //학습데이터등록 : s
-    @RequestMapping("/soulGod/learn/dataManage")
+    // 학습 데이터 등록 : s
+
+    /**
+     * BC카드 학습 데이터 등록
+     */
+    @RequestMapping("/soulGod/learn/cardManage")
     public String dataManage(Model model,
                              @ModelAttribute CardLearningDataForm params) {
-        /*if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
-            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
-        }
-
-        List<CardLearningDataInfo> list = cardLearningDataService.page(params);
-
-        model.addAttribute("list", list);
-        model.addAttribute("pagingInfo", params.getPaginationInfo());*/
-
         params.setLearningType(LearningType.CARD);
 
         if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
@@ -57,52 +50,16 @@ public class LearnController extends BaseCont {
 
         model.addAttribute("params", params);
         model.addAttribute("mc", "ico_database");
-        model.addAttribute("pageTitle", "학습 데이터 등록");
+        model.addAttribute("pageTitle", "BC카드 학습 데이터 등록");
 
-        return "/soulGod/learn/dataManage";
-    }
-
-    @RequestMapping("/soulGod/learn/dataManageView")
-    public String dataManageView(Model model,
-                                 @ModelAttribute CardLearningDataForm params) {
-
-        model.addAttribute("params", params);
-        model.addAttribute("mc", "ico_database");
-        model.addAttribute("pageTitle", "학습 데이터 조회");
-
-        return "/soulGod/learn/dataManageView";
+        return "/soulGod/learn/cardManage";
     }
 
     /**
-     * 학습 데이터 목록 조회
-     *
-     * @param params
-     * @return1
+     * BC카드 학습 데이터 등록 > 목록
      */
     @ResponseBody
-    @PostMapping("/soulGod/learn/dataManageView/list")
-    public Map<String, Object> learnDataListView(@RequestBody CardLearningDataForm params) {
-        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
-            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
-        }
-        List<CardLearningDataInfo> list = cardLearningDataService.page(params);
-
-        PageDto pageDto = new PageDto(params.getPaginationInfo(), params.getRecordsPerPage());
-
-        return Map.of(
-                "list", list,
-                "pageInfo", pageDto
-        );
-    }
-
-    /**
-     * 학습 데이터 목록 조회
-     *
-     * @param params
-     * @return1
-     */
-    @ResponseBody
-    @PostMapping("/soulGod/learn/dataManage/list")
+    @PostMapping("/soulGod/learn/cardManage/list")
     public Map<String, Object> learnDataList(@RequestBody CardLearningDataForm params) {
         if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
             params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
@@ -119,29 +76,40 @@ public class LearnController extends BaseCont {
     }
 
     /**
-     * 학습데이터명 중복 체크
-     *
-     * @param form
-     * @return
+     * BC카드 학습 데이터 조회
      */
-    @ResponseBody
-    @PostMapping(value = {"/soulGod/learnData/nmCount"})
-    public int learnDataNmCount(@RequestBody LearningDataForm form) {
-        return learningDataService.learnDataNmCount(form);
+    @RequestMapping("/soulGod/learn/cardManageView")
+    public String cardManageView(Model model,
+                                 @ModelAttribute CardLearningDataForm params) {
+
+        model.addAttribute("params", params);
+        model.addAttribute("mc", "ico_database");
+        model.addAttribute("pageTitle", "학습 데이터 조회");
+
+        return "/soulGod/learn/cardManageView";
     }
-
-    @ResponseBody
-    @PostMapping(value = {"/soulGod/learnData/save"})
-    public HashMap<String, Object> learnDataSave(@RequestBody LearningDataForm form, @CurrentUser MemberInfo memberInfo) {
-
-        return learningDataService.save(form, memberInfo);
-    }
-    //학습데이터등록 : e
-
-    // 세금계산서 학습데이터등록 : s
 
     /**
-     * 세금계산서 학습데이터 등록
+     * BC카드 학습 데이터 조회 > 목록
+     */
+    @ResponseBody
+    @PostMapping("/soulGod/learn/cardManageView/list")
+    public Map<String, Object> learnDataListView(@RequestBody CardLearningDataForm params) {
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+        List<CardLearningDataInfo> list = cardLearningDataService.page(params);
+
+        PageDto pageDto = new PageDto(params.getPaginationInfo(), params.getRecordsPerPage());
+
+        return Map.of(
+                "list", list,
+                "pageInfo", pageDto
+        );
+    }
+
+    /**
+     * 세금계산서 학습 데이터 등록
      */
     @GetMapping("/soulGod/learn/billManage")
     public String billManage(Model model,
@@ -166,7 +134,7 @@ public class LearnController extends BaseCont {
     }
 
     /**
-     * 세금계산서 학습데이터 등록 > 학습 데이터 목록 조회
+     * 세금계산서 학습 데이터 등록 > 목록
      */
     @ResponseBody
     @PostMapping("/soulGod/learn/billManage/list")
@@ -184,8 +152,59 @@ public class LearnController extends BaseCont {
                 "params", params
         );
     }
-    // 세금계산서 학습데이터등록 : e
 
+    /**
+     * 세금계산서 학습 데이터 조회
+     */
+    @RequestMapping("/soulGod/learn/billManageView")
+    public String billManageView(Model model,
+                                 @ModelAttribute BillLearningDataForm params) {
+
+        model.addAttribute("params", params);
+        model.addAttribute("mc", "ico_database");
+        model.addAttribute("pageTitle", "학습 데이터 조회");
+
+        return "/soulGod/learn/billManageView";
+    }
+
+    /**
+     * 세금계산서 학습 데이터 조회 > 목록
+     */
+    @ResponseBody
+    @PostMapping("/soulGod/learn/billManageView/list")
+    public Map<String, Object> billLearnDataListView(@RequestBody BillLearningDataForm params) {
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+        List<BillLearningDataInfo> list = billLearningDataService.page(params);
+
+        PageDto pageDto = new PageDto(params.getPaginationInfo(), params.getRecordsPerPage());
+
+        return Map.of(
+                "list", list,
+                "pageInfo", pageDto
+        );
+    }
+
+    /**
+     * 학습데이터명 중복 체크
+     */
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/learnData/nmCount"})
+    public int learnDataNmCount(@RequestBody LearningDataForm form) {
+        return learningDataService.learnDataNmCount(form);
+    }
+
+    /**
+     * 학습데이터 등록
+     */
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/learnData/save"})
+    public HashMap<String, Object> learnDataSave(@RequestBody LearningDataForm form, @CurrentUser MemberInfo memberInfo) {
+
+        return learningDataService.save(form, memberInfo);
+    }
+    // 학습 데이터 등록 : e
 
     //학습템플릿관리 : s
     @RequestMapping("/soulGod/learn/templateManage")
@@ -255,19 +274,32 @@ public class LearnController extends BaseCont {
 
         return learningModelService.save(form, memberInfo);
     }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/learningDataManage/delete"})
+    public HashMap<String, Object> learningDataManageDelete(@RequestBody LearningModelForm form) {
+        return learningDataService.delete(form);
+    }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/learningDataManage/nmCount"})
+    public int learningDataManageNmCount(@RequestBody LearningModelForm form) {
+        return learningModelService.modelNmCount(form);
+    }
     //학습데이터관리 : e
 
 
     //모델관리 : s
     @RequestMapping("/soulGod/learn/modelManage")
     public String modelManage(Model model,
-                              @ModelAttribute LearningModelForm form,
+                              @ModelAttribute LearningModelForm params,
                               @CurrentUser MemberInfo memberInfo) {
 
-        List<LearningModelInfo> list = learningModelService.getList(form);
+        List<LearningModelInfo> list = learningModelService.getList(params);
 
+        model.addAttribute("pagingInfo", params.getPaginationInfo());
         model.addAttribute("list", list);
-        model.addAttribute("params", form);
+        model.addAttribute("params", params);
         model.addAttribute("mc", "ico_database");
         model.addAttribute("pageTitle", "모델 관리");
 
@@ -294,11 +326,7 @@ public class LearnController extends BaseCont {
     @PostMapping(value = {"/soulGod/learnData/detail"})
     public HashMap<String, Object> learnDataDetail(@RequestBody LearningModelForm form) {
         HashMap<String, Object> returnMap = new HashMap<>();
-
         returnMap.put("data", learningModelService.getLoad(form));
-        returnMap.put("inputArr", InputColumnCardType.values());
-        returnMap.put("outputArr", OutputColumnCardType.values());
-
         return returnMap;
     }
     //모델관리 : e

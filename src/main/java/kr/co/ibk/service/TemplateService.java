@@ -28,10 +28,6 @@ public class TemplateService extends _BaseService {
     private final TemplateInputRepository templateInputRepository;
 
     public List<TemplateInfo> page(TemplateForm params) {
-         /*
-        default search condition
-         */
-
         int totalCount = templateRepository.getTotalCount(params);
 
         PaginationInfo paginationInfo = new PaginationInfo(params);
@@ -40,6 +36,9 @@ public class TemplateService extends _BaseService {
 
         List<TemplateInfo> list = new ArrayList<>();
         if (totalCount > 0) {
+            if (ObjectUtils.isEmpty(params.getSorting())) {
+                params.setSorting("desc");
+            }
             params.setPagingAt("Y");
             list = getList(params);
         }

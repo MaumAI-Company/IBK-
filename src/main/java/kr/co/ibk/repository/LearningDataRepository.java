@@ -22,4 +22,6 @@ public interface LearningDataRepository {
     int learnDataNmCount(@Param("dataName") String dataName);
 
     LearningDataInfo getLoad(Integer id);
+
+    Long deleteAllById(Integer[] idArr);
 }

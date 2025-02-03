@@ -15,10 +15,12 @@ public class LearningModelInputInfo {
     private Integer modelId; //모델ID
     private InOutGbnType inoutGbn;    //인/아웃 구분
 
-    private InputColumnCardType inputColumnType;
+    private InputColumnCardType inputColumnCardType;
+    private InputColumnCardType inputColumnBillType;
     private String inputColumnNm;
     private String inputColumnVal;
-    private OutputColumnCardType outputColumnType;
+    private OutputColumnCardType outputColumnCardType;
+    private OutputColumnCardType outputColumnBillType;
     private String outputColumnNm;
 }
 

@@ -4,12 +4,10 @@ import kr.co.ibk.domain.enums.InOutGbnType;
 import kr.co.ibk.domain.web.LearningDataInfo;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.model.LearningDataForm;
+import kr.co.ibk.model.LearningModelForm;
 import kr.co.ibk.model.TemplateForm;
 import kr.co.ibk.model.paging.PaginationInfo;
-import kr.co.ibk.repository.LearningDataInputRepository;
-import kr.co.ibk.repository.LearningDataRepository;
-import kr.co.ibk.repository.TemplateInputRepository;
-import kr.co.ibk.repository.TemplateRepository;
+import kr.co.ibk.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +26,7 @@ public class LearningDataService extends _BaseService {
     private final LearningDataInputRepository learningDataInputRepository;
     private final TemplateRepository templateRepository;
     private final TemplateInputRepository templateInputRepository;
+    private final LearningModelRepository learningModelRepository;
 
     public HashMap<String, Object> save(LearningDataForm form, MemberInfo memberInfo) {
         HashMap<String, Object> map = new HashMap<>();
@@ -80,6 +79,9 @@ public class LearningDataService extends _BaseService {
 
         List<LearningDataInfo> list = new ArrayList<>();
         if (totalCount > 0) {
+            if (ObjectUtils.isEmpty(params.getSorting())) {
+                params.setSorting("desc");
+            }
             params.setPagingAt("Y");
             list = getList(params);
         }
@@ -99,5 +101,27 @@ public class LearningDataService extends _BaseService {
         LearningDataInfo info = learningDataRepository.getLoad(form.getId());
         info.setInputList(learningDataInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name()));
         return info;
+    }
+
+    public HashMap<String, Object> delete(LearningModelForm form) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("status", "FAIL");
+
+        Long deleteCnt;
+        if (!ObjectUtils.isEmpty(form.getIdArr()) && form.getIdArr().length > 0) {
+            int learningCnt = learningModelRepository.countByInLearningId(form.getIdArr());
+
+            if (learningCnt > 0) {
+                return map;
+            }
+
+            learningDataInputRepository.deleteAllByDataId(form.getIdArr());
+
+            deleteCnt = learningDataRepository.deleteAllById(form.getIdArr());
+            if (deleteCnt > 0) {
+                map.put("status", "SUCCESS");
+            }
+        }
+        return map;
     }
 }

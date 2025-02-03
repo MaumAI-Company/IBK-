@@ -40,4 +40,11 @@
         </if>
         order by ldi.INOUT_GBN asc
     </select>
+
+    <delete id="deleteAllByDataId">
+        DELETE FROM LEARNING_DATA_INPUT WHERE DATA_ID IN
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>
