@@ -12,23 +12,27 @@
                 #{learningType});
     </insert>
     <select id="getLoad" resultType="LearningModelInfo" parameterType="Integer">
-        select ID,
-               LEARNING_ID,
-               REG_ID,
-               REG_DT,
-               MOD_ID,
-               MOD_DT,
-               LEARN_NAME,
-               RESULT_CODE,
-               RESULT_MSG,
-               CREATE_DTM,
-               HDQR_BOB_DCD,
-               EPOCH,
-               LEARNING_RATE,
-               BATCH_SIZE,
-               LEARNING_TYPE
-        from LEARNING_MODEL
-        where ID = #{id}
+        SELECT lm.ID,
+               lm.LEARNING_ID,
+               lm.REG_ID,
+               lm.REG_DT,
+               lm.MOD_ID,
+               lm.MOD_DT,
+               lm.LEARN_NAME,
+               lm.RESULT_CODE,
+               lm.RESULT_MSG,
+               lm.CREATE_DTM,
+               lm.HDQR_BOB_DCD,
+               lm.EPOCH,
+               lm.LEARNING_RATE,
+               lm.BATCH_SIZE,
+               lm.DEPLOY_STATUS,
+               lm.LEARNING_TYPE,
+               ld.DATA_NAME,
+               ld.SELECT_CON
+        FROM LEARNING_MODEL lm
+                 LEFT JOIN LEARNING_DATA ld ON lm.LEARNING_ID = ld.ID
+        WHERE lm.ID = #{id}
     </select>
     <update id="updateFile" parameterType="LearningModelForm">
         UPDATE maummcc.LEARNING_MODEL
@@ -73,7 +77,7 @@
 
         /*구분 검색*/
         <if test="searchLearningType != null and ''.toString != searchLearningType">
-            and t.LEARNING_TYPE = #{searchLearningType}
+            AND lm.LEARNING_TYPE = #{searchLearningType}
         </if>
 
         /*키워드 검색*/
@@ -154,4 +158,17 @@
             LEARNING_MODEL lm
         where lm.LEARN_NAME = #{learnName}
     </select>
+
+    <update id="deleteAllById">
+        update LEARNING_MODEL lm
+        set
+        lm.DELETE_YN = 'Y',
+        lm.MOD_ID = #{memId},
+        lm.MOD_DT = current_timestamp()
+        where
+        lm.ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
 </mapper>

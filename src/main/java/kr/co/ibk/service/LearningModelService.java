@@ -276,10 +276,26 @@ public class LearningModelService extends _BaseService {
         //model input list set
         info.setInputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name(), info.getLearningType().getName()));
         info.setOutputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.OUTPUT.name(), info.getLearningType().getName()));
+
+
         return info;
     }
 
     public int modelNmCount(LearningModelForm form) {
         return learningModelRepository.modelNmCount(form.getLearnName());
+    }
+
+    public HashMap<String, Object> delete(LearningModelForm form, MemberInfo memberInfo) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("status", "FAIL");
+
+        Long deleteCnt;
+        if (!ObjectUtils.isEmpty(form.getIdArr()) && form.getIdArr().length > 0) {
+            deleteCnt = learningModelRepository.deleteAllById(form.getIdArr(), memberInfo.getMemId());
+            if (deleteCnt > 0) {
+                map.put("status", "SUCCESS");
+            }
+        }
+        return map;
     }
 }

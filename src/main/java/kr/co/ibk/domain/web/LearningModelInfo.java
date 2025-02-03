@@ -40,6 +40,9 @@ public class LearningModelInfo {
 
     private List<LearningModelInputInfo> inputList;
     private List<LearningModelInputInfo> outputList;
+
+    private String dataName; // 학습데이터명
+    private String selectCon; // 선택조건
 }
 
 

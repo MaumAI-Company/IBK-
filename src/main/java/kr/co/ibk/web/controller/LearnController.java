@@ -28,6 +28,7 @@ public class LearnController extends BaseCont {
     private final BillLearningDataService billLearningDataService;
     private final TemplateService templateService;
     private final LearningDataService learningDataService;
+    private final MccService mccService;
 
     // 학습 데이터 등록 : s
 
@@ -308,7 +309,7 @@ public class LearnController extends BaseCont {
     }
 
     @ResponseBody
-    @PostMapping(value = {"/soulGod/learnData/learning"})
+    @PostMapping(value = {"/soulGod/model/learning"})
     public List<HashMap<String, Object>> dataLearning(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
 
         List<HashMap<String, Object>> rtnList = new ArrayList<>();
@@ -323,28 +324,54 @@ public class LearnController extends BaseCont {
     }
 
     @ResponseBody
-    @PostMapping(value = {"/soulGod/learnData/detail"})
+    @PostMapping(value = {"/soulGod/model/detail"})
     public HashMap<String, Object> learnDataDetail(@RequestBody LearningModelForm form) {
         HashMap<String, Object> returnMap = new HashMap<>();
         returnMap.put("data", learningModelService.getLoad(form));
         return returnMap;
     }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/model/delete"})
+    public HashMap<String, Object> modelDelete(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
+        return learningModelService.delete(form, memberInfo);
+    }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/model/trainModel"})
+    public void trainModel(@RequestBody LearningModelForm form) {
+        mccService.trainModel(form.getId());
+    }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/model/stopModel"})
+    public void stopModel(@RequestBody LearningModelForm form) {
+        mccService.stopModel(form.getId());
+    }
     //모델관리 : e
 
     @RequestMapping("/soulGod/learn/deployManage")
     public String deployManage(Model model,
-                               @ModelAttribute LearningModelForm form,
+                               @ModelAttribute LearningModelForm params,
                                @CurrentUser MemberInfo memberInfo) {
 
-        List<LearningModelInfo> list = learningModelService.getList(form);
+        List<LearningModelInfo> list = learningModelService.getList(params);
 
+        model.addAttribute("pagingInfo", params.getPaginationInfo());
         model.addAttribute("list", list);
-        model.addAttribute("params", form);
+        model.addAttribute("params", params);
         model.addAttribute("mc", "ico_database");
         model.addAttribute("pageTitle", "배포 관리");
 
         return "/soulGod/learn/deployManage";
 
     }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/model/replaceModel"})
+    public void replaceModel(@RequestBody LearningModelForm form) {
+        mccService.replaceModel(form.getId());
+    }
+
 
 }

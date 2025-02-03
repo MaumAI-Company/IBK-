@@ -13,8 +13,44 @@
             width: calc((100% - 16px) / 3)
         }
 
+        .tbl_list {
+            overflow: hidden
+        }
+
+        .tbl_list > thead > tr > th {
+            padding: 0 8px
+        }
+
+        .tbl_list > tbody > tr > td {
+            padding: 0 8px
+        }
+
+        .tbl_list tbody td .link {
+            text-decoration: underline;
+            color: #004c9d !important;
+        }
+
         .txt_guide {
             margin-top: 8px
+        }
+
+        #templateDetail .check_wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        #templateDetail .check_wrap .checkbox {
+            width: calc((100% - 8px) / 3);
+        }
+
+        #templateDetail .tbl_tit {
+            display: block;
+            font-weight: 700;
+            font-size: 20px;
+            margin-top: 18px;
+            margin-bottom: 17px;
         }
     </style>
     <script type="text/javascript">
@@ -33,7 +69,31 @@
                     })
                 }
             });
+
+            //학습 팝업 도움말
+            $('.btn_help').each(function () {
+                $(this).on('click', function () {
+                    $(this).parent('.th_help_area').toggleClass('active').parents('.tr').siblings('.tr').find('.th_help_area').removeClass('active');
+                });
+            });
+
+            $(document).on('click', function (e) {
+                if (!$(e.target).parents('div').hasClass('th_help_area')) {
+                    $('.th_help_area').removeClass('active');
+                }
+            });
         });
+
+        function fn_reset() {
+            $('#searchTarget').val('').niceSelect('update');
+            $('#statusType').val('').niceSelect('update');
+            $('#searchLearningType').val('').niceSelect('update');
+            $('#searchKeyword').val('');
+            $('#searchJson').val('');
+            $('#searchTypeJson').val('');
+
+            fn_search();
+        }
 
         function fn_search() {
             let frm = $('#aform');
@@ -56,14 +116,7 @@
             }
         }
 
-        function fn_initLearnPop() {
-            $("#epoch").val(3);
-            $("#learningRate").val(3.15484548538); //3e-5
-            $("#batchSize").val(8);
-            layerShow('popLearn');
-        }
-
-        function fn_goLearning() {
+        /*function fn_goLearning() {
             let epoch = $("#epoch");
             if (!$.trim(epoch.val())) {
                 showAlert('warning', "Epoch를 입력해주세요.");
@@ -89,7 +142,7 @@
                 idArr: idArr
             }
             $.ajax({
-                url: "/soulGod/learnData/learning",
+                url: "/soulGod/model/learning",
                 type: "post",
                 async: false,
                 data: JSON.stringify(jsonData),
@@ -103,6 +156,52 @@
                     console.log("error");
                 }
             });
+        }*/
+
+        const inPrefix = 'input_';
+        const outPrefix = 'output_';
+
+        function fn_modelDelete() {
+            let checked = $("[id^='chk_']:checked");
+            if (checked.length < 1) {
+                showAlert('warning', '1개 이상의 모델을 선택해주세요.');
+                return false;
+            }
+
+            showConfirm('message', checked.length + '건의 모델이 선택되었습니다. <br> 삭제하시겠습니까?', () => {
+                let idArr = [];
+                $.each(checked, function () {
+                    idArr.push($(this).val());
+                });
+
+                let jsonData = {
+                    "idArr": idArr,
+                }
+
+                $.ajax({
+                    url: "/soulGod/model/delete",
+                    type: "post",
+                    async: false,
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        if ("SUCCESS" === data.status) {
+                            showAlert('complete', '삭제되었습니다.', () => {
+                                location.reload();
+                            })
+                        } else {
+                            showAlert('warning', '실패하였습니다.', () => {
+                                location.reload();
+                            })
+                        }
+                    },
+                    error: function () {
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        })
+                    }
+                });
+            });
         }
 
         /**
@@ -113,7 +212,6 @@
             let id = $(el).data('id');
             let learningTy = $(el).data('learning-ty');
             let learningTyNm = $(el).data('learning-ty-nm');
-            let templateName = $(el).data('nm');
             let isCard = $(el).data('is-card');
             let selectCon = isCard ? '.cardCon' : '.billCon';
 
@@ -121,7 +219,6 @@
             $('#isCard').val(isCard);
             $('#templateId').val(id);
             $('#learningTyNm').text(learningTyNm);
-            $('#templateName').text(templateName);
             $('#searchStartDate').val('');
             $('#searchEndDate').val('');
 
@@ -141,19 +238,27 @@
             }
 
             $.ajax({
-                url: "/soulGod/learnData/detail",
+                url: "/soulGod/model/detail",
                 type: "post",
                 async: false,
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     if (data) {
                         let item = data.data;
 
                         $('#id').val(id);
                         $('#hdqrBobDcd').val(item.hdqrBobDcd).niceSelect('update');
-                        $('#learnName').val(item.learnName);
+                        $('#learnName').text(item.learnName);
+                        $('#epoch').val(item.epoch);
+                        $('#learningRate').val(item.learningRate);
+                        $('#batchSize').val(item.batchSize);
+
+                        $('#dataName').text(item.dataName);
+                        fn_settingChip(item.selectCon); //템플릿의 선택조건
+                        $('.chipArea').html($('.selected_filter').html());
+                        $('.chipArea .chip button').remove();
 
                         if (item.inputList) {
                             $.each(item.inputList, function (idx, item) {
@@ -164,7 +269,19 @@
                                 })
                             })
                         }
-                        layerShow('popLearnData');
+
+                        let buttonHtml = '';
+                        if (['0', '2', '3'].includes(item.deployStatus)) {
+                            buttonHtml = `
+                                <button type="button" class="btn fill"
+                                    onclick="${item.deployStatus === 2 ? 'fn_stopModel(' + item.id + ')' : 'fn_trainModel(' + item.id + ')'}">
+                                    <span>${item.deployStatus === 2 ? '학습 중단' : '학습'}</span>
+                                </button>
+                            `;
+                        }
+                        $('#btnLearnModel').html(buttonHtml);
+
+                        layerShow('templateDetail');
                     } else {
                         showAlert('warning', '학습 데이터가 존재하지 않습니다.');
                     }
@@ -175,86 +292,45 @@
             });
         }
 
-        const inPrefix = 'input_';
-        const outPrefix = 'output_';
-
-        /**
-         * 학습데이터 유효성 검사
-         */
-        function fn_learnDataSaveChk() {
-            let hdqrBobDcd = $('#hdqrBobDcd').val();
-            let learnName = $('#learnName').val();
-            let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
-
-            if (!$.trim(hdqrBobDcd)) {
-                showAlert('warning', '학습대상 선택은 필수입니다.');
-                return false;
-            }
-
-            if (!$.trim(learnName)) {
-                showAlert('warning', '학습데이터 명 입력은 필수입니다.');
-                return false;
-            }
-
-            if (inputColumns.length < 1) {
-                showAlert('warning', '학습데이터는 최소 1개 이상 선택해야합니다.');
-                return false;
-            }
-
-            showConfirm('message', '저장하시겠습니까?', function () {
-                fn_learnDataSave();
-            })
-        }
-
-        /**
-         * 학습데이터 저장
-         */
-        function fn_learnDataSave() {
-            let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
-            let outputColumns = $(':checkbox[id^="' + outPrefix + '"]');
-
-            let inputArr = [];
-            $.each(inputColumns, function (idx, item) {
-                inputArr.push($(item).val());
-            })
-
-            let outputArr = [];
-            $.each(outputColumns, function (idx, item) {
-                outputArr.push($(item).val());
-            })
-
+        function fn_trainModel(modelId) {
             let jsonData = {
-                "id": $('#id').val(),
-                "hdqrBobDcd": $('#hdqrBobDcd').val(),
-                "learnName": $('#learnName').val(),
-                "inputArr": inputArr,
-                "outputArr": outputArr
+                id: modelId
             }
-
             $.ajax({
-                url: "/soulGod/learnData/save",
+                url: "/soulGod/model/trainModel",
                 type: "post",
                 async: false,
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
-                    if ("SUCCESS" === data.status) {
-                        showAlert('complete', '저장되었습니다.', () => {
-                            location.reload();
-                        })
-                    } else {
-                        showAlert('warning', '실패하였습니다.', () => {
-                            location.reload();
-                        })
-                    }
+
                 },
                 error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
-                        location.reload();
-                    })
+                    console.log("error");
                 }
             });
         }
+
+        function fn_stopModel(modelId) {
+            let jsonData = {
+                id: modelId
+            }
+            $.ajax({
+                url: "/soulGod/model/stopModel",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        }
+
+
     </script>
 </head>
 <body>
@@ -271,14 +347,10 @@
                     <h3 class="page_tit">모델 관리</h3>
                 </div>
                 <div class="btn_area">
-                    <button type="button" class="btn line_cool_grey30" onclick="fn_showLearnPop()">
-                        <span>학습</span>
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_modelDelete()">
+                        <span>삭제</span>
                     </button>
-                    <!--<button type="button" class="btn line_cool_grey30" onclick="layerShow('alert')">
-                        <span>배포</span>
-                    </button>-->
                 </div>
-
             </div>
 
 
@@ -378,7 +450,7 @@
                                         </dd>
                                     </dl>
                                     <div class="btn_area">
-                                        <button type="button" class="btn line_cool_grey30">
+                                        <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
                                             <span>초기화</span>
                                         </button>
                                         <button type="button" class="btn fill" onclick="fn_search()">
@@ -392,7 +464,7 @@
                 </div>
             </form>
 
-            <div class="selected_filter"></div>
+            <div class="selected_filter" style="display: none"></div>
 
             <!--데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
             <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
@@ -431,7 +503,6 @@
                             </label>
                         </div>
                     </th>
-                    <!--<th scope="col">선택</th>-->
                     <th scope="col">No</th>
                     <th scope="col">학습 모델 명</th>
                     <th scope="col">구분</th>
@@ -450,14 +521,9 @@
                 <tbody>
                 <tr th:each="item,idx: ${list}">
                     <td>
-                        <!--<div class="radio">
-                            <input type="radio" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}">
-                            <label th:for="${'chk_' + item.id}">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>-->
                         <div class="checkbox">
-                            <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}">
+                            <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
+                                   th:disabled="${item.deployStatus == 5}">
                             <label th:for="${'chk_' + item.id}">
                                 <span class="blind">선택</span>
                             </label>
@@ -465,27 +531,29 @@
                     </td>
                     <td th:text="${(params.paginationInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
                     <td>
-                        <a href="javascript:" th:class="${'link templateName' + item.id}"
+                        <a href="javascript:void(0)" th:class="${'link templateName' + item.id}"
                            th:text="${item.learnName}"
                            th:data-id="${item.id}"
                            th:data-nm="${item.learnName}"
                            th:data-learning-ty="${item.learningType}"
-                           th:data-learning-ty-nm="${item.learningType.getName()}"
+                           th:data-learning-ty-nm="${item.learningType?.getName()}"
                            th:data-is-card="${item.learningType eq T(kr.co.ibk.domain.enums.LearningType).CARD}"
                            onclick="fn_learningDataOpen(this)">admin</a>
                     </td>
-                    <td th:text="${item.learningType.getName()}">BC카드</td>
+                    <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}">BC카드</td>
                     <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
                     <td th:text="${item.regName}">홍길녀</td>
                     <td>
-                        <!--0: 등록완료, 1: 오류, 2: 학습완료 3: 학습중 4: 배포완료, 5: 롤백완료, 6: 배포중-->
-                        <div th:if="${item.deployStatus eq '0'}" class="badge fill_bg20">등록완료</div>
-                        <div th:if="${item.deployStatus eq '1'}" class="badge fill_error10">오류</div>
-                        <div th:if="${item.deployStatus eq '2'}" class="badge fill_blue_green">학습완료</div>
-                        <div th:if="${item.deployStatus eq '3'}" class="badge fill_progress10">학습중</div>
-                        <div th:if="${item.deployStatus eq '4'}" class="badge fill_purple">배포완료</div>
+                        <!--0: 등록 완료, 1: 학습 데이터 중 생성 오류, 2: 학습 중, 3: 학습 완료 4: 학습 오류 -->
+                        <div th:if="${item.deployStatus eq '0'}" class="badge fill_bg20">등록 완료</div>
+                        <div th:if="${item.deployStatus eq '1'}" class="badge fill_error10">학습 데이터 중 생성 오류</div>
+                        <div th:if="${item.deployStatus eq '2'}" class="badge fill_progress10">학습 중</div>
+                        <div th:if="${item.deployStatus eq '3'}" class="badge fill_blue_green">학습 완료</div>
+                        <div th:if="${item.deployStatus eq '4'}" class="badge fill_error10">학습 오류</div>
+
+                        <!--<div th:if="${item.deployStatus eq '4'}" class="badge fill_purple">배포완료</div>
                         <div th:if="${item.deployStatus eq '5'}" class="badge fill_error10">롤백</div>
-                        <div th:if="${item.deployStatus eq '6'}" class="badge fill_purple">배포중</div>
+                        <div th:if="${item.deployStatus eq '6'}" class="badge fill_purple">배포중</div>-->
                     </td>
                     <td th:text="${'-'}">97%</td>
                     <td th:text="${'-'}">75%</td>
@@ -659,12 +727,12 @@
 <!--학습 팝업 : e-->
 
 <!--학습데이터 팝업 : s-->
-<div id="popLearnData" class="pop_layer">
+<div id="templateDetail" class="pop_layer">
     <div class="dim"></div>
     <div class="popup lg">
         <div class="pop_head">
             <strong class="pop_tit">학습데이터</strong>
-            <button type="button" class="btn_close" onclick="layerHide('learnDetail')">
+            <button type="button" class="btn_close" onclick="layerHide('templateDetail')">
                 <span class="blind">닫기</span>
             </button>
         </div>
@@ -759,7 +827,7 @@
                     </tr>
                     </tbody>
                 </table>
-                <strong class="tbl_tit">모델 등록</strong>
+                <strong class="tbl_tit">모델</strong>
                 <table class="tbl_write">
                     <caption>모델 : 모델명, 파라미터</caption>
                     <colgroup>
@@ -773,12 +841,7 @@
                             <label for="learnName">모델명</label>
                         </th>
                         <td>
-                            <div class="input">
-                                <input type="text" id="learnName" placeholder="모델명을 입력하세요." maxlength="500">
-                                <button type="button" class="btn_del" tabindex="-1">
-                                    <span class="blind">삭제</span>
-                                </button>
-                            </div>
+                            <span id="learnName"></span>
                         </td>
                     </tr>
                     <tr>
@@ -802,8 +865,7 @@
                                     </div>
                                     <div class="td">
                                         <div class="input">
-                                            <input type="text" id="epoch" value="10" placeholder="Epoch를 입력하세요."
-                                                   onkeyup="fn_numberOnly(this, 100)">
+                                            <input type="text" id="epoch" disabled>
                                             <button type="button" class="btn_del" tabindex="-1">
                                                 <span class="blind">삭제</span>
                                             </button>
@@ -822,10 +884,9 @@
                                             <div class="th_help">학습률, 최적 값을 찾기 위한 기울기의 이동 정도</div>
                                         </div>
                                     </div>
-                                    <div class="td df w100">
-                                        <div class="input w100">
-                                            <input type="text" id="learningRate" value="3"
-                                                   onkeyup="fn_numberOnly(this, 10)">
+                                    <div class="td df w200">
+                                        <div class="input">
+                                            <input type="text" id="learningRate" disabled>
                                             <button type="button" class="btn_del" tabindex="-1">
                                                 <span class="blind">삭제</span>
                                             </button>
@@ -847,8 +908,7 @@
                                     </div>
                                     <div class="td">
                                         <div class="input">
-                                            <input type="text" id="batchSize" value="16"
-                                                   placeholder="Batch Size를 입력하세요." onkeyup="fn_numberOnly(this, 16)">
+                                            <input type="text" id="batchSize" disabled>
                                             <button type="button" class="btn_del" tabindex="-1">
                                                 <span class="blind">삭제</span>
                                             </button>
@@ -862,16 +922,9 @@
                 </table>
             </form>
         </div>
-        <div class="pop_foot">
-            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearnData')">
-                <span>취소</span>
-            </button>
-            <button type="button" class="btn fill" onclick="fn_learnModelSave()">
-                <span>모델 등록</span>
-            </button>
+        <div class="pop_foot" id="btnLearnModel">
         </div>
     </div>
-</div>
 </div>
 <!--학습데이터 팝업 : e-->
 <div style="display: none">

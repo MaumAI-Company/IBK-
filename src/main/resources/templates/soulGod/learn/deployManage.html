@@ -20,6 +20,17 @@
             });
         });
 
+        function fn_reset() {
+            $('#searchTarget').val('').niceSelect('update');
+            $('#statusType').val('').niceSelect('update');
+            $('#searchLearningType').val('').niceSelect('update');
+            $('#searchKeyword').val('');
+            $('#searchJson').val('');
+            $('#searchTypeJson').val('');
+
+            fn_search();
+        }
+
         function fn_search() {
             let frm = $('#aform');
             frm.prop('action', '?');
@@ -31,14 +42,37 @@
             $('#aform').attr({action: '/soulGod/learn/deployManage', method: 'post'}).unbind('submit').submit();
         }
 
-        function fn_showDeployPop() {
-            let checked = $("input[id^='chk_']:checked");
-            if (checked.length) {
-                layerShow('alert');
-            } else {
-                showAlert('warning', '배포할 모델을 1개 이상 선택하세요.');
+        function fn_deploy() {
+            let checked = $("input[name='chk']:checked").val();
+            if (!checked) {
+                showAlert('warning', '모델을 선택해주세요.');
                 return false;
             }
+
+            showConfirm('message', '모델을 배포(Deploy) 하시겠습니까?', () => {
+
+                let jsonData = {
+                    "id": checked,
+                }
+
+                $.ajax({
+                    url: "/soulGod/model/replaceModel",
+                    type: "post",
+                    async: false,
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        showAlert('complete', '모델 배포(Deploy)가 완료 되었습니다.', () => {
+                            location.reload();
+                        });
+                    },
+                    error: function () {
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        });
+                    }
+                });
+            });
         }
     </script>
 </head>
@@ -56,7 +90,7 @@
                     <h3 class="page_tit">배포 관리</h3>
                 </div>
                 <div class="btn_area">
-                    <button type="button" class="btn line_cool_grey30" onclick="fn_showDeployPop()">
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_deploy()">
                         <span>배포</span>
                     </button>
                 </div>
@@ -69,34 +103,21 @@
                         </div>
                     </div>
                     <div class="mla">
-                        <!-- 신규 검색시 1 페이지로 이동 -->
-                        <!--                    <input type="hidden" id="currentPageNo" name="currentPageNo" value="1"/>-->
-                        <!-- org 검색시 1 페이지로 이동 -->
-                        <input type="hidden" id="currentPageNo" name="currentPageNo"
-                               th:value="${params.currentPageNo}"/>
-                        <!-- org 페이지에 보여질 수 -->
-                        <!--                        <input type="hidden" id="recordsPerPage" name="recordsPerPage" th:value="${params.recordsPerPage}"/>-->
-                        <!-- org 페이지 블럭의 수 -->
-                        <input type="hidden" id="pageSize" name="pageSize" th:value="${params.pageSize}"/>
-                        <!-- org 검색 종류 -->
-                        <input type="hidden" id="searchType" name="searchType" th:value="${params.searchType}"/>
-                        <!-- org 검색 값 -->
-                        <input type="hidden" id="searchKeyword" name="searchKeyword"
-                               th:value="${params.searchKeyword}"/>
-
                         <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
                         <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
                                 onchange="fn_search()">
-                            <option value="10" th:selected="${params.recordsPerPage eq 10}">10개</option>
-                            <option value="20" th:selected="${params.recordsPerPage eq 20}">20개</option>
-                            <option value="30" th:selected="${params.recordsPerPage eq 30}">30개</option>
-                            <option value="40" th:selected="${params.recordsPerPage eq 40}">40개</option>
-                            <option value="50" th:selected="${params.recordsPerPage eq 50}">50개</option>
+                            <option value="10" th:selected="${pagingInfo.criteria.recordsPerPage == 10}" selected>10개
+                            </option>
+                            <option value="20" th:selected="${pagingInfo.criteria.recordsPerPage == 20}">20개</option>
+                            <option value="30" th:selected="${pagingInfo.criteria.recordsPerPage == 30}">30개</option>
+                            <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
+                            <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
                         <label for="sorting" class="blind">정렬조건</label>
                         <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
-                            <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
-                            <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">과거순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">최신순</option>
+                            \
                         </select>
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter">
@@ -107,37 +128,70 @@
                             <div class="filter">
                                 <div class="inner">
                                     <dl>
-                                        <dt>조회기간</dt>
+                                        <dt>
+                                            <label for="searchLearningType">구분</label>
+                                        </dt>
                                         <dd>
-                                            <div class="term_form">
-                                                <label for="searchStartDate" class="blind">조회 시작 날짜</label>
-                                                <input type="text" id="searchStartDate" name="searchStartDate"
-                                                       class="datepicker" th:value="${params.searchStartDate}"
-                                                       readonly>
-                                                <div class="swung"></div>
-                                                <label for="searchEndDate" class="blind">조회 종료 날짜</label>
-                                                <input type="text" id="searchEndDate" name="searchEndDate"
-                                                       class="datepicker" th:value="${params.searchEndDate}"
-                                                       readonly>
-                                            </div>
+                                            <select name="searchLearningType" id="searchLearningType">
+                                                <option value="" selected>전체</option>
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.LearningType).values()}"
+                                                        th:class="${item}" th:text="${item.name}" th:value="${item}"
+                                                        th:selected="${item.name() eq params.searchLearningType}"></option>
+                                            </select>
                                         </dd>
                                     </dl>
                                     <dl>
                                         <dt>
-                                            <label for="condition">조회조건</label>
+                                            <label for="searchTarget">대상</label>
                                         </dt>
                                         <dd>
-                                            <select name="condition" id="condition">
+                                            <select name="searchTarget" id="searchTarget">
                                                 <option value="" selected>전체</option>
-                                                <option value="">제목</option>
-                                                <option value="">상태</option>
-                                                <option value="">학습 가능</option>
-                                                <option value="">학습 불가</option>
+                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부
+                                                </option>
+                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
                                             </select>
                                         </dd>
                                     </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="statusType">상태</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="statusType" id="statusType">
+                                                <option value="" selected>전체</option>
+                                                <option value="0" th:selected="${params.statusType == '3'}">학습완료
+                                                </option>
+                                                <option value="1" th:selected="${params.statusType == '5'}">배포 중
+                                                </option>
+                                                <option value="2" th:selected="${params.statusType == '6'}">배포 완료
+                                                </option>
+                                                <option value="3" th:selected="${params.statusType == '7'}">배포 중지
+                                                </option>
+                                                <option value="4" th:selected="${params.statusType == '8'}">배포 실패
+                                                </option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label>검색어</label>
+                                        </dt>
+                                        <dd>
+                                            <div class="search_form">
+                                                <div class="search">
+                                                    <input type="search" th:field="${params.searchKeyword}"
+                                                           placeholder="모델명 혹은 등록자 명을 입력하세요.">
+                                                    <button type="button" class="btn_del" tabindex="-1">
+                                                        <span class="blind">삭제</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
                                     <div class="btn_area">
-                                        <button type="button" class="btn line_cool_grey30">
+                                        <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
                                             <span>초기화</span>
                                         </button>
                                         <button type="button" class="btn fill" onclick="fn_search()">
@@ -165,7 +219,8 @@
                     <col style="width: 3.5%;min-width: 44px;">
                     <col style="width: 3.5%;min-width: 44px;">
                     <col style="width: 19%;">
-                    <col style="width: 11%;">
+                    <col style="width: 7%;">
+                    <col style="width: 7%;">
                     <col style="width: 11%;">
                     <col style="width: 11%;">
                     <col style="width: 11%;min-width: 106px;">
@@ -173,28 +228,22 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th scope="col">
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="allChk" class="all_chk">
-                            <label for="allChk">
-                                <span class="blind">전체선택</span>
-                            </label>
-                        </div>
-                    </th>
+                    <th scope="col">선택</th>
                     <th scope="col">No</th>
                     <th scope="col">학습 모델 명</th>
+                    <th scope="col">구분</th>
+                    <th scope="col">대상</th>
                     <th scope="col">등록자</th>
                     <th scope="col">상태</th>
-                    <th scope="col">배포 여부</th>
                     <th scope="col">배포일시</th>
-                    <th scope="col">등록일시</th>
+                    <th scope="col">중단일시</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="item,idx: ${list}">
                     <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}">
+                        <div class="radio">
+                            <input type="radio" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}">
                             <label th:for="${'chk_' + item.id}">
                                 <span class="blind">선택</span>
                             </label>
@@ -202,14 +251,23 @@
                     </td>
                     <td th:text="${(params.paginationInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
                     <td th:text="${item.learnName}" th:onclick="|fn_learningDataOpen(${item.id})|">카드지급결의 통합모델_A</td>
+                    <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}">BC카드</td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
                     <td th:text="${item.regName}">홍길녀</td>
                     <td>
-                        <!--                        <div class="badge fill_blue_green">사용</div>-->
-                        <div class="badge fill_error10">중지</div>
+                        <!--3:학습 완료,  5: 배포 중, 6: 배포 완료, 7: 배포 중지, 8: 배포 실패 -->
+                        <div th:if="${item.deployStatus eq '3'}" class="badge fill_blue_green">학습 완료</div>
+                        <div th:if="${item.deployStatus eq '5'}" class="badge fill_purple">배포 중</div>
+                        <div th:if="${item.deployStatus eq '6'}" class="badge fill_purple">배포 완료</div>
+                        <div th:if="${item.deployStatus eq '7'}" class="badge fill_error10">배포 중지</div>
+                        <div th:if="${item.deployStatus eq '8'}" class="badge fill_error10">배포 실패</div>
                     </td>
-                    <td>-</td>
-                    <td th:text="${#temporals.format(item.deployDt, 'yyyy-MM-dd')}">2022.07.30</td>
-                    <td th:text="${#temporals.format(item.createDtm, 'yyyy-MM-dd')}">2022.07.30</td>
+                    <td th:text="${item.deployDt != null ? #temporals.format(item.deployDt, 'yyyy-MM-dd') : '-'}">
+                        2022.07.30
+                    </td>
+                    <td th:text="${item.rollbackDt != null ? #temporals.format(item.rollbackDt, 'yyyy-MM-dd') : '-'}">
+                        2022.07.30
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -218,49 +276,5 @@
         </div>
     </div>
 </div>
-
-
-<!--얼럿 : s-->
-<div id="alert" class="system_alert">
-    <div class="dim"></div>
-    <div class="popup">
-        <div class="pop_cont">
-            <i class="ico ico_message"></i>
-            <strong class="pop_tit">모델 배포(Deploy)</strong>
-            <p class="pop_txt">
-                모델을 배포(Deploy) 하시겠습니까?
-            </p>
-        </div>
-        <div class="pop_foot">
-            <button type="button" class="btn line_cool_grey30" onclick="layerHide('alert')">
-                <span>취소</span>
-            </button>
-            <button type="button" class="btn fill" onclick="layerHide('alert');layerShow('alertComplete')">
-                <span>확인</span>
-            </button>
-        </div>
-    </div>
-</div>
-<!--얼럿 : e-->
-
-<!--얼럿 : s-->
-<div id="alertComplete" class="system_alert">
-    <div class="dim"></div>
-    <div class="popup">
-        <div class="pop_cont">
-            <i class="ico ico_complete"></i>
-            <strong class="pop_tit">모델 배포(Deploy)</strong>
-            <p class="pop_txt">
-                모델을 배포(Deploy)가 완료 되었습니다.
-            </p>
-        </div>
-        <div class="pop_foot">
-            <button type="button" class="btn fill" onclick="layerHide('alertComplete')">
-                <span>확인</span>
-            </button>
-        </div>
-    </div>
-</div>
-<!--얼럿 : e-->
 </body>
 </html>

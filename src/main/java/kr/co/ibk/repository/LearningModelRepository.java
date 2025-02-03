@@ -27,4 +27,6 @@ public interface LearningModelRepository {
     int countByInLearningId(Integer[] idArr);
 
     int modelNmCount(@Param("learnName") String learnName);
+
+    Long deleteAllById(Integer[] idArr, @Param("memId") String memId);
 }
