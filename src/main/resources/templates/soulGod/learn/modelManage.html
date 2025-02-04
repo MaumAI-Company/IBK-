@@ -419,16 +419,11 @@
                                         <dd>
                                             <select name="statusType" id="statusType">
                                                 <option value="" selected>전체</option>
-                                                <option value="0" th:selected="${params.statusType == '0'}">등록완료
-                                                </option>
-                                                <option value="1" th:selected="${params.statusType == '1'}">학습 데이터 생성
-                                                    오류
-                                                </option>
-                                                <option value="2" th:selected="${params.statusType == '2'}">학습 중
-                                                </option>
-                                                <option value="3" th:selected="${params.statusType == '3'}">학습 완료
-                                                </option>
-                                                <option value="4" th:selected="${params.statusType == '4'}">학습 오류
+                                                <option th:each="item : ${T(kr.co.ibk.domain.enums.DeployStatusType).getModelStatusList()}"
+                                                        th:class="${item}"
+                                                        th:text="${item.statusNm}"
+                                                        th:value="${item.code}"
+                                                        th:selected="${item.code eq params.statusType}">
                                                 </option>
                                             </select>
                                         </dd>
@@ -550,10 +545,6 @@
                         <div th:if="${item.deployStatus eq '2'}" class="badge fill_progress10">학습 중</div>
                         <div th:if="${item.deployStatus eq '3'}" class="badge fill_blue_green">학습 완료</div>
                         <div th:if="${item.deployStatus eq '4'}" class="badge fill_error10">학습 오류</div>
-
-                        <!--<div th:if="${item.deployStatus eq '4'}" class="badge fill_purple">배포완료</div>
-                        <div th:if="${item.deployStatus eq '5'}" class="badge fill_error10">롤백</div>
-                        <div th:if="${item.deployStatus eq '6'}" class="badge fill_purple">배포중</div>-->
                     </td>
                     <td th:text="${'-'}">97%</td>
                     <td th:text="${'-'}">75%</td>
@@ -569,162 +560,6 @@
         </div>
     </div>
 </div>
-
-
-<!--얼럿 : s-->
-<!--<div id="alert" class="system_alert">
-    <div class="dim"></div>
-    <div class="popup">
-        <div class="pop_cont">
-            <i class="ico ico_message"></i>
-            <strong class="pop_tit">모델 배포(Deploy)</strong>
-            <p class="pop_txt">
-                모델을 배포(Deploy) 하시겠습니까?
-            </p>
-        </div>
-        <div class="pop_foot">
-            <button type="button" class="btn line_cool_grey30" onclick="layerHide('alert')">
-                <span>취소</span>
-            </button>
-            <button type="button" class="btn fill" onclick="layerHide('alert');layerShow('alertComplete')">
-                <span>확인</span>
-            </button>
-        </div>
-    </div>
-</div>-->
-<!--얼럿 : e-->
-
-<!--얼럿 : s-->
-<!--<div id="alertComplete" class="system_alert">
-    <div class="dim"></div>
-    <div class="popup">
-        <div class="pop_cont">
-            <i class="ico ico_complete"></i>
-            <strong class="pop_tit">모델 배포(Deploy)</strong>
-            <p class="pop_txt">
-                모델을 배포(Deploy)가 완료 되었습니다.
-            </p>
-        </div>
-        <div class="pop_foot">
-            <button type="button" class="btn fill" onclick="layerHide('alertComplete')">
-                <span>확인</span>
-            </button>
-        </div>
-    </div>
-</div>-->
-<!--얼럿 : e-->
-
-<!--학습 팝업 : s-->
-<!--<div id="popLearn" class="pop_layer">
-    <div class="dim"></div>
-    <div class="popup">
-        <div class="pop_head">
-            <strong class="pop_tit">파라미터 설정</strong>
-            <button type="button" class="btn_close" onclick="layerHide('popLearn')">
-                <span class="blind">닫기</span>
-            </button>
-        </div>
-        <div class="pop_cont">
-            <div class="div_write">
-                <div class="tr">
-                    <div class="th">
-                        <strong>
-                            <label for="epoch">Epoch</label>
-                        </strong>
-                        <div class="th_help_area">
-                            <button type="button" class="btn_help">
-                                <span class="blind">안내</span>
-                            </button>
-                            <div class="th_help">학습 데이셋을 학습하는 회수</div>
-                        </div>
-                    </div>
-                    <div class="td">
-                        <div class="input">
-                            <input type="number" id="epoch" placeholder="Epoch를 입력하세요.(default : 3)" value="3">
-                            <button type="button" class="btn_del" tabindex="-1">
-                                <span class="blind">삭제</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="tr">
-                    <div class="th">
-                        <strong>
-                            <label for="learningRate">Learning Rate</label>
-                        </strong>
-                        <div class="th_help_area">
-                            <button type="button" class="btn_help">
-                                <span class="blind">안내</span>
-                            </button>
-                            <div class="th_help">학습률, 최적 값을 찾기 위한 기울기의 이동 정도</div>
-                        </div>
-                    </div>
-                    <div class="td">
-                        <div class="input">
-                            <input type="number" id="learningRate" placeholder="Learning Rate를 입력하세요.(default : 3e-5)"
-                                   value="3.15484548538">
-                            <button type="button" class="btn_del" tabindex="-1">
-                                <span class="blind">삭제</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="tr">
-                    <div class="th">
-                        <strong>
-                            <label for="batchSize">Batch Size</label>
-                        </strong>
-                        <div class="th_help_area">
-                            <button type="button" class="btn_help">
-                                <span class="blind">안내</span>
-                            </button>
-                            <div class="th_help">학습 데이터셋 중, 몇 개의 데이터를 묶어서 가중치 값을 갱신할 지 지정하는 단위</div>
-                        </div>
-                    </div>
-                    <div class="td">
-                        <div class="input">
-                            <input type="number" id="batchSize" placeholder="Batch Size를 입력하세요.(default : 8)"
-                                   value="8">
-                            <button type="button" class="btn_del" tabindex="-1">
-                                <span class="blind">삭제</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                &lt;!&ndash;<div class="tr">
-                    <div class="th">
-                        <strong>정답셋</strong>
-                    </div>
-                    <div class="td">
-                        <div class="file_form">
-                            <input type="file" id="attechedFile02" class="input_file" accept=".xls,.xlsx">
-                            <div class="file_tip">
-                                <p>
-                                    파일을 선택하거나, Drag &amp; Drop 하세요.
-                                </p>
-                            </div>
-                            <label for="attechedFile02" class="btn_file">
-                                <span class="blind">파일 선택</span>
-                            </label>
-                            <div class="drop_zone">
-                                <div class="area"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>&ndash;&gt;
-            </div>
-        </div>
-        <div class="pop_foot">
-            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearn')">
-                <span>취소</span>
-            </button>
-            <button type="button" class="btn fill" onclick="fn_goLearning()">
-                <span>학습실행</span>
-            </button>
-        </div>
-    </div>
-</div>-->
-<!--학습 팝업 : e-->
 
 <!--학습데이터 팝업 : s-->
 <div id="templateDetail" class="pop_layer">

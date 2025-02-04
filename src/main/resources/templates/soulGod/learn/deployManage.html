@@ -161,15 +161,11 @@
                                         <dd>
                                             <select name="statusType" id="statusType">
                                                 <option value="" selected>전체</option>
-                                                <option value="0" th:selected="${params.statusType == '3'}">학습완료
-                                                </option>
-                                                <option value="1" th:selected="${params.statusType == '5'}">배포 중
-                                                </option>
-                                                <option value="2" th:selected="${params.statusType == '6'}">배포 완료
-                                                </option>
-                                                <option value="3" th:selected="${params.statusType == '7'}">배포 중지
-                                                </option>
-                                                <option value="4" th:selected="${params.statusType == '8'}">배포 실패
+                                                <option th:each="item : ${T(kr.co.ibk.domain.enums.DeployStatusType).getDeployStatusList()}"
+                                                        th:class="${item}"
+                                                        th:text="${item.statusNm}"
+                                                        th:value="${item.code}"
+                                                        th:selected="${item.code eq params.statusType}">
                                                 </option>
                                             </select>
                                         </dd>

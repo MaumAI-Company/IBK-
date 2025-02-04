@@ -41,14 +41,14 @@ public class LearningModelForm extends PageForm {
     List<Map<String, Object>> inputArr;
     List<Map<String, Object>> outputArr;
     private Integer[] idArr;
+    private Integer[] deployStatusArr;
     private String templateAt;
     private String templateName;
 
     /*검색조건*/
-    private String statusType;
+    private Integer statusType;
     private String searchLearningType;
     private String sorting;
-
 }
 
 

@@ -52,22 +52,17 @@
     <sql id="where">
         where lm.DELETE_YN = 'N'
 
-        /*일자 검색*/
-        <if test="searchStartDate != null and searchStartDate != ''">
-            <![CDATA[
-				AND DATE_FORMAT( lm.CREATE_DTM, '%Y.%m.%d') >= #{searchStartDate}
-			 ]]>
-        </if>
-
-        <if test="searchEndDate != null and searchEndDate != ''">
-            <![CDATA[
-				AND DATE_FORMAT( lm.CREATE_DTM, '%Y.%m.%d') <= #{searchEndDate}
-			 ]]>
-        </if>
-
         /*대상 검색*/
         <if test="searchTarget != null and searchTarget != ''">
             AND lm.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+
+        /*상태 구분*/
+        <if test="deployStatusArr != null">
+            AND lm.DEPLOY_STATUS IN
+            <foreach collection="deployStatusArr" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
         </if>
 
         /*상태 검색*/

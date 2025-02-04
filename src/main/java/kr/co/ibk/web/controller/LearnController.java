@@ -1,6 +1,7 @@
 package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
+import kr.co.ibk.domain.enums.DeployStatusType;
 import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.*;
@@ -293,8 +294,13 @@ public class LearnController extends BaseCont {
     //모델관리 : s
     @RequestMapping("/soulGod/learn/modelManage")
     public String modelManage(Model model,
-                              @ModelAttribute LearningModelForm params,
-                              @CurrentUser MemberInfo memberInfo) {
+                              @ModelAttribute LearningModelForm params) {
+
+        Integer[] deployStatusArr = DeployStatusType.getModelStatusList()
+                .stream()
+                .map(DeployStatusType::getCode)
+                .toArray(Integer[]::new);
+        params.setDeployStatusArr(deployStatusArr);
 
         List<LearningModelInfo> list = learningModelService.getList(params);
 
@@ -352,8 +358,13 @@ public class LearnController extends BaseCont {
 
     @RequestMapping("/soulGod/learn/deployManage")
     public String deployManage(Model model,
-                               @ModelAttribute LearningModelForm params,
-                               @CurrentUser MemberInfo memberInfo) {
+                               @ModelAttribute LearningModelForm params) {
+
+        Integer[] deployStatusArr = DeployStatusType.getDeployStatusList()
+                .stream()
+                .map(DeployStatusType::getCode)
+                .toArray(Integer[]::new);
+        params.setDeployStatusArr(deployStatusArr);
 
         List<LearningModelInfo> list = learningModelService.getList(params);
 

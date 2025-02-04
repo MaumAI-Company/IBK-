@@ -247,10 +247,10 @@ public class LearningModelService extends _BaseService {
     public List<LearningModelInfo> getList(LearningModelForm params) {
         List<LearningModelInfo> modelList = Collections.emptyList();
 
-        if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+        /*if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
             params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
             params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
-        }
+        }*/
 
         int totalCount = learningModelRepository.getTotalCount(params);
 

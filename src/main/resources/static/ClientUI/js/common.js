@@ -136,7 +136,7 @@ function showConfirm(icon, msg, confirmFunc, dismissFunc) {
  * ex) onkeyup="fn_numberOnly(this)"
  ***************************************************************************/
 
-/*function fn_numberOnly(obj, max) {
+function fn_numberOnly(obj, max) {
     let regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;	//정규식 구문
     if (regExp.test(obj.value)) {
         // 특수문자 모두 제거
@@ -148,22 +148,6 @@ function showConfirm(icon, msg, confirmFunc, dismissFunc) {
     }
 
     if (parseInt(obj.value, 10) > max) {
-        obj.value = max;
-    }
-}*/
-
-function fn_numberOnly(obj, max) {
-    let regExp = /[^\d.]/g;
-    if (regExp.test(obj.value)) {
-        obj.value = obj.value.replace(regExp, '');
-    }
-
-    let parts = obj.value.split('.');
-    if (parts.length > 2) {
-        obj.value = parts[0] + '.' + parts[1];
-    }
-
-    if (parseFloat(obj.value) > max) {
         obj.value = max;
     }
 }
