@@ -150,6 +150,7 @@
             let learningTyNm = $(el).data('learning-ty-nm');
             let templateName = $(el).data('nm');
             let isCard = $(el).data('is-card');
+            let selectCon = isCard ? '.cardCon' : '.billCon';
 
             $('#learningType').val(learningTy);
             $('#isCard').val(isCard);
@@ -161,7 +162,7 @@
 
             $(':checkbox[id^="' + inPrefix + '"]').prop('checked', false);
             $(':checkbox[id^="' + outPrefix + '"]').prop('checked', false);
-            $((isCard ? '.cardCon' : '.billCon') + ' :checkbox[id^="' + outPrefix + '"]').prop('checked', true);
+            $(selectCon + ' :checkbox[id^="' + outPrefix + '"]').prop('checked', true);
 
             $('.cardCon').toggle(isCard);
             $('.billCon').toggle(!isCard);
@@ -182,7 +183,7 @@
 
                         if (item.inputList) {
                             $.each(item.inputList, function (idx, item) {
-                                $((isCard ? '.cardCon' : '.billCon') + ' :checkbox[id^="' + inPrefix + '"]').each(function () {
+                                $(selectCon + ' :checkbox[id^="' + inPrefix + '"]').each(function () {
                                     if ($(this).val() === item.colName) {
                                         $(this).prop('checked', true);
                                     }

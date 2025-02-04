@@ -88,7 +88,31 @@
                     $('.th_help_area').removeClass('active');
                 }
             });
-        })
+        });
+
+        let modelNmCount = 0;
+
+        function fn_modelNmCount() {
+            let jsonData = {
+                "learnName": $.trim($('#learnName').val())
+            }
+
+            $.ajax({
+                url: "/soulGod/learningDataManage/nmCount",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    modelNmCount = data;
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
 
         function movePage(url, pageNo) {
             $('#currentPageNo').val(pageNo);
@@ -103,17 +127,38 @@
 
         function fn_reset() {
             $('#searchTarget').val('').niceSelect('update');
+            $('#searchLearningType').val('').niceSelect('update');
             $('#searchKeyword').val('');
+
+            fn_search();
         }
 
         const inPrefix = 'input_';
         const outPrefix = 'output_';
 
-        function fn_learnDetailOpen(id, nm) {
+        function fn_learnDetailOpen(el) {
+            let id = $(el).data('id');
+            let dataName = $(el).data('nm');
+            let learningTy = $(el).data('learning-ty');
+            let learningTyNm = $(el).data('learning-ty-nm');
+            let isCard = $(el).data('is-card');
+            let selectCon = isCard ? '.cardCon' : '.billCon';
+
+            $('#learningType').val(learningTy);
+            $('#learningTyNm').text(learningTyNm);
+            $('#isCard').val(isCard);
             $('#dataId').val(id);
-            $('#dataName').text(nm);
+            $('#dataName').text(dataName);
             $('#searchStartDate').val('');
             $('#searchEndDate').val('');
+
+            $('.cardCon').toggle(isCard);
+            $('.billCon').toggle(!isCard);
+
+            $(':checkbox[id^="' + inPrefix + '"]').prop('checked', false);
+            $(':checkbox[id^="' + outPrefix + '"]').prop('checked', false);
+            $(selectCon + ' :checkbox[id^="' + outPrefix + '"]').prop('checked', true);
+
 
             let jsonData = {
                 "id": id
@@ -131,7 +176,7 @@
 
                         if (item.inputList) {
                             $.each(item.inputList, function (idx, item) {
-                                $(':checkbox[id^="' + inPrefix + '"]').each(function () {
+                                $(selectCon + ' :checkbox[id^="' + inPrefix + '"]').each(function () {
                                     if ($(this).val() === item.colName) {
                                         $(this).prop('checked', true);
                                     }
@@ -160,18 +205,72 @@
         /**
          * 학습 모델 저장
          */
-        function fn_learnModelSave() {
+        function fn_learnModelSaveChk() {
+            let learnName = $('#learnName').val();
+            let epoch = $('#epoch').val();
+            let learningRate = $('#learningRate').val();
+            let batchSize = $('#batchSize').val();
             let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
-            let outputColumns = $(':checkbox[id^="' + outPrefix + '"]');
+
+            if (!$('#searchJson').val()) {
+                showAlert('warning', '검색 조건 추가 후 진행해주세요.');
+                return false;
+            }
+
+            if (!$.trim(learnName)) {
+                showAlert('warning', '모델 명 입력은 필수입니다.');
+                return false;
+            }
+
+            fn_modelNmCount();
+            if (modelNmCount > 0) {
+                showAlert('warning', '이미 존재하는 모델 명 입니다.');
+                return false;
+            }
+
+            if (inputColumns.length < 1) {
+                showAlert('warning', '학습데이터는 최소 1개 이상 선택해야합니다.');
+                return false;
+            }
+
+            if (!$.trim(epoch)) {
+                showAlert('warning', 'Epoch 입력은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(learningRate)) {
+                showAlert('warning', 'Learning Rate 입력은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(batchSize)) {
+                showAlert('warning', 'Batch Size 입력은 필수입니다.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function fn_learnModelSave() {
+            if (!fn_learnModelSaveChk()) {
+                return false;
+            }
+
+            let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+            let outputColumns = $(':checkbox[id^="' + outPrefix + '"]:checked');
 
             let inputArr = [];
             $.each(inputColumns, function (idx, item) {
-                inputArr.push($(item).val());
+                let name = $(item).data('name');
+                let sno = $(item).data('sno');
+                inputArr.push({name: name, sno: sno});
             })
 
             let outputArr = [];
             $.each(outputColumns, function (idx, item) {
-                outputArr.push($(item).val());
+                let name = $(item).data('name');
+                let sno = $(item).data('sno');
+                outputArr.push({name: name, sno: sno});
             })
 
             let jsonData = {
@@ -183,7 +282,8 @@
                 "batchSize": $.trim($('#batchSize').val()),
                 "inputArr": inputArr,
                 "outputArr": outputArr,
-                "selectCon": $('#searchJson').val()
+                "selectCon": $('#searchJson').val(),
+                "learningType": $('#learningType').val()
             } //todo 학습데이터 선택조건 set 필요
 
             $.ajax({
@@ -211,6 +311,48 @@
             });
         }
 
+        function fn_learningDataDelete() {
+            let checked = $("[id^='chk_']:checked");
+            if (checked.length < 1) {
+                showAlert('warning', '1개 이상의 학습데이터를 선택해주세요.');
+                return false;
+            }
+
+            showConfirm('message', checked.length + '건의 학습데이터가 선택되었습니다. <br> 삭제하시겠습니까?', () => {
+                let idArr = [];
+                $.each(checked, function () {
+                    idArr.push($(this).val());
+                });
+
+                let jsonData = {
+                    "idArr": idArr,
+                }
+
+                $.ajax({
+                    url: "/soulGod/learningDataManage/delete",
+                    type: "post",
+                    async: false,
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        if ("SUCCESS" === data.status) {
+                            showAlert('complete', '삭제되었습니다.', () => {
+                                location.reload();
+                            })
+                        } else {
+                            showAlert('warning', '실패하였습니다.', () => {
+                                location.reload();
+                            })
+                        }
+                    },
+                    error: function () {
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        })
+                    }
+                });
+            });
+        }
 
     </script>
 </head>
@@ -228,7 +370,7 @@
                     <h3 class="page_tit">학습 데이터 관리</h3>
                 </div>
                 <div class="btn_area">
-                    <button type="button" class="btn line_cool_grey30" onclick="fn_templateDelete()">
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_learningDataDelete()">
                         <span>삭제</span>
                     </button>
                 </div>
@@ -254,6 +396,12 @@
                             <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
                             <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
                         </select>
+                        <label for="sorting" class="blind">정렬조건</label>
+                        <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">과거순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">최신순</option>
+                            \
+                        </select>
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter active">
                                 <i class="ico_filter"></i>
@@ -262,6 +410,19 @@
 
                             <div class="filter">
                                 <div class="inner">
+                                    <dl>
+                                        <dt>
+                                            <label for="searchLearningType">구분</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchLearningType" id="searchLearningType">
+                                                <option value="" selected>전체</option>
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.LearningType).values()}"
+                                                        th:class="${item}" th:text="${item.name}" th:value="${item}"
+                                                        th:selected="${item.name() eq params.searchLearningType}"></option>
+                                            </select>
+                                        </dd>
+                                    </dl>
                                     <dl>
                                         <dt>
                                             <label for="searchTarget">대상</label>
@@ -316,12 +477,13 @@
 
             <div class="tbl_wrap">
                 <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
-                    <caption>학습 데이터 관리 : No, 대상, 템플릿 명, 등록자, 등록일시</caption>
+                    <caption>학습 데이터 관리 : No, 구분, 대상, 템플릿 명, 등록자, 등록일시</caption>
                     <colgroup>
                         <col style="width: 10%">
+                        <col style="width: 10%">
                         <col style="width: 12%">
-                        <col style="width: 22%;">
-                        <col style="width: 22%;">
+                        <col style="width: 10%;">
+                        <col style="width: 30%;">
                         <col style="width: 22%;">
                         <col style="width: 22%;">
                         <col style="width: 22%">
@@ -337,6 +499,7 @@
                             </div>
                         </th>
                         <th scope="col">No</th>
+                        <th scope="col">구분</th>
                         <th scope="col">대상</th>
                         <th scope="col">학습데이터 명</th>
                         <th scope="col">템플릿 명</th>
@@ -348,20 +511,27 @@
                     <tr th:each="item, idx:${list}">
                         <td>
                             <div class="checkbox">
-                                <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}">
+                                <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
+                                       th:disabled="${item.modelCnt > 0}">
                                 <label th:for="${'chk_' + item.id}">
                                     <span class="blind">선택</span>
                                 </label>
                             </div>
                         </td>
                         <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                        <td th:text="${item.learningType != null ? item.learningType.getName() : '-'}"></td>
                         <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
                         <td>
                             <!--<a href="javascript:" class="link"
                                th:text="${item.dataName}"></a>-->
                             <a href="javascript:" th:class="${'link templateName' + item.id}"
                                th:text="${item.dataName}"
-                               th:onclick="fn_learnDetailOpen([[${item.id}]], [[${item.dataName}]])">admin</a>
+                               th:data-id="${item.id}"
+                               th:data-nm="${item.dataName}"
+                               th:data-learning-ty="${item.learningType}"
+                               th:data-learning-ty-nm="${item.learningType.getName()}"
+                               th:data-is-card="${item.learningType eq T(kr.co.ibk.domain.enums.LearningType).CARD}"
+                               onclick="fn_learnDetailOpen(this)">admin</a>
                         </td>
                         <td th:text="${item.templateName != null ? item.templateName : '-'}"></td>
                         <td th:text="${item.regName}"></td>
@@ -390,6 +560,7 @@
             <form id="templateForm">
                 <input type="hidden" id="dataId">
                 <input type="hidden" id="hdqrBobDcd">
+                <input type="hidden" id="learningType">
                 <input type="hidden" th:field="${params.searchJson}">
                 <input type="hidden" th:field="${params.searchTypeJson}">
                 <table class="tbl_write">
@@ -401,7 +572,7 @@
                     <tbody>
                     <tr>
                         <th scope="row">구분</th>
-                        <td id="gubun">BC카드</td>
+                        <td id="learningTyNm"></td>
                     </tr>
                     <tr>
                         <th scope="row">학습데이터 명</th>
@@ -412,10 +583,23 @@
                             <span>학습데이터 체크</span>
                         </th>
                         <td>
-                            <div class="check_wrap">
+                            <div class="check_wrap cardCon">
                                 <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnCardType).values()}">
                                     <div class="checkbox">
                                         <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
+                                               disabled>
+                                        <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
+                                    </div>
+                                </th:block>
+                            </div>
+                            <div class="check_wrap billCon">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnBillType).values()}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
                                                disabled>
                                         <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
                                     </div>
@@ -429,11 +613,25 @@
                             <span>학습데이터 (output)</span>
                         </th>
                         <td>
-                            <div class="check_wrap">
+                            <div class="check_wrap cardCon">
                                 <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnCardType).values()}">
                                     <div class="checkbox">
                                         <input type="checkbox" th:id="${'output_' + item.camelColumn}"
                                                th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
+                                               checked disabled>
+                                        <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
+                                    </div>
+                                </th:block>
+                            </div>
+                            <div class="check_wrap billCon">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnBillType).values()}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" th:id="${'output_' + item.camelColumn}"
+                                               th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
                                                checked disabled>
                                         <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
                                     </div>
@@ -464,7 +662,7 @@
                         </th>
                         <td>
                             <div class="input">
-                                <input type="text" id="learnName" placeholder="모델명을 입력하세요.">
+                                <input type="text" id="learnName" placeholder="모델명을 입력하세요." maxlength="500">
                                 <button type="button" class="btn_del" tabindex="-1">
                                     <span class="blind">삭제</span>
                                 </button>
@@ -492,7 +690,8 @@
                                     </div>
                                     <div class="td">
                                         <div class="input">
-                                            <input type="text" id="epoch" placeholder="Epoch를 입력하세요.">
+                                            <input type="text" id="epoch" value="10" placeholder="Epoch를 입력하세요."
+                                                   onkeyup="fn_numberOnly(this, 100)">
                                             <button type="button" class="btn_del" tabindex="-1">
                                                 <span class="blind">삭제</span>
                                             </button>
@@ -511,13 +710,15 @@
                                             <div class="th_help">학습률, 최적 값을 찾기 위한 기울기의 이동 정도</div>
                                         </div>
                                     </div>
-                                    <div class="td">
+                                    <div class="td df w200">
                                         <div class="input">
-                                            <input type="text" id="learningRate" placeholder="Learning Rate를 입력하세요.">
+                                            <input type="text" id="learningRate" value="3"
+                                                   onkeyup="fn_numberOnly(this, 10)">
                                             <button type="button" class="btn_del" tabindex="-1">
                                                 <span class="blind">삭제</span>
                                             </button>
                                         </div>
+                                        <strong>e<sub>-5</sub></strong>
                                     </div>
                                 </div>
                                 <div class="tr">
@@ -534,7 +735,8 @@
                                     </div>
                                     <div class="td">
                                         <div class="input">
-                                            <input type="text" id="batchSize" placeholder="Batch Size를 입력하세요.">
+                                            <input type="text" id="batchSize" value="16"
+                                                   placeholder="Batch Size를 입력하세요." onkeyup="fn_numberOnly(this, 16)">
                                             <button type="button" class="btn_del" tabindex="-1">
                                                 <span class="blind">삭제</span>
                                             </button>
@@ -559,5 +761,14 @@
     </div>
 </div>
 <!--학습 팝업 : e-->
+
+<div style="display: none">
+    <select>
+        <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
+                th:class="${item}" th:text="${item.name}"></option>
+        <option th:each="item :${T(kr.co.ibk.domain.enums.SearchBillType).values()}"
+                th:class="${item}" th:text="${item.name}"></option>
+    </select>
+</div>
 </body>
 </html>

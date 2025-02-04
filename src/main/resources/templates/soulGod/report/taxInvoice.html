@@ -3,7 +3,7 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <style>
-        .tbl_wrap .tbl_list > tbody > tr > td:nth-child(n+15):nth-child(-n+17) {
+        .tbl_wrap .tbl_list > tbody > tr > td.wsp {
             white-space: pre
         }
 
@@ -152,8 +152,8 @@
                 "searchTypeJson": $('#searchTypeJson').val()
             }
 
-            /*$.ajax({
-                url: "/soulGod/report/card/detail",
+            $.ajax({
+                url: "/soulGod/report/bill/detail",
                 type: "post",
                 async: false,
                 data: JSON.stringify(jsonData),
@@ -204,8 +204,8 @@
                     makeOutputText('bdgtPrfrRsnFrcsPrbCon', data.bdgtPrfrRsnFrcsPrbCon);
                     $('#outputBody').show();
 
-                    /!*$('#popHead').html('');
-                    contents = '<tr><td colspan="2">해당 데이터에 대한 AI 추론 결과가 없습니다.</td></tr>';*!/
+                    /*$('#popHead').html('');
+                    contents = '<tr><td colspan="2">해당 데이터에 대한 AI 추론 결과가 없습니다.</td></tr>';*/
 
                     $('#inpputBody').html(contents);
 
@@ -233,7 +233,7 @@
                         location.reload();
                     })
                 }
-            });*/
+            });
         }
 
         function makeOutputText(columnNm, columnValue) {
@@ -265,7 +265,7 @@
                 .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
                 .join('&');
 
-            location.href = '/soulGod/report/taxInvoice/xlsDown' + (queryString ? '?' + queryString : '');
+            location.href = '/soulGod/report/bill/xlsDown' + (queryString ? '?' + queryString : '');
         }
 
     </script>
@@ -431,20 +431,20 @@
                         예산관리비목번호, 사업세부사업, 예산집행사유코드, 결과등록년월일, 상세보기로 구성
                     </caption>
                     <colgroup>
-                        <col style="width: 3.5%;min-width: 44px;">
+                        <col style="width: 5%;min-width: 44px;">
                         <col style="width: 5%;">
-                        <col style="width: 9%;min-width: 90px;">
+                        <col style="width: 9%;min-width: 65px;">
                         <col style="width: 7%;">
-                        <col style="width: 11%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
+                        <col style="width: 7%;">
+                        <col style="width: 7%;">
+                        <col style="width: 7%;">
                         <col style="width: 5%;">
-                        <col style="width: 15%;min-width: 104px;">
-                        <col style="width: 8%;">
-                        <col style="width: 8%;">
                         <col style="width: 10%;">
+                        <col style="width: 9%;">
+                        <col style="width: 8%;">
+                        <col style="width: 8%;">
                         <col style="width: 4%;">
-                        <col style="width: 20%;min-width: 90px;">
+                        <col style="width: 5%;min-width: 90px;">
                     </colgroup>
                     <thead>
                     <tr>
@@ -483,9 +483,9 @@
                         <td th:text="${#numbers.formatDecimal(item.issAmt, 1, 0)}"></td>
                         <td th:text="${item.txblLsarNm}"></td>
 
-                        <td style="background-color:#f9f9ff" th:text="${item.bdgtItexFrcsPrbCon}"></td>
-                        <td style="background-color:#f9f9ff" th:text="${item.bdgtPrfrRsnFrcsCon}" class="pr"></td>
-                        <td style="background-color:#f9f9ff" th:text="${item.bdgtBsnsFrcsPrbCon}"></td>
+                        <td class="wsp" style="background-color:#f9f9ff" th:text="${item.bdgtItexFrcsPrbCon}"></td>
+                        <td class="wsp" style="background-color:#f9f9ff" th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
+                        <td class="wsp" style="background-color:#f9f9ff" th:text="${item.bdgtBsnsFrcsPrbCon}"></td>
                         <td th:text="${item.rsreYmd != null and item.rsreYmd != '' ?
                             (item.rsreYmd.length() == 8 ? item.rsreYmd.substring(0, 4) + '.' + item.rsreYmd.substring(4, 6) + '.' + item.rsreYmd.substring(6, 8) : '')
                              : ''}"></td>

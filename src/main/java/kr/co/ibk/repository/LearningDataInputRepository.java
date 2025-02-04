@@ -14,4 +14,6 @@ public interface LearningDataInputRepository {
     void delete(@Param("id") Integer id);
 
     List<LearningDataInputInfo> getPartList(@Param("id") Integer id, @Param("gbn") String gbn);
+
+    void deleteAllByDataId(Integer[] idArr);
 }

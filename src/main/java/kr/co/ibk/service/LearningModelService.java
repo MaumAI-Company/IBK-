@@ -20,7 +20,6 @@ import org.springframework.util.ObjectUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -32,6 +31,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class LearningModelService extends _BaseService {
 
+    private final LearningDataRepository learningDataRepository;
     @Value("${Globals.fileStorePath}")
     private String filepath;
 
@@ -246,10 +246,10 @@ public class LearningModelService extends _BaseService {
     public List<LearningModelInfo> getList(LearningModelForm params) {
         List<LearningModelInfo> modelList = Collections.emptyList();
 
-        if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+        /*if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
             params.setSearchStartDate(String.valueOf(LocalDate.now().minusMonths(1)).replaceAll("-", "."));
             params.setSearchEndDate(String.valueOf(LocalDate.now()).replaceAll("-", "."));
-        }
+        }*/
 
         int totalCount = learningModelRepository.getTotalCount(params);
 
@@ -273,8 +273,27 @@ public class LearningModelService extends _BaseService {
         LearningModelInfo info = learningModelRepository.getLoad(form.getId());
 
         //model input list set
-        info.setInputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name()));
-        info.setOutputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.OUTPUT.name()));
+        String learningType = info.getLearningType() != null ? info.getLearningType().getName() : null;
+        info.setInputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name(), learningType));
+        info.setOutputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.OUTPUT.name(), learningType));
         return info;
+    }
+
+    public int modelNmCount(LearningModelForm form) {
+        return learningModelRepository.modelNmCount(form.getLearnName());
+    }
+
+    public HashMap<String, Object> delete(LearningModelForm form, MemberInfo memberInfo) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("status", "FAIL");
+
+        Long deleteCnt;
+        if (!ObjectUtils.isEmpty(form.getIdArr()) && form.getIdArr().length > 0) {
+            deleteCnt = learningModelRepository.deleteAllById(form.getIdArr(), memberInfo.getMemId());
+            if (deleteCnt > 0) {
+                map.put("status", "SUCCESS");
+            }
+        }
+        return map;
     }
 }

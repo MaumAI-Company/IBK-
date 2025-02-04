@@ -12,11 +12,10 @@ public class BillInputForm extends PageForm {
     private String pagingAt;
     private String sorting;
 
-    private String tstmYmd;
-    private String tstmNo;
+    private String txblSrn;
+    private String baseYm;
     private String brcd;
     private Integer no;
     private String loadType;
     private String sortingTarget;
-    private String issSrn;
 }

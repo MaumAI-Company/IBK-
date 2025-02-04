@@ -3,7 +3,7 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <style>
-        .tbl_wrap .tbl_list > tbody > tr > td:nth-child(n+15):nth-child(-n+17) {
+        .tbl_wrap .tbl_list > tbody > tr > td.wsp {
             white-space: pre
         }
 
@@ -476,8 +476,8 @@
                         <!-- Output -->
                         <th scope="col" style="background-color:#f9f9ff">예산관리비목관리번호</th>
                         <!--<span class="dib">(1순위)</span>-->
-                        <th scope="col" style="background-color:#f9f9ff">예산집행사유코드</th>
                         <th scope="col" class="pr" style="background-color:#f9f9ff">사업세부사업</th>
+                        <th scope="col" style="background-color:#f9f9ff">예산집행사유코드</th>
                         <th scope="col">결과등록년월일</th>
                         <th scope="col">상세보기</th>
                     </tr>
@@ -500,9 +500,9 @@
                         <td th:text="${item.afstTpbcd}"></td>
                         <td th:text="${item.afstDtlAdr}"></td>
                         <td th:text="${item.brncAdr}" class="pr"></td>
-                        <td style="background-color:#f9f9ff" th:text="${item.bdgtItexFrcsCon}"></td>
-                        <td style="background-color:#f9f9ff" th:text="${item.bdgtPrfrRsnFrcsCon}" class="pr"></td>
-                        <td style="background-color:#f9f9ff" th:text="${item.bdgtBsnsFrcsCon}"></td>
+                        <td class="wsp" style="background-color:#f9f9ff" th:text="${item.bdgtItexFrcsCon}"></td>
+                        <td class="wsp" style="background-color:#f9f9ff" th:text="${item.bdgtBsnsFrcsCon}"></td>
+                        <td class="wsp" style="background-color:#f9f9ff" th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
                         <td th:text="${item.rsreYmd != null and item.rsreYmd != '' ?
                             (item.rsreYmd.length() == 8 ? item.rsreYmd.substring(0, 4) + '.' + item.rsreYmd.substring(4, 6) + '.' + item.rsreYmd.substring(6, 8) : '')
                              : ''}"></td>

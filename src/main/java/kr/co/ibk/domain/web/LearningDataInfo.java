@@ -1,5 +1,6 @@
 package kr.co.ibk.domain.web;
 
+import kr.co.ibk.domain.enums.LearningType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,8 @@ public class LearningDataInfo {
     /*list*/
     private String templateName;
     private String regName;
+    private LearningType learningType;
+    private Integer modelCnt;
 
     /*detail*/
     private List<LearningDataInputInfo> inputList;
