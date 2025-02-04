@@ -1,8 +1,6 @@
 package kr.co.ibk.domain.web;
 
-import kr.co.ibk.domain.enums.InOutGbnType;
-import kr.co.ibk.domain.enums.InputColumnCardType;
-import kr.co.ibk.domain.enums.OutputColumnCardType;
+import kr.co.ibk.domain.enums.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,11 +14,11 @@ public class LearningModelInputInfo {
     private InOutGbnType inoutGbn;    //인/아웃 구분
 
     private InputColumnCardType inputColumnCardType;
-    private InputColumnCardType inputColumnBillType;
+    private InputColumnBillType inputColumnBillType;
     private String inputColumnNm;
     private String inputColumnVal;
     private OutputColumnCardType outputColumnCardType;
-    private OutputColumnCardType outputColumnBillType;
+    private OutputColumnBillType outputColumnBillType;
     private String outputColumnNm;
 }
 

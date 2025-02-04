@@ -1,13 +1,11 @@
 package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
-import kr.co.ibk.domain.web.BillInputInfo;
-import kr.co.ibk.domain.web.CardInputInfo;
-import kr.co.ibk.domain.web.CardOutputInfo;
-import kr.co.ibk.domain.web.MemberInfo;
+import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.BillInputForm;
 import kr.co.ibk.model.CardInputForm;
 import kr.co.ibk.service.BillInputService;
+import kr.co.ibk.service.BillOutputService;
 import kr.co.ibk.service.CardInputService;
 import kr.co.ibk.service.CardOutputService;
 import kr.co.ibk.web.BaseCont;
@@ -29,6 +27,7 @@ public class ReportController extends BaseCont {
     private final CardInputService cardInputService;
     private final CardOutputService cardOutputService;
     private final BillInputService billInputService;
+    private final BillOutputService billOutputService;
 
     // BC카드 지급결의 내역 조회 : s
     @RequestMapping("/soulGod/report/card")
@@ -125,5 +124,40 @@ public class ReportController extends BaseCont {
 
         return "/soulGod/report/taxInvoice";
     }
+
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/report/bill/detail"})
+    public BillOutputInfo billDetail(@RequestBody BillInputForm params) {
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+        return billOutputService.detail(params);
+    }
+
+    @GetMapping("/soulGod/report/bill/xlsDown")
+    public void reportBillExcelDown(@RequestParam(name = "searchStartDate", required = false) String searchStartDate,
+                                    @RequestParam(name = "searchEndDate", required = false) String searchEndDate,
+                                    @RequestParam(name = "searchTarget", required = false) String searchTarget,
+                                    @RequestParam(name = "searchTypeJson", required = false) String searchTypeJson,
+                                    @RequestParam(name = "sorting", required = false) String sorting,
+                                    HttpServletResponse response) throws UnsupportedEncodingException {
+
+        BillInputForm params = new BillInputForm();
+        params.setSearchStartDate(searchStartDate);
+        params.setSearchEndDate(searchEndDate);
+        params.setSearchTarget(searchTarget);
+
+        if (!ObjectUtils.isEmpty(searchTypeJson)) {
+            params.setSearchJsonMap(jsonToHashMap(searchTypeJson));
+        }
+
+        if (!ObjectUtils.isEmpty(sorting)) {
+            params.setSorting(sorting);
+        }
+        List<BillInputInfo> excelList = billInputService.list(params);
+        billInputService.reportBillExcelDown(response, excelList);
+    }
     // 세금계산서 지급결의 내역 조회 : e
 }
+

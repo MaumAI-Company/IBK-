@@ -20,7 +20,6 @@ import org.springframework.util.ObjectUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -274,8 +273,9 @@ public class LearningModelService extends _BaseService {
         LearningModelInfo info = learningModelRepository.getLoad(form.getId());
 
         //model input list set
-        info.setInputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name(), info.getLearningType().getName()));
-        info.setOutputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.OUTPUT.name(), info.getLearningType().getName()));
+        String learningType = info.getLearningType() != null ? info.getLearningType().getName() : null;
+        info.setInputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name(), learningType));
+        info.setOutputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.OUTPUT.name(), learningType));
         return info;
     }
 
