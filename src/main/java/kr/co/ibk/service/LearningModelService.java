@@ -276,8 +276,6 @@ public class LearningModelService extends _BaseService {
         //model input list set
         info.setInputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name(), info.getLearningType().getName()));
         info.setOutputList(learningModelInputRepository.getPartList(form.getId(), InOutGbnType.OUTPUT.name(), info.getLearningType().getName()));
-
-
         return info;
     }
 
