@@ -4,10 +4,7 @@ import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.BillInputForm;
 import kr.co.ibk.model.CardInputForm;
-import kr.co.ibk.service.BillInputService;
-import kr.co.ibk.service.BillOutputService;
-import kr.co.ibk.service.CardInputService;
-import kr.co.ibk.service.CardOutputService;
+import kr.co.ibk.service.*;
 import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -28,6 +25,7 @@ public class ReportController extends BaseCont {
     private final CardOutputService cardOutputService;
     private final BillInputService billInputService;
     private final BillOutputService billOutputService;
+    private final StatisticService statisticService;
 
     // BC카드 지급결의 내역 조회 : s
     @RequestMapping("/soulGod/report/card")
@@ -77,17 +75,6 @@ public class ReportController extends BaseCont {
         }
         List<CardInputInfo> excelList = cardInputService.list(params);
         cardInputService.reportCardExcelDown(response, excelList);
-    }
-
-    @RequestMapping("/soulGod/report/statistic")
-    public String statistic(Model model,
-                            @CurrentUser MemberInfo memberInfo) {
-
-        model.addAttribute("mc", "ico_chart");
-        model.addAttribute("pageTitle", "기간별 통계");
-
-        return "/soulGod/report/statistic";
-
     }
 
     @ResponseBody
@@ -159,5 +146,30 @@ public class ReportController extends BaseCont {
         billInputService.reportBillExcelDown(response, excelList);
     }
     // 세금계산서 지급결의 내역 조회 : e
+
+    // 기간별 통계 : s
+    @RequestMapping("/soulGod/report/statistic")
+    public String statistic(Model model,
+                            @CurrentUser MemberInfo memberInfo) {
+
+        model.addAttribute("mc", "ico_chart");
+        model.addAttribute("pageTitle", "기간별 통계");
+
+        return "/soulGod/report/statistic";
+
+    }
+
+    @ResponseBody
+    @PostMapping("/soulGod/report/statistic/input")
+    public List<StatisticInfo> statisticInput() {
+        return statisticService.getStatisticInput();
+    }
+
+    @ResponseBody
+    @PostMapping("/soulGod/report/statistic/output")
+    public List<StatisticInfo> statisticOutput() {
+        return statisticService.getStatisticOutput();
+    }
+    // 기간별 통계 : e
 }
 
