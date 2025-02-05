@@ -22,8 +22,8 @@
                 }
             });
 
-            fn_getStatisticInput();
-            fn_getStatisticOutput();
+            // fn_getStatisticInput();
+            // fn_getStatisticOutput();
         });
 
         function fn_getStatisticInput(){
@@ -59,13 +59,17 @@
         }
 
         am5.ready(function() {
-            var root = am5.Root.new("chartdiv");
+            fn_drawChart1();
+            fn_drawChart2();
+        });
+        function fn_drawChart1() {
+            let root = am5.Root.new("chartdiv1");
 
             root.setThemes([
                 am5themes_Animated.new(root)
             ]);
 
-            var chart = root.container.children.push(am5xy.XYChart.new(root, {
+            let chart = root.container.children.push(am5xy.XYChart.new(root, {
                 panX: false,
                 panY: false,
                 paddingLeft: 0,
@@ -75,77 +79,94 @@
             }));
 
 
-            var legend = chart.children.push(
-                    am5.Legend.new(root, {
-                        centerX: am5.p50,
-                        x: am5.p50
-                    })
+            let legend = chart.children.push(
+                am5.Legend.new(root, {
+                    centerX: am5.p50,
+                    x: am5.p50
+                })
             );
 
-            var data = [{
-                "year": "2021년 1월",
+            let data = [{
+                "year": "2024년 1월",
                 "branch": 243,
                 "head": 13,
-                "all": 256
+                "all": 256,
+                "per": 94.92
             }, {
-                "year": "2021년 2월",
+                "year": "2024년 2월",
                 "branch": 288,
                 "head": 15,
-                "all": 303
+                "all": 303,
+                "per": 95.04
             }, {
-                "year": "2021년 3월",
+                "year": "2024년 3월",
                 "branch": 298,
                 "head": 12,
-                "all": 310
+                "all": 310,
+                "per": 96.12
             }, {
-                "year": "2021년 4월",
+                "year": "2024년 4월",
                 "branch": 316,
                 "head": 23,
-                "all": 339
+                "all": 339,
+                "per": 93.21
             }, {
-                "year": "2021년 5월",
+                "year": "2024년 5월",
                 "branch": 376,
                 "head": 29,
-                "all": 405
+                "all": 405,
+                "per": 92.83
             }, {
-                "year": "2021년 6월",
+                "year": "2024년 6월",
                 "branch": 407,
                 "head": 16,
-                "all": 423
+                "all": 423,
+                "per": 96.21
             }, {
-                "year": "2021년 7월",
+                "year": "2024년 7월",
                 "branch": 374,
                 "head": 11,
-                "all": 385
+                "all": 385,
+                "per": 97.14
             }, {
-                "year": "2021년 8월",
+                "year": "2024년 8월",
                 "branch": 325,
                 "head": 12,
-                "all": 337
+                "all": 337,
+                "per": 94.92
             }, {
-                "year": "2021년 9월",
+                "year": "2024년 9월",
                 "branch": 289,
                 "head": 21,
-                "all": 310
+                "all": 310,
+                "per": 94.92
             }, {
-                "year": "2021년 10월",
+                "year": "2024년 10월",
                 "branch": 312,
                 "head": 9,
-                "all": 321
+                "all": 321,
+                "per": 94.92
             }, {
-                "year": "2021년 11월",
+                "year": "2024년 11월",
                 "branch": 298,
                 "head": 284,
-                "all": 298
+                "all": 298,
+                "per": 94.92
+            }, {
+                "year": "2024년 12월",
+                "branch": 298,
+                "head": 284,
+                "all": 298,
+                "per": 94.92
             }]
 
-            var xRenderer = am5xy.AxisRendererX.new(root, {
+            let xRenderer = am5xy.AxisRendererX.new(root, {
                 cellStartLocation: 0.1,
                 cellEndLocation: 0.9,
                 minorGridEnabled: true
             })
 
-            var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+            let xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
                 categoryField: "year",
                 renderer: xRenderer,
                 tooltip: am5.Tooltip.new(root, {})
@@ -157,15 +178,16 @@
 
             xAxis.data.setAll(data);
 
-            var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+            let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
                 renderer: am5xy.AxisRendererY.new(root, {
                     strokeOpacity: 0.1
                 })
             }));
 
-            function makeSeries(name, fieldName) {
+            function makeSeries1(name, fieldName) {
+                let series;
                 if(fieldName != 'all'){
-                    var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+                    series = chart.series.push(am5xy.ColumnSeries.new(root, {
                         name: name,
                         xAxis: xAxis,
                         yAxis: yAxis,
@@ -174,45 +196,47 @@
                     }));
                 }
 
-                series.columns.template.setAll({
-                    tooltipText: "{valueY}",
-                    width: am5.percent(90),
-                    tooltipY: 0,
-                    strokeOpacity: 0
-                });
-
-                series.data.setAll(data);
-
-                series.appear();
-
-                series.bullets.push(function () {
-                    return am5.Bullet.new(root, {
-                        locationY: 0,
-                        sprite: am5.Label.new(root, {
-                            text: "{valueY}",
-                            fill: root.interfaceColors.get("alternativeText"),
-                            centerY: 0,
-                            centerX: am5.p50,
-                            populateText: true
-                        })
+                if (series) {
+                    series.columns.template.setAll({
+                        tooltipText: "{valueY}개 / {per}%",
+                        width: am5.percent(90),
+                        tooltipY: 0,
+                        strokeOpacity: 0
                     });
-                });
 
-                legend.data.push(series);
+                    series.data.setAll(data);
+
+                    series.appear();
+
+                    series.bullets.push(function () {
+                        return am5.Bullet.new(root, {
+                            locationY: 0,
+                            sprite: am5.Label.new(root, {
+                                text: "{valueY}",
+                                fill: root.interfaceColors.get("alternativeText"),
+                                centerY: 0,
+                                centerX: am5.p50,
+                                populateText: true
+                            })
+                        });
+                    });
+
+                    legend.data.push(series);
+                }
             }
 
 
-            var series2 = chart.series.push(
-                    am5xy.LineSeries.new(root, {
-                        xAxis: xAxis,
-                        yAxis: yAxis,
-                        valueYField: "all",
-                        categoryXField: "year",
-                        tooltip: am5.Tooltip.new(root, {
-                            pointerOrientation: "horizontal",
-                            labelText: "{valueY}"
-                        })
+            let series2 = chart.series.push(
+                am5xy.LineSeries.new(root, {
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "all",
+                    categoryXField: "year",
+                    tooltip: am5.Tooltip.new(root, {
+                        pointerOrientation: "horizontal",
+                        labelText: "{valueY}"
                     })
+                })
             );
 
             series2.strokes.template.setAll({
@@ -236,13 +260,211 @@
 
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 
-            makeSeries("영업점", "branch");
-            makeSeries("본부, 지역본부", "head");
-            makeSeries("전체", "all");
+            makeSeries1("학습수", "branch");
+            // makeSeries("본부, 지역본부", "head");
+            makeSeries1("전체", "all");
 
 
             chart.appear(1000, 100);
-        });
+        }
+
+        function fn_drawChart2() {
+            let root = am5.Root.new("chartdiv2");
+
+            root.setThemes([
+                am5themes_Animated.new(root)
+            ]);
+
+            let chart = root.container.children.push(am5xy.XYChart.new(root, {
+                panX: false,
+                panY: false,
+                paddingLeft: 0,
+                wheelX: "panX",
+                wheelY: "zoomX",
+                layout: root.verticalLayout
+            }));
+
+
+            let legend = chart.children.push(
+                am5.Legend.new(root, {
+                    centerX: am5.p50,
+                    x: am5.p50
+                })
+            );
+
+            let data = [{
+                "year": "9/1",
+                "hit1": 40,
+                "hit1_per": 20,
+                "hit2": 20,
+                "hit2_per": 10,
+                "hit3": 100,
+                "hit3_per": 50,
+                "all": 200
+            }, {
+                "year": "9/2",
+                "hit1": 50,
+                "hit1_per": 10,
+                "hit2": 150,
+                "hit2_per": 30,
+                "hit3": 100,
+                "hit3_per": 20,
+                "all": 500
+            }, {
+                "year": "9/3",
+                "hit1": 30,
+                "hit1_per": 10,
+                "hit2": 60,
+                "hit2_per": 20,
+                "hit3": 200,
+                "hit3_per": 66.66,
+                "all": 300
+            }, {
+                "year": "9/4",
+                "hit1": 50,
+                "hit1_per": 20,
+                "hit2": 250,
+                "hit2_per": 100,
+                "hit3": 250,
+                "hit3_per": 100,
+                "all": 250
+            }, {
+                "year": "9/5",
+                "hit1": 200,
+                "hit1_per": 50,
+                "hit2": 400,
+                "hit2_per": 100,
+                "hit3": 360,
+                "hit3_per": 90,
+                "all": 400
+            }, {
+                "year": "9/6",
+                "hit1": 40,
+                "hit1_per": 20,
+                "hit2": 20,
+                "hit2_per": 10,
+                "hit3": 100,
+                "hit3_per": 50,
+                "all": 200
+            }, {
+                "year": "9/7",
+                "hit1": 40,
+                "hit1_per": 20,
+                "hit2": 20,
+                "hit2_per": 10,
+                "hit3": 100,
+                "hit3_per": 50,
+                "all": 200
+            }]
+
+            let xRenderer = am5xy.AxisRendererX.new(root, {
+                cellStartLocation: 0.1,
+                cellEndLocation: 0.9,
+                minorGridEnabled: true
+            })
+
+            let xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+                categoryField: "year",
+                renderer: xRenderer,
+                tooltip: am5.Tooltip.new(root, {})
+            }));
+
+            xRenderer.grid.template.setAll({
+                location: 1
+            })
+
+            xAxis.data.setAll(data);
+
+            let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                renderer: am5xy.AxisRendererY.new(root, {
+                    strokeOpacity: 0.1
+                })
+            }));
+
+            function makeSeries2(name, fieldName, per) {
+                let series;
+                if(fieldName != 'all'){
+                    series = chart.series.push(am5xy.ColumnSeries.new(root, {
+                        name: name,
+                        xAxis: xAxis,
+                        yAxis: yAxis,
+                        valueYField: fieldName,
+                        categoryXField: "year"
+                    }));
+                }
+
+                if (series) {
+                    series.columns.template.setAll({
+                        tooltipText: "{valueY}개 / {" + per + "}%",
+                        width: am5.percent(90),
+                        tooltipY: 0,
+                        strokeOpacity: 0
+                    });
+
+                    series.data.setAll(data);
+
+                    series.appear();
+
+                    series.bullets.push(function () {
+                        return am5.Bullet.new(root, {
+                            locationY: 0,
+                            sprite: am5.Label.new(root, {
+                                text: "{valueY}",
+                                fill: root.interfaceColors.get("alternativeText"),
+                                centerY: 0,
+                                centerX: am5.p50,
+                                populateText: true
+                            })
+                        });
+                    });
+
+                    legend.data.push(series);
+                }
+            }
+
+
+            let series2 = chart.series.push(
+                am5xy.LineSeries.new(root, {
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "all",
+                    categoryXField: "year",
+                    tooltip: am5.Tooltip.new(root, {
+                        pointerOrientation: "horizontal",
+                        labelText: "{valueY}"
+                    })
+                })
+            );
+
+            series2.strokes.template.setAll({
+                strokeWidth: 3,
+                templateField: "strokeSettings"
+            });
+
+
+            series2.data.setAll(data);
+
+            series2.bullets.push(function () {
+                return am5.Bullet.new(root, {
+                    sprite: am5.Circle.new(root, {
+                        strokeWidth: 3,
+                        stroke: series2.get("stroke"),
+                        radius: 5,
+                        fill: root.interfaceColors.get("background")
+                    })
+                });
+            });
+
+            chart.set("cursor", am5xy.XYCursor.new(root, {}));
+
+            makeSeries2("적중수1", "hit1", "hit1_per");
+            makeSeries2("적중수2", "hit2", "hit2_per");
+            makeSeries2("적중수3", "hit3", "hit3_per");
+            makeSeries2("전체", "all");
+
+
+            chart.appear(1000, 100);
+        }
     </script>
 </head>
 <body>
@@ -287,7 +509,7 @@
                                         </div>
                                     </dd>
                                 </dl>
-                                <dl>
+                                <!--<dl>
                                     <dt>
                                         <label for="cycle">주기</label>
                                     </dt>
@@ -297,17 +519,15 @@
                                             <option value="">일별</option>
                                         </select>
                                     </dd>
-                                </dl>
+                                </dl>-->
                                 <dl>
                                     <dt>
-                                        <label for="condition">실행조건</label>
+                                        <label for="condition">대상</label>
                                     </dt>
                                     <dd>
                                         <select name="condition" id="condition">
-                                            <option value="" selected>전체</option>
-                                            <option value="">기간</option>
-                                            <option value="">부점</option>
-                                            <option value="">비목명</option>
+                                            <option value="" selected>본부</option>
+                                            <option value="">영업점</option>
                                         </select>
                                     </dd>
                                 </dl>
@@ -329,7 +549,13 @@
 
             <div class="graph_area">
                 <div class="graph">
-                    <div id="chartdiv" style="height:366px"></div> <!--TODO : 임의 높이값-->
+                    <div id="chartdiv1" style="height:366px"></div> <!--TODO : 임의 높이값-->
+                </div>
+            </div>
+
+            <div class="graph_area">
+                <div class="graph">
+                    <div id="chartdiv2" style="height:366px"></div> <!--TODO : 임의 높이값-->
                 </div>
             </div>
 
@@ -339,7 +565,7 @@
 			</div>-->
             <!--데이터가 없을 때 : e-->
 
-            <table class="tbl_list">
+            <!--<table class="tbl_list">
                 <caption>기간별 통계 : 전체, 본부, 지역본부, 영업점으로 구성</caption>
                 <colgroup>
                     <col style="width:8%;min-width:125px">
@@ -420,7 +646,7 @@
                     <td>-</td>
                 </tr>
                 </tbody>
-            </table>
+            </table>-->
         </div>
     </div>
 </div>
