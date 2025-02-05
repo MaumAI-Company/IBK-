@@ -15,13 +15,13 @@ public class StatisticInfo {
     private Integer total;
 
     /* statics input */
-    private Double outCnt;
+    private Integer outCnt;
     private Double per;
 
     /* statics output */
-    private Double hitCnt1;
-    private Double hitCnt2;
-    private Double hitCnt3;
+    private Integer hitCnt1;
+    private Integer hitCnt2;
+    private Integer hitCnt3;
     private Double hitCnt1Per;
     private Double hitCnt2Per;
     private Double hitCnt3Per;
