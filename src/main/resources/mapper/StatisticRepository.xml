@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.StatisticRepository">
+    <select id="getStatisticInput" resultType="StatisticInfo">
+        SELECT SUBSTRING(ci.TSTM_YMD, 7)                                AS dd,
+               count(*)                                                 AS total,
+               sum(CASE WHEN co.TSTM_YMD IS NOT NULL THEN 1 ELSE 0 END) AS outCnt
+        FROM CARD_INPUT ci
+                 LEFT JOIN CARD_OUTPUT co ON
+            ci.TSTM_YMD = co.TSTM_YMD
+                AND ci.TSTM_NO = co.TSTM_NO
+                AND ci.BRCD = co.BRCD
+        WHERE ci.HDQR_BOB_DCD = 2
+          AND ci.TSTM_YMD LIKE '202409%'
+        GROUP BY SUBSTRING(ci.TSTM_YMD, 7)
+    </select>
+
+    <select id="getStatisticOutput" resultType="StatisticInfo">
+        SELECT SUBSTRING(ci.TSTM_YMD, 7) AS dd,
+               count(*)                  AS total,
+               sum(CASE
+                       WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO) THEN 1
+                       ELSE 0 END)       AS hitCnt1,
+               sum(CASE
+                       WHEN co.TSTM_YMD IS NOT NULL AND
+                            INSTR(ci.BDGT_BSNS_FRCS_CON, concat(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1
+                       ELSE 0 END)       AS hitCnt2,
+               sum(CASE
+                       WHEN co.TSTM_YMD IS NOT NULL AND
+                            INSTR(ci.BDGT_PRFR_RSN_FRCS_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON)) THEN 1
+                       ELSE 0 END)       AS hitCnt3
+        FROM CARD_OUTPUT ci
+                 INNER JOIN CARD_LEARNING_DATA co
+                            ON
+                                ci.TSTM_YMD = co.TSTM_YMD
+                                    AND ci.TSTM_NO = co.TSTM_NO
+                                    AND ci.BRCD = co.BRCD
+        WHERE ci.HDQR_BOB_DCD = 2
+          AND ci.TSTM_YMD BETWEEN '20240901'
+            AND '20240908'
+        GROUP BY SUBSTRING(ci.TSTM_YMD, 7)
+    </select>
+</mapper>

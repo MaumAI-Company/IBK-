@@ -21,7 +21,42 @@
                     })
                 }
             });
+
+            fn_getStatisticInput();
+            fn_getStatisticOutput();
         });
+
+        function fn_getStatisticInput(){
+            $.ajax({
+                url: "/soulGod/report/statistic/input",
+                type: "post",
+                async: false,
+                data: null,
+                dataType: "json",
+                success: function (data) {
+                    console.log("input 대비", data);
+                },
+                error: function () {
+                    //console.log("error");
+                }
+            });
+        }
+
+        function fn_getStatisticOutput(){
+            $.ajax({
+                url: "/soulGod/report/statistic/output",
+                type: "post",
+                async: false,
+                data: null,
+                dataType: "json",
+                success: function (data) {
+                    console.log("output 대비", data);
+                },
+                error: function () {
+                    //console.log("error");
+                }
+            });
+        }
 
         am5.ready(function() {
             var root = am5.Root.new("chartdiv");
