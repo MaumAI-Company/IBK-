@@ -49,6 +49,7 @@ public class LearningModelForm extends PageForm {
     private Integer statusType;
     private String searchLearningType;
     private String sorting;
+    private String sortingType;
 }
 
 

@@ -108,7 +108,15 @@
         from LEARNING_MODEL lm
         inner join HC_MEMBER hm on lm.REG_ID = hm.MEM_ID
         <include refid="where"></include>
-        ORDER BY CREATE_DTM
+        ORDER BY
+        <choose>
+            <when test="sortingType != null and sortingType == 'rollBackDt'">
+                ROLLBACK_DT
+            </when>
+            <otherwise>
+                CREATE_DTM
+            </otherwise>
+        </choose>
         <choose>
             <when test="sorting != null and sorting == 'asc'">
                 ASC

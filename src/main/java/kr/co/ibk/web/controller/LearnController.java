@@ -356,6 +356,7 @@ public class LearnController extends BaseCont {
     }
     //모델관리 : e
 
+    //배포관리 : s
     @RequestMapping("/soulGod/learn/deployManage")
     public String deployManage(Model model,
                                @ModelAttribute LearningModelForm params) {
@@ -365,6 +366,7 @@ public class LearnController extends BaseCont {
                 .map(DeployStatusType::getCode)
                 .toArray(Integer[]::new);
         params.setDeployStatusArr(deployStatusArr);
+        params.setSortingType("rollBackDt");
 
         List<LearningModelInfo> list = learningModelService.getList(params);
 
@@ -375,7 +377,6 @@ public class LearnController extends BaseCont {
         model.addAttribute("pageTitle", "배포 관리");
 
         return "/soulGod/learn/deployManage";
-
     }
 
     @ResponseBody
@@ -383,6 +384,5 @@ public class LearnController extends BaseCont {
     public void replaceModel(@RequestBody LearningModelForm form) {
         //mccService.replaceModel(form.getId());
     }
-
-
+    //배포관리 : e
 }
