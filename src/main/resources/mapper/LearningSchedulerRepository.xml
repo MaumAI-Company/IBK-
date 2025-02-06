@@ -5,20 +5,20 @@
 <mapper namespace="kr.co.ibk.repository.LearningSchedulerRepository">
     <select id="getTotalCount" resultType="int" parameterType="LearningSchedulerForm">
         select
-            count(*)
+        count(*)
         from
-            LEARNING_SCHEDULER ls
-        inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID
+        LEARNING_SCHEDULER ls
+        /*inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID*/
         <include refid="where"></include>
     </select>
 
-    <select id="getList">
+    <select id="getList" resultType="LearningSchedulerInfo" parameterType="LearningSchedulerForm">
         select
             <include refid="columns"></include>
-            , lm.LEARN_NAME
+            /*, lm.LEARN_NAME*/
         from
             LEARNING_SCHEDULER ls
-        inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID
+        /*inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID*/
             <include refid="where"></include>
         <if test="pagingAt != null and pagingAt == 'Y'.toString()">
             <include refid="kr.co.ibk.repository.CommonRepository.paging" />
@@ -31,15 +31,15 @@
             , lm.LEARN_NAME
         from
             LEARNING_SCHEDULER ls
-        inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID
+       /* inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID*/
         where ls.DEL_AT = 'N'
             and ls.SCHED_ID = #{id}
     </select>
 
     <insert id="setInsert" parameterType="LearningSchedulerForm">
         insert into maummcc.LEARNING_SCHEDULER
-        (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, LEARNING_MODEL_ID)
-        values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), 'N', #{learningModelId});
+        (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, TEMPLATE_ID)
+        values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), 'N', #{templateId});
     </insert>
 
     <update id="setUpdate" parameterType="LearningSchedulerForm">
@@ -74,7 +74,7 @@
         , ls.MOD_DT
         , ls.REG_ID
         , ls.REG_DT
-        , ls.LEARNING_MODEL_ID
+        /*, ls.LEARNING_MODEL_ID*/
         , ls.TERM_TY
         , ls.ST_YMD
         , ls.ST_TIME

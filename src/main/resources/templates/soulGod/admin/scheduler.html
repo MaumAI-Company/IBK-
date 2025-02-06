@@ -44,10 +44,126 @@
     </style>
     <script type="text/javascript">
         $(function () {
+
+            fn_setDatePicker('#stYmd');
+
+            //학습 팝업 도움말
+            $('.btn_help').each(function () {
+                $(this).on('click', function () {
+                    $(this).parent('.th_help_area').toggleClass('active').parents('.tr').siblings('.tr').find('.th_help_area').removeClass('active');
+                });
+            });
+            $(document).on('click', function (e) {
+                if (!$(e.target).parents('div').hasClass('th_help_area')) {
+                    $('.th_help_area').removeClass('active');
+                }
+            });
+
         });
 
         function fn_schedulerOpen() {
             layerShow('popRegister');
+        }
+
+        function fn_schedulerSaveChk() {
+            let schedNm = $('#schedNm').val();
+            let templateId = $('#templateId').val();
+            let epoch = $('#epoch').val();
+            let learningRate = $('#learningRate').val();
+            let batchSize = $('#batchSize').val();
+            let termTy = $('#termTy').val();
+            let stYmd = $('#stYmd').val();
+            let stHour = $('#stHour').val();
+            let stMin = $('#stMin').val();
+            let useAt = $('[name=useAt]:checked').val();
+
+            if (!$.trim(schedNm)) {
+                showAlert('warning', '학습 스케줄러명 입력은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(templateId)) {
+                showAlert('warning', '학습데이터 템플릿 선택은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(epoch)) {
+                showAlert('warning', 'Epoch 입력은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(learningRate)) {
+                showAlert('warning', 'Learning Rate 입력은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(batchSize)) {
+                showAlert('warning', 'Batch Size 입력은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(termTy)) {
+                showAlert('warning', '주기 선택은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(stYmd) || !$.trim(stHour) || !$.trim(stMin)) {
+                showAlert('warning', '적용 시간 일자 선택은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(useAt)) {
+                showAlert('warning', '사용 여부 선택은 필수입니다.');
+                return false;
+            }
+
+            return true;
+        }
+
+
+        function fn_schedulerSave() {
+            if (!fn_schedulerSaveChk()) {
+                return false;
+            }
+
+            showConfirm('message', '저장 하시겠습니까?', () => {
+                let jsonData = {
+                    "schedNm": $('#schedNm').val(),
+                    "templateId": $('#templateId').val(),
+                    "epoch": $('#epoch').val(),
+                    "learningRate": $('#learningRate').val(),
+                    "batchSize": $('#batchSize').val(),
+                    "termTy": $('#termTy').val(),
+                    "stDt": $('#stYmd').val() + ' ' + [$('#stHour').val(), $('#stMin').val()].join(":"),
+                    "stYmd": $('#stYmd').val().replaceAll('.', '-'),
+                    "stTime": [$('#stHour').val(), $('#stMin').val()].join(":") + ':00',
+                    "useAt": $('[name=useAt]:checked').val()
+                }
+
+                $.ajax({
+                    url: "/soulGod/admin/scheduler/save",
+                    type: "post",
+                    async: false,
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function () {
+                        if ("SUCCESS" === data.status) {
+                            showAlert('complete', '저장되었습니다.', () => {
+                                location.reload();
+                            })
+                        } else {
+                            showAlert('warning', '실패하였습니다.', () => {
+                                location.reload();
+                            })
+                        }
+                    },
+                    error: function () {
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        })
+                    }
+                });
+            });
         }
     </script>
 </head>
@@ -75,11 +191,10 @@
                 <!--<input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>-->
                 <div class="board_top">
                     <div>
-                        <div class="total_num"><b>3</b>
-                            개의 글이 있습니다.
+                        <div class="total_num"><b th:text="${params.paginationInfo.totalRecordCount}">0</b> 개의 글이 있습니다.
                         </div>
                     </div>
-                    <!--<div class="mla">
+                    <div class="mla">
                         <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
                         <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
                                 onchange="fn_search()">
@@ -92,19 +207,82 @@
                         </select>
                         <label for="sorting" class="blind">정렬조건</label>
                         <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
-                            <option value="asc" th:selected="${params.sorting == 'asc'}">오름차순</option>
-                            <option value="desc" th:selected="${params.sorting == 'desc'}">내림차순</option>
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">과거순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">최신순</option>
+                            \
                         </select>
-                    </div>-->
+                        <div class="filter_area">
+                            <button type="button" class="btn btn_text btn_filter">
+                                <i class="ico_filter"></i>
+                                <span>필터</span>
+                            </button>
+
+                            <div class="filter">
+                                <div class="inner">
+                                    <dl>
+                                        <dt>
+                                            <label for="searchLearningType">구분</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchLearningType" id="searchLearningType">
+                                                <option value="" selected>전체</option>
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.LearningType).values()}"
+                                                        th:class="${item}" th:text="${item.name}" th:value="${item}"
+                                                        th:selected="${item.name() eq params.searchLearningType}"></option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="searchTarget">대상</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchTarget" id="searchTarget">
+                                                <option value="" selected>전체</option>
+                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부
+                                                </option>
+                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label>검색어</label>
+                                        </dt>
+                                        <dd>
+                                            <div class="search_form">
+                                                <div class="search">
+                                                    <input type="search" th:field="${params.searchKeyword}"
+                                                           placeholder="검색어를 입력하세요.">
+                                                    <button type="button" class="btn_del" tabindex="-1">
+                                                        <span class="blind">삭제</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <div class="btn_area">
+                                        <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
+                                            <span>초기화</span>
+                                        </button>
+                                        <button type="button" class="btn fill" onclick="fn_search()">
+                                            <span>검색</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
             <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
-            <!--<div class="nodata">
+            <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
                 <p>검색 결과가 없습니다.</p>
-            </div>-->
+            </div>
             <!--데이터가 없을 때 : e-->
 
-            <table class="tbl_list">
+            <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
                 <caption>학습 스케줄러 관리 : No, 스케줄러명, 모델명, 등록자, 상태, 최근 동작 일시, 등록일시로 구성</caption>
                 <colgroup>
                     <col style="width: 45px;">
@@ -128,17 +306,20 @@
                         </div>
                     </th>
                     <th scope="col">No</th>
-                    <th scope="col">스케줄러명</th>
-                    <th scope="col">모델명</th>
-                    <th scope="col">등록자</th>
+                    <th scope="col">이름</th>
+                    <th scope="col">구분</th>
+                    <th scope="col">대상</th>
 
-                    <th scope="col">사용여부</th>
+                    <th scope="col">사용템플릿</th>
+                    <th scope="col">등록자</th>
+                    <th scope="col">실행상태</th>
                     <th scope="col">최근 동작 일시</th>
-                    <th scope="col">등록일시</th>
+                    <th scope="col">등록 일시</th>
+                    <th scope="col">배치 설명</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
+                <tr th:each="item, idx:${list}">
                     <td>
                         <div class="checkbox">
                             <input type="checkbox" name="chk" id="chk_0">
@@ -148,53 +329,16 @@
                         </div>
                     </td>
                     <td>1</td>
-                    <td>영업점_카드지급결의 학습모델 생성_Job</td>
-                    <td>영업점 학습모델 202408</td>
+                    <td th:text="${item.schedNm}">영업점_카드지급결의 학습모델 생성_Job</td>
+                    <td th:text="${item.schedNm}">영업점 학습모델 202408</td>
                     <td>이덕구</td>
-
                     <td>사용</td>
                     <td>2024.11.05 00:00:00</td>
                     <td>2024.02.22 12:22:33</td>
                 </tr>
-                <tr>
-                    <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk_1">
-                            <label for="chk_1">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td>2</td>
-                    <td>본부_카드지급결의 학습모델 생성_Job-1</td>
-                    <td>본부 학습모델 202410</td>
-                    <td>최지환</td>
-
-                    <td>사용</td>
-                    <td>2024.10.14 00:00:00</td>
-                    <td>2024.01.10 12:22:33</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk_2">
-                            <label for="chk_2">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td>3</td>
-                    <td>본부_카드지급결의 학습모델</td>
-                    <td>본부 학습모델 v1</td>
-                    <td>김정무</td>
-
-                    <td>미사용</td>
-                    <td>2024.11.30 12:00:00</td>
-                    <td>2022.12.04 00:30:00</td>
-                </tr>
                 </tbody>
             </table>
-            <!--<th:block th:insert="~{soulGod/fragments/paging}"></th:block>-->
+            <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
         </div>
     </div>
 </div>
@@ -215,8 +359,6 @@
                 <colgroup>
                     <col style="width:160px">
                     <col style="width:auto">
-                    <col style="width:160px">
-                    <col style="width:auto">
                 </colgroup>
                 <tbody>
                 <tr>
@@ -224,31 +366,160 @@
                         <label for="schedNm">학습 스케줄러명</label>
                     </th>
                     <td>
-                        <input type="text" id="schedNm" name="schedNm" class="w250">
+                        <input type="text" id="schedNm" name="schedNm" class="w250" maxlength="500">
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="hdqrBobDcd">학습 대상</label>
+                        <label for="templateId">학습데이터 템플릿</label>
                     </th>
                     <td>
-                        <select id="hdqrBobDcd">
-                            <option value="1" selected>본부</option>
-                            <option value="2">영업점</option>
-                        </select>
-                    </td>
-                    <th scope="row">
-                        <label for="learningModelId">학습 모델 선택</label>
-                    </th>
-                    <td>
-                        <select id="learningModelId">
-                            <option value="" selected>선택하세요.</option>
-                            <option value="">모델1</option>
-                            <option value="">모델2</option>
-                            <option value="">모델3</option>
+                        <select id="templateId">
+                            <option value="" disabled selected>선택</option>
+                            <option th:each="template : ${templateList}"
+                                    th:value="${template.id}"
+                                    th:text="${template.templateName}">
+                            </option>
                         </select>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="ymd">예산집행년월</label>
+                    </th>
+                    <td>
+                        <select id="ymd">
+                            <option value="" disabled selected>선택</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label>모델 파라미터</label>
+                    </th>
+                    <td>
+                        <div class="div_write">
+                            <div class="tr">
+                                <div class="th">
+                                    <strong>
+                                        <label for="epoch">Epoch</label>
+                                    </strong>
+                                    <div class="th_help_area">
+                                        <button type="button" class="btn_help">
+                                            <span class="blind">안내</span>
+                                        </button>
+                                        <div class="th_help">학습 데이셋을 학습하는 회수</div>
+                                    </div>
+                                </div>
+                                <div class="td">
+                                    <div class="input">
+                                        <input type="text" id="epoch" value="10" placeholder="Epoch를 입력하세요."
+                                               onkeyup="fn_numberOnly(this, 100)">
+                                        <button type="button" class="btn_del" tabindex="-1">
+                                            <span class="blind">삭제</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tr">
+                                <div class="th">
+                                    <strong>
+                                        <label for="learningRate">Learning Rate</label>
+                                    </strong>
+                                    <div class="th_help_area">
+                                        <button type="button" class="btn_help">
+                                            <span class="blind">안내</span>
+                                        </button>
+                                        <div class="th_help">학습률, 최적 값을 찾기 위한 기울기의 이동 정도</div>
+                                    </div>
+                                </div>
+                                <div class="td df w200">
+                                    <div class="input">
+                                        <input type="text" id="learningRate" value="3"
+                                               onkeyup="fn_numberOnly(this, 10)">
+                                        <button type="button" class="btn_del" tabindex="-1">
+                                            <span class="blind">삭제</span>
+                                        </button>
+                                    </div>
+                                    <strong>e<sub>-5</sub></strong>
+                                </div>
+                            </div>
+                            <div class="tr">
+                                <div class="th">
+                                    <strong>
+                                        <label for="batchSize">Batch Size</label>
+                                    </strong>
+                                    <div class="th_help_area">
+                                        <button type="button" class="btn_help">
+                                            <span class="blind">안내</span>
+                                        </button>
+                                        <div class="th_help">학습 데이터셋 중, 몇 개의 데이터를 묶어서 가중치 값을 갱신할 지 지정하는 단위</div>
+                                    </div>
+                                </div>
+                                <div class="td">
+                                    <div class="input">
+                                        <input type="text" id="batchSize" value="16"
+                                               placeholder="Batch Size를 입력하세요." onkeyup="fn_numberOnly(this, 16)">
+                                        <button type="button" class="btn_del" tabindex="-1">
+                                            <span class="blind">삭제</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="termTy">주기</label>
+                    </th>
+                    <td>
+                        <select id="termTy">
+                            <option value="" disabled selected>선택</option>
+                            <option th:each="item :${T(kr.co.ibk.domain.enums.TermType).values()}"
+                                    th:value="${item}"
+                                    th:text="${item.name}"></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">적용 시작 일자</th>
+                    <td>
+                        <div class="df">
+                            <label for="stYmd" class="blind"></label>
+                            <input type="text" id="stYmd" class="datepicker" readonly
+                                   th:value="${#dates.format(#dates.createNow(), 'yyyy.MM.dd')}">
+                            <select id="stHour">
+                                <option th:each="hour : ${#numbers.sequence(0, 23)}"
+                                        th:value="${#strings.length(hour) == 1 ? '0' + hour : hour}"
+                                        th:text="${#strings.length(hour) == 1 ? '0' + hour : hour}">
+                                </option>
+                            </select>시
+                            <select id="stMin">
+                                <option th:each="minute : ${#numbers.sequence(0, 50, 10)}"
+                                        th:value="${#strings.length(minute) == 1 ? '0' + minute : minute}"
+                                        th:text="${#strings.length(minute) == 1 ? '0' + minute : minute}">
+                                </option>
+                            </select>분
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">사용여부</th>
+                    <td>
+                        <div class="df">
+                            <div class="radio txt">
+                                <input type="radio" name="useAt" id="useAtY" value="Y" checked>
+                                <label for="useAtY">사용</label>
+                            </div>
+                            <div class="radio txt">
+                                <input type="radio" name="useAt" id="useAtN" value="N">
+                                <label for="useAtN">미사용</label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
                 </tbody>
             </table>
         </div>
@@ -256,7 +527,7 @@
             <button type="button" class="btn line_cool_grey30" onclick="layerHide('popRegister')">
                 <span>취소</span>
             </button>
-            <button type="button" class="btn fill" onclick="alert('등록api 구현 필요.')">
+            <button type="button" class="btn fill" onclick="fn_schedulerSave()">
                 <span>확인</span>
             </button>
         </div>

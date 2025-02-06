@@ -26,6 +26,7 @@ public class LearningSchedulerInfo {
     private String modDt; /*수정일자*/
     private String delAt; /*삭제여부*/
     private String learningModelId; /*모델관리 ID*/
+    private Long templateId; /* 템플릿 ID*/
 
 }
 

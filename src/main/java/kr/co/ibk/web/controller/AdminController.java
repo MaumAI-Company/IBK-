@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.common.utils.CustomMap;
-import kr.co.ibk.domain.web.DepTreetInfo;
-import kr.co.ibk.domain.web.MemberInfo;
-import kr.co.ibk.domain.web.MenuAuthMember;
+import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.DeptForm;
+import kr.co.ibk.model.LearningSchedulerForm;
+import kr.co.ibk.model.TemplateForm;
 import kr.co.ibk.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,27 +24,28 @@ import java.util.List;
 import java.util.Map;
 
 
-
 @Controller
 @Slf4j
 @RequiredArgsConstructor
 public class AdminController {
-	private final AdminDeptService adminDeptService;
-	private final AdminUserService adminUserService;
-	private final AdminAuthManagementService adminAuthManagementService;
-	private final AdminMenuManagementService adminMenuManagementService;
-	private final AdminDetectLevelService adminDetectLevelService;
+    private final AdminDeptService adminDeptService;
+    private final AdminUserService adminUserService;
+    private final AdminAuthManagementService adminAuthManagementService;
+    private final AdminMenuManagementService adminMenuManagementService;
+    private final AdminDetectLevelService adminDetectLevelService;
+    private final LearningSchedulerService learningSchedulerService;
+    private final TemplateService templateService;
 
-    @RequestMapping( "/soulGod/admin/department")
+    @RequestMapping("/soulGod/admin/department")
     public String department(Model model,
-                        @CurrentUser MemberInfo memberInfo) {
+                             @CurrentUser MemberInfo memberInfo) {
 
-    	log.info("##### URI :: { /admin/department } #####");
+        log.info("##### URI :: { /admin/department } #####");
 
-    	List<DepTreetInfo> result = new ArrayList();
-    	CustomMap param = new CustomMap();
+        List<DepTreetInfo> result = new ArrayList();
+        CustomMap param = new CustomMap();
 
-    	result = adminDeptService.getDeptTree();
+        result = adminDeptService.getDeptTree();
 
 
         model.addAttribute("mc", "ico_manage");
@@ -59,9 +60,9 @@ public class AdminController {
 
     }
 
-    @RequestMapping( "/soulGod/admin/user")
+    @RequestMapping("/soulGod/admin/user")
     public String user(Model model,
-                        @CurrentUser MemberInfo memberInfo, MemberInfo nowMember) {
+                       @CurrentUser MemberInfo memberInfo, MemberInfo nowMember) {
 
         model.addAttribute("mc", "ico_manage");
         model.addAttribute("pageTitle", "사용자 관리");
@@ -79,26 +80,27 @@ public class AdminController {
         model.addAttribute("roles", "");
         model.addAttribute("userList", userList); // 사용자 목록
         model.addAttribute("params", nowMember); // 사용자페이지 관련 정보 / 페이징 정보
-        model.addAttribute("totalRecordCount",nowMember.getPaginationInfo().getTotalRecordCount());
+        model.addAttribute("totalRecordCount", nowMember.getPaginationInfo().getTotalRecordCount());
         model.addAttribute("isSuperAdmin", "SUPER".equals(memberInfo.getMemColumn3()) ? true : false);
 
         return "/soulGod/admin/user";
 
     }
-    @RequestMapping( "/soulGod/admin/auth")
+
+    @RequestMapping("/soulGod/admin/auth")
     public String auth(Model model,
-                        @CurrentUser MemberInfo memberInfo, MenuAuthMember param) {
+                       @CurrentUser MemberInfo memberInfo, MenuAuthMember param) {
 
         log.info("##### URI :: { /admin/auth/main } #####");
         ObjectMapper mapper = new ObjectMapper();
         String menuAuthMemberVO;
-		try{
-			menuAuthMemberVO = mapper.writeValueAsString(param);
-			log.info("authMainPage params : {}",menuAuthMemberVO);
-		} catch (JsonProcessingException e){
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        try {
+            menuAuthMemberVO = mapper.writeValueAsString(param);
+            log.info("authMainPage params : {}", menuAuthMemberVO);
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         ModelAndView mav = new ModelAndView();
         model.addAttribute("sessionMember", memberInfo);
@@ -112,22 +114,23 @@ public class AdminController {
 
         model.addAttribute("mc", "ico_manage");
         model.addAttribute("pageTitle", "권한 관리");
-        model.addAttribute("totalRecordCount",param.getPaginationInfo().getTotalRecordCount());
+        model.addAttribute("totalRecordCount", param.getPaginationInfo().getTotalRecordCount());
         return "/soulGod/admin/auth";
 
     }
-    @RequestMapping( "/soulGod/admin/menu")
+
+    @RequestMapping("/soulGod/admin/menu")
     public String menu(Model model,
-                            @CurrentUser MemberInfo memberInfo) {
+                       @CurrentUser MemberInfo memberInfo) {
 
-    	log.info("access Url : /menu/main, target Method : manuManagementMain()");
+        log.info("access Url : /menu/main, target Method : manuManagementMain()");
 
-    	List<CustomMap> resultMenuTree = new ArrayList();
-    	List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
-    	//메뉴트리목록을 가져온다.
-    	resultMenuTree = adminMenuManagementService.getMenuTree();
-    	//메뉴트리목록 건수
-    	resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();
+        List<CustomMap> resultMenuTree = new ArrayList();
+        List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
+        //메뉴트리목록을 가져온다.
+        resultMenuTree = adminMenuManagementService.getMenuTree();
+        //메뉴트리목록 건수
+        resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();
 
         model.addAttribute("sessionMember", memberInfo);
         model.addAttribute("roles", "");
@@ -138,7 +141,7 @@ public class AdminController {
 
         //메뉴목록 최대 카운트
         JSONArray menuTreeOrderCount = new JSONArray(resultMenuTreeOrderCount);
-        model.addAttribute("menuTreeOrderCount",resultMenuTreeOrderCount);
+        model.addAttribute("menuTreeOrderCount", resultMenuTreeOrderCount);
 
         log.info("access Url : /menu/main, target Method : manuManagementMain() End View menuMainPage");
 
@@ -149,6 +152,7 @@ public class AdminController {
         return "/soulGod/admin/menu";
 
     }
+
     /*@RequestMapping( "/soulGod/admin/fakeCheck")
     public String fakeCheck(Model model,
                             @CurrentUser MemberInfo memberInfo, DetectionLevel params) {
@@ -168,9 +172,9 @@ public class AdminController {
         return "/soulGod/admin/fakeCheck";
 
     }*/
-    @RequestMapping( "/soulGod/admin/commonCode")
+    @RequestMapping("/soulGod/admin/commonCode")
     public String commonCode(Model model,
-                            @CurrentUser MemberInfo memberInfo) {
+                             @CurrentUser MemberInfo memberInfo) {
 
         model.addAttribute("mc", "ico_manage");
         model.addAttribute("pageTitle", "공통코드 관리");
@@ -180,10 +184,10 @@ public class AdminController {
     }
 
     @ResponseBody
-    @RequestMapping( "/soulGod/admin/user/getDeptList")
+    @RequestMapping("/soulGod/admin/user/getDeptList")
     public HashMap<String, Object> userGetDeptList(DeptForm params) {
         log.info("##### URI :: { /admin/user/getDeptList } #####");
-        log.info("##### params :: "+ params + " #####");
+        log.info("##### params :: " + params + " #####");
         HashMap<String, Object> map = new HashMap<String, Object>();
 
         // 부서
@@ -194,8 +198,8 @@ public class AdminController {
 
         // 페이지 정보
         map.put("currentPageNo", params.getCurrentPageNo());
-        map.put("recordsPerPage",params.getRecordsPerPage());
-        map.put("pageSize",params.getPageSize());
+        map.put("recordsPerPage", params.getRecordsPerPage());
+        map.put("pageSize", params.getPageSize());
         map.put("hasPreviousPage", params.getPaginationInfo().isHasPreviousPage());
         map.put("firstPage", params.getPaginationInfo().getFirstPage());
         map.put("hasNextPage", params.getPaginationInfo().isHasNextPage());
@@ -210,11 +214,11 @@ public class AdminController {
         return map;
     }
 
-	@PostMapping(value = {"/soulGod/admin/department/add"})
-	@ResponseBody
+    @PostMapping(value = {"/soulGod/admin/department/add"})
+    @ResponseBody
     public HashMap<String, Object> departmentAdd(DeptForm params) {
         log.info("##### URI :: { /admin/department/add } #####");
-        log.info("##### params :: "+ params + " #####");
+        log.info("##### params :: " + params + " #####");
 
         // user 관련
         HashMap<String, Object> map = adminDeptService.addDept(params);
@@ -222,11 +226,11 @@ public class AdminController {
         return map;
     }
 
-	@PostMapping(value = {"/soulGod/admin/department/delete"})
-	@ResponseBody
+    @PostMapping(value = {"/soulGod/admin/department/delete"})
+    @ResponseBody
     public HashMap<String, Object> departmentDelete(DeptForm params) {
         log.info("##### URI :: { /admin/department/delete } #####");
-        log.info("##### params :: "+ params + " #####");
+        log.info("##### params :: " + params + " #####");
 
         // user 관련
         HashMap<String, Object> map = adminDeptService.deleteDept(params);
@@ -234,11 +238,11 @@ public class AdminController {
         return map;
     }
 
-	@PostMapping(value = {"/soulGod/admin/department/mod"})
-	@ResponseBody
+    @PostMapping(value = {"/soulGod/admin/department/mod"})
+    @ResponseBody
     public HashMap<String, Object> departmentMod(DeptForm params) {
         log.info("##### URI :: { /admin/department/mod } #####");
-        log.info("##### params :: "+ params + " #####");
+        log.info("##### params :: " + params + " #####");
 
         // user 관련
         HashMap<String, Object> map = adminDeptService.modDept(params);
@@ -246,11 +250,11 @@ public class AdminController {
         return map;
     }
 
-	@PostMapping(value = {"/soulGod/admin/user/getUserInfo"})
-	@ResponseBody
+    @PostMapping(value = {"/soulGod/admin/user/getUserInfo"})
+    @ResponseBody
     public HashMap<String, Object> userGetUserInfo(String userId) {
         log.info("##### URI :: { /admin/user/getUserInfo } #####");
-        log.info("##### userId :: "+ userId + " #####");
+        log.info("##### userId :: " + userId + " #####");
         HashMap<String, Object> map = new HashMap<String, Object>();
 
         // user 관련
@@ -259,11 +263,11 @@ public class AdminController {
         return map;
     }
 
-	@PostMapping(value = {"/soulGod/admin/user/checkUserId"})
-	@ResponseBody
+    @PostMapping(value = {"/soulGod/admin/user/checkUserId"})
+    @ResponseBody
     public HashMap<String, Object> userCheckUserId(String userId) {
         log.info("##### URI :: { /admin/user/checkUserId } #####");
-        log.info("##### userId :: "+ userId + " #####");
+        log.info("##### userId :: " + userId + " #####");
         HashMap<String, Object> map = new HashMap<String, Object>();
 
         // user 관련
@@ -272,11 +276,11 @@ public class AdminController {
         return map;
     }
 
-	@PostMapping(value = {"/soulGod/admin/user/add"})
-	@ResponseBody
+    @PostMapping(value = {"/soulGod/admin/user/add"})
+    @ResponseBody
     public HashMap<String, Object> userAdd(MemberInfo params) {
         log.info("##### URI :: { /admin/user/add } #####");
-        log.info("##### params :: "+ params + " #####");
+        log.info("##### params :: " + params + " #####");
 
         // user 관련
         HashMap<String, Object> map = adminUserService.addUser(params);
@@ -284,11 +288,11 @@ public class AdminController {
         return map;
     }
 
-	@PostMapping(value = {"/soulGod/admin/user/mod"})
-	@ResponseBody
+    @PostMapping(value = {"/soulGod/admin/user/mod"})
+    @ResponseBody
     public HashMap<String, Object> userMod(MemberInfo params) {
         log.info("##### URI :: { /admin/user/mod } #####");
-        log.info("##### params :: "+ params + " #####");
+        log.info("##### params :: " + params + " #####");
 
         // user 관련
         HashMap<String, Object> map = adminUserService.modUser(params);
@@ -297,11 +301,11 @@ public class AdminController {
     }
 
 
-	@PostMapping(value = {"/soulGod/admin/user/resetPassword"})
-	@ResponseBody
+    @PostMapping(value = {"/soulGod/admin/user/resetPassword"})
+    @ResponseBody
     public HashMap<String, Object> userResetPassword(MemberInfo params) {
         log.info("##### URI :: { /admin/user/resetPassword } #####");
-        log.info("##### params :: "+ params + " #####");
+        log.info("##### params :: " + params + " #####");
 
         // user 관련
         HashMap<String, Object> map = adminUserService.resetPassword(params);
@@ -309,37 +313,37 @@ public class AdminController {
         return map;
     }
 
-	@PostMapping(value = {"/soulGod/admin/user/setSuperAdmin"})
-	@ResponseBody
+    @PostMapping(value = {"/soulGod/admin/user/setSuperAdmin"})
+    @ResponseBody
     public Map<String, String> setSuperAdmin(@CurrentUser MemberInfo memberInfo, String memId, String auth) {
         log.info("##### URI :: { /admin/user/resetPassword } #####");
 
         if (!"SUPER".equals(auth)) {
-        	auth = "";
+            auth = "";
         }
 
         // user 관련
-        Map<String,String> paramMap = new HashMap<String,String>();
+        Map<String, String> paramMap = new HashMap<String, String>();
         paramMap.put("memId", memId);
         paramMap.put("auth", auth);
         paramMap.put("adminMemId", memberInfo.getMemId());
 
-        Map<String, String> map = new HashMap<String,String>();
+        Map<String, String> map = new HashMap<String, String>();
         if ("SUPER".equals(memberInfo.getMemColumn3())) {
-        	map = adminUserService.setSuperAdmin(paramMap);
+            map = adminUserService.setSuperAdmin(paramMap);
         } else {
-    		map.put("status", "ERROR");
-    		map.put("msg", "SUPER ADMIN 권한이 있는 사용자만 가능합니다.");
+            map.put("status", "ERROR");
+            map.put("msg", "SUPER ADMIN 권한이 있는 사용자만 가능합니다.");
         }
 
         return map;
     }
 
-	@PostMapping(value = {"/soulGod/admin/user/delete"})
-	@ResponseBody
+    @PostMapping(value = {"/soulGod/admin/user/delete"})
+    @ResponseBody
     public HashMap<String, Object> userDelete(MemberInfo params) {
         log.info("##### URI :: { /admin/user/delete } #####");
-        log.info("##### params :: "+ params + " #####");
+        log.info("##### params :: " + params + " #####");
 
         // user 관련
         HashMap<String, Object> map = adminUserService.deleteUser(params);
@@ -347,174 +351,199 @@ public class AdminController {
         return map;
     }
 
-	/**
-	 * 권한관리 메뉴 목록 조회
-	 * @param req
-	 * @param userPrincipal
-	 * @param requestParamMap
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = {"/soulGod/admin/auth/memberMenu"},method = RequestMethod.POST)
+    /**
+     * 권한관리 메뉴 목록 조회
+     *
+     * @param req
+     * @param userPrincipal
+     * @param requestParamMap
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/soulGod/admin/auth/memberMenu"}, method = RequestMethod.POST)
     public HashMap<String, Object> authManagementMemberMenu(@CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {
-    	log.info("access Url : auth/memberMenu, target Method : authManagementMemberMenu()");
+        log.info("access Url : auth/memberMenu, target Method : authManagementMemberMenu()");
 
-    	//request param을 담는다.
-    	CustomMap param = new CustomMap();
-    	param.putAll(requestParamMap);
+        //request param을 담는다.
+        CustomMap param = new CustomMap();
+        param.putAll(requestParamMap);
 
-    	HashMap<String, Object> result = new HashMap<String, Object>();
+        HashMap<String, Object> result = new HashMap<String, Object>();
 
-    	List<CustomMap> resultMenuTree = new ArrayList();
-    	//메뉴트리목록을 가져온다.
-    	resultMenuTree = adminAuthManagementService.getMenuTree(param);
-		result.put("menuTree", resultMenuTree);
+        List<CustomMap> resultMenuTree = new ArrayList();
+        //메뉴트리목록을 가져온다.
+        resultMenuTree = adminAuthManagementService.getMenuTree(param);
+        result.put("menuTree", resultMenuTree);
         log.info("access Url : auth/memberMenu, target Method : authManagementMemberMenu() End View menuMainPage");
         return result;
     }
 
-	@ResponseBody
-	@RequestMapping(value = {"/soulGod/admin/auth/insertMemberMenu"},method = RequestMethod.POST)
+    @ResponseBody
+    @RequestMapping(value = {"/soulGod/admin/auth/insertMemberMenu"}, method = RequestMethod.POST)
     public HashMap<String, Object> authManagementInsertMemberMenu(@CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {
-    	log.info("access Url : /menu/addMenu, target Method : authManagementInsertMemberMenu()");
+        log.info("access Url : /menu/addMenu, target Method : authManagementInsertMemberMenu()");
 
-    	//request param을 담는다.
-    	CustomMap param = new CustomMap();
-    	param.putAll(requestParamMap);
-    	param.orginPut("regMemId", memberInfo.getMemId());
+        //request param을 담는다.
+        CustomMap param = new CustomMap();
+        param.putAll(requestParamMap);
+        param.orginPut("regMemId", memberInfo.getMemId());
 
-    	log.info("AdminController.authManagementInsertMemberMenu() param :: {}", param);
-    	adminAuthManagementService.insertMemberMenu(param);
+        log.info("AdminController.authManagementInsertMemberMenu() param :: {}", param);
+        adminAuthManagementService.insertMemberMenu(param);
 
-    	HashMap<String, Object> result = new HashMap<String, Object>();
+        HashMap<String, Object> result = new HashMap<String, Object>();
 
-    	List<CustomMap> resultMenuTree = new ArrayList();
-    	//메뉴트리목록을 가져온다.
-    	resultMenuTree = adminAuthManagementService.getMenuTree(param);
-		result.put("menuTree", resultMenuTree);
+        List<CustomMap> resultMenuTree = new ArrayList();
+        //메뉴트리목록을 가져온다.
+        resultMenuTree = adminAuthManagementService.getMenuTree(param);
+        result.put("menuTree", resultMenuTree);
         log.info("access Url : /menu/main, target Method : authManagementInsertMemberMenu() End View menuMainPage");
         return result;
     }
 
-	/**
-	 * 메뉴 추가 처리
-	 * @param req
-	 * @param userPrincipal
-	 * @param requestParamMap
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = {"/soulGod/admin/menu/addMenu"},method = RequestMethod.POST)
+    /**
+     * 메뉴 추가 처리
+     *
+     * @param req
+     * @param userPrincipal
+     * @param requestParamMap
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/soulGod/admin/menu/addMenu"}, method = RequestMethod.POST)
     public HashMap<String, Object> manuManagementAddMenu(HttpServletRequest req, @CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {
-    	log.info("access Url : /menu/addMenu, target Method : manuManagementAddMenu()");
+        log.info("access Url : /menu/addMenu, target Method : manuManagementAddMenu()");
 
-    	//request param을 담는다.
-    	CustomMap param = new CustomMap();
-    	param.putAll(requestParamMap);
-    	param.orginPut("menuRegId", memberInfo.getMemId());
-    	param.orginPut("menuModId", memberInfo.getMemId());
+        //request param을 담는다.
+        CustomMap param = new CustomMap();
+        param.putAll(requestParamMap);
+        param.orginPut("menuRegId", memberInfo.getMemId());
+        param.orginPut("menuModId", memberInfo.getMemId());
 
-    	adminMenuManagementService.insertHcMenuTree(param);
-    	adminMenuManagementService.updateHcMenuDepthLevel();
+        adminMenuManagementService.insertHcMenuTree(param);
+        adminMenuManagementService.updateHcMenuDepthLevel();
 
-    	HashMap<String, Object> result = new HashMap<String, Object>();
+        HashMap<String, Object> result = new HashMap<String, Object>();
 
-    	List<CustomMap> resultMenuTree = new ArrayList();
-    	List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
-    	//메뉴트리목록을 가져온다.
-    	resultMenuTree = adminMenuManagementService.getMenuTree();
-    	resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();
-		result.put("menuTree", resultMenuTree);
-		result.put("menuTreeOrderCount",resultMenuTreeOrderCount);
+        List<CustomMap> resultMenuTree = new ArrayList();
+        List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
+        //메뉴트리목록을 가져온다.
+        resultMenuTree = adminMenuManagementService.getMenuTree();
+        resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();
+        result.put("menuTree", resultMenuTree);
+        result.put("menuTreeOrderCount", resultMenuTreeOrderCount);
         log.info("access Url : /menu/main, target Method : manuManagementMain() End View menuMainPage");
         return result;
     }
 
-	/**
-	 * 메뉴 수정 처리
-	 * @param req
-	 * @param userPrincipal
-	 * @param requestParamMap
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = {"/soulGod/admin/menu/updateMenu"},method = RequestMethod.POST)
+    /**
+     * 메뉴 수정 처리
+     *
+     * @param req
+     * @param userPrincipal
+     * @param requestParamMap
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/soulGod/admin/menu/updateMenu"}, method = RequestMethod.POST)
     public HashMap<String, Object> manuManagementUpdateMenu(HttpServletRequest req, @CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {
-    	log.info("access Url : /menu/addMenu, target Method : manuManagementUpdateMenu()");
+        log.info("access Url : /menu/addMenu, target Method : manuManagementUpdateMenu()");
 
-    	//request param을 담는다.
-    	CustomMap param = new CustomMap();
-    	param.putAll(requestParamMap);
-    	param.orginPut("menuModId", memberInfo.getMemId());
+        //request param을 담는다.
+        CustomMap param = new CustomMap();
+        param.putAll(requestParamMap);
+        param.orginPut("menuModId", memberInfo.getMemId());
 
-    	adminMenuManagementService.updateHcMenuTree(param);
-    	adminMenuManagementService.updateHcMenuDepthLevel();
+        adminMenuManagementService.updateHcMenuTree(param);
+        adminMenuManagementService.updateHcMenuDepthLevel();
 
-    	HashMap<String, Object> result = new HashMap<String, Object>();
+        HashMap<String, Object> result = new HashMap<String, Object>();
 
-    	List<CustomMap> resultMenuTree = new ArrayList();
-    	List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
-    	//메뉴트리목록을 가져온다.
-    	resultMenuTree = adminMenuManagementService.getMenuTree();
-    	resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();
-		result.put("menuTree", resultMenuTree);
-		result.put("menuTreeOrderCount",resultMenuTreeOrderCount);
+        List<CustomMap> resultMenuTree = new ArrayList();
+        List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
+        //메뉴트리목록을 가져온다.
+        resultMenuTree = adminMenuManagementService.getMenuTree();
+        resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();
+        result.put("menuTree", resultMenuTree);
+        result.put("menuTreeOrderCount", resultMenuTreeOrderCount);
         log.info("access Url : /menu/main, target Method : manuManagementUpdateMenu() End View menuMainPage");
         return result;
     }
 
-	/**
-	 * 메뉴 삭제 처리
-	 * @param req
-	 * @param userPrincipal
-	 * @param requestParamMap
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = {"/soulGod/admin/menu/deleteMenu"},method = RequestMethod.POST)
+    /**
+     * 메뉴 삭제 처리
+     *
+     * @param req
+     * @param userPrincipal
+     * @param requestParamMap
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/soulGod/admin/menu/deleteMenu"}, method = RequestMethod.POST)
     public HashMap<String, Object> manuManagementDeleteMenu(HttpServletRequest req, @CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {
-    	log.info("access Url : /menu/addMenu, target Method : manuManagementDeleteMenu()");
+        log.info("access Url : /menu/addMenu, target Method : manuManagementDeleteMenu()");
 
-    	//request param을 담는다.
-    	CustomMap param = new CustomMap();
-    	param.putAll(requestParamMap);
-    	param.orginPut("menuModId", memberInfo.getMemId());
+        //request param을 담는다.
+        CustomMap param = new CustomMap();
+        param.putAll(requestParamMap);
+        param.orginPut("menuModId", memberInfo.getMemId());
 
-    	log.info("AdminController.manuManagementDeleteMenu() requestParamMap :: {}", requestParamMap);
+        log.info("AdminController.manuManagementDeleteMenu() requestParamMap :: {}", requestParamMap);
 
-    	adminMenuManagementService.deleteHcMenuTree(param);
-    	adminMenuManagementService.updateHcMenuDepthLevel();
+        adminMenuManagementService.deleteHcMenuTree(param);
+        adminMenuManagementService.updateHcMenuDepthLevel();
 
-    	HashMap<String, Object> result = new HashMap<String, Object>();
+        HashMap<String, Object> result = new HashMap<String, Object>();
 
-    	List<CustomMap> resultMenuTree = new ArrayList();
-    	List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
-    	//메뉴트리목록을 가져온다.
-    	resultMenuTree = adminMenuManagementService.getMenuTree();
-    	resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();
-		result.put("menuTree", resultMenuTree);
-		result.put("menuTreeOrderCount",resultMenuTreeOrderCount);
+        List<CustomMap> resultMenuTree = new ArrayList();
+        List<CustomMap> resultMenuTreeOrderCount = new ArrayList();
+        //메뉴트리목록을 가져온다.
+        resultMenuTree = adminMenuManagementService.getMenuTree();
+        resultMenuTreeOrderCount = adminMenuManagementService.getMenuTreeOrderCount();
+        result.put("menuTree", resultMenuTree);
+        result.put("menuTreeOrderCount", resultMenuTreeOrderCount);
         log.info("access Url : /menu/main, target Method : manuManagementDeleteMenu() End View menuMainPage");
         return result;
     }
 
-	@PostMapping(value = {"/soulGod/admin/detection_level/change"})
-	@ResponseBody
+    @PostMapping(value = {"/soulGod/admin/detection_level/change"})
+    @ResponseBody
     public HashMap<String, Object> detectionLevelChange(@RequestBody HashMap<String, Object> params, HttpServletRequest request) {
         log.info("##### URI :: { /admin/detection_level/change } #####");
-        log.info("##### params :: "+ params + " #####");
+        log.info("##### params :: " + params + " #####");
 
         HashMap<String, Object> map = adminDetectLevelService.setDetectionLevel(params, request);
 
         return map;
     }
 
-    @RequestMapping( "/soulGod/admin/scheduler")
-    public String fakeCheck(Model model) {
+    @RequestMapping("/soulGod/admin/scheduler")
+    public String getScheduler(Model model,
+                               @ModelAttribute LearningSchedulerForm params) {
+        List<LearningSchedulerInfo> list = learningSchedulerService.getPage(params);
+
+        TemplateForm templateForm = new TemplateForm();
+        List<TemplateInfo> templateList = templateService.getList(templateForm);
+
+        model.addAttribute("list", list);
+        model.addAttribute("templateList", templateList);
+        model.addAttribute("pagingInfo", params.getPaginationInfo());
+        model.addAttribute("params", params);
         model.addAttribute("mc", "ico_manage");
         model.addAttribute("pageTitle", "학습 스케줄러 관리");
 
         return "/soulGod/admin/scheduler";
+    }
 
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/admin/scheduler/detail"})
+    public LearningSchedulerInfo schedulerDetail(@RequestBody LearningSchedulerForm params) {
+        return learningSchedulerService.getDetail(params.getSchedId());
+    }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/admin/scheduler/save"})
+    public HashMap<String, Object> schedulerSave(@RequestBody LearningSchedulerForm form, @CurrentUser MemberInfo memberInfo) {
+        return learningSchedulerService.save(form, memberInfo);
     }
 }
