@@ -83,25 +83,28 @@
     </sql>
     <select id="getList" resultType="LearningModelInfo" parameterType="LearningModelForm">
         select lm.ID,
-               lm.LEARNING_ID,
-               lm.HDQR_BOB_DCD,
-               lm.REG_ID,
-               lm.REG_DT,
-               lm.MOD_ID,
-               lm.MOD_DT,
-               lm.LEARN_NAME,
-               lm.RESULT_CODE,
-               lm.RESULT_MSG,
-               lm.CREATE_DTM,
-               lm.EPOCH,
-               lm.LEARNING_RATE,
-               lm.BATCH_SIZE,
-               lm.DEPLOY_DT,
-               lm.ROLLBACK_DT,
-               lm.LEARNING_RESULT,
-               lm.DEPLOY_STATUS,
-               lm.LEARNING_TYPE,
-               hm.MEM_NAME as REG_NAME
+        lm.LEARNING_ID,
+        lm.HDQR_BOB_DCD,
+        lm.REG_ID,
+        lm.REG_DT,
+        lm.MOD_ID,
+        lm.MOD_DT,
+        lm.LEARN_NAME,
+        lm.RESULT_CODE,
+        lm.RESULT_MSG,
+        lm.CREATE_DTM,
+        lm.EPOCH,
+        lm.LEARNING_RATE,
+        lm.BATCH_SIZE,
+        lm.DEPLOY_DT,
+        lm.ROLLBACK_DT,
+        lm.LEARNING_RESULT,
+        lm.DEPLOY_STATUS,
+        lm.LEARNING_TYPE,
+        lm.PRECISION,
+        lm.RECALL,
+        lm.F1_SCORE,
+        hm.MEM_NAME as REG_NAME
         from LEARNING_MODEL lm
         inner join HC_MEMBER hm on lm.REG_ID = hm.MEM_ID
         <include refid="where"></include>
@@ -114,7 +117,7 @@
                 DESC
             </otherwise>
         </choose>
-        <include refid="kr.co.ibk.repository.CommonRepository.paging" />
+        <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
     </select>
 
     <select id="getTotalCount" resultType="int" parameterType="LearningModelForm">

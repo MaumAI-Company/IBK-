@@ -8,14 +8,17 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class LearningSchedulerForm extends PageForm {
-    //todo cofls : 필요 시 검색조건 추가
+    /*검색조건*/
     private String pagingAt;
+    private String sorting;
+    private String searchLearningType;
+    private String searchTarget;
+    private String searchKeyword;
 
     //insert/update
     private String schedNm;
@@ -23,10 +26,12 @@ public class LearningSchedulerForm extends PageForm {
     private TermType termTy;
     private LocalDate stYmd;
     private LocalTime stTime;
+    private String stDt;
     private String useAt;
     private String regId;
     private String modId;
     private Integer learningModelId;
+    private Long templateId;
 
     private Integer schedId;
 }

@@ -8,8 +8,10 @@ import kr.co.ibk.repository.LearningSchedulerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -44,10 +46,24 @@ public class LearningSchedulerService extends _BaseService {
         return learningSchedulerRepository.getDetail(schedId);
     }
 
-    public int setInsert(LearningSchedulerForm params, MemberInfo memberInfo) {
-        params.setRegId(memberInfo.getMemId());
+    public HashMap<String, Object> save(LearningSchedulerForm params, MemberInfo memberInfo) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("status", "FAIL");
+
+        Long saveCnt = 0L;
         params.setModId(memberInfo.getMemId());
-        return learningSchedulerRepository.setInsert(params);
+        params.setRegId(memberInfo.getMemId());
+
+        if (ObjectUtils.isEmpty(params.getSchedId())) {
+            saveCnt += learningSchedulerRepository.setInsert(params);
+        } else {
+            learningSchedulerRepository.setUpdate(params);
+        }
+
+        if (saveCnt > 0) {
+            map.put("status", "SUCCESS");
+        }
+        return map;
     }
 
     public int setUpdate(LearningSchedulerForm params, MemberInfo memberInfo) {

@@ -1,8 +1,6 @@
 package kr.co.ibk.service;
 
-import kr.co.ibk.domain.enums.InOutGbnType;
 import kr.co.ibk.domain.enums.InputColumnCardType;
-import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.CardOutputInfo;
 import kr.co.ibk.domain.web.LearningModelInputInfo;
 import kr.co.ibk.model.CardInputForm;
@@ -12,7 +10,6 @@ import kr.co.ibk.repository.LearningModelInputRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -29,24 +26,15 @@ public class CardOutputService extends _BaseService {
 
     public CardOutputInfo detail(CardInputForm params) {
         CardOutputInfo info = cardOutputRepository.getDetail(params);
+        List<LearningModelInputInfo> defaultInputList = new ArrayList<>();
 
-        List<LearningModelInputInfo> inputInfos = new ArrayList<>();
-
-        if (!ObjectUtils.isEmpty(info.getLearningModelId())) {
-            inputInfos = learningModelInputRepository.getPartList(info.getLearningModelId(), InOutGbnType.INPUT.name(), LearningType.CARD.getName());
-        }
-        if (ObjectUtils.isEmpty(inputInfos)) {
-            List<LearningModelInputInfo> defaultInputList = new ArrayList<>();
-
-            for (InputColumnCardType value : InputColumnCardType.values()) {
-                LearningModelInputInfo defaultInput = new LearningModelInputInfo();
-                defaultInput.setInputColumnCardType(value);
-                defaultInputList.add(defaultInput);
-            }
-            inputInfos = defaultInputList;
+        for (InputColumnCardType value : InputColumnCardType.values()) {
+            LearningModelInputInfo defaultInput = new LearningModelInputInfo();
+            defaultInput.setInputColumnCardType(value);
+            defaultInputList.add(defaultInput);
         }
 
-        inputInfos.forEach(input -> {
+        defaultInputList.forEach(input -> {
             input.setInputColumnNm(input.getInputColumnCardType().getName());
 
             String columnName = input.getInputColumnCardType().getCamelColumn();
@@ -65,7 +53,7 @@ public class CardOutputService extends _BaseService {
                 e.printStackTrace();
             }
         });
-        info.setInputList(inputInfos);
+        info.setInputList(defaultInputList);
 
 
         //이전/다음글 no find

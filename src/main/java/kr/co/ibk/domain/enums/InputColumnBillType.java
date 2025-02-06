@@ -4,7 +4,7 @@ public enum InputColumnBillType {
     BRCD("부점코드", "brcd", true, 1),
     HDQR_BOB_DCD("대상(본부, 영업점)", "hdqrBobDcd", true, 2),
     TXBL_DCD("세금계산서구분코드", "txblDcd", true, 3),
-    SPRL_BSNN_NO("공급자사업자번호", "sprlBsnnNo", true, 4),
+    SPRL_BSNN_NO("공급자사업자번호", "splrBsnnNo", true, 4),
     SPLR_FRM("공급자상호명", "splrFrm", true, 5),
     SPLR_BZST_NM("공급자업태명", "splrBzstNm", true, 6),
     SPLR_ITMS_NM("공급자종목명", "splrItmsNm", true, 7),

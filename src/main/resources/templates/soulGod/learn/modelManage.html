@@ -559,9 +559,9 @@
                         <div th:if="${item.deployStatus eq '3'}" class="badge fill_blue_green">학습 완료</div>
                         <div th:if="${item.deployStatus eq '4'}" class="badge fill_error10">학습 오류</div>
                     </td>
-                    <td th:text="${'-'}">97%</td>
-                    <td th:text="${'-'}">75%</td>
-                    <td th:text="${'-'}">97%</td>
+                    <td th:text="${item.precision ne null ? item.precision + '%' : '-'}">97%</td>
+                    <td th:text="${item.recall ne null ? item.epoch + '%' : '-'}">75%</td>
+                    <td th:text="${item.f1Score ne null ? item.f1Score + '%' : '-'}">97%</td>
                     <td th:text="${item.epoch ne null ? item.epoch : '-'}">100</td>
                     <td th:text="${item.learningRate ne null ? item.learningRate : '-'}">0.02</td>
                     <td th:text="${item.batchSize ne null ? item.batchSize : '-'}">32</td>
