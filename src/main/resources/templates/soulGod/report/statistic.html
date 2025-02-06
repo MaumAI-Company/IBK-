@@ -21,9 +21,6 @@
                     })
                 }
             });
-
-            // fn_getStatisticInput();
-            // fn_getStatisticOutput();
         });
 
         function fn_getStatisticInput(){
@@ -35,6 +32,7 @@
                 dataType: "json",
                 success: function (data) {
                     console.log("input 대비", data);
+                    fn_drawChart1(data);
                 },
                 error: function () {
                     //console.log("error");
@@ -51,6 +49,265 @@
                 dataType: "json",
                 success: function (data) {
                     console.log("output 대비", data);
+                    data =
+                        [
+                            {
+                        "dd": "9/1",
+                        "hitCnt1": 40,
+                        "hitCnt1Per": 20,
+                        "hitCnt2": 20,
+                        "hitCnt2Per": 10,
+                        "hitCnt3": 100,
+                        "hitCnt3Per": 50,
+                        "total": 200
+                    }, {
+                        "dd": "9/2",
+                        "hitCnt1": 50,
+                        "hitCnt1Per": 10,
+                        "hitCnt2": 150,
+                        "hitCnt2Per": 30,
+                        "hitCnt3": 100,
+                        "hitCnt3Per": 20,
+                        "total": 500
+                    }, {
+                        "dd": "9/3",
+                        "hitCnt1": 30,
+                        "hitCnt1Per": 10,
+                        "hitCnt2": 60,
+                        "hitCnt2Per": 20,
+                        "hitCnt3": 200,
+                        "hitCnt3Per": 66.66,
+                        "total": 300
+                    }, {
+                        "dd": "9/4",
+                        "hitCnt1": 50,
+                        "hitCnt1Per": 20,
+                        "hitCnt2": 250,
+                        "hitCnt2Per": 100,
+                        "hitCnt3": 250,
+                        "hitCnt3Per": 100,
+                        "total": 250
+                    }, {
+                        "dd": "9/5",
+                        "hitCnt1": 200,
+                        "hitCnt1Per": 50,
+                        "hitCnt2": 400,
+                        "hitCnt2Per": 100,
+                        "hitCnt3": 360,
+                        "hitCnt3Per": 90,
+                        "total": 400
+                    }, {
+                        "dd": "9/6",
+                        "hitCnt1": 40,
+                        "hitCnt1Per": 20,
+                        "hitCnt2": 20,
+                        "hitCnt2Per": 10,
+                        "hitCnt3": 100,
+                        "hitCnt3Per": 50,
+                        "total": 200
+                    }, {
+                        "dd": "9/7",
+                        "hitCnt1": 40,
+                        "hitCnt1Per": 20,
+                        "hitCnt2": 20,
+                        "hitCnt2Per": 10,
+                        "hitCnt3": 100,
+                        "hitCnt3Per": 50,
+                        "total": 200
+                    },
+                        {
+                            "dd": "9/8",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200
+                        }, {
+                            "dd": "9/9",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 150,
+                            "hitCnt2Per": 30,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 20,
+                            "total": 500
+                        }, {
+                            "dd": "9/10",
+                            "hitCnt1": 30,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 60,
+                            "hitCnt2Per": 20,
+                            "hitCnt3": 200,
+                            "hitCnt3Per": 66.66,
+                            "total": 300
+                        }, {
+                            "dd": "9/11",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 250,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 250,
+                            "hitCnt3Per": 100,
+                            "total": 250
+                        }, {
+                            "dd": "9/12",
+                            "hitCnt1": 200,
+                            "hitCnt1Per": 50,
+                            "hitCnt2": 400,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 360,
+                            "hitCnt3Per": 90,
+                            "total": 400
+                        }, {
+                            "dd": "9/13",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200
+                        }, {
+                            "dd": "9/14",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200
+                        },
+                        {
+                            "dd": "9/15",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200
+                        }, {
+                            "dd": "9/16",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 150,
+                            "hitCnt2Per": 30,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 20,
+                            "total": 500
+                        }, {
+                            "dd": "9/17",
+                            "hitCnt1": 30,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 60,
+                            "hitCnt2Per": 20,
+                            "hitCnt3": 200,
+                            "hitCnt3Per": 66.66,
+                            "total": 300
+                        }, {
+                            "dd": "9/18",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 250,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 250,
+                            "hitCnt3Per": 100,
+                            "total": 250
+                        }, {
+                            "dd": "9/19",
+                            "hitCnt1": 200,
+                            "hitCnt1Per": 50,
+                            "hitCnt2": 400,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 360,
+                            "hitCnt3Per": 90,
+                            "total": 400
+                        }, {
+                            "dd": "9/20",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200
+                        }, {
+                            "dd": "9/21",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200
+                        },
+                        {
+                            "dd": "9/22",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200
+                        }, {
+                            "dd": "9/23",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 150,
+                            "hitCnt2Per": 30,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 20,
+                            "total": 500
+                        }, {
+                            "dd": "9/24",
+                            "hitCnt1": 30,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 60,
+                            "hitCnt2Per": 20,
+                            "hitCnt3": 200,
+                            "hitCnt3Per": 66.66,
+                            "total": 300
+                        }, {
+                            "dd": "9/25",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 250,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 250,
+                            "hitCnt3Per": 100,
+                            "total": 250
+                        }, {
+                            "dd": "9/26",
+                            "hitCnt1": 200,
+                            "hitCnt1Per": 50,
+                            "hitCnt2": 400,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 360,
+                            "hitCnt3Per": 90,
+                            "total": 400
+                        }, {
+                            "dd": "9/27",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200
+                        }, {
+                            "dd": "9/28",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200
+                        }];
+                    fn_drawChart2(data);
                 },
                 error: function () {
                     //console.log("error");
@@ -59,10 +316,15 @@
         }
 
         am5.ready(function() {
-            fn_drawChart1();
-            fn_drawChart2();
+            fn_getStatisticInput();
+            fn_getStatisticOutput();
         });
-        function fn_drawChart1() {
+        function fn_drawChart1(data) {
+            $("#chartdiv1").html("");
+            if (!data || data.length === 0) {
+                $("#chartdiv1").html('<div className="nodata"><p>검색 결과가 없습니다.</p></div>');
+                return;
+            }
             let root = am5.Root.new("chartdiv1");
 
             root.setThemes([
@@ -78,7 +340,6 @@
                 layout: root.verticalLayout
             }));
 
-
             let legend = chart.children.push(
                 am5.Legend.new(root, {
                     centerX: am5.p50,
@@ -86,79 +347,67 @@
                 })
             );
 
-            let data = [{
-                "year": "2024년 1월",
-                "branch": 243,
-                "head": 13,
-                "all": 256,
+            /*let data = [{
+                "dd": "2024년 1월",
+                "outCnt": 243,
+                "total": 256,
                 "per": 94.92
             }, {
-                "year": "2024년 2월",
-                "branch": 288,
-                "head": 15,
-                "all": 303,
+                "dd": "2024년 2월",
+                "outCnt": 288,
+                "total": 303,
                 "per": 95.04
             }, {
-                "year": "2024년 3월",
-                "branch": 298,
-                "head": 12,
-                "all": 310,
+                "dd": "2024년 3월",
+                "outCnt": 298,
+                "total": 310,
                 "per": 96.12
             }, {
-                "year": "2024년 4월",
-                "branch": 316,
-                "head": 23,
-                "all": 339,
+                "dd": "2024년 4월",
+                "outCnt": 316,
+                "total": 339,
                 "per": 93.21
             }, {
-                "year": "2024년 5월",
-                "branch": 376,
-                "head": 29,
-                "all": 405,
+                "dd": "2024년 5월",
+                "outCnt": 376,
+                "total": 405,
                 "per": 92.83
             }, {
-                "year": "2024년 6월",
-                "branch": 407,
-                "head": 16,
-                "all": 423,
+                "dd": "2024년 6월",
+                "outCnt": 407,
+                "total": 423,
                 "per": 96.21
             }, {
-                "year": "2024년 7월",
-                "branch": 374,
-                "head": 11,
-                "all": 385,
+                "dd": "2024년 7월",
+                "outCnt": 374,
+                "total": 385,
                 "per": 97.14
             }, {
-                "year": "2024년 8월",
-                "branch": 325,
-                "head": 12,
-                "all": 337,
+                "dd": "2024년 8월",
+                "outCnt": 325,
+                "total": 337,
                 "per": 94.92
             }, {
-                "year": "2024년 9월",
-                "branch": 289,
-                "head": 21,
-                "all": 310,
+                "dd": "2024년 9월",
+                "outCnt": 289,
+                "total": 310,
                 "per": 94.92
             }, {
-                "year": "2024년 10월",
-                "branch": 312,
-                "head": 9,
-                "all": 321,
+                "dd": "2024년 10월",
+                "outCnt": 312,
+                "total": 321,
                 "per": 94.92
             }, {
-                "year": "2024년 11월",
-                "branch": 298,
-                "head": 284,
-                "all": 298,
+                "dd": "2024년 11월",
+                "outCnt": 298,
+                "total": 298,
                 "per": 94.92
             }, {
-                "year": "2024년 12월",
-                "branch": 298,
-                "head": 284,
-                "all": 298,
+                "dd": "2024년 12월",
+                "outCnt": 298,
+                "total": 298,
                 "per": 94.92
-            }]
+            }]*/
 
             let xRenderer = am5xy.AxisRendererX.new(root, {
                 cellStartLocation: 0.1,
@@ -167,7 +416,7 @@
             })
 
             let xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
-                categoryField: "year",
+                categoryField: "dd",
                 renderer: xRenderer,
                 tooltip: am5.Tooltip.new(root, {})
             }));
@@ -186,13 +435,13 @@
 
             function makeSeries1(name, fieldName) {
                 let series;
-                if(fieldName != 'all'){
+                if(fieldName != 'total'){
                     series = chart.series.push(am5xy.ColumnSeries.new(root, {
                         name: name,
                         xAxis: xAxis,
                         yAxis: yAxis,
                         valueYField: fieldName,
-                        categoryXField: "year"
+                        categoryXField: "dd"
                     }));
                 }
 
@@ -225,16 +474,15 @@
                 }
             }
 
-
             let series2 = chart.series.push(
                 am5xy.LineSeries.new(root, {
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "all",
-                    categoryXField: "year",
+                    valueYField: "total",
+                    categoryXField: "dd",
                     tooltip: am5.Tooltip.new(root, {
                         pointerOrientation: "horizontal",
-                        labelText: "{valueY}"
+                        labelText: "{valueY}개"
                     })
                 })
             );
@@ -243,7 +491,6 @@
                 strokeWidth: 3,
                 templateField: "strokeSettings"
             });
-
 
             series2.data.setAll(data);
 
@@ -260,15 +507,18 @@
 
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 
-            makeSeries1("학습수", "branch");
-            // makeSeries("본부, 지역본부", "head");
-            makeSeries1("전체", "all");
-
+            makeSeries1("학습수", "outCnt");
+            makeSeries1("전체", "total");
 
             chart.appear(1000, 100);
         }
 
-        function fn_drawChart2() {
+        function fn_drawChart2(data) {
+            $("#chartdiv2").html("");
+            if (!data || data.length === 0) {
+                $("#chartdiv2").html('<div className="nodata"><p>검색 결과가 없습니다.</p></div>');
+                return;
+            }
             let root = am5.Root.new("chartdiv2");
 
             root.setThemes([
@@ -284,78 +534,12 @@
                 layout: root.verticalLayout
             }));
 
-
             let legend = chart.children.push(
                 am5.Legend.new(root, {
                     centerX: am5.p50,
                     x: am5.p50
                 })
             );
-
-            let data = [{
-                "year": "9/1",
-                "hit1": 40,
-                "hit1_per": 20,
-                "hit2": 20,
-                "hit2_per": 10,
-                "hit3": 100,
-                "hit3_per": 50,
-                "all": 200
-            }, {
-                "year": "9/2",
-                "hit1": 50,
-                "hit1_per": 10,
-                "hit2": 150,
-                "hit2_per": 30,
-                "hit3": 100,
-                "hit3_per": 20,
-                "all": 500
-            }, {
-                "year": "9/3",
-                "hit1": 30,
-                "hit1_per": 10,
-                "hit2": 60,
-                "hit2_per": 20,
-                "hit3": 200,
-                "hit3_per": 66.66,
-                "all": 300
-            }, {
-                "year": "9/4",
-                "hit1": 50,
-                "hit1_per": 20,
-                "hit2": 250,
-                "hit2_per": 100,
-                "hit3": 250,
-                "hit3_per": 100,
-                "all": 250
-            }, {
-                "year": "9/5",
-                "hit1": 200,
-                "hit1_per": 50,
-                "hit2": 400,
-                "hit2_per": 100,
-                "hit3": 360,
-                "hit3_per": 90,
-                "all": 400
-            }, {
-                "year": "9/6",
-                "hit1": 40,
-                "hit1_per": 20,
-                "hit2": 20,
-                "hit2_per": 10,
-                "hit3": 100,
-                "hit3_per": 50,
-                "all": 200
-            }, {
-                "year": "9/7",
-                "hit1": 40,
-                "hit1_per": 20,
-                "hit2": 20,
-                "hit2_per": 10,
-                "hit3": 100,
-                "hit3_per": 50,
-                "all": 200
-            }]
 
             let xRenderer = am5xy.AxisRendererX.new(root, {
                 cellStartLocation: 0.1,
@@ -364,7 +548,7 @@
             })
 
             let xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
-                categoryField: "year",
+                categoryField: "dd",
                 renderer: xRenderer,
                 tooltip: am5.Tooltip.new(root, {})
             }));
@@ -383,13 +567,13 @@
 
             function makeSeries2(name, fieldName, per) {
                 let series;
-                if(fieldName != 'all'){
+                if(fieldName != 'total'){
                     series = chart.series.push(am5xy.ColumnSeries.new(root, {
                         name: name,
                         xAxis: xAxis,
                         yAxis: yAxis,
                         valueYField: fieldName,
-                        categoryXField: "year"
+                        categoryXField: "dd"
                     }));
                 }
 
@@ -422,16 +606,15 @@
                 }
             }
 
-
             let series2 = chart.series.push(
                 am5xy.LineSeries.new(root, {
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "all",
-                    categoryXField: "year",
+                    valueYField: "total",
+                    categoryXField: "dd",
                     tooltip: am5.Tooltip.new(root, {
                         pointerOrientation: "horizontal",
-                        labelText: "{valueY}"
+                        labelText: "{valueY}개"
                     })
                 })
             );
@@ -457,11 +640,10 @@
 
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 
-            makeSeries2("적중수1", "hit1", "hit1_per");
-            makeSeries2("적중수2", "hit2", "hit2_per");
-            makeSeries2("적중수3", "hit3", "hit3_per");
-            makeSeries2("전체", "all");
-
+            makeSeries2("예산비목정보_적중수", "hitCnt1", "hitCnt1Per");
+            makeSeries2("예산사업ID_적중수", "hitCnt2", "hitCnt2Per");
+            makeSeries2("비목집행사유_적중수", "hitCnt3", "hitCnt3Per");
+            makeSeries2("전체", "total");
 
             chart.appear(1000, 100);
         }
