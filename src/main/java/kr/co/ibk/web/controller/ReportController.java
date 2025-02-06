@@ -1,9 +1,9 @@
 package kr.co.ibk.web.controller;
 
-import kr.co.ibk.common.annotation.CurrentUser;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.BillInputForm;
 import kr.co.ibk.model.CardInputForm;
+import kr.co.ibk.model.StatisticInfoForm;
 import kr.co.ibk.service.*;
 import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -150,9 +151,16 @@ public class ReportController extends BaseCont {
     // 기간별 통계 : s
     @RequestMapping("/soulGod/report/statistic")
     public String statistic(Model model,
-                            @CurrentUser MemberInfo memberInfo) {
+                            @ModelAttribute StatisticInfoForm params) {
+
+        if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
+            params.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+            params.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+        }
+        List<StatisticInfo> statisticInput = statisticService.getStatisticInput(params);
 
         model.addAttribute("mc", "ico_chart");
+        model.addAttribute("params", params);
         model.addAttribute("pageTitle", "기간별 통계");
 
         return "/soulGod/report/statistic";
@@ -161,14 +169,22 @@ public class ReportController extends BaseCont {
 
     @ResponseBody
     @PostMapping("/soulGod/report/statistic/input")
-    public List<StatisticInfo> statisticInput() {
-        return statisticService.getStatisticInput();
+    public List<StatisticInfo> statisticInput(@RequestBody StatisticInfoForm form) {
+        if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
+            form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+            form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+        }
+        return statisticService.getStatisticInput(form);
     }
 
     @ResponseBody
     @PostMapping("/soulGod/report/statistic/output")
-    public List<StatisticInfo> statisticOutput() {
-        return statisticService.getStatisticOutput();
+    public List<StatisticInfo> statisticOutput(@RequestBody StatisticInfoForm form) {
+        if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
+            form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+            form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+        }
+        return statisticService.getStatisticOutput(form);
     }
     // 기간별 통계 : e
 }
