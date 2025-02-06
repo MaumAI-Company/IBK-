@@ -1,6 +1,7 @@
 package kr.co.ibk_monitoring.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ApiService {
@@ -74,15 +76,17 @@ public class ApiService {
         String title = TITLE;
         try {
             if (mccCheck) {
-                Integer resLLM = sendPost(mccDomain, "/check-engine/");
-                if (resLLM == null || resLLM != 200) {
-                    title = "LLM " + TITLE;
+                Integer resMCC = sendPost(mccDomain, "/check-engine/");
+                if (resMCC == null || resMCC != 200) {
+                    log.debug("### MCC 서버 장애! : " + resMCC);
+                    title = "MCC " + TITLE;
                     callAlarm(title, title);
                 }
             }
             if (webCheck) {
                 Integer resWeb = sendPost(webDomain, "/api/v1/o/check-engine");
                 if (resWeb == null || resWeb != 200) {
+                    log.debug("### WEB 서버 장애! : "+resWeb);
                     title = "WEB " + TITLE;
                     callAlarm(title, title);
                 }
@@ -110,7 +114,6 @@ public class ApiService {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }*/
-
             return connection.getResponseCode();
         } catch (IOException e) {
             return null;

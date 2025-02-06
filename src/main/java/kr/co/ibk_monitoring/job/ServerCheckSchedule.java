@@ -2,6 +2,8 @@ package kr.co.ibk_monitoring.job;
 
 import kr.co.ibk_monitoring.service.ApiService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 @EnableScheduling
 public class ServerCheckSchedule {
 
+    private static final Logger log = LoggerFactory.getLogger(ServerCheckSchedule.class);
     private final ApiService apiService;
 
     /* 속성
@@ -25,10 +28,11 @@ public class ServerCheckSchedule {
     //	@Scheduled(fixedDelay = 1000 * 60 * 60 * 12, initialDelay = 0)
 
     /**
-     * 10분 단위로 LLM서버, 웹서버 체크
+     * 3분 단위로 MCC서버, 웹서버 체크
      */
-    @Scheduled(fixedDelay = 1000 * 60 * 10, initialDelay = 0)
+    @Scheduled(fixedDelay = 1000 * 60 * 3, initialDelay = 0)
     public void serverCheck() {
+        log.debug("### MCC, Web 서버 모니터링 시작");
         apiService.serverCheck();
     }
 }
