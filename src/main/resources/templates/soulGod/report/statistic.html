@@ -11,7 +11,7 @@
             text-align: center;
             border-radius: 8px;
             background-color: #fff;
-             box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.06) !important;
+            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.06) !important;
         }
     </style>
     <script type="text/javascript">
@@ -33,36 +33,49 @@
 
         });
 
-        let inputData;
-        let outputData;
+        let inputData = [];
+        let outputData = [];
 
-        function fn_search() {
+        async function fn_search() {
             layerShow('loading');
-            fn_getStatisticInput();
-            fn_getStatisticOutput();
-            fn_createTable();
+
+            await new Promise(resolve => setTimeout(resolve, 100)); // 로딩 UI 업데이트 대기
+
+            try {
+                await Promise.all([fn_getStatisticInput(), fn_getStatisticOutput(), fn_createTable()]);
+            } catch (error) {
+                showAlert('warning', '실패하였습니다.');
+            } finally {
+                layerHide('loading');
+            }
         }
 
         function fn_reset() {
             location.reload();
         }
 
-        function fn_getStatisticInput() {
+        async function fn_getStatisticInput() {
             let jsonData = {
                 "searchLearningType": $('#searchLearningType').val(),
                 "searchTarget": $('#searchTarget').val(),
                 "searchStartDate": $('#searchStartDate').val(),
                 "searchEndDate": $('#searchEndDate').val(),
+                "searchCycle": $('#searchCycle').val(),
             }
 
             $.ajax({
                 url: "/soulGod/report/statistic/input",
                 type: "post",
+                async: false,
                 data: JSON.stringify(jsonData),
                 dataType: "json",
                 contentType: "application/json",
                 success: function (data) {
-                    //console.log("input 대비", data);
+                    data.forEach(item => {
+                        let strDate = item.dd.toString();
+                        item.dd = fn_dateFormat(strDate);
+                    });
+
                     inputData = data;
                     fn_drawChart1(data);
                 },
@@ -78,17 +91,23 @@
                 "searchTarget": $('#searchTarget').val(),
                 "searchStartDate": $('#searchStartDate').val(),
                 "searchEndDate": $('#searchEndDate').val(),
+                "searchCycle": $('#searchCycle').val(),
             }
 
             $.ajax({
                 url: "/soulGod/report/statistic/output",
                 type: "post",
+                async: false,
                 data: JSON.stringify(jsonData),
                 dataType: "json",
                 contentType: "application/json",
                 success: function (data) {
+                    data.forEach(item => {
+                        let strDate = item.dd.toString();
+                        item.dd = fn_dateFormat(strDate);
+                    });
+
                     outputData = data;
-                    //console.log("output 대비", data);
                     /*data =
                         [
                             {
@@ -348,8 +367,6 @@
                             "total": 200
                         }];*/
                     fn_drawChart2(data);
-                    //fn_createOuputTable(data);
-                    layerHide('loading');
                 },
                 error: function () {
                     //console.log("error");
@@ -358,8 +375,7 @@
         }
 
         am5.ready(function () {
-            fn_getStatisticInput();
-            fn_getStatisticOutput();
+            fn_search();
         });
 
         function fn_drawChart1(data) {
@@ -558,7 +574,7 @@
 
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 
-            makeSeries1("학습수", "outCnt");
+            makeSeries1("추론 데이터 수", "outCnt");
             makeSeries1("전체", "total");
 
             chart.appear(1000, 100);
@@ -711,7 +727,7 @@
             tableBody.empty();
 
             // Input 대비 학습 통계 타이틀 : s
-            let inputTitleRow = $('<tr><th colspan="' + (inputData.length + 1) + '" class="section-title">INPUT 대비 학습 통계</th></tr>');
+            let inputTitleRow = $('<tr><th colspan="' + (inputData.length + 1) + '" class="section-title">추론 결과 수 : INPUT 데이터 기반 OUTPUT 데이터 생성 개수</th></tr>');
             tableBody.append(inputTitleRow);
 
             let dateRow = $('<tr><th scope="row">날짜</th></tr>');
@@ -719,7 +735,7 @@
             let outCntRow = $('<tr><th scope="row">학습수</th></tr>');
             let perRow = $('<tr><th scope="row" class="fc_primary">학습 비율</th></tr>');
 
-            $.each(inputData, function(index, item) {
+            $.each(inputData, function (index, item) {
                 dateRow.append(`<td>${item.dd}</td>`);
                 totalRow.append(`<td>${fn_setCommas(item.total)}</td>`);
                 outCntRow.append(`<td>${fn_setCommas(item.outCnt)}</td>`);
@@ -733,7 +749,7 @@
             tableBody.append(emptyRow);
 
             // Output 대비 적중 통계 타이틀 : s
-            let outputTitleRow = $('<tr><th colspan="' + (outputData.length + 1) + '" class="section-title">OUTPUT 대비 적중 통계</th></tr>');
+            let outputTitleRow = $('<tr><th colspan="' + (outputData.length + 1) + '" class="section-title">사용자 활용 현황 : 추론된 OUTPUT 데이터의 실제 사용 개수</th></tr>');
             tableBody.append(outputTitleRow);
 
             let dateOutputRow = $('<tr><th scope="row">날짜</th></tr>');
@@ -745,7 +761,7 @@
             let hitCnt3Row = $('<tr><th scope="row">비목집행사유_적중수</th></tr>');
             let hitCnt3PerRow = $('<tr><th scope="row">비목집행사유_적중비율</th></tr>');
 
-            $.each(outputData, function(index, item) {
+            $.each(outputData, function (index, item) {
                 dateOutputRow.append(`<td>${item.dd}</td>`);
                 totalOutputRow.append(`<td>${fn_setCommas(item.total)}</td>`);
                 hitCnt1Row.append(`<td>${fn_setCommas(item.hitCnt1) || 0}</td>`);
@@ -762,6 +778,20 @@
         function fn_excelDownload() {
             let fileNm = '통계정보_' + new Date().toISOString().replace(/\D/g, '').slice(2, 15);
             fnTableToExcel('table', fileNm);
+        }
+
+        function fn_dateFormat(date){
+            if(date != null) {
+                if (date.length === 8) {
+                    return `${date.substring(0, 4)}.${date.substring(4, 6)}.${date.substring(6, 8)}`;
+                } else if (date.length === 6) {
+                    return `${date.substring(0, 4)}.${date.substring(4, 6)}`;
+                } else {
+                    return date;
+                }
+            } else {
+                return date;
+            }
         }
     </script>
 </head>
@@ -810,19 +840,6 @@
                                             </div>
                                         </dd>
                                     </dl>
-                                    <!--<dl>
-                                        <dt>
-                                            <label for="searchCycle">주기</label>
-                                        </dt>
-                                        <dd>
-                                            <select name="searchCycle" id="searchCycle">
-                                                <option value="1" th:selected="${params.searchCycle eq '1'}">연도별</option>
-                                                <option value="2" th:selected="${params.searchCycle eq '2'}">월별</option>
-                                                <option th:if="${params.searchLearningType eq T(kr.co.ibk.domain.enums.LearningType).CARD()}"
-                                                        value="3" th:selected="${params.searchCycle eq '3'}">일별</option>
-                                            </select>
-                                        </dd>
-                                    </dl>-->
                                     <dl>
                                         <dt>
                                             <label for="searchLearningType">구분</label>
@@ -849,6 +866,19 @@
                                             </select>
                                         </dd>
                                     </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="searchCycle">주기</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchCycle" id="searchCycle">
+                                                <option value="1" th:selected="${params.searchCycle eq '1'}">일별</option>
+                                                <option value="2" th:selected="${params.searchCycle eq '2'}">월별</option>
+                                                <option value="3" th:selected="${params.searchCycle eq '3'}">연도별
+                                                </option>
+                                            </select>
+                                        </dd>
+                                    </dl>
                                     <div class="btn_area">
                                         <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
                                             <span>초기화</span>
@@ -868,12 +898,14 @@
 
             <div class="graph_area">
                 <div class="graph">
+                    <div>추론 결과 수 : INPUT 데이터 기반 OUTPUT 데이터 생성 개수</div>
                     <div id="chartdiv1" style="height:366px"></div> <!--TODO : 임의 높이값-->
                 </div>
             </div>
 
             <div class="graph_area">
                 <div class="graph">
+                    <div>사용자 활용 현황 : 추론된 OUTPUT 데이터의 실제 사용 개수</div>
                     <div id="chartdiv2" style="height:366px"></div> <!--TODO : 임의 높이값-->
                 </div>
             </div>

@@ -11,6 +11,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,7 +21,7 @@ public class StatisticService extends _BaseService {
 
     private final StatisticRepository statisticRepository;
 
-    public List<StatisticInfo> getStatisticInput(StatisticInfoForm form) {
+    public List<StatisticInfo> inferResultStatistic(StatisticInfoForm form) {
         if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
             form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
             form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
@@ -30,30 +31,32 @@ public class StatisticService extends _BaseService {
         LearningType learningType = form.getSearchLearningType() != null ? form.getSearchLearningType() : LearningType.CARD;
 
         if (learningType.equals(LearningType.CARD)) {
-            infos = statisticRepository.getCardInput(form);
+            infos = statisticRepository.cardInferResultStatistic(form);
         } else {
-            form.setSearchStartDate(trimLastTwoChars(form.getSearchStartDate()));
-            form.setSearchEndDate(trimLastTwoChars(form.getSearchEndDate()));
-            infos = statisticRepository.getBillInput(form);
+            infos = statisticRepository.billInferResultStatistic(form);
         }
         return infos;
     }
 
-    public List<StatisticInfo> getStatisticOutput(StatisticInfoForm form) {
+    public List<StatisticInfo> usageStatistic(StatisticInfoForm form) {
+        List<StatisticInfo> infos = new ArrayList<>();
+
+        if (form.getSearchCycle().equals("1")) {
+            return infos;
+        }
+
         if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
             form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
             form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
         }
-
-        List<StatisticInfo> infos;
         LearningType learningType = form.getSearchLearningType() != null ? form.getSearchLearningType() : LearningType.CARD;
+        form.setSearchStartDate(trimLastTwoChars(form.getSearchStartDate().replaceAll("/.", "")));
+        form.setSearchEndDate(trimLastTwoChars(form.getSearchEndDate()));
 
         if (learningType.equals(LearningType.CARD)) {
-            infos = statisticRepository.getCardOutput(form);
+            infos = statisticRepository.cardUsageStatistic(form);
         } else {
-            form.setSearchStartDate(trimLastTwoChars(form.getSearchStartDate().replaceAll("/.", "")));
-            form.setSearchEndDate(trimLastTwoChars(form.getSearchEndDate()));
-            infos = statisticRepository.getBillOutput(form);
+            infos = statisticRepository.billUsageStatistic(form);
         }
         return infos;
     }
