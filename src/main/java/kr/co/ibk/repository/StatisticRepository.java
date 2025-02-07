@@ -8,12 +8,12 @@ import java.util.List;
 
 @Repository
 public interface StatisticRepository {
-    List<StatisticInfo> getCardInput(StatisticInfoForm form);
+    List<StatisticInfo> cardInferResultStatistic(StatisticInfoForm form);
 
-    List<StatisticInfo> getCardOutput(StatisticInfoForm form);
+    List<StatisticInfo> cardUsageStatistic(StatisticInfoForm form);
 
-    List<StatisticInfo> getBillInput(StatisticInfoForm form);
+    List<StatisticInfo> billInferResultStatistic(StatisticInfoForm form);
 
-    List<StatisticInfo> getBillOutput(StatisticInfoForm form);
+    List<StatisticInfo> billUsageStatistic(StatisticInfoForm form);
 
 }

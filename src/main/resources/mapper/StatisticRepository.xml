@@ -3,80 +3,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.ibk.repository.StatisticRepository">
-    <select id="getCardInput" resultType="StatisticInfo" parameterType="StatisticInfoForm">
-        SELECT sub.dd,
-        sub.total,
-        sub.outCnt,
-        ROUND(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
-        FROM (SELECT SUBSTRING(ci.TSTM_YMD, 7) AS dd,
-        COUNT(*) AS total,
-        SUM(CASE WHEN co.TSTM_YMD IS NOT NULL THEN 1 ELSE 0 END) AS outCnt
-        FROM CARD_INPUT ci
-        LEFT JOIN
-        CARD_OUTPUT co
-        ON ci.TSTM_YMD = co.TSTM_YMD
-        AND ci.TSTM_NO = co.TSTM_NO
-        AND ci.BRCD = co.BRCD
-        <include refid="where"></include>
-        GROUP BY SUBSTRING(ci.TSTM_YMD, 7)) sub
-    </select>
-
-    <select id="getCardOutput" resultType="StatisticInfo" parameterType="StatisticInfoForm">
+    <select id="cardInferResultStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
         SELECT
-        sub.dd,
-        sub.total,
-        sub.hitCnt1,
-        sub.hitCnt2,
-        sub.hitCnt3,
-        ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
-        ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
-        ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per
+            sub.dd,
+            sub.total,
+            sub.outCnt,
+            ROUND(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
         FROM (
-        SELECT
-        SUBSTRING(ci.TSTM_YMD, 7) AS dd,
-        COUNT(*) AS total,
-        SUM(CASE
-        WHEN co.TSTM_YMD IS NOT NULL
-        AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO)
-        THEN 1 ELSE 0
-        END) AS hitCnt1,
-        SUM(CASE
-        WHEN co.TSTM_YMD IS NOT NULL
-        AND INSTR(ci.BDGT_BSNS_FRCS_CON, CONCAT(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON))
-        THEN 1 ELSE 0
-        END) AS hitCnt2,
-        SUM(CASE
-        WHEN co.TSTM_YMD IS NOT NULL
-        AND INSTR(ci.BDGT_PRFR_RSN_FRCS_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON))
-        THEN 1 ELSE 0
-        END) AS hitCnt3
-        FROM CARD_OUTPUT ci
-        INNER JOIN CARD_LEARNING_DATA co
-        ON ci.TSTM_YMD = co.TSTM_YMD
-        AND ci.TSTM_NO = co.TSTM_NO
-        AND ci.BRCD = co.BRCD
-        <include refid="where"></include>
-        GROUP BY SUBSTRING(ci.TSTM_YMD, 7)
+             SELECT
+                <include refid="inferDateGrouping"/> AS dd,
+                COUNT(*) AS total,
+                SUM(CASE WHEN co.TSTM_YMD IS NOT NULL THEN 1 ELSE 0 END) AS outCnt
+             FROM
+                 CARD_INPUT ci LEFT JOIN CARD_OUTPUT co ON
+                     ci.TSTM_YMD = co.TSTM_YMD
+                         AND ci.TSTM_NO = co.TSTM_NO
+                         AND ci.BRCD = co.BRCD
+            <include refid="inferWhere"></include>
+             GROUP BY dd
         ) sub
     </select>
 
-
-    <select id="getBillInput" resultType="StatisticInfo" parameterType="StatisticInfoForm">
-        SELECT SUBSTRING(bi.BASE_YM, 5) AS dd,
-        count(*) AS total,
-        sum(CASE WHEN bo.BASE_YM IS NOT NULL THEN 1 ELSE 0 END) AS outCnt,
-        ROUND( CASE WHEN COUNT(*) > 0 THEN (SUM(CASE WHEN bo.BASE_YM IS NOT NULL THEN 1 ELSE 0 END) * 100.0) / COUNT(*)
-        ELSE 0 END, 2) AS per
-        FROM BILL_INPUT bi
-        LEFT JOIN BILL_OUTPUT bo ON
-        bi.TXBL_SRN = bo.TXBL_SRN
-        AND bi.BASE_YM = bo.BASE_YM
-        AND bi.TXBL_SRN = bo.TXBL_SRN
-        <include refid="where2"></include>
-        GROUP BY SUBSTRING(bi.BASE_YM, 5)
-    </select>
-
-    <select id="getBillOutput" resultType="StatisticInfo" parameterType="StatisticInfoForm">
+    <select id="cardUsageStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
         SELECT
             sub.dd,
             sub.total,
@@ -89,37 +37,88 @@
         FROM
             (
                 SELECT
-                    SUBSTRING(bi.BASE_YM, 5) AS dd,
-                    count(*) AS total,
-                    sum(CASE WHEN bi.BASE_YM IS NOT NULL AND INSTR(bi.BDGT_ITEX_FRCS_PRB_CON, bo.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
-                    sum(CASE WHEN bi.BASE_YM IS NOT NULL AND INSTR(bi.BDGT_BSNS_FRCS_PRB_CON, concat(bo.BRCD, '-', bo.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
-                    sum(CASE WHEN bi.BASE_YM IS NOT NULL AND INSTR(bi.BDGT_PRFR_RSN_FRCS_PRB_CON, TRIM(bo.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt3
+                    <include refid="usageDateGrouping"/> AS dd,
+                    COUNT(*) AS total,
+                    SUM(CASE
+                            WHEN co.TSTM_YMD IS NOT NULL
+                                AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO)
+                                THEN 1 ELSE 0
+                        END) AS hitCnt1,
+                    SUM(CASE
+                            WHEN co.TSTM_YMD IS NOT NULL
+                                AND INSTR(ci.BDGT_BSNS_FRCS_CON, CONCAT(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON))
+                                THEN 1 ELSE 0
+                        END) AS hitCnt2,
+                    SUM(CASE
+                            WHEN co.TSTM_YMD IS NOT NULL
+                                AND INSTR(ci.BDGT_PRFR_RSN_FRCS_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON))
+                                THEN 1 ELSE 0
+                        END) AS hitCnt3
                 FROM
-                    BILL_OUTPUT bi
-                        INNER JOIN BILL_LEARNING_DATA bo ON
-                        bi.BASE_YM = bo.BASE_YM
-                            AND bi.TXBL_SRN = bo.TXBL_SRN
-                            AND bi.BRCD = bo.BRCD
-                <include refid="where2"></include>
-                GROUP BY
-                    SUBSTRING(bi.BASE_YM, 5)
+                    CARD_OUTPUT ci
+                        INNER JOIN CARD_LEARNING_DATA co
+                                   ON
+                                       ci.TSTM_YMD = co.TSTM_YMD
+                                           AND ci.TSTM_NO = co.TSTM_NO
+                                           AND ci.BRCD = co.BRCD
+                <include refid="usageWhere"></include>
+                GROUP BY dd
             ) sub
     </select>
 
-    <sql id="where2">
-        WHERE 1=1
 
-        /*대상 검색*/
-        <if test="searchTarget != null and searchTarget != ''">
-            AND bi.HDQR_BOB_DCD = #{searchTarget}
-        </if>
+    <select id="billInferResultStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
+        SELECT
+            sub.dd,
+            sub.total,
+            sub.outCnt,
+            ROUND(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
+        FROM(
+            SELECT
+                <include refid="inferDateGrouping"></include> AS dd,
+                count(*) AS total,
+                sum(CASE WHEN co.BASE_YM IS NOT NULL THEN 1 ELSE 0 END) AS outCnt
+            FROM
+                BILL_INPUT ci
+            LEFT JOIN BILL_OUTPUT co ON
+                ci.TXBL_SRN = co.TXBL_SRN
+                AND ci.BASE_YM = co.BASE_YM
+                AND ci.TXBL_SRN = co.TXBL_SRN
+            <include refid="inferWhere"></include>
+            GROUP BY dd
+        ) sub
+    </select>
 
-        /*일자 검색*/
-        <if test="searchStartDate != null and searchEndDate != null">
-            AND bi.BASE_YM BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
-        </if>
-    </sql>
-    <sql id="where">
+    <select id="billUsageStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
+        SELECT
+            sub.dd,
+            sub.total,
+            sub.hitCnt1,
+            sub.hitCnt2,
+            sub.hitCnt3,
+            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
+            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
+            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per
+        FROM
+            (
+                SELECT
+                    <include refid="usageDateGrouping"/> AS dd,
+                    count(*) AS total,
+                    sum(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_PRB_CON, co.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
+                    sum(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_BSNS_FRCS_PRB_CON, concat(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
+                    sum(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_PRFR_RSN_FRCS_PRB_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt3
+                FROM
+                    BILL_OUTPUT ci
+                        INNER JOIN BILL_LEARNING_DATA co ON
+                        ci.BASE_YM = co.BASE_YM
+                            AND ci.TXBL_SRN = co.TXBL_SRN
+                            AND ci.BRCD = co.BRCD
+                <include refid="usageWhere"></include>
+                GROUP BY dd
+            ) sub
+    </select>
+
+    <sql id="inferWhere">
         WHERE 1=1
 
         /*대상 검색*/
@@ -129,7 +128,52 @@
 
         /*일자 검색*/
         <if test="searchStartDate != null and searchEndDate != null">
-            AND ci.TSTM_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+            AND ci.RCV_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
         </if>
+    </sql>
+
+    <sql id="usageWhere">
+        WHERE 1=1
+
+        /*대상 검색*/
+        <if test="searchTarget != null and searchTarget != ''">
+            AND ci.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+
+        /*일자 검색*/
+        <if test="searchStartDate != null and searchEndDate != null">
+            AND co.BDGT_PRFR_YM BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+        </if>
+    </sql>
+
+    <sql id="inferDateGrouping">
+        <choose>
+            <when test="searchCycle == null or searchCycle == '' or searchCycle == 1">
+                SUBSTRING(ci.RCV_YMD, 1, 8) <!-- 일별 -->
+            </when>
+            <when test="searchCycle == 2">
+                SUBSTRING(ci.RCV_YMD, 1, 6) <!-- 월별 -->
+            </when>
+            <when test="searchCycle == 3">
+                SUBSTRING(ci.RCV_YMD, 1, 4) <!-- 연도별 -->
+            </when>
+            <otherwise>
+                SUBSTRING(ci.RCV_YMD, 1, 8) <!-- 기본값: 일별 -->
+            </otherwise>
+        </choose>
+    </sql>
+
+    <sql id="usageDateGrouping">
+        <choose>
+            <when test="searchCycle == '2'">
+                SUBSTRING(co.BDGT_PRFR_YM, 1, 6) <!-- 월별 -->
+            </when>
+            <when test="searchCycle == null or searchCycle == '' or searchCycle == '3'">
+                SUBSTRING(co.BDGT_PRFR_YM, 1, 4) <!-- 연도별 -->
+            </when>
+            <otherwise>
+                SUBSTRING(co.BDGT_PRFR_YM, 1, 6) <!-- 월별 -->
+            </otherwise>
+        </choose>
     </sql>
 </mapper>

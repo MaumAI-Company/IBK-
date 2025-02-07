@@ -1,5 +1,6 @@
 package kr.co.ibk.web.controller;
 
+import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.BillInputForm;
 import kr.co.ibk.model.CardInputForm;
@@ -157,7 +158,10 @@ public class ReportController extends BaseCont {
             params.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
             params.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
         }
-        List<StatisticInfo> statisticInput = statisticService.getStatisticInput(params);
+
+        if (ObjectUtils.isEmpty(params.getSearchLearningType())) {
+            params.setSearchLearningType(LearningType.CARD);
+        }
 
         model.addAttribute("mc", "ico_chart");
         model.addAttribute("params", params);
@@ -167,24 +171,30 @@ public class ReportController extends BaseCont {
 
     }
 
+    /**
+     * 기간별 통계 > 추론 결과 수(INPUT 데이터 기반 OUTPUT 데이터 생성 개수)
+     */
     @ResponseBody
     @PostMapping("/soulGod/report/statistic/input")
-    public List<StatisticInfo> statisticInput(@RequestBody StatisticInfoForm form) {
+    public List<StatisticInfo> inferResultStatistic(@RequestBody StatisticInfoForm form) {
         if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
             form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
             form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
         }
-        return statisticService.getStatisticInput(form);
+        return statisticService.inferResultStatistic(form);
     }
 
+    /**
+     * 기간별 통계 > 사용자 활용 현황(INPUT 데이터 기반 OUTPUT 데이터 생성 개수)
+     */
     @ResponseBody
     @PostMapping("/soulGod/report/statistic/output")
-    public List<StatisticInfo> statisticOutput(@RequestBody StatisticInfoForm form) {
+    public List<StatisticInfo> usageStatistic(@RequestBody StatisticInfoForm form) {
         if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
             form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
             form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
         }
-        return statisticService.getStatisticOutput(form);
+        return statisticService.usageStatistic(form);
     }
     // 기간별 통계 : e
 }

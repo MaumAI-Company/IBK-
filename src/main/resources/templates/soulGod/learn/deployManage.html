@@ -239,7 +239,8 @@
                 <tr th:each="item,idx: ${list}">
                     <td>
                         <div class="radio">
-                            <input type="radio" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}">
+                            <input type="radio" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
+                                   th:disabled="${item.deployStatus ne T(kr.co.ibk.domain.enums.DeployStatusType).LEARN_COMPLETE.getCode().toString()}">
                             <label th:for="${'chk_' + item.id}">
                                 <span class="blind">선택</span>
                             </label>
