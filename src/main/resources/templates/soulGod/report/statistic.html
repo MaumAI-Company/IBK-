@@ -5,6 +5,15 @@
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/index.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
+    <style>
+        .nodata {
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            background-color: #fff;
+             box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.06) !important;
+        }
+    </style>
     <script type="text/javascript">
         $(function () {
             fn_setDatePicker('#searchStartDate', {
@@ -24,15 +33,13 @@
 
         });
 
-        function fn_excelDownload() {
-            fnTableToExcel('inputTable', 'INPUT 대비 학습 통계');
-            fnTableToExcel('outputTable', 'OUTPUT 대비 적중 통계');
-        }
-
+        let inputData;
+        let outputData;
 
         function fn_search() {
             fn_getStatisticInput();
             fn_getStatisticOutput();
+            fn_createTable();
         }
 
         function fn_reset() {
@@ -56,8 +63,8 @@
                 contentType: "application/json",
                 success: function (data) {
                     //console.log("input 대비", data);
+                    inputData = data;
                     fn_drawChart1(data);
-                    fn_createInputTable(data);
                 },
                 error: function () {
                     //console.log("error");
@@ -81,6 +88,7 @@
                 dataType: "json",
                 contentType: "application/json",
                 success: function (data) {
+                    outputData = data;
                     //console.log("output 대비", data);
                     /*data =
                         [
@@ -698,54 +706,38 @@
             chart.appear(1000, 100);
         }
 
-        function fn_createInputTable(data) {
-            let tableHeadRow = $("#inputTable thead tr");
-            let tableBody = $("#inputTable tbody");
-            let colGroup = $("#inputTable colgroup");
-
-            tableHeadRow.html('<th scope="col">날짜</th>');
+        function fn_createTable() {
+            let tableBody = $("#tbody");
             tableBody.empty();
-            colGroup.html('<col style="width:8%;min-width:125px">');
 
-            $.each(data, function (index, item) {
-                tableHeadRow.append('<th>' + item.dd + '</th>');
-                colGroup.append('<col style="width:7.66%">');
-            });
+            // Input 대비 학습 통계 타이틀 : s
+            let inputTitleRow = $('<tr><th colspan="' + (inputData.length + 1) + '" class="section-title">INPUT 대비 학습 통계</th></tr>');
+            tableBody.append(inputTitleRow);
 
+            let dateRow = $('<tr><th scope="row">날짜</th></tr>');
             let totalRow = $('<tr><th scope="row">전체</th></tr>');
-            $.each(data, function (index, item) {
-                totalRow.append('<td>' + item.total + '</td>');
-            });
-            tableBody.append(totalRow);
-
             let outCntRow = $('<tr><th scope="row">학습수</th></tr>');
-            $.each(data, function (index, item) {
-                outCntRow.append('<td>' + item.outCnt + '</td>');
-            });
-            tableBody.append(outCntRow);
-
             let perRow = $('<tr><th scope="row" class="fc_primary">학습 비율</th></tr>');
-            $.each(data, function (index, item) {
-                perRow.append('<td>' + item.per + '%</td>');
+
+            $.each(inputData, function(index, item) {
+                dateRow.append(`<td>${item.dd}</td>`);
+                totalRow.append(`<td>${fn_setCommas(item.total)}</td>`);
+                outCntRow.append(`<td>${fn_setCommas(item.outCnt)}</td>`);
+                perRow.append(`<td>${item.per}%</td>`);
             });
-            tableBody.append(perRow);
-        }
+            tableBody.append(dateRow, totalRow, outCntRow, perRow);
+            // Input 대비 학습 통계 타이틀 : e
 
-        function fn_createOuputTable(data) {
-            let outputTableHeadRow = $("#outputTable thead tr");
-            let outputTableBody = $("#outputTable tbody");
-            let outputColGroup = $("#outputTable colgroup");
+            // 빈 행 추가
+            let emptyRow = $('<tr><td colspan="' + (inputData.length + 1) + '"></td></tr>');
+            tableBody.append(emptyRow);
 
-            outputTableHeadRow.html('<th scope="col">날짜</th>');
-            outputTableBody.empty();
-            outputColGroup.html('<col style="width:8%;min-width:125px">');
+            // Output 대비 적중 통계 타이틀 : s
+            let outputTitleRow = $('<tr><th colspan="' + (outputData.length + 1) + '" class="section-title">OUTPUT 대비 적중 통계</th></tr>');
+            tableBody.append(outputTitleRow);
 
-            $.each(data, function (index, item) {
-                outputTableHeadRow.append('<th>' + item.dd + '</th>');
-                outputColGroup.append('<col style="width:7.66%">');
-            });
-
-            let totalRow = $('<tr><th scope="row">전체</th></tr>');
+            let dateOutputRow = $('<tr><th scope="row">날짜</th></tr>');
+            let totalOutputRow = $('<tr><th scope="row">전체</th></tr>');
             let hitCnt1Row = $('<tr><th scope="row">예산비목정보_적중수</th></tr>');
             let hitCnt1PerRow = $('<tr><th scope="row">예산비목정보_적중비율</th></tr>');
             let hitCnt2Row = $('<tr><th scope="row">예산사업ID_적중수</th></tr>');
@@ -753,16 +745,23 @@
             let hitCnt3Row = $('<tr><th scope="row">비목집행사유_적중수</th></tr>');
             let hitCnt3PerRow = $('<tr><th scope="row">비목집행사유_적중비율</th></tr>');
 
-            $.each(data, function (index, item) {
-                totalRow.append('<td>' + item.total + '</td>');
-                hitCnt1Row.append('<td>' + (item.hitCnt1 || 0) + '</td>');
-                hitCnt1PerRow.append('<td>' + (item.hitCnt1Per || 0) + '%</td>');
-                hitCnt2Row.append('<td>' + (item.hitCnt2 || 0) + '</td>');
-                hitCnt2PerRow.append('<td>' + (item.hitCnt2Per || 0) + '%</td>');
-                hitCnt3Row.append('<td>' + (item.hitCnt3 || 0) + '</td>');
-                hitCnt3PerRow.append('<td>' + (item.hitCnt3Per || 0) + '%</td>');
+            $.each(outputData, function(index, item) {
+                dateOutputRow.append(`<td>${item.dd}</td>`);
+                totalOutputRow.append(`<td>${fn_setCommas(item.total)}</td>`);
+                hitCnt1Row.append(`<td>${fn_setCommas(item.hitCnt1) || 0}</td>`);
+                hitCnt1PerRow.append(`<td>${item.hitCnt1Per || 0}%</td>`);
+                hitCnt2Row.append(`<td>${fn_setCommas(item.hitCnt2) || 0}</td>`);
+                hitCnt2PerRow.append(`<td>${item.hitCnt2Per || 0}%</td>`);
+                hitCnt3Row.append(`<td>${fn_setCommas(item.hitCnt3) || 0}</td>`);
+                hitCnt3PerRow.append(`<td>${item.hitCnt3Per || 0}%</td>`);
             });
-            outputTableBody.append(totalRow, hitCnt1Row, hitCnt1PerRow, hitCnt2Row, hitCnt2PerRow, hitCnt3Row, hitCnt3PerRow);
+            tableBody.append(dateOutputRow, totalOutputRow, hitCnt1Row, hitCnt1PerRow, hitCnt2Row, hitCnt2PerRow, hitCnt3Row, hitCnt3PerRow);
+            // Output 대비 적중 통계 타이틀 : e
+        }
+
+        function fn_excelDownload() {
+            let fileNm = '통계정보_' + new Date().toISOString().replace(/\D/g, '').slice(2, 15);
+            fnTableToExcel('table', fileNm);
         }
     </script>
 </head>
@@ -877,20 +876,9 @@
                 </div>
             </div>
 
-            <div style="display: none">
-                <table class="tbl_list" id="inputTable">
-                    <colgroup></colgroup>
-                    <thead>
-                    <tr></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <table class="tbl_list" id="outputTable">
-                    <colgroup></colgroup>
-                    <thead>
-                    <tr></tr>
-                    </thead>
-                    <tbody></tbody>
+            <div style="display: none;">
+                <table class="tbl_list" id="table">
+                    <tbody id="tbody"></tbody>
                 </table>
             </div>
         </div>
