@@ -37,6 +37,7 @@
         let outputData;
 
         function fn_search() {
+            layerShow('loading');
             fn_getStatisticInput();
             fn_getStatisticOutput();
             fn_createTable();
@@ -57,7 +58,6 @@
             $.ajax({
                 url: "/soulGod/report/statistic/input",
                 type: "post",
-                async: false,
                 data: JSON.stringify(jsonData),
                 dataType: "json",
                 contentType: "application/json",
@@ -83,7 +83,6 @@
             $.ajax({
                 url: "/soulGod/report/statistic/output",
                 type: "post",
-                async: false,
                 data: JSON.stringify(jsonData),
                 dataType: "json",
                 contentType: "application/json",
@@ -349,7 +348,8 @@
                             "total": 200
                         }];*/
                     fn_drawChart2(data);
-                    fn_createOuputTable(data);
+                    //fn_createOuputTable(data);
+                    layerHide('loading');
                 },
                 error: function () {
                     //console.log("error");
@@ -812,12 +812,14 @@
                                     </dl>
                                     <!--<dl>
                                         <dt>
-                                            <label for="cycle">주기</label>
+                                            <label for="searchCycle">주기</label>
                                         </dt>
                                         <dd>
-                                            <select name="cycle" id="cycle">
-                                                <option value="" selected>월별</option>
-                                                <option value="">일별</option>
+                                            <select name="searchCycle" id="searchCycle">
+                                                <option value="1" th:selected="${params.searchCycle eq '1'}">연도별</option>
+                                                <option value="2" th:selected="${params.searchCycle eq '2'}">월별</option>
+                                                <option th:if="${params.searchLearningType eq T(kr.co.ibk.domain.enums.LearningType).CARD()}"
+                                                        value="3" th:selected="${params.searchCycle eq '3'}">일별</option>
                                             </select>
                                         </dd>
                                     </dl>-->
@@ -884,5 +886,18 @@
         </div>
     </div>
 </div>
+<!--로딩중 : s-->
+<div id="loading" class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
+    <div class="loading">
+        <p>Loading</p>
+        <div class="loading_circle_rotate">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+    </div>
+</div>
+<!--로딩중 : e-->
 </body>
 </html>
