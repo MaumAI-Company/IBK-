@@ -8,18 +8,31 @@
         count(*)
         from
         LEARNING_SCHEDULER ls
-        /*inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID*/
+        inner join TEMPLATE t on t.ID = ls.TEMPLATE_ID
+        inner join HC_MEMBER hm on ls.REG_ID = hm.MEM_ID
         <include refid="where"></include>
     </select>
 
     <select id="getList" resultType="LearningSchedulerInfo" parameterType="LearningSchedulerForm">
         select
             <include refid="columns"></include>
-            /*, lm.LEARN_NAME*/
+            , t.TEMPLATE_NAME
+            , hm.MEM_NAME as regNm
         from
             LEARNING_SCHEDULER ls
-        /*inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID*/
+        inner join TEMPLATE t on t.ID = ls.TEMPLATE_ID
+        inner join HC_MEMBER hm on ls.REG_ID = hm.MEM_ID
             <include refid="where"></include>
+        ORDER BY
+        ls.REG_DT
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
         <if test="pagingAt != null and pagingAt == 'Y'.toString()">
             <include refid="kr.co.ibk.repository.CommonRepository.paging" />
         </if>
@@ -28,10 +41,10 @@
     <select id="getDetail" resultType="LearningSchedulerInfo" parameterType="int">
         select
             <include refid="columns"></include>
-            , lm.LEARN_NAME
+        , t.TEMPLATE_NAME
         from
             LEARNING_SCHEDULER ls
-       /* inner join LEARNING_MODEL lm on ls.LEARNING_MODEL_ID = lm.ID*/
+       inner join TEMPLATE t on t.ID = ls.TEMPLATE_ID
         where ls.DEL_AT = 'N'
             and ls.SCHED_ID = #{id}
     </select>
@@ -53,7 +66,7 @@
             USE_AT = #{useAt},
             MOD_ID = #{modId},
             MOD_DT = current_timestamp(),
-            LEARNING_MODEL_ID = #{learningModelId}
+            TEMPLATE_ID = #{templateId}
         where SCHED_ID = #{schedId};
     </update>
 
@@ -74,7 +87,7 @@
         , ls.MOD_DT
         , ls.REG_ID
         , ls.REG_DT
-        /*, ls.LEARNING_MODEL_ID*/
+        , ls.TEMPLATE_ID
         , ls.TERM_TY
         , ls.ST_YMD
         , ls.ST_TIME
@@ -87,6 +100,11 @@
 
     <sql id="where">
         where ls.DEL_AT = 'N'
+        <if test="searchKeyword != null  and searchKeyword != ''">
+            AND (ls.SCHED_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR t.TEMPLATE_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
+        </if>
     </sql>
 
     <select id="countByInTemplateId" resultType="int">

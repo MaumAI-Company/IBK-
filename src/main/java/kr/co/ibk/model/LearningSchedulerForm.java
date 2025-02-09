@@ -31,7 +31,11 @@ public class LearningSchedulerForm extends PageForm {
     private String regId;
     private String modId;
     private Integer learningModelId;
-    private Long templateId;
+    private Integer templateId;
+    private Integer bdgtPrfrYm;
+    private String epoch;
+    private String learningRate;
+    private String batchSize;
 
     private Integer schedId;
 }

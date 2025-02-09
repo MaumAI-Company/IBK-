@@ -27,6 +27,7 @@
         ti.COL_NAME
         ,ti.TEMPLATE_ID
         ,ti.INOUT_GBN
+        ,ti.SNO
         <if test="gbn != null and gbn != '' and gbn == 'INPUT'">
             ,ti.COL_NAME as inputColumnType
         </if>

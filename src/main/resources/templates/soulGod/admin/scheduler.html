@@ -3,6 +3,7 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <style>
+
         #popDetail .tbl_write table th,
         #popDetail .tbl_write table td {
             padding-top: 2px;
@@ -41,6 +42,18 @@
         #popDetail .tbl_write div + div {
             margin-top: 12px
         }
+
+        .tbl_list > thead > tr > th {
+            padding: 0 8px
+        }
+
+        .tbl_list > tbody > tr > td {
+            padding: 0 8px
+        }
+        .tbl_list tbody td .link {
+            text-decoration: underline;
+            color: #004c9d !important;
+        }
     </style>
     <script type="text/javascript">
         $(function () {
@@ -61,13 +74,75 @@
 
         });
 
+        function fn_search(){
+            let frm = $('#form1');
+            frm.prop('action', '?');
+            frm.submit();
+        }
+
+        function fn_reset(){
+            $('#searchTarget').val('').niceSelect('update');
+            $('#searchLearningType').val('').niceSelect('update');
+            $('#searchKeyword').val('');
+
+            fn_search();
+        }
+
         function fn_schedulerOpen() {
+            $('#schedNm').val('');
+            $('#templateId').val('').niceSelect('update');
+            $('#bdgtPrfrYm').val('').niceSelect('update');
+            $('#epoch').val('10');
+            $('#learningRate').val('3');
+            $('#batchSize').val('16');
+            $('#termTy').val('').niceSelect('update');
+            $('#stYmd').val();
+            $('#stHour').val('00').niceSelect('update');
+            $('#stMin').val('00').niceSelect('update');
+            $('#useAtY').prop('checked', true);
+
             layerShow('popRegister');
+        }
+
+        function fn_schedulerDetail(schedId){
+            let jsonData = {
+                "schedId": schedId
+            }
+
+            $.ajax({
+                url: "/soulGod/admin/scheduler/detail",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    $('#schedNm').val(data.schedNm);
+                    $('#templateId').val(data.templateId).niceSelect('update');
+                    $('#bdgtPrfrYm').val(data.bdgtPrfrYm).niceSelect('update');
+                    $('#epoch').val(data.epoch);
+                    $('#learningRate').val(data.learningRate);
+                    $('#batchSize').val(data.batchSize);
+                    $('#termTy').val(data.termTy).niceSelect('update');
+                    $('#stYmd').val(data.stYmd);
+                    let timeParts = data.stTime.split(':');
+                    $('#stHour').val(timeParts[0]).niceSelect('update');
+                    $('#stMin').val(timeParts[1]).niceSelect('update');
+                    $('#useAt'+ data.useAt).prop('checked', true);
+                    layerShow('popRegister');
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+
         }
 
         function fn_schedulerSaveChk() {
             let schedNm = $('#schedNm').val();
             let templateId = $('#templateId').val();
+            let bdgtPrfrYm = $('#bdgtPrfrYm').val();
             let epoch = $('#epoch').val();
             let learningRate = $('#learningRate').val();
             let batchSize = $('#batchSize').val();
@@ -84,6 +159,11 @@
 
             if (!$.trim(templateId)) {
                 showAlert('warning', '학습데이터 템플릿 선택은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(bdgtPrfrYm)) {
+                showAlert('warning', '예산집행년월 선택은 필수입니다.');
                 return false;
             }
 
@@ -130,6 +210,7 @@
                 let jsonData = {
                     "schedNm": $('#schedNm').val(),
                     "templateId": $('#templateId').val(),
+                    "bdgtPrfrYm": $('#bdgtPrfrYm').val(),
                     "epoch": $('#epoch').val(),
                     "learningRate": $('#learningRate').val(),
                     "batchSize": $('#batchSize').val(),
@@ -328,13 +409,18 @@
                             </label>
                         </div>
                     </td>
-                    <td>1</td>
-                    <td th:text="${item.schedNm}">영업점_카드지급결의 학습모델 생성_Job</td>
-                    <td th:text="${item.schedNm}">영업점 학습모델 202408</td>
-                    <td>이덕구</td>
-                    <td>사용</td>
-                    <td>2024.11.05 00:00:00</td>
-                    <td>2024.02.22 12:22:33</td>
+                    <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                    <td>
+                        <a th:onclick="fn_schedulerDetail([[${item.schedId}]])" th:text="${item.schedNm}" th:value="${item.schedId}">영업점_카드지급결의 학습모델 생성_Job</a>
+                    </td>
+                    <td>BC카드(id매핑후작업)</td>
+                    <td>대상(id매핑후작업)</td>
+                    <td th:text="${item.templateName}">사용</td>
+                    <td th:text="${item.regNm}">사용</td>
+                    <td th:text="${item.useAt != null && item.useAt == 'Y' ? '사용' : '미사용'}">사용</td>
+                    <td th:text="${#temporals.format(item.regDt, 'yyyy-MM-dd hh:mm:ss')}"></td>
+                    <td th:text="${#temporals.format(item.regDt, 'yyyy-MM-dd hh:mm:ss')}"></td>
+                    <td>배치설명</td>
                 </tr>
                 </tbody>
             </table>
@@ -385,11 +471,15 @@
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="ymd">예산집행년월</label>
+                        <label for="bdgtPrfrYm">예산집행년월</label>
                     </th>
                     <td>
-                        <select id="ymd">
+                        <select id="bdgtPrfrYm">
                             <option value="" disabled selected>선택</option>
+                            <option th:each="month : ${#numbers.sequence(1, 12)}"
+                                    th:value="${#strings.length(month) == 1 ? '0' + month : month}"
+                                    th:text="${#strings.length(month) == 1 ? '0' + month : month}">
+                            </option>
                         </select>
                     </td>
                 </tr>
