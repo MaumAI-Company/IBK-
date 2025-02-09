@@ -62,9 +62,15 @@
                     data: JSON.stringify(jsonData),
                     contentType: 'application/json;charset=utf-8',
                     success: function (data) {
-                        showAlert('complete', '모델 배포(Deploy)가 완료 되었습니다.', () => {
-                            location.reload();
-                        });
+                        if(data) {
+                            showAlert('complete', '모델 배포(Deploy)가 완료 되었습니다.', () => {
+                                location.reload();
+                            });
+                        } else {
+                            showAlert('warning', '모델 배포(Deploy)에 실패하였습니다.', () => {
+                                location.reload();
+                            });
+                        }
                     },
                     error: function () {
                         showAlert('warning', '실패하였습니다.', () => {

@@ -9,7 +9,6 @@
         from
             CARD_LEARNING_DATA cld
         where
-            cld.BRCD is not null
             <include refid="where"></include>
     </select>
 
@@ -19,7 +18,6 @@
         from
             CARD_LEARNING_DATA cld
         where
-            cld.BRCD is not null
             <include refid="where"></include>
         order by
             cld.BDGT_PRFR_YM desc
@@ -104,9 +102,11 @@
              , cld.BDGT_PRFR_RSN_FRCS_CON
              , cld.BDGT_BSNS_FRCS_CON
         from CARD_LEARNING_DATA cld
+        where <include refid="where"></include>
         order by cld.FRRG_TS desc limit 100
     </select>
     <sql id="where">
+        1=1
         /*대상 검색*/
         <if test="searchTarget != null and searchTarget != ''">
             AND cld.HDQR_BOB_DCD = #{searchTarget}
@@ -114,10 +114,22 @@
 
         <if test="searchJsonMap != null">
             <foreach collection="searchJsonMap" item="value" index="key">
-                AND cld.${key} LIKE CONCAT('%', #{value}, '%')
+                <choose>
+                    <when test="key == 'searchTarget' and value != null and value != ''">
+                        AND cld.HDQR_BOB_DCD = #{value}
+                    </when>
+                    <when test="key == 'searchStartDate' and value != null and value != ''">
+                        AND cld.BDGT_PRFR_YM <![CDATA[>=]]> REPLACE(#{value}, '-', '')
+                    </when>
+                    <when test="key == 'searchEndDate' and value != null and value != ''">
+                        AND cld.BDGT_PRFR_YM <![CDATA[<=]]> REPLACE(#{value}, '-', '')
+                    </when>
+                    <when test="value != null and value != ''">
+                        AND cld.${key} LIKE CONCAT('%', #{value}, '%')
+                    </when>
+                </choose>
             </foreach>
         </if>
-
         /*검색어 검색*/
         <if test="searchKeyword != null  and searchKeyword != ''">
             <choose>

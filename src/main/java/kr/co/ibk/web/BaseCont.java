@@ -1,11 +1,13 @@
 package kr.co.ibk.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.ibk.common.AppWebResult;
 import kr.co.ibk.common.Base;
 import kr.co.ibk.common.utils.RequestUtil;
 import org.springframework.ui.Model;
 
 import java.util.HashMap;
+import java.util.List;
 
 
 public abstract class BaseCont extends Base {
@@ -82,22 +84,33 @@ public abstract class BaseCont extends Base {
     }
 
     public HashMap<String, String> jsonToHashMap(String json) {
-        // JSON 문자열을 HashMap으로 변환
         HashMap<String, String> map = new HashMap<>();
 
-        //외부 대괄호 제거
-        json = json.substring(1, json.length() - 1);
+        try {
+            // JSON 문자열을 HashMap으로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<List<Object>> list = objectMapper.readValue(json, List.class);
 
-        String[] pairs = json.split("\\],\\["); // ],[ 기준으로 나누기
-        for (String pair : pairs) {
-            // 대괄호와 큰따옴표 제거
-            pair = pair.replaceAll("[\\[\\]\"]", "");
-            String[] entry = pair.split(",", 2); // 첫 쉼표를 기준으로 나눔
-            if (entry.length == 2) {
-                map.put(entry[0].trim(), entry[1].trim());
+            for (List<Object> entry : list) {
+                String key = (String) entry.get(0);
+                Object value = entry.get(1);
+
+                // searchType 내부 리스트를 String으로 변환하여 저장
+                if (value instanceof List) {
+                    List<List<String>> subList = (List<List<String>>) value;
+                    for (List<String> subEntry : subList) {
+                        map.put(subEntry.get(0), subEntry.get(1));
+                    }
+                } else {
+                    map.put(key, value.toString());
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return map;
     }
+
 
 }
