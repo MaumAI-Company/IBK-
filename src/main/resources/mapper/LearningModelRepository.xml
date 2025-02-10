@@ -37,10 +37,7 @@
     <update id="updateFile" parameterType="LearningModelForm">
         UPDATE maummcc.LEARNING_MODEL
         SET FILE_PATH     = #{filePath},
-            FILE_NAME     = #{fileName},
-            EPOCH         = #{epoch},
-            LEARNING_RATE = #{learningRate},
-            BATCH_SIZE    = #{batchSize}
+            FILE_NAME     = #{fileName}
         WHERE ID = #{id}
     </update>
     <update id="updateStatus" parameterType="LearningModelForm">

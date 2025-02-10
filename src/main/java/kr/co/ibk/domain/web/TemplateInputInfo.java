@@ -13,6 +13,7 @@ public class TemplateInputInfo {
     private String colName;
     private Integer templateId;
     private String inoutGbn;
+    private Integer sno;
 }
 
 

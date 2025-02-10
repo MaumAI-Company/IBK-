@@ -1,7 +1,8 @@
 package kr.co.ibk.service;
 
+import kr.co.ibk.common.utils.HttpUtil;
+import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.LearningModelInfo;
-import kr.co.ibk.model.LearningModelForm;
 import kr.co.ibk.repository.LearningModelRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
@@ -19,8 +20,12 @@ import java.nio.charset.StandardCharsets;
 @Transactional(readOnly = true)
 public class MccService {
 
-    @Value("${Globals.domain.mcc}")
-    private String mccDomain;
+    private final HttpUtil httpUtil;
+    @Value("${Globals.domain.card.mcc}")
+    private String cardMccDomain;
+
+    @Value("${Globals.domain.bill.mcc}")
+    private String billMccDomain;
 
     private final LearningModelRepository learningModelRepository;
 
@@ -56,7 +61,7 @@ public class MccService {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    sendPost("/train-model", params);
+                    sendPost("/train-model", params, info.getLearningType());
                 }
             }).start();
         } catch (Exception e) {
@@ -70,6 +75,11 @@ public class MccService {
      * @param modelId
      */
     public void stopModel(Integer modelId) {
+        LearningModelInfo info = learningModelRepository.getLoad(modelId);
+        if (info == null) {
+            return;
+        }
+        
         try {
             /*LearningModelForm form = new LearningModelForm();
             form.setId(modelId);
@@ -82,7 +92,7 @@ public class MccService {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    sendPost("/stop-model", params);
+                    sendPost("/stop-model", params, info.getLearningType());
                 }
             }).start();
         } catch (Exception e) {
@@ -95,31 +105,45 @@ public class MccService {
      * 지정된 모델로 배포
      * @param modelId
      */
-    public void replaceModel(Integer modelId) {
-        try {
-            /*LearningModelForm form = new LearningModelForm();
-            form.setId(modelId);
-            form.setDeployStatus("0");
-            learningModelRepository.updateStatus(form);*/
+    public Boolean replaceModel(Integer modelId) {
+        LearningModelInfo info = learningModelRepository.getLoad(modelId);
+        if (info == null) {
+            return false;
+        }
 
+        try {
             JSONObject params = new JSONObject();
             params.put("model_id", modelId);
+
+            final Boolean[] result = {false};
 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    sendPost("/replace-model", params);
+                    result[0] = sendPost("/stop-model", params, info.getLearningType());
                 }
             }).start();
+
+            return result[0];
         } catch (Exception e) {
-            return;
+            return false;
         }
     }
 
-    private String sendPost(String path, JSONObject params) {
+
+    private Boolean sendPost(String path, JSONObject params, LearningType learningType) {
         BufferedReader in = null;
         try {
-            URL url = new URL(mccDomain + path);
+            String domain;
+            if(learningType.equals(LearningType.CARD)) {
+                domain = cardMccDomain;
+            } else if(learningType.equals(LearningType.BILL)) {
+                domain = billMccDomain;
+            } else {
+                return false;
+            }
+
+            URL url = new URL(domain + path);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -132,7 +156,8 @@ public class MccService {
             }
 
             int responseCode = connection.getResponseCode();
-//            System.out.println("Response Code : " + responseCode);
+            //System.out.println("url : " + url);
+            //System.out.println("Response Code : " + responseCode);
 
             in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String inputLine;
@@ -141,8 +166,7 @@ public class MccService {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
-
-            return response.toString();
+            return responseCode == HttpURLConnection.HTTP_OK;
         } catch (IOException e) {
             return null;
         } finally {

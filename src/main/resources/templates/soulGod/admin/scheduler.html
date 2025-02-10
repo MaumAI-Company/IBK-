@@ -3,6 +3,7 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <style>
+
         #popDetail .tbl_write table th,
         #popDetail .tbl_write table td {
             padding-top: 2px;
@@ -41,6 +42,19 @@
         #popDetail .tbl_write div + div {
             margin-top: 12px
         }
+
+        .tbl_list > thead > tr > th {
+            padding: 0 8px
+        }
+
+        .tbl_list > tbody > tr > td {
+            padding: 0 8px
+        }
+
+        .tbl_list tbody td a.link {
+            text-decoration: underline !important;
+            color: #004c9d !important;
+        }
     </style>
     <script type="text/javascript">
         $(function () {
@@ -61,13 +75,77 @@
 
         });
 
+        function fn_search() {
+            let frm = $('#form1');
+            frm.prop('action', '?');
+            frm.submit();
+        }
+
+        function fn_reset() {
+            $('#searchTarget').val('').niceSelect('update');
+            $('#searchLearningType').val('').niceSelect('update');
+            $('#searchKeyword').val('');
+
+            fn_search();
+        }
+
         function fn_schedulerOpen() {
+            $('#schedId').val('');
+            $('#schedNm').val('');
+            $('#templateId').val('').niceSelect('update');
+            $('#bdgtPrfrYm').val('').niceSelect('update');
+            $('#epoch').val('10');
+            $('#learningRate').val('3');
+            $('#batchSize').val('16');
+            $('#termTy').val('').niceSelect('update');
+            $('#stYmd').val();
+            $('#stHour').val('00').niceSelect('update');
+            $('#stMin').val('00').niceSelect('update');
+            $('#useAtY').prop('checked', true);
+
             layerShow('popRegister');
+        }
+
+        function fn_schedulerDetail(schedId) {
+            let jsonData = {
+                "schedId": schedId
+            }
+
+            $.ajax({
+                url: "/soulGod/admin/scheduler/detail",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    $('#schedId').val(data.schedId);
+                    $('#schedNm').val(data.schedNm);
+                    $('#templateId').val(data.templateId).niceSelect('update');
+                    $('#bdgtPrfrYm').val(data.bdgtPrfrYm).niceSelect('update');
+                    $('#epoch').val(data.epoch);
+                    $('#learningRate').val(data.learningRate);
+                    $('#batchSize').val(data.batchSize);
+                    $('#termTy').val(data.termTy).niceSelect('update');
+                    $('#stYmd').val(data.stYmd != null ? data.stYmd.replaceAll('-', '.') : '');
+                    let timeParts = data.stTime.split(':');
+                    $('#stHour').val(timeParts[0]).niceSelect('update');
+                    $('#stMin').val(timeParts[1]).niceSelect('update');
+                    $('#useAt' + data.useAt).prop('checked', true);
+                    layerShow('popRegister');
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+
         }
 
         function fn_schedulerSaveChk() {
             let schedNm = $('#schedNm').val();
             let templateId = $('#templateId').val();
+            let bdgtPrfrYm = $('#bdgtPrfrYm').val();
             let epoch = $('#epoch').val();
             let learningRate = $('#learningRate').val();
             let batchSize = $('#batchSize').val();
@@ -84,6 +162,11 @@
 
             if (!$.trim(templateId)) {
                 showAlert('warning', '학습데이터 템플릿 선택은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(bdgtPrfrYm)) {
+                showAlert('warning', '예산집행년월 선택은 필수입니다.');
                 return false;
             }
 
@@ -128,8 +211,10 @@
 
             showConfirm('message', '저장 하시겠습니까?', () => {
                 let jsonData = {
+                    "schedId": $('#schedId').val(),
                     "schedNm": $('#schedNm').val(),
                     "templateId": $('#templateId').val(),
+                    "bdgtPrfrYm": $('#bdgtPrfrYm').val(),
                     "epoch": $('#epoch').val(),
                     "learningRate": $('#learningRate').val(),
                     "batchSize": $('#batchSize').val(),
@@ -146,7 +231,7 @@
                     async: false,
                     data: JSON.stringify(jsonData),
                     contentType: 'application/json;charset=utf-8',
-                    success: function () {
+                    success: function (data) {
                         if ("SUCCESS" === data.status) {
                             showAlert('complete', '저장되었습니다.', () => {
                                 location.reload();
@@ -164,6 +249,50 @@
                     }
                 });
             });
+        }
+
+        function fn_schedulerDelete() {
+            let checked = $("[id^='chk_']:checked");
+            if (checked.length < 1) {
+                showAlert('warning', '1개 이상의 스케줄러를 선택해주세요.');
+                return false;
+            }
+
+            showConfirm('message', checked.length + '건의 스케줄러가 선택되었습니다. <br> 삭제하시겠습니까?', () => {
+                let idArr = [];
+                $.each(checked, function () {
+                    idArr.push($(this).val());
+                });
+
+                let jsonData = {
+                    "idArr": idArr,
+                }
+
+                $.ajax({
+                    url: "/soulGod/admin/scheduler/delete",
+                    type: "post",
+                    async: false,
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        if ("SUCCESS" === data.status) {
+                            showAlert('complete', '삭제되었습니다.', () => {
+                                location.reload();
+                            })
+                        } else {
+                            showAlert('warning', '실패하였습니다.', () => {
+                                location.reload();
+                            })
+                        }
+                    },
+                    error: function () {
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        })
+                    }
+                });
+            });
+
         }
     </script>
 </head>
@@ -183,6 +312,9 @@
                 <div class="btn_area">
                     <button type="button" class="btn line_cool_grey30" onclick="fn_schedulerOpen()">
                         <span>등록</span>
+                    </button>
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_schedulerDelete()">
+                        <span>삭제</span>
                     </button>
                 </div>
             </div>
@@ -322,19 +454,26 @@
                 <tr th:each="item, idx:${list}">
                     <td>
                         <div class="checkbox">
-                            <input type="checkbox" name="chk" id="chk_0">
-                            <label for="chk_0">
+                            <input type="checkbox" name="chk" th:id="${'chk_' + item.schedId}"
+                                   th:value="${item.schedId}">
+                            <label th:for="${'chk_' + item.schedId}">
                                 <span class="blind">선택</span>
                             </label>
                         </div>
                     </td>
-                    <td>1</td>
-                    <td th:text="${item.schedNm}">영업점_카드지급결의 학습모델 생성_Job</td>
-                    <td th:text="${item.schedNm}">영업점 학습모델 202408</td>
-                    <td>이덕구</td>
-                    <td>사용</td>
-                    <td>2024.11.05 00:00:00</td>
-                    <td>2024.02.22 12:22:33</td>
+                    <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                    <td>
+                        <a th:onclick="fn_schedulerDetail([[${item.schedId}]])" th:text="${item.schedNm}"
+                           th:value="${item.schedId}">영업점_카드지급결의 학습모델 생성_Job</a>
+                    </td>
+                    <td>BC카드</td>  <!-- TODO : 학습 데이터 id 매핑후작업 -->
+                    <td>대상</td>  <!-- TODO : 학습 데이터 id 매핑후작업 -->
+                    <td th:text="${item.templateName}">사용</td>
+                    <td th:text="${item.regNm}">사용</td>
+                    <td th:text="${item.useAt != null && item.useAt == 'Y' ? '사용' : '미사용'}">사용</td>
+                    <td th:text="${#temporals.format(item.regDt, 'yyyy-MM-dd hh:mm:ss')}"></td>
+                    <td th:text="${#temporals.format(item.regDt, 'yyyy-MM-dd hh:mm:ss')}"></td>
+                    <td>배치설명</td>
                 </tr>
                 </tbody>
             </table>
@@ -345,6 +484,7 @@
 
 <!--스케줄러 등록 팝업 : s-->
 <div id="popRegister" class="pop_layer">
+    <input type="hidden" name="schedId" id="schedId">
     <div class="dim"></div>
     <div class="popup lg">
         <div class="pop_head">
@@ -355,7 +495,7 @@
         </div>
         <div class="pop_cont">
             <table class="tbl_write">
-                <caption>학습 스케줄러 배치 설정 : TODO</caption>
+                <caption>학습 스케줄러 배치 설정</caption>
                 <colgroup>
                     <col style="width:160px">
                     <col style="width:auto">
@@ -364,6 +504,7 @@
                 <tr>
                     <th scope="row">
                         <label for="schedNm">학습 스케줄러명</label>
+                        <span class="aster"></span>
                     </th>
                     <td>
                         <input type="text" id="schedNm" name="schedNm" class="w250" maxlength="500">
@@ -372,6 +513,7 @@
                 <tr>
                     <th scope="row">
                         <label for="templateId">학습데이터 템플릿</label>
+                        <span class="aster"></span>
                     </th>
                     <td>
                         <select id="templateId">
@@ -385,17 +527,27 @@
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="ymd">예산집행년월</label>
+                        <label for="bdgtPrfrYm">예산집행년월</label>
+                        <span class="aster"></span>
                     </th>
                     <td>
-                        <select id="ymd">
-                            <option value="" disabled selected>선택</option>
-                        </select>
+                        <div class="df" style="align-items:center;">
+                            <span>최근 </span>
+                            <select id="bdgtPrfrYm">
+                                <option value="" disabled selected>선택</option>
+                                <option th:each="month : ${#numbers.sequence(1, 12)}"
+                                        th:value="${#strings.length(month) == 1 ? '0' + month : month}"
+                                        th:text="${#strings.length(month) == 1 ? '0' + month : month}">
+                                </option>
+                            </select>
+                            <span> 개월</span>
+                        </div>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">
                         <label>모델 파라미터</label>
+                        <span class="aster"></span>
                     </th>
                     <td>
                         <div class="div_write">
@@ -436,7 +588,7 @@
                                 <div class="td df w200">
                                     <div class="input">
                                         <input type="text" id="learningRate" value="3"
-                                               onkeyup="fn_numberOnly(this, 10)">
+                                               onkeyup="fn_numberOnly(this, 10)" placeholder="Learning Rate를 입력하세요.">
                                         <button type="button" class="btn_del" tabindex="-1">
                                             <span class="blind">삭제</span>
                                         </button>
@@ -472,6 +624,7 @@
                 <tr>
                     <th scope="row">
                         <label for="termTy">주기</label>
+                        <span class="aster"></span>
                     </th>
                     <td>
                         <select id="termTy">
@@ -483,7 +636,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">적용 시작 일자</th>
+                    <th scope="row">적용 시작 일자<span class="aster"></span></th>
                     <td>
                         <div class="df">
                             <label for="stYmd" class="blind"></label>
@@ -505,7 +658,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">사용여부</th>
+                    <th scope="row">사용여부<span class="aster"></span></th>
                     <td>
                         <div class="df">
                             <div class="radio txt">
@@ -528,7 +681,7 @@
                 <span>취소</span>
             </button>
             <button type="button" class="btn fill" onclick="fn_schedulerSave()">
-                <span>확인</span>
+                <span>설정 저장</span>
             </button>
         </div>
     </div>

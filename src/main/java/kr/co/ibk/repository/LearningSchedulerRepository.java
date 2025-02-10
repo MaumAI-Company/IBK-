@@ -22,4 +22,8 @@ public interface LearningSchedulerRepository {
     int setDelete(LearningSchedulerForm params);
 
     int countByInTemplateId(Integer[] idArr);
+
+    Long deleteAllById(Integer[] idArr, @Param("memId") String memId);
+
+    List<Integer> getBatchList();
 }

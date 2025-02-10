@@ -1,10 +1,10 @@
 package kr.co.ibk.domain.enums;
 
 public enum TermType {
-    HALF("반기", 24),
-    QUARTER("분기", 12),
-    MONTHLY("매월", 4),
-    WEEKLY("매주", 1);
+    WEEKLY("1주 (매주)", 1),
+    MONTHLY("4주 (매월)", 4),
+    QUARTER("12주 (분기)", 12),
+    HALF("24주 (반기)", 24);
 
     final private String name;
     final private Integer week;

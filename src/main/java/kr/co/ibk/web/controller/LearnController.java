@@ -344,15 +344,9 @@ public class LearnController extends BaseCont {
     }
 
     @ResponseBody
-    @PostMapping(value = {"/soulGod/model/trainModel"})
-    public void trainModel(@RequestBody LearningModelForm form) {
-        //mccService.trainModel(form.getId());
-    }
-
-    @ResponseBody
     @PostMapping(value = {"/soulGod/model/stopModel"})
     public void stopModel(@RequestBody LearningModelForm form) {
-        //mccService.stopModel(form.getId());
+        mccService.stopModel(form.getId());
     }
     //모델관리 : e
 
@@ -380,8 +374,8 @@ public class LearnController extends BaseCont {
 
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/replaceModel"})
-    public void replaceModel(@RequestBody LearningModelForm form) {
-        //mccService.replaceModel(form.getId());
+    public Boolean replaceModel(@RequestBody LearningModelForm form) {
+        return mccService.replaceModel(form.getId());
     }
 
 

@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface CardLearningDataRepository {
     List<CardLearningDataInfo> getList(CardLearningDataForm form);
-    List<CardLearningDataInfo> getLearningList(SearchForm form);
+    List<CardLearningDataInfo> getLearningList(CardLearningDataForm form);
     int getTotalCount(CardLearningDataForm form);
 }

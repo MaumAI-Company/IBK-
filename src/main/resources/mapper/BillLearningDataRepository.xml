@@ -9,7 +9,6 @@
         FROM
         BILL_LEARNING_DATA bld
         WHERE
-        bld.BRCD IS NOT NULL
         <include refid="where"></include>
     </select>
 
@@ -18,9 +17,7 @@
         <include refid="columns"></include>
         from
         BILL_LEARNING_DATA bld
-        where
-        bld.BRCD is not null
-        <include refid="where"></include>
+        where <include refid="where"></include>
         order by
         bld.BDGT_PRFR_YM desc
         <if test="pagingAt != null and pagingAt == 'Y'.toString()">
@@ -55,27 +52,16 @@
         bld.JOB_YMD /*작업년월일*/
     </sql>
 
-    <!--<select id="getLearningList" resultType="BillLearningDataInfo" parameterType="SearchForm">
-        select cld.BRCD
-             , cld.CDN
-             , cld.BDGT_TSTM_USE_HMS
-             , cld.AMSL_AMT
-             , cld.AFST_NM
-             , cld.TPBS_NM
-             , cld.BZDY_YN
-             , cld.AFST_DTL_ADR
-             , cld.BRNC_ADR
-             , cld.AFST_BZN
-             , cld.AMSL_AFST_NO
-             , cld.AFST_TPBCD
-             , cld.BDMN_ITEX_MNGM_NO
-             , cld.BDGT_PRFR_RSN_FRCS_CON
-             , cld.BDGT_BSNS_FRCS_CON
-        from CARD_LEARNING_DATA cld
-        order by cld.FRRG_TS desc limit 100
-    </select>-->
+    <select id="getLearningList" resultType="BillLearningDataInfo" parameterType="LearningDataForm">
+        SELECT
+            <include refid="columns"></include>
+        from BILL_LEARNING_DATA bld
+        where <include refid="where"></include>
+        order by bld.FRRG_TS desc limit 100
+    </select>
 
     <sql id="where">
+        1=1
         /*대상 검색*/
         <if test="searchTarget != null and searchTarget != ''">
             AND bld.HDQR_BOB_DCD = #{searchTarget}
@@ -83,7 +69,20 @@
 
         <if test="searchJsonMap != null">
             <foreach collection="searchJsonMap" item="value" index="key">
-                AND bld.${key} LIKE CONCAT('%', #{value}, '%')
+                <choose>
+                    <when test="key == 'searchTarget' and value != null and value != ''">
+                        AND bld.HDQR_BOB_DCD = #{value}
+                    </when>
+                    <when test="key == 'searchStartDate' and value != null and value != ''">
+                        AND bld.BDGT_PRFR_YM <![CDATA[>=]]> REPLACE(#{value}, '-', '')
+                    </when>
+                    <when test="key == 'searchEndDate' and value != null and value != ''">
+                        AND bld.BDGT_PRFR_YM <![CDATA[<=]]> REPLACE(#{value}, '-', '')
+                    </when>
+                    <when test="value != null and value != ''">
+                        AND bld.${key} LIKE CONCAT('%', #{value}, '%')
+                    </when>
+                </choose>
             </foreach>
         </if>
 

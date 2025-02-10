@@ -1,16 +1,13 @@
 package kr.co.ibk.service;
 
-import kr.co.ibk.domain.enums.InOutGbnType;
-import kr.co.ibk.domain.enums.InputColumnCardType;
-import kr.co.ibk.domain.enums.OutputColumnCardType;
-import kr.co.ibk.domain.web.CardLearningDataInfo;
-import kr.co.ibk.domain.web.LearningModelInfo;
-import kr.co.ibk.domain.web.LearningModelInputInfo;
-import kr.co.ibk.domain.web.MemberInfo;
+import kr.co.ibk.domain.enums.*;
+import kr.co.ibk.domain.web.*;
+import kr.co.ibk.model.BillLearningDataForm;
+import kr.co.ibk.model.CardLearningDataForm;
 import kr.co.ibk.model.LearningModelForm;
-import kr.co.ibk.model.SearchForm;
 import kr.co.ibk.model.paging.PaginationInfo;
 import kr.co.ibk.repository.*;
+import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,11 +22,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class LearningModelService extends _BaseService {
+public class LearningModelService extends BaseCont {
 
     private final LearningDataRepository learningDataRepository;
     @Value("${Globals.fileStorePath}")
@@ -38,8 +36,10 @@ public class LearningModelService extends _BaseService {
     private final LearningModelRepository learningModelRepository;
     private final LearningModelInputRepository learningModelInputRepository;
     private final CardLearningDataRepository cardLearningDataRepository;
+    private final BillLearningDataRepository billLearningDataRepository;
     private final TemplateRepository templateRepository;
     private final TemplateInputRepository templateInputRepository;
+    private final MccService mccService;
 
     public HashMap<String, Object> save(LearningModelForm form, MemberInfo memberInfo) {
         HashMap<String, Object> map = new HashMap<>();
@@ -92,120 +92,27 @@ public class LearningModelService extends _BaseService {
         map.put("learnName", load.getLearnName());
         try {
             List<LearningModelInputInfo> list = learningModelInputRepository.getList(form.getId());
-            List<CardLearningDataInfo> dataList = cardLearningDataRepository.getLearningList(new SearchForm());
+            Map<String, StringBuilder> fileCon = new HashMap<>();
+            if (load.getLearningType().equals(LearningType.CARD)) {
+                CardLearningDataForm learningDataForm = new CardLearningDataForm();
+                String selectCon = load.getSelectCon();
+                if (!ObjectUtils.isEmpty(selectCon)) {
+                    learningDataForm.setSearchJsonMap(jsonToHashMap(selectCon));
+                }
+                List<CardLearningDataInfo> dataList = cardLearningDataRepository.getLearningList(learningDataForm);
+                fileCon = cardLearningFileContent(dataList, list);
+            } else if (load.getLearningType().equals(LearningType.BILL)) {
+                BillLearningDataForm learningDataForm = new BillLearningDataForm();
+                String selectCon = load.getSelectCon();
+                if (!ObjectUtils.isEmpty(selectCon)) {
+                    learningDataForm.setSearchJsonMap(jsonToHashMap(selectCon));
+                }
+                List<BillLearningDataInfo> dataList = billLearningDataRepository.getLearningList(learningDataForm);
+                fileCon = billLearningFileContent(dataList, list);
+            }
 
-            String sep = "<<|SEP|>>AMSL_AMT";
-            // 헤더
-            StringBuilder header = new StringBuilder();
-            String separator = " ";
-            boolean isAmslAmt = false;
-            boolean outputFirst = true;
-            for (LearningModelInputInfo info : list) {
-                String colNm = null;
-                if (InOutGbnType.INPUT.equals(info.getInoutGbn())) {
-                    separator = " || ";
-                    InputColumnCardType inputColumnType = InputColumnCardType.valueOf(info.getColName());
-                    if (InputColumnCardType.AMSL_AMT.equals(inputColumnType)) {
-                        isAmslAmt = true;
-                    } else {
-                        colNm = inputColumnType.name();
-                    }
-                } else {
-                    if (outputFirst) {
-                        header.append(sep);
-                        outputFirst = false;
-                    }
-                    separator = "\t";
-                    OutputColumnCardType outputColumnType = OutputColumnCardType.valueOf(info.getColName());
-                    if (OutputColumnCardType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
-                        colNm = InputColumnCardType.BRCD.name() + "-" + outputColumnType.name();
-                    } else {
-                        colNm = outputColumnType.name();
-                    }
-                }
-                if (!header.toString().isEmpty() && colNm != null) {
-                    header.append(separator);
-                }
-                if (colNm != null) {
-                    header.append(colNm);
-                }
-            }
-            if (!isAmslAmt) {
-                String replace = header.toString().replace(sep, "");
-                header = new StringBuilder();
-                header.append(replace);
-            }
-            header.append("\n");
-
-            // 바디
-            StringBuilder body = new StringBuilder();
-            outputFirst = true;
-            separator = " || ";
-            for (CardLearningDataInfo data : dataList) {
-                boolean first = true;
-                for (LearningModelInputInfo info : list) {
-                    if (InOutGbnType.INPUT.equals(info.getInoutGbn())) {
-                        InputColumnCardType inputColumnType = InputColumnCardType.valueOf(info.getColName());
-                        separator = " || ";
-                        if (!first && !InputColumnCardType.AMSL_AMT.equals(inputColumnType)) {
-                            body.append(separator);
-                        }
-                        String value = null;
-                        if (InputColumnCardType.BRCD.equals(inputColumnType)) {
-                            value = data.getBrcd();
-                        } else if (InputColumnCardType.CDN.equals(inputColumnType)) {
-                            value = data.getCdn();
-                        } else if (InputColumnCardType.BDGT_TSTM_USE_HMS.equals(inputColumnType)) {
-                            value = data.getBdgtTstmUseHms();
-                        } else if (InputColumnCardType.AMSL_AMT.equals(inputColumnType)) {
-//                            value = String.valueOf(data.getAmslAmt());
-                        } else if (InputColumnCardType.AFST_NM.equals(inputColumnType)) {
-                            value = data.getAfstNm();
-                        } else if (InputColumnCardType.TPBS_NM.equals(inputColumnType)) {
-                            value = data.getTpbsNm();
-                        } else if (InputColumnCardType.BZDY_YN.equals(inputColumnType)) {
-                            value = data.getBzdyYn();
-                        } else if (InputColumnCardType.AFST_DTL_ADR.equals(inputColumnType)) {
-                            value = data.getAfstDtlAdr();
-                        } else if (InputColumnCardType.BRNC_ADR.equals(inputColumnType)) {
-                            value = data.getBrncAdr();
-                        } else if (InputColumnCardType.AFST_BZN.equals(inputColumnType)) {
-                            value = data.getAfstBzn();
-                        } else if (InputColumnCardType.AMSL_AFST_NO.equals(inputColumnType)) {
-                            value = data.getAmslAfstNo();
-                        } else if (InputColumnCardType.AFST_TPBCD.equals(inputColumnType)) {
-                            value = data.getAfstTpbcd();
-                        }
-                        if (value != null) {
-                            body.append(inputColumnType.name())
-                                    .append(" : ")
-                                    .append(value);
-                        }
-                    } else {
-                        if (outputFirst && isAmslAmt) {
-                            body.append(sep.replace("AMSL_AMT", String.valueOf(data.getAmslAmt())));
-                            outputFirst = false;
-                        }
-                        separator = "\t";
-                        if (!first) {
-                            body.append(separator);
-                        }
-                        String value = null;
-                        OutputColumnCardType outputColumnType = OutputColumnCardType.valueOf(info.getColName());
-                        if (OutputColumnCardType.BDMN_ITEX_MNGM_NO.equals(outputColumnType)) {
-                            value = data.getBdmnItexMngmNo();
-                        } else if (OutputColumnCardType.BDGT_PRFR_RSN_FRCS_CON.equals(outputColumnType)) {
-                            value = data.getBdgtPrfrRsnFrcsCon();
-                        } else if (OutputColumnCardType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
-                            value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
-                        }
-                        body.append(value);
-                    }
-                    first = false;
-                }
-                outputFirst = true;
-                body.append("\n");
-            }
+            StringBuilder header = fileCon.get("header");
+            StringBuilder body = fileCon.get("body");
 
             System.out.println(header.toString());
             System.out.println(body.toString());
@@ -229,18 +136,260 @@ public class LearningModelService extends _BaseService {
             update.setId(form.getId());
             update.setFilePath(filePath);
             update.setFileName(fileName);
-            update.setEpoch(form.getEpoch());
+            /*update.setEpoch(form.getEpoch());
             update.setLearningRate(form.getLearningRate());
-            update.setBatchSize(form.getBatchSize());
+            update.setBatchSize(form.getBatchSize());*/
             learningModelRepository.updateFile(update);
 
-            //mccService.trainModel(form.getId());
+            mccService.trainModel(form.getId());
 
             map.put("status", "SUCCESS");
         } catch (Exception e) {
-            map.put("status", "FAIL");
+            try {
+                form.setDeployStatus(DeployStatusType.LEARN_DATA_ERROR.getCode().toString());
+                learningModelRepository.updateStatus(form);
+                map.put("status", "FAIL");
+            } catch (Exception ex) {
+                map.put("status", "FAIL");
+            }
         }
         return map;
+    }
+
+    @Transactional
+    public Map<String, StringBuilder> cardLearningFileContent(List<CardLearningDataInfo> dataList, List<LearningModelInputInfo> list){
+        Map<String, StringBuilder> fileContent = new HashMap<>();
+
+        String sep = "<<|SEP|>>AMSL_AMT";
+        // 헤더
+        StringBuilder header = new StringBuilder();
+        String separator = " ";
+        boolean isAmslAmt = false;
+        boolean outputFirst = true;
+        for (LearningModelInputInfo info : list) {
+            String colNm = null;
+            if (InOutGbnType.INPUT.equals(info.getInoutGbn())) {
+                separator = " || ";
+                InputColumnCardType inputColumnType = InputColumnCardType.valueOf(info.getColName());
+                if (InputColumnCardType.AMSL_AMT.equals(inputColumnType)) {
+                    isAmslAmt = true;
+                } else {
+                    colNm = inputColumnType.name();
+                }
+            } else {
+                if (outputFirst) {
+                    header.append(sep);
+                    outputFirst = false;
+                }
+                separator = "\t";
+                OutputColumnCardType outputColumnType = OutputColumnCardType.valueOf(info.getColName());
+                if (OutputColumnCardType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
+                    colNm = InputColumnCardType.BRCD.name() + "-" + outputColumnType.name();
+                } else {
+                    colNm = outputColumnType.name();
+                }
+            }
+            if (!header.toString().isEmpty() && colNm != null) {
+                header.append(separator);
+            }
+            if (colNm != null) {
+                header.append(colNm);
+            }
+        }
+        if (!isAmslAmt) {
+            String replace = header.toString().replace(sep, "");
+            header = new StringBuilder();
+            header.append(replace);
+        }
+        header.append("\n");
+
+        // 바디
+        StringBuilder body = new StringBuilder();
+        outputFirst = true;
+        separator = " || ";
+        for (CardLearningDataInfo data : dataList) {
+            boolean first = true;
+            for (LearningModelInputInfo info : list) {
+                if (InOutGbnType.INPUT.equals(info.getInoutGbn())) {
+                    InputColumnCardType inputColumnType = InputColumnCardType.valueOf(info.getColName());
+                    separator = " || ";
+                    if (!first && !InputColumnCardType.AMSL_AMT.equals(inputColumnType)) {
+                        body.append(separator);
+                    }
+                    String value = null;
+                    if (InputColumnCardType.BRCD.equals(inputColumnType)) {
+                        value = data.getBrcd();
+                    } else if (InputColumnCardType.CDN.equals(inputColumnType)) {
+                        value = data.getCdn();
+                    } else if (InputColumnCardType.BDGT_TSTM_USE_HMS.equals(inputColumnType)) {
+                        value = data.getBdgtTstmUseHms();
+                    } else if (InputColumnCardType.AMSL_AMT.equals(inputColumnType)) {
+//                            value = String.valueOf(data.getAmslAmt());
+                    } else if (InputColumnCardType.AFST_NM.equals(inputColumnType)) {
+                        value = data.getAfstNm();
+                    } else if (InputColumnCardType.TPBS_NM.equals(inputColumnType)) {
+                        value = data.getTpbsNm();
+                    } else if (InputColumnCardType.BZDY_YN.equals(inputColumnType)) {
+                        value = data.getBzdyYn();
+                    } else if (InputColumnCardType.AFST_DTL_ADR.equals(inputColumnType)) {
+                        value = data.getAfstDtlAdr();
+                    } else if (InputColumnCardType.BRNC_ADR.equals(inputColumnType)) {
+                        value = data.getBrncAdr();
+                    } else if (InputColumnCardType.AFST_BZN.equals(inputColumnType)) {
+                        value = data.getAfstBzn();
+                    } else if (InputColumnCardType.AMSL_AFST_NO.equals(inputColumnType)) {
+                        value = data.getAmslAfstNo();
+                    } else if (InputColumnCardType.AFST_TPBCD.equals(inputColumnType)) {
+                        value = data.getAfstTpbcd();
+                    }
+                    if (value != null) {
+                        body.append(inputColumnType.name())
+                                .append(" : ")
+                                .append(value);
+                    }
+                } else {
+                    if (outputFirst && isAmslAmt) {
+                        body.append(sep.replace("AMSL_AMT", String.valueOf(data.getAmslAmt())));
+                        outputFirst = false;
+                    }
+                    separator = "\t";
+                    if (!first) {
+                        body.append(separator);
+                    }
+                    String value = null;
+                    OutputColumnCardType outputColumnType = OutputColumnCardType.valueOf(info.getColName());
+                    if (OutputColumnCardType.BDMN_ITEX_MNGM_NO.equals(outputColumnType)) {
+                        value = data.getBdmnItexMngmNo();
+                    } else if (OutputColumnCardType.BDGT_PRFR_RSN_FRCS_CON.equals(outputColumnType)) {
+                        value = data.getBdgtPrfrRsnFrcsCon();
+                    } else if (OutputColumnCardType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
+                        value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
+                    }
+                    body.append(value);
+                }
+                first = false;
+            }
+            outputFirst = true;
+            body.append("\n");
+        }
+        fileContent.put("header", header);
+        fileContent.put("body", body);
+
+        return fileContent;
+    }
+
+    @Transactional
+    public Map<String, StringBuilder> billLearningFileContent(List<BillLearningDataInfo> dataList, List<LearningModelInputInfo> list){
+        Map<String, StringBuilder> fileContent = new HashMap<>();
+
+        String sep = "<<|SEP|>>AMSL_AMT";
+        // 헤더
+        StringBuilder header = new StringBuilder();
+        String separator = " ";
+        boolean isIssAmt = false;
+        boolean outputFirst = true;
+        for (LearningModelInputInfo info : list) {
+            String colNm = null;
+            if (InOutGbnType.INPUT.equals(info.getInoutGbn())) {
+                separator = " || ";
+                InputColumnBillType inputColumnType = InputColumnBillType.valueOf(info.getColName());
+                if (InputColumnBillType.ISS_AMT.equals(inputColumnType)) {
+                    isIssAmt = true;
+                } else {
+                    colNm = inputColumnType.name();
+                }
+            } else {
+                if (outputFirst) {
+                    header.append(sep);
+                    outputFirst = false;
+                }
+                separator = "\t";
+                OutputColumnBillType outputColumnType = OutputColumnBillType.valueOf(info.getColName());
+                if (OutputColumnBillType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
+                    colNm = InputColumnBillType.BRCD.name() + "-" + outputColumnType.name();
+                } else {
+                    colNm = outputColumnType.name();
+                }
+            }
+            if (!header.toString().isEmpty() && colNm != null) {
+                header.append(separator);
+            }
+            if (colNm != null) {
+                header.append(colNm);
+            }
+        }
+        if (!isIssAmt) {
+            String replace = header.toString().replace(sep, "");
+            header = new StringBuilder();
+            header.append(replace);
+        }
+        header.append("\n");
+
+        // 바디
+        StringBuilder body = new StringBuilder();
+        outputFirst = true;
+        separator = " || ";
+        for (BillLearningDataInfo data : dataList) {
+            boolean first = true;
+            for (LearningModelInputInfo info : list) {
+                if (InOutGbnType.INPUT.equals(info.getInoutGbn())) {
+                    InputColumnBillType inputColumnType = InputColumnBillType.valueOf(info.getColName());
+                    separator = " || ";
+                    if (!first && !InputColumnBillType.ISS_AMT.equals(inputColumnType)) {
+                        body.append(separator);
+                    }
+                    String value = null;
+                    if (InputColumnBillType.BRCD.equals(inputColumnType)) {
+                        value = data.getBrcd();
+                    } else if (InputColumnBillType.TXBL_DCD.equals(inputColumnType)) {
+                        value = data.getTxblDcd();
+                    } else if (InputColumnBillType.SPRL_BSNN_NO.equals(inputColumnType)) {
+                        value = data.getSplrBsnnNo();
+                    } else if (InputColumnBillType.ISS_AMT.equals(inputColumnType)) {
+                       //value = String.valueOf(data.getIssAmt());
+                    } else if (InputColumnBillType.SPLR_FRM.equals(inputColumnType)) {
+                        value = data.getSplrFrm();
+                    } else if (InputColumnBillType.SPLR_BZST_NM.equals(inputColumnType)) {
+                        value = data.getSplrBzstNm();
+                    } else if (InputColumnBillType.SPLR_ITMS_NM.equals(inputColumnType)) {
+                        value = data.getSplrItmsNm();
+                    } else if (InputColumnBillType.TXBL_LSAR_NM.equals(inputColumnType)) {
+                        value = data.getTxblLsarNm();
+                    }
+                    if (value != null) {
+                        body.append(inputColumnType.name())
+                                .append(" : ")
+                                .append(value);
+                    }
+                } else {
+                    if (outputFirst && isIssAmt) {
+                        body.append(sep.replace("ISS_AMT", String.valueOf(data.getIssAmt())));
+                        outputFirst = false;
+                    }
+                    separator = "\t";
+                    if (!first) {
+                        body.append(separator);
+                    }
+                    String value = null;
+                    OutputColumnBillType outputColumnType = OutputColumnBillType.valueOf(info.getColName());
+                    if (OutputColumnBillType.BDGT_ITEX_FRCS_CON.equals(outputColumnType)) {
+                        value = data.getBdmnItexMngmNo();
+                    } else if (OutputColumnBillType.BDGT_PRFR_RSN_FRCS_CON.equals(outputColumnType)) {
+                        value = data.getBdgtPrfrRsnFrcsCon();
+                    } else if (OutputColumnBillType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
+                        value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
+                    }
+                    body.append(value);
+                }
+                first = false;
+            }
+            outputFirst = true;
+            body.append("\n");
+        }
+        fileContent.put("header", header);
+        fileContent.put("body", body);
+
+        return fileContent;
     }
 
     public List<LearningModelInfo> getList(LearningModelForm params) {

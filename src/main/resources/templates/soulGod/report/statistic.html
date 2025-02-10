@@ -543,6 +543,7 @@
 
             let series2 = chart.series.push(
                 am5xy.LineSeries.new(root, {
+                    name: "INPUT 데이터 수",
                     xAxis: xAxis,
                     yAxis: yAxis,
                     valueYField: "total",
@@ -571,6 +572,7 @@
                     })
                 });
             });
+            legend.data.push(series2);
 
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 
@@ -682,6 +684,7 @@
 
             let series2 = chart.series.push(
                 am5xy.LineSeries.new(root, {
+                    name: "추론 데이터 수",
                     xAxis: xAxis,
                     yAxis: yAxis,
                     valueYField: "total",
@@ -711,6 +714,7 @@
                     })
                 });
             });
+            legend.data.push(series2);
 
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 

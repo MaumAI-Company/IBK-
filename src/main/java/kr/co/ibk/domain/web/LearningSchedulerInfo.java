@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,12 +23,14 @@ public class LearningSchedulerInfo {
     private String stTime; /*학습 시작 시간*/
     private String useAt; /*사용여부*/
     private String regId; /*등록자*/
-    private String regDt; /*등록일시*/
+    private LocalDateTime regDt; /*등록일시*/
     private String modId; /*수정자*/
-    private String modDt; /*수정일자*/
+    private LocalDateTime modDt; /*수정일자*/
     private String delAt; /*삭제여부*/
     private String learningModelId; /*모델관리 ID*/
     private Long templateId; /* 템플릿 ID*/
+    private String templateName; /* 템플릿 명*/
+    private String regNm; /* 등록자 */
 
 }
 

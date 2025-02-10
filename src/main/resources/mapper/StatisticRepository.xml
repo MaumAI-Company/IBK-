@@ -165,10 +165,10 @@
 
     <sql id="usageDateGrouping">
         <choose>
-            <when test="searchCycle == '2'">
+            <when test="searchCycle == 2">
                 SUBSTRING(co.BDGT_PRFR_YM, 1, 6) <!-- 월별 -->
             </when>
-            <when test="searchCycle == null or searchCycle == '' or searchCycle == '3'">
+            <when test="searchCycle == 3">
                 SUBSTRING(co.BDGT_PRFR_YM, 1, 4) <!-- 연도별 -->
             </when>
             <otherwise>
