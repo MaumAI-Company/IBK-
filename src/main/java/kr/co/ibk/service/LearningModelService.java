@@ -94,18 +94,26 @@ public class LearningModelService extends BaseCont {
             List<LearningModelInputInfo> list = learningModelInputRepository.getList(form.getId());
             Map<String, StringBuilder> fileCon = new HashMap<>();
             if (load.getLearningType().equals(LearningType.CARD)) {
+
                 CardLearningDataForm learningDataForm = new CardLearningDataForm();
-                String selectCon = load.getSelectCon();
-                if (!ObjectUtils.isEmpty(selectCon)) {
-                    learningDataForm.setSearchJsonMap(jsonToHashMap(selectCon));
+                if (!ObjectUtils.isEmpty(load.getSelectCon())) {
+                    learningDataForm.setSearchJsonMap(jsonToHashMap(load.getSelectCon()));
+                }
+                if (!ObjectUtils.isEmpty(load.getStartDt()) && !ObjectUtils.isEmpty(load.getEndDt())) {
+                    learningDataForm.setSearchStartDate(load.getStartDt().format(DateTimeFormatter.ofPattern("yyyy-MM")));
+                    learningDataForm.setSearchEndDate(load.getEndDt().format(DateTimeFormatter.ofPattern("yyyy-MM")));
                 }
                 List<CardLearningDataInfo> dataList = cardLearningDataRepository.getLearningList(learningDataForm);
                 fileCon = cardLearningFileContent(dataList, list);
+
             } else if (load.getLearningType().equals(LearningType.BILL)) {
                 BillLearningDataForm learningDataForm = new BillLearningDataForm();
-                String selectCon = load.getSelectCon();
-                if (!ObjectUtils.isEmpty(selectCon)) {
-                    learningDataForm.setSearchJsonMap(jsonToHashMap(selectCon));
+                if (!ObjectUtils.isEmpty(load.getSelectCon())) {
+                    learningDataForm.setSearchJsonMap(jsonToHashMap(load.getSelectCon()));
+                }
+                if (!ObjectUtils.isEmpty(load.getStartDt()) && !ObjectUtils.isEmpty(load.getEndDt())) {
+                    learningDataForm.setSearchStartDate(load.getStartDt().format(DateTimeFormatter.ofPattern("yyyy-MM")));
+                    learningDataForm.setSearchEndDate(load.getEndDt().format(DateTimeFormatter.ofPattern("yyyy-MM")));
                 }
                 List<BillLearningDataInfo> dataList = billLearningDataRepository.getLearningList(learningDataForm);
                 fileCon = billLearningFileContent(dataList, list);
@@ -136,9 +144,9 @@ public class LearningModelService extends BaseCont {
             update.setId(form.getId());
             update.setFilePath(filePath);
             update.setFileName(fileName);
-            /*update.setEpoch(form.getEpoch());
+            update.setEpoch(form.getEpoch());
             update.setLearningRate(form.getLearningRate());
-            update.setBatchSize(form.getBatchSize());*/
+            update.setBatchSize(form.getBatchSize());
             learningModelRepository.updateFile(update);
 
             mccService.trainModel(form.getId());
@@ -157,7 +165,7 @@ public class LearningModelService extends BaseCont {
     }
 
     @Transactional
-    public Map<String, StringBuilder> cardLearningFileContent(List<CardLearningDataInfo> dataList, List<LearningModelInputInfo> list){
+    public Map<String, StringBuilder> cardLearningFileContent(List<CardLearningDataInfo> dataList, List<LearningModelInputInfo> list) {
         Map<String, StringBuilder> fileContent = new HashMap<>();
 
         String sep = "<<|SEP|>>AMSL_AMT";
@@ -279,7 +287,7 @@ public class LearningModelService extends BaseCont {
     }
 
     @Transactional
-    public Map<String, StringBuilder> billLearningFileContent(List<BillLearningDataInfo> dataList, List<LearningModelInputInfo> list){
+    public Map<String, StringBuilder> billLearningFileContent(List<BillLearningDataInfo> dataList, List<LearningModelInputInfo> list) {
         Map<String, StringBuilder> fileContent = new HashMap<>();
 
         String sep = "<<|SEP|>>AMSL_AMT";
@@ -346,7 +354,7 @@ public class LearningModelService extends BaseCont {
                     } else if (InputColumnBillType.SPRL_BSNN_NO.equals(inputColumnType)) {
                         value = data.getSplrBsnnNo();
                     } else if (InputColumnBillType.ISS_AMT.equals(inputColumnType)) {
-                       //value = String.valueOf(data.getIssAmt());
+                        //value = String.valueOf(data.getIssAmt());
                     } else if (InputColumnBillType.SPLR_FRM.equals(inputColumnType)) {
                         value = data.getSplrFrm();
                     } else if (InputColumnBillType.SPLR_BZST_NM.equals(inputColumnType)) {

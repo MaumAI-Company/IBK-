@@ -35,8 +35,11 @@ public class LearningDataService extends _BaseService {
         Long saveCnt = 0L;
 
         form.setMemId(memberInfo.getMemId());
+        form.setStartDt(form.getStartDt() + "-01 00:00:00");
+        form.setEndDt(form.getEndDt() + "-01 00:00:00");
 
         if (ObjectUtils.isEmpty(form.getId())) {
+
             //insert
             TemplateForm tempForm = new TemplateForm();
             if (!ObjectUtils.isEmpty(form.getTemplateAt()) && "Y".equals(form.getTemplateAt())) {
