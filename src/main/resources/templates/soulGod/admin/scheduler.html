@@ -466,8 +466,8 @@
                         <a th:onclick="fn_schedulerDetail([[${item.schedId}]])" th:text="${item.schedNm}"
                            th:value="${item.schedId}">영업점_카드지급결의 학습모델 생성_Job</a>
                     </td>
-                    <td>BC카드(id매핑후작업)</td>
-                    <td>대상(id매핑후작업)</td>
+                    <td>BC카드</td>  <!-- TODO : 학습 데이터 id 매핑후작업 -->
+                    <td>대상</td>  <!-- TODO : 학습 데이터 id 매핑후작업 -->
                     <td th:text="${item.templateName}">사용</td>
                     <td th:text="${item.regNm}">사용</td>
                     <td th:text="${item.useAt != null && item.useAt == 'Y' ? '사용' : '미사용'}">사용</td>

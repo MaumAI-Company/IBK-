@@ -59,6 +59,7 @@ public class LearningSchedulerService extends _BaseService {
     }
 
     public LearningSchedulerInfo getDetail(Integer schedId) {
+        // TODO : 학습 데이터 id 매핑
         return learningSchedulerRepository.getDetail(schedId);
     }
 
@@ -83,6 +84,7 @@ public class LearningSchedulerService extends _BaseService {
         List<Map<String, Object>> inputArr = convertToMap(templateInputRepository.getPartList(form.getTemplateId(), InOutGbnType.INPUT.name()));
         List<Map<String, Object>> outputArr = convertToMap(templateInputRepository.getPartList(form.getTemplateId(), InOutGbnType.OUTPUT.name()));
 
+        // TODO : 학습 데이터 id 매핑
         // 학습 데이터 복사
         LearningDataForm dataForm = new LearningDataForm();
         dataForm.setDataName("[배치]" + form.getSchedNm());
@@ -154,5 +156,9 @@ public class LearningSchedulerService extends _BaseService {
             mapList.add(map);
         }
         return mapList;
+    }
+
+    public List<Integer> getBatchList() {
+        return learningSchedulerRepository.getBatchList();
     }
 }

@@ -132,4 +132,19 @@
             #{item}
         </foreach>
     </update>
+
+    <!-- TODO : 모델과 매핑하여 배치실행일시+배치주기 계산한 모델 ID를 리턴 -->
+    <select id="getBatchList" resultType="int">
+        SELECT
+            ls.SCHED_ID
+        FROM
+            LEARNING_SCHEDULER ls
+                INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
+        WHERE
+            ls.DEL_AT = 'N'
+          AND ls.USE_AT = 'Y'
+          AND ls.ST_YMD >= DATE_FORMAT(NOW(), '%Y%m%d')
+          AND ls.ST_TIME = DATE_FORMAT(NOW(), '%H:%i')
+    </select>
+
 </mapper>

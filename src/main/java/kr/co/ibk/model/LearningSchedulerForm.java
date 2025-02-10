@@ -16,8 +16,8 @@ public class LearningSchedulerForm extends PageForm {
     /*검색조건*/
     private String pagingAt;
     private String sorting;
-    private String searchLearningType;
-    private String searchTarget;
+    private String searchLearningType; // TODO : 학습 데이터 id 매핑
+    private String searchTarget; // TODO : 학습 데이터 id 매핑
     private String searchKeyword;
 
     //insert/update
