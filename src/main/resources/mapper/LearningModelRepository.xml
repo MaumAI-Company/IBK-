@@ -28,8 +28,12 @@
                lm.BATCH_SIZE,
                lm.DEPLOY_STATUS,
                lm.LEARNING_TYPE,
+               lm.FILE_PATH,
+               lm.FILE_NAME,
                ld.DATA_NAME,
-               ld.SELECT_CON
+               ld.SELECT_CON,
+               ld.START_DT,
+               ld.END_DT
         FROM LEARNING_MODEL lm
                  LEFT JOIN LEARNING_DATA ld ON lm.LEARNING_ID = ld.ID
         WHERE lm.ID = #{id}
@@ -98,9 +102,9 @@
         lm.LEARNING_RESULT,
         lm.DEPLOY_STATUS,
         lm.LEARNING_TYPE,
-        lm.PRECISION,
+        /*lm.PRECISION,
         lm.RECALL,
-        lm.F1_SCORE,
+        lm.F1_SCORE,*/
         hm.MEM_NAME as REG_NAME
         from LEARNING_MODEL lm
         inner join HC_MEMBER hm on lm.REG_ID = hm.MEM_ID

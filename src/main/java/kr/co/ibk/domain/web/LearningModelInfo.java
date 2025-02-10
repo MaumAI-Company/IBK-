@@ -46,6 +46,8 @@ public class LearningModelInfo {
 
     private String dataName; // 학습데이터명
     private String selectCon; // 선택조건
+    private LocalDateTime startDt;
+    private LocalDateTime endDt;
 }
 
 

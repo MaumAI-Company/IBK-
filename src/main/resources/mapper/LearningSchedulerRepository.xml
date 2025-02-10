@@ -8,8 +8,10 @@
         count(*)
         from
         LEARNING_SCHEDULER ls
-        inner join TEMPLATE t on t.ID = ls.TEMPLATE_ID
-        inner join HC_MEMBER hm on ls.REG_ID = hm.MEM_ID
+        INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
+        INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
+        INNER JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
+        INNER JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
         <include refid="where"></include>
     </select>
 
@@ -18,10 +20,15 @@
         <include refid="columns"></include>
         , t.TEMPLATE_NAME
         , hm.MEM_NAME as regNm
+        , lm.DEPLOY_DT
+        , ld.HDQR_BOB_DCD
+        , ld.LEARNING_TYPE
         from
         LEARNING_SCHEDULER ls
-        inner join TEMPLATE t on t.ID = ls.TEMPLATE_ID
-        inner join HC_MEMBER hm on ls.REG_ID = hm.MEM_ID
+        INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
+        INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
+        INNER JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
+        INNER JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
         <include refid="where"></include>
         ORDER BY
         ls.REG_DT
@@ -42,14 +49,21 @@
         select
         <include refid="columns"></include>
         , t.TEMPLATE_NAME
+        , lm.EPOCH
+        , lm.LEARNING_RATE
+        , lm.BATCH_SIZE
+        , TIMESTAMPDIFF(MONTH, ld.START_DT, ld.END_DT) AS bdgtPrfrYmTerm
         from
         LEARNING_SCHEDULER ls
-        inner join TEMPLATE t on t.ID = ls.TEMPLATE_ID
+        INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
+        INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
+        INNER JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
+        INNER JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
         where ls.DEL_AT = 'N'
         and ls.SCHED_ID = #{id}
     </select>
 
-    <insert id="setInsert" parameterType="LearningSchedulerForm">
+    <insert id="setInsert" useGeneratedKeys="true" keyProperty="schedId" keyColumn="sched_id" parameterType="LearningSchedulerForm">
         insert into maummcc.LEARNING_SCHEDULER
         (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, TEMPLATE_ID, DES)
         values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(),
@@ -80,11 +94,9 @@
     </update>
 
     <sql id="columns">
-        ls
-        .
-        SCHED_ID
+        ls.SCHED_ID
         , ls.SCHED_NM
-        , ls.HDQR_BOB_DCD
+        /*, ls.HDQR_BOB_DCD*/
         , ls.USE_AT
         , ls.MOD_DT
         , ls.REG_ID
@@ -103,6 +115,17 @@
 
     <sql id="where">
         where ls.DEL_AT = 'N'
+
+        /*대상 검색*/
+        <if test="searchTarget != null and searchTarget != ''">
+            AND ld.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+
+        /*구분 검색*/
+        <if test="searchLearningType != null and ''.toString != searchLearningType">
+            AND ld.LEARNING_TYPE = #{searchLearningType}
+        </if>
+
         <if test="searchKeyword != null  and searchKeyword != ''">
             AND (ls.SCHED_NM LIKE CONCAT('%', #{searchKeyword}, '%')
             OR t.TEMPLATE_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
@@ -135,7 +158,7 @@
         </foreach>
     </update>
 
-    <!-- TODO : 모델과 매핑하여 배치실행일시+배치주기 계산한 모델 ID를 리턴 -->
+    <!-- TODO : 배치 실행할 모델 목록 -->
     <select id="getBatchList" resultType="int">
         SELECT
             ls.SCHED_ID
