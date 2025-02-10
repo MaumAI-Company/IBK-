@@ -102,9 +102,15 @@
         lm.LEARNING_RESULT,
         lm.DEPLOY_STATUS,
         lm.LEARNING_TYPE,
-        /*lm.PRECISION,
-        lm.RECALL,
-        lm.F1_SCORE,*/
+        lm.BDGT_ITEX_FRCS_CON_PRECISION,
+        lm.BDGT_ITEX_FRCS_CON_RECALL,
+        lm.BDGT_ITEX_FRCS_CON_F1_SCORE,
+        lm.BDGT_BSNS_FRCS_CON_PRECISION,
+        lm.BDGT_BSNS_FRCS_CON_RECALL,
+        lm.BDGT_BSNS_FRCS_CON_F1_SCORE,
+        lm.BDGT_PRFR_RSN_FRCS_CON_PRECISION,
+        lm.BDGT_PRFR_RSN_FRCS_CON_RECALL,
+        lm.BDGT_PRFR_RSN_FRCS_CON_F1_SCORE,
         hm.MEM_NAME as REG_NAME
         from LEARNING_MODEL lm
         inner join HC_MEMBER hm on lm.REG_ID = hm.MEM_ID

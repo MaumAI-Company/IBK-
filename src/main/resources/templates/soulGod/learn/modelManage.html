@@ -52,6 +52,62 @@
             margin-top: 18px;
             margin-bottom: 17px;
         }
+
+        #popResult .tbl_write table th,
+        #popResult .tbl_write table td {
+            padding-top: 2px;
+            padding-bottom: 2px;
+            vertical-align: middle;
+        }
+
+        #popResult .tbl_write .in_table {
+            border-radius: 8px;
+            border: 1px solid #ebeff2;
+            margin-top: 4px
+        }
+
+        #popResult .tbl_write .in_table th {
+            color: #6d7175;
+            font-weight: 600;
+            font-size: 13px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popResult .tbl_write .in_table th + th {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popResult .tbl_write .in_table td {
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popResult .tbl_write .in_table td + td {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popResult .tbl_write div + div {
+            margin-top: 12px
+        }
+
+        #popResult .tbl_write > thead > tr > th {
+            height: 52px;
+            padding: 14px 16px;
+            font-weight: 400;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            background-color: #f9f9f9
+        }
+
+        #popResult .tbl_write > thead > tr > td {
+            padding: 2px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+        }
     </style>
     <script type="text/javascript">
         $(function () {
@@ -335,6 +391,30 @@
             });
         }
 
+        function fn_result(el){
+            let itexPrecision = $(el).data('itex-precision');
+            let itexRecall = $(el).data('itex-recall');
+            let itexF1Score = $(el).data('itex-f1-score');
+            let bsnsPrecision = $(el).data('bsns-precision');
+            let bsnsRecall = $(el).data('bsns-recall');
+            let bsnsF1Score = $(el).data('bsns-f1-score');
+            let prfrPrecision = $(el).data('prfr-precision');
+            let prfrRecall = $(el).data('prfr-recall');
+            let prfrF1Score = $(el).data('prfr-f1-score');
+
+            $('#itexPrecision').text(itexPrecision != null ? itexPrecision : '-');
+            $('#itexRecall').text(itexRecall != null ? itexRecall : '-');
+            $('#itexF1Score').text(itexF1Score != null ? itexF1Score : '-');
+            $('#bsnsPrecision').text(bsnsPrecision != null ? bsnsPrecision : '-');
+            $('#bsnsRecall').text(bsnsRecall != null ? bsnsRecall : '-');
+            $('#bsnsF1Score').text(bsnsF1Score != null ? bsnsF1Score : '-');
+            $('#prfrPrecision').text(prfrPrecision != null ? prfrPrecision : '-');
+            $('#prfrRecall').text(prfrRecall != null ? prfrRecall : '-');
+            $('#prfrF1Score').text(prfrF1Score != null ? prfrF1Score : '-');
+
+            layerShow('popResult');
+        }
+
 
     </script>
 </head>
@@ -488,9 +568,7 @@
                     <col style="width: 7%;">
                     <col style="width: 7%;">
                     <col style="width: 7%;">
-                    <col style="width: 7%;">
-                    <col style="width: 7%;">
-                    <col style="width: 7%;">
+                    <col style="width:8%;">
                     <col style="width:8%;">
                 </colgroup>
                 <thead>
@@ -509,13 +587,11 @@
                     <th scope="col">대상</th>
                     <th scope="col">등록자</th>
                     <th scope="col">상태</th>
-                    <th scope="col">Precision</th>
-                    <th scope="col">recall</th>
-                    <th scope="col">F-1 <span class="dib">Score</span></th>
                     <th scope="col">epoch</th>
                     <th scope="col">Learning <span class="dib">Rate</span></th>
                     <th scope="col">Batch <span class="dib">Size</span></th>
                     <th scope="col">생성일시</th>
+                    <th scope="col">결과보기</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -551,13 +627,26 @@
                         <div th:if="${item.deployStatus eq '3'}" class="badge fill_blue_green">학습 완료</div>
                         <div th:if="${item.deployStatus eq '4'}" class="badge fill_error10">학습 오류</div>
                     </td>
-                    <td th:text="${item.precision ne null ? item.precision + '%' : '-'}">97%</td>
-                    <td th:text="${item.recall ne null ? item.epoch + '%' : '-'}">75%</td>
-                    <td th:text="${item.f1Score ne null ? item.f1Score + '%' : '-'}">97%</td>
                     <td th:text="${item.epoch ne null ? item.epoch : '-'}">100</td>
                     <td th:text="${item.learningRate ne null ? item.learningRate : '-'}">0.02</td>
                     <td th:text="${item.batchSize ne null ? item.batchSize : '-'}">32</td>
                     <td th:text="${#temporals.format(item.createDtm, 'yyyy-MM-dd')}">2022.07.30</td>
+                    <td>
+                        <button type="button" class="badge" onclick="fn_result(this)"
+                                th:data-itex-precision="${item.bdgtItexFrcsConPrecision}"
+                                th:data-itex-recall="${item.bdgtItexFrcsConRecall}"
+                                th:data-itex-f1-score="${item.bdgtItexFrcsConF1Score}"
+                                th:data-bsns-precision="${item.bdgtBsnsFrcsConPrecision}"
+                                th:data-bsns-recall="${item.bdgtBsnsFrcsConRecall}"
+                                th:data-bsns-f1-score="${item.bdgtBsnsFrcsConF1Score}"
+                                th:data-prfr-precision="${item.bdgtPrfrRsnFrcsConPrecision}"
+                                th:data-prfr-recall="${item.bdgtPrfrRsnFrcsConRecall}"
+                                th:data-prfr-f1-score="${item.bdgtPrfrRsnFrcsConF1Score}">
+                            <input type="hidden" id="0_1" value="first">
+                            <i class="ico_plus"></i>
+                            <span>결과보기</span>
+                        </button>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -767,6 +856,139 @@
     </div>
 </div>
 <!--학습데이터 팝업 : e-->
+<!--결과 팝업 : s-->
+<div id="popResult" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_head">
+            <strong class="pop_tit">정밀도 결과</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popResult')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <table class="tbl_write">
+                <caption>결과보기 : 예산비목정보내용, 예산사업ID내용, 비목집행사유내용으로 구성</caption>
+                <colgroup>
+                    <col style="width:180px">
+                    <col style="width:auto">
+                </colgroup>
+                <tbody id="tbody">
+                <tr>
+                    <th scope="row">예산비목정보내용<br>(비목코드)</th>
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>Precision</td>
+                                                <td id="itexPrecision"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>recall</td>
+                                                <td id="itexRecall"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>F1Score</td>
+                                                <td id="itexF1Score"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">예산사업ID내용<br>(부점코드-사업-세부사업)</th>
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>Precision</td>
+                                                <td id="bsnsPrecision"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>recall</td>
+                                                <td id="bsnsRecall"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>F1Score</td>
+                                                <td id="bsnsF1Score"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">비목집행사유내용<br>(비목-집행사유코드)</th>
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>Precision</td>
+                                                <td id="prfrPrecision"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>recall</td>
+                                                <td id="prfrRecall"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>F1Score</td>
+                                                <td id="prfrF1Score"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--결과 팝업 : e-->
 <div style="display: none">
     <select>
         <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
