@@ -102,6 +102,7 @@
             $('#stHour').val('00').niceSelect('update');
             $('#stMin').val('00').niceSelect('update');
             $('#useAtY').prop('checked', true);
+            $('#des').val('');
 
             layerShow('popRegister');
         }
@@ -131,6 +132,7 @@
                     $('#stHour').val(timeParts[0]).niceSelect('update');
                     $('#stMin').val(timeParts[1]).niceSelect('update');
                     $('#useAt' + data.useAt).prop('checked', true);
+                    $('#des').val(data.des);
                     layerShow('popRegister');
                 },
                 error: function () {
@@ -222,7 +224,8 @@
                     "stDt": $('#stYmd').val() + ' ' + [$('#stHour').val(), $('#stMin').val()].join(":"),
                     "stYmd": $('#stYmd').val().replaceAll('.', '-'),
                     "stTime": [$('#stHour').val(), $('#stMin').val()].join(":") + ':00',
-                    "useAt": $('[name=useAt]:checked').val()
+                    "useAt": $('[name=useAt]:checked').val(),
+                    "des": $('#des').val()
                 }
 
                 $.ajax({
@@ -473,7 +476,7 @@
                     <td th:text="${item.useAt != null && item.useAt == 'Y' ? '사용' : '미사용'}">사용</td>
                     <td th:text="${#temporals.format(item.regDt, 'yyyy-MM-dd hh:mm:ss')}"></td>
                     <td th:text="${#temporals.format(item.regDt, 'yyyy-MM-dd hh:mm:ss')}"></td>
-                    <td>배치설명</td>
+                    <td th:text="${item.des != null && item.des != '' ? item.des : '-'}">배치설명</td>
                 </tr>
                 </tbody>
             </table>
@@ -503,11 +506,11 @@
                 <tbody>
                 <tr>
                     <th scope="row">
-                        <label for="schedNm">학습 스케줄러명</label>
+                        <label for="schedNm">이름</label>
                         <span class="aster"></span>
                     </th>
                     <td>
-                        <input type="text" id="schedNm" name="schedNm" class="w250" maxlength="500">
+                        <input type="text" id="schedNm" name="schedNm" class="w250" maxlength="500" placeholder="이름을 입력하세요.">
                     </td>
                 </tr>
                 <tr>
@@ -672,7 +675,14 @@
                         </div>
                     </td>
                 </tr>
-
+                <tr>
+                    <th scope="row">
+                        <label for="des">배치 설명</label>
+                    </th>
+                    <td>
+                        <input type="text" id="des" name="des" class="w250" maxlength="500" placeholder="배치 설명을 입력하세요.">
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>

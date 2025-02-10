@@ -51,9 +51,9 @@
 
     <insert id="setInsert" parameterType="LearningSchedulerForm">
         insert into maummcc.LEARNING_SCHEDULER
-        (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, TEMPLATE_ID)
+        (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, TEMPLATE_ID, DES)
         values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(),
-                #{modId}, current_timestamp(), 'N', #{templateId});
+                #{modId}, current_timestamp(), 'N', #{templateId}, #{des});
     </insert>
 
     <update id="setUpdate" parameterType="LearningSchedulerForm">
@@ -66,7 +66,8 @@
             USE_AT       = #{useAt},
             MOD_ID       = #{modId},
             MOD_DT       = current_timestamp(),
-            TEMPLATE_ID  = #{templateId}
+            TEMPLATE_ID  = #{templateId},
+            DES  = #{des}
         where SCHED_ID = #{schedId};
     </update>
 
@@ -97,6 +98,7 @@
         , ls.ST_YMD
         , ls.ST_TIME
         , ls.USE_AT
+        , ls.DES
     </sql>
 
     <sql id="where">
