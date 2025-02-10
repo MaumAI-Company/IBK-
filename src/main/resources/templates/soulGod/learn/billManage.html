@@ -349,6 +349,7 @@
 
                     // 검색 조건 있는 경우 등록버튼 활성화
                     $('#saveBtn').attr('disabled', !$('#searchJson').val());
+                    $('#searchKeyword').prop('disabled', true);
                 },
                 error: function (error) {
                     console.log(error);
