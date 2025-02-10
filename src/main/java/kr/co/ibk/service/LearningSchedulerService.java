@@ -59,7 +59,6 @@ public class LearningSchedulerService extends _BaseService {
     }
 
     public LearningSchedulerInfo getDetail(Integer schedId) {
-        // TODO : 학습 데이터 id 매핑
         return learningSchedulerRepository.getDetail(schedId);
     }
 
@@ -77,6 +76,7 @@ public class LearningSchedulerService extends _BaseService {
             learningSchedulerRepository.setInsert(form);
         } else {
             learningSchedulerRepository.setUpdate(form);
+            learningDataRepository.updateNullAllBySchedId(form.getSchedId()); // 학습데이터 > 스케줄러 ID 초기화
         }
 
         // 템플릿 조회
@@ -93,8 +93,16 @@ public class LearningSchedulerService extends _BaseService {
         dataForm.setSelectCon(templateInfo.getSelectCon());
         dataForm.setHdqrBobDcd(templateInfo.getHdqrBobDcd());
         dataForm.setTemplateId(form.getTemplateId());
-        dataForm.setStartDt(LocalDateTime.now().minusMonths(form.getBdgtPrfrYm()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        dataForm.setEndDt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        dataForm.setStartDt(LocalDateTime.now()
+                .minusMonths(form.getBdgtPrfrYmTerm())
+                .withDayOfMonth(1)
+                .toLocalDate()
+                .atStartOfDay()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        dataForm.setEndDt(LocalDateTime.now()
+                .toLocalDate()
+                .atStartOfDay()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         learningDataRepository.insert(dataForm);
         saveCnt = learningDataInputRepository.insertList(dataForm.getId(), inputArr, InOutGbnType.INPUT.name());
         saveCnt += learningDataInputRepository.insertList(dataForm.getId(), outputArr, InOutGbnType.OUTPUT.name());

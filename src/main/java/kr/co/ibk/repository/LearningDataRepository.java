@@ -24,4 +24,6 @@ public interface LearningDataRepository {
     LearningDataInfo getLoad(Integer id);
 
     Long deleteAllById(Integer[] idArr);
+
+    void updateNullAllBySchedId(@Param("schedId") Integer schedId);
 }

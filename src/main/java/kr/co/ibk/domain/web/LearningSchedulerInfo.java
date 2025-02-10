@@ -1,5 +1,6 @@
 package kr.co.ibk.domain.web;
 
+import kr.co.ibk.domain.enums.LearningType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,8 +31,15 @@ public class LearningSchedulerInfo {
     private String learningModelId; /*모델관리 ID*/
     private Long templateId; /* 템플릿 ID*/
     private String des; /* 배치설명 */
+
     private String templateName; /* 템플릿 명*/
     private String regNm; /* 등록자 */
+    private String epoch;
+    private String learningRate;
+    private String batchSize;
+    private LocalDateTime deployDt;  //'배포일',
+    private LearningType learningType;
+    private String bdgtPrfrYmTerm;
 
 }
 
