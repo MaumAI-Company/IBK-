@@ -36,6 +36,7 @@ public class LearningSchedulerForm extends PageForm {
     private String epoch;
     private String learningRate;
     private String batchSize;
+    private String des;
 
     private Integer schedId;
 

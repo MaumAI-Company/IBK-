@@ -55,7 +55,7 @@ public class MccService {
             modelCfg.put("batch_size", info.getBatchSize());
             modelCfg.put("epochs", info.getEpoch());
             params.put("model_cfg", modelCfg);
-            params.put("file_name", info.getFilePath() + File.separator + info.getFileName());
+            params.put("file_name", info.getFileName());
 //            params.put("file_name", "test.txt");
 
             new Thread(new Runnable() {
@@ -79,7 +79,7 @@ public class MccService {
         if (info == null) {
             return;
         }
-        
+
         try {
             /*LearningModelForm form = new LearningModelForm();
             form.setId(modelId);

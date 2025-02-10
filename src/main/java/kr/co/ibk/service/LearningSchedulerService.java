@@ -84,11 +84,11 @@ public class LearningSchedulerService extends _BaseService {
         List<Map<String, Object>> inputArr = convertToMap(templateInputRepository.getPartList(form.getTemplateId(), InOutGbnType.INPUT.name()));
         List<Map<String, Object>> outputArr = convertToMap(templateInputRepository.getPartList(form.getTemplateId(), InOutGbnType.OUTPUT.name()));
 
-        // TODO : 학습 데이터 id 매핑
         // 학습 데이터 복사
         LearningDataForm dataForm = new LearningDataForm();
-        dataForm.setDataName("[배치]" + form.getSchedNm());
+        dataForm.setSchedId(form.getSchedId());
         dataForm.setMemId(memberInfo.getMemId());
+        dataForm.setDataName("[배치]" + form.getSchedNm());
         dataForm.setLearningType(templateInfo.getLearningType());
         dataForm.setSelectCon(templateInfo.getSelectCon());
         dataForm.setHdqrBobDcd(templateInfo.getHdqrBobDcd());

@@ -14,7 +14,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -61,7 +61,7 @@ public class ReportController extends BaseCont {
                                     @RequestParam(name = "searchTarget", required = false) String searchTarget,
                                     @RequestParam(name = "searchTypeJson", required = false) String searchTypeJson,
                                     @RequestParam(name = "sorting", required = false) String sorting,
-                                    HttpServletResponse response) throws UnsupportedEncodingException {
+                                    HttpServletResponse response) throws IOException {
 
         CardInputForm params = new CardInputForm();
         params.setSearchStartDate(searchStartDate);
@@ -130,7 +130,7 @@ public class ReportController extends BaseCont {
                                     @RequestParam(name = "searchTarget", required = false) String searchTarget,
                                     @RequestParam(name = "searchTypeJson", required = false) String searchTypeJson,
                                     @RequestParam(name = "sorting", required = false) String sorting,
-                                    HttpServletResponse response) throws UnsupportedEncodingException {
+                                    HttpServletResponse response) throws IOException {
 
         BillInputForm params = new BillInputForm();
         params.setSearchStartDate(searchStartDate);

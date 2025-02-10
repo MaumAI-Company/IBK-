@@ -29,6 +29,7 @@ public class LearningSchedulerInfo {
     private String delAt; /*삭제여부*/
     private String learningModelId; /*모델관리 ID*/
     private Long templateId; /* 템플릿 ID*/
+    private String des; /* 배치설명 */
     private String templateName; /* 템플릿 명*/
     private String regNm; /* 등록자 */
 

@@ -1,28 +1,27 @@
 package kr.co.ibk.service;
 
-import kr.co.ibk.common.utils.NullHelper;
 import kr.co.ibk.domain.web.BillInputInfo;
 import kr.co.ibk.model.BillInputForm;
 import kr.co.ibk.model.paging.PaginationInfo;
 import kr.co.ibk.repository.BillInputRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -90,152 +89,116 @@ public class BillInputService extends _BaseService {
         return billInputRepository.getDetail(params);
     }
 
-    public void reportBillExcelDown(HttpServletResponse response, List<BillInputInfo> excelList) throws UnsupportedEncodingException {
-        final String fileName = "세금계산서 지급결의 내역_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".xlsx";
+    public void reportBillExcelDown(HttpServletResponse response, List<BillInputInfo> excelList) throws IOException {
+        final int batchSize = 20000;
+        int totalRecords = excelList.size();
+        int fileIndex = 1;
+        int processedRecords = 0;
+        String zipFileName = "세금계산서_지급결의_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".zip";
+        String tempDir = System.getProperty("java.io.tmpdir");
+        List<File> generatedFiles = new java.util.ArrayList<>();
 
-        final String[] colNames1 = {
-                "No"
-                , "대상"
-                , "세금계산서구분코드"
-                , "공급자사업자번호"
-                , "공급자상호명"
-                , "공급자업태명"
-                , "공급자종목명"
-                , "발행금액"
-                , "세금계산서품목명"
-                , "예산관리비목관리번호"
-                , "예산집행사유코드"
-                , "사업세부사업"
-                , "결과등록년월일"
-        };
+        while (processedRecords < totalRecords) {
+            String fileName = "세금계산서_지급결의_" + fileIndex + "_" +
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".xlsx";
+            File excelFile = new File(tempDir, fileName);
+            generatedFiles.add(excelFile);
 
-        final int[] colWidths = {4000, 8000, 6000, 8000, 8000, 6000, 4000, 6000, 8000, 8000, 8000, 8000, 8000};
+            try (SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+                 FileOutputStream fileOutputStream = new FileOutputStream(excelFile)) {
 
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = null;
-        XSSFCell cell = null;
-        XSSFRow row = null;
+                Sheet sheet = workbook.createSheet("세금계산서 지급결의 내역");
 
-        int rowCnt = 0;
+                // ✅ 열 제목
+                String[] colNames1 = {
+                        "No", "대상", "세금계산서구분코드", "공급자사업자번호", "공급자상호명", "공급자업태명", "공급자종목명",
+                        "발행금액", "세금계산서품목명", "예산관리비목관리번호", "예산집행사유코드", "사업세부사업", "결과등록년월일"
+                };
 
-        sheet = workbook.createSheet("세금계산서 지급결의 내역");
+                CellStyle headerCellStyle = workbook.createCellStyle();
+                headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+                headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
+                headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerCellStyle.setBorderBottom(BorderStyle.THIN);
+                headerCellStyle.setBorderLeft(BorderStyle.THIN);
+                headerCellStyle.setBorderRight(BorderStyle.THIN);
+                headerCellStyle.setBorderTop(BorderStyle.THIN);
 
-        // 제목 스타일
-        CellStyle headerCellStyle = workbook.createCellStyle();
-        headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
-        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-        headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        headerCellStyle.setBorderBottom(BorderStyle.THIN);
-        headerCellStyle.setBorderLeft(BorderStyle.THIN);
-        headerCellStyle.setBorderRight(BorderStyle.THIN);
-        headerCellStyle.setBorderTop(BorderStyle.THIN);
+                Row row = sheet.createRow(0);
+                for (int i = 0; i < colNames1.length; i++) {
+                    Cell cell = row.createCell(i);
+                    cell.setCellValue(colNames1[i]);
+                    cell.setCellStyle(headerCellStyle);
+                }
 
-        // 텍스트 형식 스타일 (가운데 정렬)
-        CellStyle cellStyle = workbook.createCellStyle();
-        cellStyle.setAlignment(HorizontalAlignment.CENTER);
-        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        cellStyle.setBorderBottom(BorderStyle.THIN);
-        cellStyle.setBorderLeft(BorderStyle.THIN);
-        cellStyle.setBorderRight(BorderStyle.THIN);
-        cellStyle.setBorderTop(BorderStyle.THIN);
+                int rowCnt = 1;
+                int batchEnd = Math.min(processedRecords + batchSize, totalRecords); // 2만 건씩 처리
 
-        // 텍스트 형식 스타일 (왼쪽 정렬)
-        CellStyle cellStyle2 = workbook.createCellStyle();
-        cellStyle2.setAlignment(HorizontalAlignment.LEFT);
-        cellStyle2.setVerticalAlignment(VerticalAlignment.CENTER);
-        cellStyle2.setBorderBottom(BorderStyle.THIN);
-        cellStyle2.setBorderLeft(BorderStyle.THIN);
-        cellStyle2.setBorderRight(BorderStyle.THIN);
-        cellStyle2.setBorderTop(BorderStyle.THIN);
+                for (int i = processedRecords; i < batchEnd; i++) {
+                    BillInputInfo item = excelList.get(i);
+                    row = sheet.createRow(rowCnt++);
+                    int cellCnt = 0;
 
-        // 숫자 형식 스타일
-        CellStyle cellStyle3 = workbook.createCellStyle();
-        cellStyle3.setAlignment(HorizontalAlignment.RIGHT);
-        cellStyle3.setVerticalAlignment(VerticalAlignment.CENTER);
-        cellStyle3.setBorderBottom(BorderStyle.THIN);
-        cellStyle3.setBorderLeft(BorderStyle.THIN);
-        cellStyle3.setBorderRight(BorderStyle.THIN);
-        cellStyle3.setBorderTop(BorderStyle.THIN);
-        cellStyle3.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0"));
+                    row.createCell(cellCnt++).setCellValue(totalRecords - i); // No
+                    row.createCell(cellCnt++).setCellValue(item.getHdqrBobDcd() == null ? "-" : ("1".equals(item.getHdqrBobDcd()) ? "본부" : "영업점"));
+                    row.createCell(cellCnt++).setCellValue(item.getTxblDcd() == null ? "-" : item.getTxblDcd());
+                    row.createCell(cellCnt++).setCellValue(item.getSplrBsnnNo() == null ? "-" : item.getSplrBsnnNo());
+                    row.createCell(cellCnt++).setCellValue(item.getSplrFrm() == null ? "-" : item.getSplrFrm());
+                    row.createCell(cellCnt++).setCellValue(item.getSplrBzstNm() == null ? "-" : item.getSplrBzstNm());
+                    row.createCell(cellCnt++).setCellValue(item.getSplrItmsNm() == null ? "-" : item.getSplrItmsNm());
+                    row.createCell(cellCnt++).setCellValue(item.getIssAmt() == null ? "-" : item.getIssAmt().toString());
+                    row.createCell(cellCnt++).setCellValue(item.getTxblLsarNm() == null ? "-" : item.getTxblLsarNm());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtItexFrcsPrbCon() == null ? "-" : item.getBdgtItexFrcsPrbCon());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtBsnsFrcsPrbCon() == null ? "-" : item.getBdgtBsnsFrcsPrbCon());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtPrfrRsnFrcsCon() == null ? "-" : item.getBdgtPrfrRsnFrcsCon());
+                    row.createCell(cellCnt++).setCellValue(item.getRsreYmd() == null ? "-" : item.getRsreYmd());
 
-        row = sheet.createRow(rowCnt++);
-        for (int i = 0; i < colNames1.length; i++) {
-            cell = row.createCell(i);
-            cell.setCellValue(colNames1[i]);
-            sheet.setColumnWidth(i, colWidths[i]);
-            cell.setCellStyle(headerCellStyle);
-        }
-        int cellCnt = 0;
+                    if (rowCnt % 100 == 0) {
+                        ((SXSSFSheet) sheet).flushRows(100);
+                    }
+                }
 
-        AtomicInteger index = new AtomicInteger();
-        int totalRecords = excelList.size(); // No
-        for (BillInputInfo item : excelList) {
-            index.getAndIncrement();
+                workbook.write(fileOutputStream);
+                workbook.dispose();
+            }
 
-            cellCnt = 0;
-            row = sheet.createRow(rowCnt++);
-
-            cell = row.createCell(cellCnt++); // No
-            cell.setCellValue(totalRecords--);
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 대상
-            cell.setCellValue(NullHelper.isNull(item.getHdqrBobDcd()) ? "-" : ("1".equals(item.getHdqrBobDcd()) ? "본부" : "영업점"));
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 세금계산서구분코드
-            cell.setCellValue(NullHelper.isNull(item.getTxblDcd()) ? "-" : item.getTxblDcd());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 공급자사업자번호
-            cell.setCellValue(NullHelper.isNull(item.getSplrBsnnNo()) ? "-" : item.getSplrBsnnNo());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 공급자상호명
-            cell.setCellValue(NullHelper.isNull(item.getSplrFrm()) ? "-" : item.getSplrFrm());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 공급자업태명
-            cell.setCellValue(NullHelper.isNull(item.getSplrBzstNm()) ? "-" : item.getSplrBzstNm());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 공급자종목명
-            cell.setCellValue(NullHelper.isNull(item.getSplrItmsNm()) ? "-" : item.getSplrItmsNm());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 발행금액
-            cell.setCellValue(String.valueOf(NullHelper.isNull(item.getIssAmt()) ? "-" : item.getIssAmt()));
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 세금계산서품목명
-            cell.setCellValue(NullHelper.isNull(item.getTxblLsarNm()) ? "-" : item.getTxblLsarNm());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 예산관리비목관리번호
-            cell.setCellValue(NullHelper.isNull(item.getBdgtItexFrcsPrbCon()) ? "-" : item.getBdgtItexFrcsPrbCon());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 사업세부사업
-            cell.setCellValue(NullHelper.isNull(item.getBdgtPrfrRsnFrcsCon()) ? "-" : item.getBdgtPrfrRsnFrcsCon());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 예산집행사유코드
-            cell.setCellValue(NullHelper.isNull(item.getBdgtBsnsFrcsPrbCon()) ? "-" : item.getBdgtPrfrRsnFrcsCon());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 결과등록년월일
-            cell.setCellValue(NullHelper.isNull(item.getRsreYmd()) ? "-" : item.getRsreYmd());
-            cell.setCellStyle(cellStyle);
+            processedRecords += batchSize;
+            fileIndex++;
         }
 
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes("KSC5601"), "8859_1"));
+        File zipFile = new File(System.getProperty("java.io.tmpdir"), zipFileName);
 
-        try {
-            workbook.write(response.getOutputStream());
-        } catch (Exception e) {
-            e.printStackTrace();
+        try (FileOutputStream fos = new FileOutputStream(zipFile);
+             ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+            for (File file : generatedFiles) {
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    ZipEntry zipEntry = new ZipEntry(file.getName());
+                    zipOut.putNextEntry(zipEntry);
+                    byte[] bytes = new byte[1024];
+                    int length;
+                    while ((length = fis.read(bytes)) >= 0) {
+                        zipOut.write(bytes, 0, length);
+                    }
+                }
+            }
         }
+
+        response.setContentType("application/zip");
+        response.setHeader("Content-Disposition", "attachment;filename=" + new String(zipFileName.getBytes("KSC5601"), "8859_1"));
+
+        try (InputStream inputStream = Files.newInputStream(Paths.get(zipFile.getAbsolutePath()));
+             OutputStream outputStream = response.getOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+        }
+
+        for (File file : generatedFiles) {
+            file.delete();
+        }
+        zipFile.delete();
     }
 }

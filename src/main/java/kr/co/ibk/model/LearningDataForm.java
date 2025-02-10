@@ -25,6 +25,7 @@ public class LearningDataForm extends PageForm {
     private String templateAt;
     private Integer templateId;
     private String templateName;
+    private Integer schedId;
     List<Map<String, Object>> inputArr;
     List<Map<String, Object>> outputArr;
 

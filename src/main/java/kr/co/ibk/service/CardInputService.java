@@ -1,28 +1,27 @@
 package kr.co.ibk.service;
 
-import kr.co.ibk.common.utils.NullHelper;
 import kr.co.ibk.domain.web.CardInputInfo;
 import kr.co.ibk.model.CardInputForm;
 import kr.co.ibk.model.paging.PaginationInfo;
 import kr.co.ibk.repository.CardInputRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -91,177 +90,122 @@ public class CardInputService extends _BaseService {
     }
 
 
-    public void reportCardExcelDown(HttpServletResponse response, List<CardInputInfo> excelList) throws UnsupportedEncodingException {
-        final String fileName = "BC카드 지급결의 내역_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".xlsx";
+    public void reportCardExcelDown(HttpServletResponse response, List<CardInputInfo> excelList) throws IOException {
+        final int batchSize = 20000;
+        int totalRecords = excelList.size();
+        int fileIndex = 1;
+        int processedRecords = 0;
 
-        final String[] colNames1 = {
-                "No"
-                , "대상"
-                , "부점코드"
-                , "카드번호"
-                , "승인시간"
-                , "영업일 여부"
-                , "매출금액"
-                , "가맹점명"
-                , "업종명"
-                , "가맹점 사업자 등록번호"
-                , "매출 가맹점 번호"
-                , "가맹점 업종코드"
-                , "가맹점 상세 주소"
-                , "부점주소"
-                , "예산관리비목관리번호"
-                , "예산집행사유코드"
-                , "사업세부사업"
-                , "결과등록년월일"
-        };
+        String zipFileName = "BC카드_지급결의_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".zip";
+        String tempDir = System.getProperty("java.io.tmpdir"); // OS별 임시 폴더 사용
+        List<File> generatedFiles = new java.util.ArrayList<>();
 
-        final int[] colWidths = {4000, 8000, 8000, 8000, 4000, 6000, 4000, 6000, 6000, 6000, 4000, 6000, 6000, 8000, 8000, 8000, 8000, 8000};
+        while (processedRecords < totalRecords) {
+            String fileName = "BC카드_지급결의_" + fileIndex + "_" +
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".xlsx";
+            File excelFile = new File(tempDir, fileName);
+            generatedFiles.add(excelFile);
 
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = null;
-        XSSFCell cell = null;
-        XSSFRow row = null;
+            try (SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+                 FileOutputStream fileOutputStream = new FileOutputStream(excelFile)) {
 
-        int rowCnt = 0;
+                Sheet sheet = workbook.createSheet("BC카드 지급결의 내역");
 
-        sheet = workbook.createSheet("BC카드 지급결의 내역");
+                String[] colNames1 = {
+                        "No", "대상", "부점코드", "카드번호", "승인시간", "영업일 여부", "매출금액",
+                        "가맹점명", "업종명", "가맹점 사업자 등록번호", "매출 가맹점 번호", "가맹점 업종코드",
+                        "가맹점 상세 주소", "부점주소", "예산관리비목관리번호", "예산집행사유코드", "사업세부사업", "결과등록년월일"
+                };
 
-        // 제목 스타일
-        CellStyle headerCellStyle = workbook.createCellStyle();
-        headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
-        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-        headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        headerCellStyle.setBorderBottom(BorderStyle.THIN);
-        headerCellStyle.setBorderLeft(BorderStyle.THIN);
-        headerCellStyle.setBorderRight(BorderStyle.THIN);
-        headerCellStyle.setBorderTop(BorderStyle.THIN);
+                CellStyle headerCellStyle = workbook.createCellStyle();
+                headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+                headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
+                headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerCellStyle.setBorderBottom(BorderStyle.THIN);
+                headerCellStyle.setBorderLeft(BorderStyle.THIN);
+                headerCellStyle.setBorderRight(BorderStyle.THIN);
+                headerCellStyle.setBorderTop(BorderStyle.THIN);
 
-        // 텍스트 형식 스타일 (가운데 정렬)
-        CellStyle cellStyle = workbook.createCellStyle();
-        cellStyle.setAlignment(HorizontalAlignment.CENTER);
-        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        cellStyle.setBorderBottom(BorderStyle.THIN);
-        cellStyle.setBorderLeft(BorderStyle.THIN);
-        cellStyle.setBorderRight(BorderStyle.THIN);
-        cellStyle.setBorderTop(BorderStyle.THIN);
+                Row row = sheet.createRow(0);
+                for (int i = 0; i < colNames1.length; i++) {
+                    Cell cell = row.createCell(i);
+                    cell.setCellValue(colNames1[i]);
+                    cell.setCellStyle(headerCellStyle);
+                }
 
-        // 텍스트 형식 스타일 (왼쪽 정렬)
-        CellStyle cellStyle2 = workbook.createCellStyle();
-        cellStyle2.setAlignment(HorizontalAlignment.LEFT);
-        cellStyle2.setVerticalAlignment(VerticalAlignment.CENTER);
-        cellStyle2.setBorderBottom(BorderStyle.THIN);
-        cellStyle2.setBorderLeft(BorderStyle.THIN);
-        cellStyle2.setBorderRight(BorderStyle.THIN);
-        cellStyle2.setBorderTop(BorderStyle.THIN);
+                int rowCnt = 1;
+                int batchEnd = Math.min(processedRecords + batchSize, totalRecords);
 
-        // 숫자 형식 스타일
-        CellStyle cellStyle3 = workbook.createCellStyle();
-        cellStyle3.setAlignment(HorizontalAlignment.RIGHT);
-        cellStyle3.setVerticalAlignment(VerticalAlignment.CENTER);
-        cellStyle3.setBorderBottom(BorderStyle.THIN);
-        cellStyle3.setBorderLeft(BorderStyle.THIN);
-        cellStyle3.setBorderRight(BorderStyle.THIN);
-        cellStyle3.setBorderTop(BorderStyle.THIN);
-        cellStyle3.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0"));
+                for (int i = processedRecords; i < batchEnd; i++) {
+                    CardInputInfo item = excelList.get(i);
+                    row = sheet.createRow(rowCnt++);
+                    int cellCnt = 0;
 
-        row = sheet.createRow(rowCnt++);
-        for (int i = 0; i < colNames1.length; i++) {
-            cell = row.createCell(i);
-            cell.setCellValue(colNames1[i]);
-            sheet.setColumnWidth(i, colWidths[i]);
-            cell.setCellStyle(headerCellStyle);
-        }
-        int cellCnt = 0;
+                    row.createCell(cellCnt++).setCellValue(totalRecords - i); // No
+                    row.createCell(cellCnt++).setCellValue(item.getHdqrBobDcd() == null ? "-" : ("1".equals(item.getHdqrBobDcd()) ? "본부" : "영업점"));
+                    row.createCell(cellCnt++).setCellValue(item.getBrcd() == null ? "-" : item.getBrcd());
+                    row.createCell(cellCnt++).setCellValue(item.getCdn() == null ? "-" : item.getCdn());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtTstmUseHms() == null ? "-" : item.getBdgtTstmUseHms());
+                    row.createCell(cellCnt++).setCellValue(item.getBzdyYn() == null ? "-" : item.getBzdyYn());
+                    row.createCell(cellCnt++).setCellValue(item.getAmslAmt() == null ? "-" : item.getAmslAmt().toString());
+                    row.createCell(cellCnt++).setCellValue(item.getAfstNm() == null ? "-" : item.getAfstNm());
+                    row.createCell(cellCnt++).setCellValue(item.getTpbsNm() == null ? "-" : item.getTpbsNm());
+                    row.createCell(cellCnt++).setCellValue(item.getAfstBzn() == null ? "-" : item.getAfstBzn());
+                    row.createCell(cellCnt++).setCellValue(item.getAmslAfstNo() == null ? "-" : item.getAmslAfstNo());
+                    row.createCell(cellCnt++).setCellValue(item.getAfstTpbcd() == null ? "-" : item.getAfstTpbcd());
+                    row.createCell(cellCnt++).setCellValue(item.getAfstDtlAdr() == null ? "-" : item.getAfstDtlAdr());
+                    row.createCell(cellCnt++).setCellValue(item.getBrncAdr() == null ? "-" : item.getBrncAdr());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtItexFrcsCon() == null ? "-" : item.getBdgtItexFrcsCon());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtBsnsFrcsCon() == null ? "-" : item.getBdgtBsnsFrcsCon());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtPrfrRsnFrcsCon() == null ? "-" : item.getBdgtPrfrRsnFrcsCon());
+                    row.createCell(cellCnt++).setCellValue(item.getRsreYmd() == null ? "-" : item.getRsreYmd());
 
-        AtomicInteger index = new AtomicInteger();
-        int totalRecords = excelList.size(); // No
-        for (CardInputInfo item : excelList) {
-            index.getAndIncrement();
+                    if (rowCnt % 100 == 0) {
+                        ((SXSSFSheet) sheet).flushRows(100);
+                    }
+                }
 
-            cellCnt = 0;
-            row = sheet.createRow(rowCnt++);
+                workbook.write(fileOutputStream);
+                workbook.dispose();
+            }
 
-            cell = row.createCell(cellCnt++); // No
-            cell.setCellValue(totalRecords--);
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 대상
-            cell.setCellValue(NullHelper.isNull(item.getHdqrBobDcd()) ? "-" : ("1".equals(item.getHdqrBobDcd()) ? "본부" : "영업점"));
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 부점코드
-            cell.setCellValue(NullHelper.isNull(item.getBrcd()) ? "-" : item.getBrcd());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 카드번호
-            cell.setCellValue(NullHelper.isNull(item.getCdn()) ? "-" : item.getCdn());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 승인시간
-            cell.setCellValue(NullHelper.isNull(item.getBdgtTstmUseHms()) ? "-" : item.getBdgtTstmUseHms());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 영업일 여부
-            cell.setCellValue(NullHelper.isNull(item.getBzdyYn()) ? "-" : item.getBzdyYn());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 매출금액
-            cell.setCellValue(String.valueOf(NullHelper.isNull(item.getAmslAmt()) ? "-" : item.getAmslAmt()));
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 가맹점명
-            cell.setCellValue(NullHelper.isNull(item.getAfstNm()) ? "-" : item.getAfstNm());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 업종명
-            cell.setCellValue(NullHelper.isNull(item.getTpbsNm()) ? "-" : item.getTpbsNm());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 가맹점 사업자 등록번호
-            cell.setCellValue(NullHelper.isNull(item.getAfstBzn()) ? "-" : item.getAfstBzn());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 매출 가맹점 번호
-            cell.setCellValue(NullHelper.isNull(item.getAmslAfstNo()) ? "-" : item.getAmslAfstNo());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 가맹점 업종코드
-            cell.setCellValue(NullHelper.isNull(item.getAfstTpbcd()) ? "-" : item.getAfstTpbcd());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 가맹점 상세 주소
-            cell.setCellValue(NullHelper.isNull(item.getAfstDtlAdr()) ? "-" : item.getAfstDtlAdr());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 부점주소
-            cell.setCellValue(NullHelper.isNull(item.getBrncAdr()) ? "-" : item.getBrncAdr());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 예산관리비목관리번호
-            cell.setCellValue(NullHelper.isNull(item.getBdgtItexFrcsCon()) ? "-" : item.getBdgtItexFrcsCon());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 예산집행사유코드
-            cell.setCellValue(NullHelper.isNull(item.getBdgtBsnsFrcsCon()) ? "-" : item.getBdgtBsnsFrcsCon());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 사업세부사업
-            cell.setCellValue(NullHelper.isNull(item.getBdgtPrfrRsnFrcsCon()) ? "-" : item.getBdgtPrfrRsnFrcsCon());
-            cell.setCellStyle(cellStyle);
-
-            cell = row.createCell(cellCnt++); // 결과등록년월일
-            cell.setCellValue(NullHelper.isNull(item.getRsreYmd()) ? "-" : item.getRsreYmd());
-            cell.setCellStyle(cellStyle);
+            processedRecords += batchSize;
+            fileIndex++;
         }
 
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes("KSC5601"), "8859_1"));
+        File zipFile = new File(tempDir, zipFileName);
 
-        try {
-            workbook.write(response.getOutputStream());
-        } catch (Exception e) {
-            e.printStackTrace();
+        try (FileOutputStream fos = new FileOutputStream(zipFile);
+             ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+            for (File file : generatedFiles) {
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    ZipEntry zipEntry = new ZipEntry(file.getName());
+                    zipOut.putNextEntry(zipEntry);
+                    byte[] bytes = new byte[1024];
+                    int length;
+                    while ((length = fis.read(bytes)) >= 0) {
+                        zipOut.write(bytes, 0, length);
+                    }
+                }
+            }
         }
+
+        response.setContentType("application/zip");
+        response.setHeader("Content-Disposition", "attachment;filename=" + new String(zipFileName.getBytes("KSC5601"), "8859_1"));
+
+        try (InputStream inputStream = Files.newInputStream(Paths.get(zipFile.getAbsolutePath()));
+             OutputStream outputStream = response.getOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+        }
+
+        for (File file : generatedFiles) {
+            file.delete();
+        }
+        zipFile.delete();
     }
 }
