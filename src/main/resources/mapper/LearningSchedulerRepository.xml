@@ -15,14 +15,14 @@
 
     <select id="getList" resultType="LearningSchedulerInfo" parameterType="LearningSchedulerForm">
         select
-            <include refid="columns"></include>
-            , t.TEMPLATE_NAME
-            , hm.MEM_NAME as regNm
+        <include refid="columns"></include>
+        , t.TEMPLATE_NAME
+        , hm.MEM_NAME as regNm
         from
-            LEARNING_SCHEDULER ls
+        LEARNING_SCHEDULER ls
         inner join TEMPLATE t on t.ID = ls.TEMPLATE_ID
         inner join HC_MEMBER hm on ls.REG_ID = hm.MEM_ID
-            <include refid="where"></include>
+        <include refid="where"></include>
         ORDER BY
         ls.REG_DT
         <choose>
@@ -34,53 +34,54 @@
             </otherwise>
         </choose>
         <if test="pagingAt != null and pagingAt == 'Y'.toString()">
-            <include refid="kr.co.ibk.repository.CommonRepository.paging" />
+            <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
         </if>
     </select>
 
     <select id="getDetail" resultType="LearningSchedulerInfo" parameterType="int">
         select
-            <include refid="columns"></include>
+        <include refid="columns"></include>
         , t.TEMPLATE_NAME
         from
-            LEARNING_SCHEDULER ls
-       inner join TEMPLATE t on t.ID = ls.TEMPLATE_ID
+        LEARNING_SCHEDULER ls
+        inner join TEMPLATE t on t.ID = ls.TEMPLATE_ID
         where ls.DEL_AT = 'N'
-            and ls.SCHED_ID = #{id}
+        and ls.SCHED_ID = #{id}
     </select>
 
     <insert id="setInsert" parameterType="LearningSchedulerForm">
         insert into maummcc.LEARNING_SCHEDULER
         (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, TEMPLATE_ID)
-        values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), 'N', #{templateId});
+        values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(),
+                #{modId}, current_timestamp(), 'N', #{templateId});
     </insert>
 
     <update id="setUpdate" parameterType="LearningSchedulerForm">
         update maummcc.LEARNING_SCHEDULER
-        set
-            SCHED_NM = #{schedNm},
+        set SCHED_NM     = #{schedNm},
             HDQR_BOB_DCD = #{hdqrBobDcd},
-            TERM_TY = #{termTy},
-            ST_YMD = #{stYmd},
-            ST_TIME = #{stTime},
-            USE_AT = #{useAt},
-            MOD_ID = #{modId},
-            MOD_DT = current_timestamp(),
-            TEMPLATE_ID = #{templateId}
+            TERM_TY      = #{termTy},
+            ST_YMD       = #{stYmd},
+            ST_TIME      = #{stTime},
+            USE_AT       = #{useAt},
+            MOD_ID       = #{modId},
+            MOD_DT       = current_timestamp(),
+            TEMPLATE_ID  = #{templateId}
         where SCHED_ID = #{schedId};
     </update>
 
     <update id="setDelete" parameterType="LearningSchedulerForm">
         update maummcc.LEARNING_SCHEDULER
-        set
-            DEL_AT = 'Y',
+        set DEL_AT = 'Y',
             MOD_ID = #{modId},
             MOD_DT = current_timestamp(),
-        where SCHED_ID = #{schedId};
+            where SCHED_ID = #{schedId};
     </update>
 
     <sql id="columns">
-        ls.SCHED_ID
+        ls
+        .
+        SCHED_ID
         , ls.SCHED_NM
         , ls.HDQR_BOB_DCD
         , ls.USE_AT
@@ -109,13 +110,26 @@
 
     <select id="countByInTemplateId" resultType="int">
         select
-            count(*)
+        count(*)
         from
-            LEARNING_SCHEDULER ls
+        LEARNING_SCHEDULER ls
         where
-            ls.TEMPLATE_ID in
+        ls.TEMPLATE_ID in
         <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
     </select>
+
+    <update id="deleteAllById">
+        update LEARNING_SCHEDULER ls
+        set
+        ls.DEL_AT = 'Y',
+        ls.MOD_ID = #{memId},
+        ls.MOD_DT = current_timestamp()
+        where
+        ls.SCHED_ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
 </mapper>

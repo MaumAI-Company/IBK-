@@ -62,6 +62,7 @@ public class LearningSchedulerService extends _BaseService {
         return learningSchedulerRepository.getDetail(schedId);
     }
 
+    @Transactional
     public HashMap<String, Object> save(LearningSchedulerForm form, MemberInfo memberInfo) {
 
         HashMap<String, Object> map = new HashMap<>();
@@ -72,7 +73,7 @@ public class LearningSchedulerService extends _BaseService {
         form.setRegId(memberInfo.getMemId());
 
         if (ObjectUtils.isEmpty(form.getSchedId())) {
-            saveCnt += learningSchedulerRepository.setInsert(form);
+            learningSchedulerRepository.setInsert(form);
         } else {
             learningSchedulerRepository.setUpdate(form);
         }
@@ -93,8 +94,8 @@ public class LearningSchedulerService extends _BaseService {
         dataForm.setStartDt(LocalDateTime.now().minusMonths(form.getBdgtPrfrYm()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         dataForm.setEndDt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         learningDataRepository.insert(dataForm);
-        learningDataInputRepository.insertList(dataForm.getId(), inputArr, InOutGbnType.INPUT.name());
-        learningDataInputRepository.insertList(dataForm.getId(), outputArr, InOutGbnType.OUTPUT.name());
+        saveCnt = learningDataInputRepository.insertList(dataForm.getId(), inputArr, InOutGbnType.INPUT.name());
+        saveCnt += learningDataInputRepository.insertList(dataForm.getId(), outputArr, InOutGbnType.OUTPUT.name());
 
         // 모델 복사
         LearningModelForm modelForm = new LearningModelForm();
@@ -108,8 +109,8 @@ public class LearningSchedulerService extends _BaseService {
         modelForm.setHdqrBobDcd(templateInfo.getHdqrBobDcd());
         modelForm.setLearningType(templateInfo.getLearningType());
         learningModelRepository.insert(modelForm);
-        learningModelInputRepository.insertList(modelForm.getId(), inputArr, InOutGbnType.INPUT.name());
-        learningModelInputRepository.insertList(modelForm.getId(), outputArr, InOutGbnType.OUTPUT.name());
+        saveCnt += learningModelInputRepository.insertList(modelForm.getId(), inputArr, InOutGbnType.INPUT.name());
+        saveCnt += learningModelInputRepository.insertList(modelForm.getId(), outputArr, InOutGbnType.OUTPUT.name());
 
         if (saveCnt > 0) {
             map.put("status", "SUCCESS");
@@ -117,11 +118,28 @@ public class LearningSchedulerService extends _BaseService {
         return map;
     }
 
+    @Transactional
     public int setUpdate(LearningSchedulerForm params, MemberInfo memberInfo) {
         params.setModId(memberInfo.getMemId());
         return learningSchedulerRepository.setUpdate(params);
     }
 
+    @Transactional
+    public HashMap<String, Object> deleteAllById(LearningSchedulerForm form, MemberInfo memberInfo) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("status", "FAIL");
+
+        Long deleteCnt;
+        if (!ObjectUtils.isEmpty(form.getIdArr()) && form.getIdArr().length > 0) {
+            deleteCnt = learningSchedulerRepository.deleteAllById(form.getIdArr(), memberInfo.getMemId());
+            if (deleteCnt > 0) {
+                map.put("status", "SUCCESS");
+            }
+        }
+        return map;
+    }
+
+    @Transactional
     public int setDelete(LearningSchedulerForm params, MemberInfo memberInfo) {
         params.setModId(memberInfo.getMemId());
         return learningSchedulerRepository.setDelete(params);

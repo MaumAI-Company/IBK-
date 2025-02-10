@@ -38,6 +38,9 @@ public class LearningSchedulerForm extends PageForm {
     private String batchSize;
 
     private Integer schedId;
+
+    /*delete*/
+    private Integer[] idArr;
 }
 
 

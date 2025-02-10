@@ -546,4 +546,10 @@ public class AdminController {
     public HashMap<String, Object> schedulerSave(@RequestBody LearningSchedulerForm form, @CurrentUser MemberInfo memberInfo) {
         return learningSchedulerService.save(form, memberInfo);
     }
+
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/admin/scheduler/delete"})
+    public HashMap<String, Object> schedulerDelete(@RequestBody LearningSchedulerForm form, @CurrentUser MemberInfo memberInfo) {
+        return learningSchedulerService.deleteAllById(form, memberInfo);
+    }
 }
