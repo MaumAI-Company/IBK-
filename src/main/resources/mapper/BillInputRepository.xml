@@ -109,10 +109,12 @@
     <select id="getDetail" resultType="BillInputInfo" parameterType="BillInputForm">
         SELECT
             <include refid="columns"></include>
-        FROM
-            BILL_INPUT bi
-        LEFT JOIN BILL_OUTPUT bo ON bi.ISS_SRN = bo.ISS_SRN
-            AND bi.BRCD = bo.BRCD
+        BILL_INPUT bi
+        LEFT JOIN BILL_OUTPUT bo
+        ON
+        bi.TXBL_SRN = bo.TXBL_SRN
+        AND bi.BASE_YM = bo.BASE_YM
+        AND bi.ISS_SRN = bo.ISS_SRN
         WHERE bi.ISS_SRN = #{issSrn}
             AND bi.BRCD = #{brcd}
     </select>
@@ -122,10 +124,11 @@
         <include refid="columns"></include>
         FROM
         BILL_INPUT bi
-        LEFT JOIN BILL_OUTPUT bo ON
+        LEFT JOIN BILL_OUTPUT bo
+        ON
         bi.TXBL_SRN = bo.TXBL_SRN
         AND bi.BASE_YM = bo.BASE_YM
-        AND bi.TXBL_SRN = bo.TXBL_SRN
+        AND bi.ISS_SRN = bo.ISS_SRN
         WHERE bi.BRCD is not null
         <include refid="where"></include>
         ORDER BY
@@ -144,10 +147,12 @@
         SELECT
             bi.ISS_SRN ,
             bi.BRCD
-        FROM
-            BILL_INPUT bi
-        LEFT JOIN BILL_OUTPUT bo ON bi.ISS_SRN = bo.ISS_SRN
-            AND bi.BRCD = bo.BRCD
+        BILL_INPUT bi
+        LEFT JOIN BILL_OUTPUT bo
+        ON
+        bi.TXBL_SRN = bo.TXBL_SRN
+        AND bi.BASE_YM = bo.BASE_YM
+        AND bi.ISS_SRN = bo.ISS_SRN
         WHERE
             bi.BRCD is not null
         <include refid="where"></include>
