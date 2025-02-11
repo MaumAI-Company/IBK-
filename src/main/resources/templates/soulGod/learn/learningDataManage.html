@@ -187,7 +187,7 @@
                         $('#searchJson').val(item.selectCon);
                         $('#searchTypeJson').val('');
 
-                        fn_settingChip(item.selectCon); //템플릿의 선택조건
+                        fn_settingChip(item.selectCon);
                         $('.chipArea').html($('.selected_filter').html());
                         $('.chipArea .chip button').remove();
 
@@ -382,7 +382,7 @@
                     <div>
                         <div class="total_num"><b
                                 th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? #numbers.formatInteger(pagingInfo.totalRecordCount , '0', 'COMMA') : 0}"></b>
-                            건의 학습 템플릿이 있습니다.
+                            건의 학습 데이터가 있습니다.
                         </div>
                     </div>
                     <div class="mla">
