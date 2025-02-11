@@ -419,6 +419,7 @@ public class LearningModelService extends BaseCont {
             if (ObjectUtils.isEmpty(params.getSorting())) {
                 params.setSorting("desc");
             }
+            params.setPagingAt("Y");
             modelList = learningModelRepository.getList(params);
         }
 

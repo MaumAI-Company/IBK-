@@ -3,46 +3,6 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <style>
-
-        #popDetail .tbl_write table th,
-        #popDetail .tbl_write table td {
-            padding-top: 2px;
-            padding-bottom: 2px
-        }
-
-        #popDetail .tbl_write .in_table {
-            border-radius: 8px;
-            border: 1px solid #ebeff2;
-            margin-top: 4px
-        }
-
-        #popDetail .tbl_write .in_table th {
-            color: #6d7175;
-            font-weight: 600;
-            font-size: 13px;
-            vertical-align: middle;
-            border-bottom: 1px solid #ebeff2;
-            padding: 6px
-        }
-
-        #popDetail .tbl_write .in_table th + th {
-            border-left: 1px solid #ebeff2
-        }
-
-        #popDetail .tbl_write .in_table td {
-            vertical-align: middle;
-            border-bottom: 1px solid #ebeff2;
-            padding: 6px
-        }
-
-        #popDetail .tbl_write .in_table td + td {
-            border-left: 1px solid #ebeff2
-        }
-
-        #popDetail .tbl_write div + div {
-            margin-top: 12px
-        }
-
         .tbl_list > thead > tr > th {
             padding: 0 8px
         }
@@ -51,8 +11,9 @@
             padding: 0 8px
         }
 
-        .tbl_list tbody td a.link {
-            text-decoration: underline !important;
+        .tbl_list tbody td a{
+            cursor: pointer;
+            text-decoration: underline;
             color: #004c9d !important;
         }
     </style>
@@ -74,6 +35,11 @@
             });
 
         });
+
+        function movePage(url, pageNo) {
+            $('#currentPageNo').val(pageNo);
+            $('#form1').attr({action: '/soulGod/admin/scheduler', method: 'post'}).unbind('submit').submit();
+        }
 
         function fn_search() {
             let frm = $('#form1');
@@ -323,7 +289,7 @@
             </div>
 
             <form id="form1">
-                <!--<input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>-->
+                <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
                 <div class="board_top">
                     <div>
                         <div class="total_num"><b th:text="${params.paginationInfo.totalRecordCount}">0</b> 개의 글이 있습니다.

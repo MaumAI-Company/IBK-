@@ -34,12 +34,18 @@ public class LearningModelInfo {
     private String deleteYn;  //'N: 정상, Y: 삭제된 데이터',
     private String filePath;    //학습파일 경로
     private String fileName;    //학습파일명
-    private String precision;    //정밀도
-    private String recall;    //재현율
-    private String f1Score;    //F1지표(평가지표)
     private String regName;
     private String hdqrBobDcd;
     private LearningType learningType;
+    private String bdgtItexFrcsConPrecision;
+    private String bdgtItexFrcsConRecall;
+    private String bdgtItexFrcsConF1Score;
+    private String bdgtBsnsFrcsConPrecision;
+    private String bdgtBsnsFrcsConRecall;
+    private String bdgtBsnsFrcsConF1Score;
+    private String bdgtPrfrRsnFrcsConPrecision;
+    private String bdgtPrfrRsnFrcsConRecall;
+    private String bdgtPrfrRsnFrcsConF1Score;
 
     private List<LearningModelInputInfo> inputList;
     private List<LearningModelInputInfo> outputList;
