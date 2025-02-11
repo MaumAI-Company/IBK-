@@ -647,7 +647,7 @@ function fn_settingChip(searchJson, isRadio) {
 
         if (searchMap.get("searchType")) {
             searchMap.get("searchType").forEach((value, key) => {
-                let keyNm = $('.' + key).text();
+                let keyNm = $('.' + key).first().text();
                 searchTypeTags += `
                     <div class="chip">
                         <div class="chip_${key}">${keyNm} : ${value}</div>
