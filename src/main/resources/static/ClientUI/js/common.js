@@ -150,6 +150,10 @@ function fn_numberOnly(obj, max) {
     if (parseInt(obj.value, 10) > max) {
         obj.value = max;
     }
+
+    if (parseInt(obj.value, 10) === 0) {
+        obj.value = '';
+    }
 }
 
 

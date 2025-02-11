@@ -11,7 +11,7 @@
             padding: 0 8px
         }
 
-        .tbl_list tbody td a{
+        .tbl_list tbody td a {
             cursor: pointer;
             text-decoration: underline;
             color: #004c9d !important;
@@ -536,7 +536,7 @@
                                 <div class="td">
                                     <div class="input">
                                         <input type="text" id="epoch" value="10" placeholder="Epoch를 입력하세요."
-                                               onkeyup="fn_numberOnly(this, 100)">
+                                               onkeyup="fn_numberOnly(this, 16)" oninput="fn_numberOnly(this, 100)">
                                         <button type="button" class="btn_del" tabindex="-1">
                                             <span class="blind">삭제</span>
                                         </button>
@@ -558,7 +558,8 @@
                                 <div class="td df w200">
                                     <div class="input">
                                         <input type="text" id="learningRate" value="3"
-                                               onkeyup="fn_numberOnly(this, 10)" placeholder="Learning Rate를 입력하세요.">
+                                               onkeyup="fn_numberOnly(this, 16)" oninput="fn_numberOnly(this, 100)"
+                                               placeholder="Learning Rate를 입력하세요.">
                                         <button type="button" class="btn_del" tabindex="-1">
                                             <span class="blind">삭제</span>
                                         </button>
@@ -581,7 +582,8 @@
                                 <div class="td">
                                     <div class="input">
                                         <input type="text" id="batchSize" value="16"
-                                               placeholder="Batch Size를 입력하세요." onkeyup="fn_numberOnly(this, 16)">
+                                               placeholder="Batch Size를 입력하세요." onkeyup="fn_numberOnly(this, 16)"
+                                               oninput="fn_numberOnly(this, 100)">
                                         <button type="button" class="btn_del" tabindex="-1">
                                             <span class="blind">삭제</span>
                                         </button>
