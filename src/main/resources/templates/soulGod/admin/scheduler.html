@@ -36,6 +36,11 @@
 
         });
 
+        function movePage(url, pageNo) {
+            $('#currentPageNo').val(pageNo);
+            $('#form1').attr({action: '/soulGod/admin/scheduler', method: 'post'}).unbind('submit').submit();
+        }
+
         function fn_search() {
             let frm = $('#form1');
             frm.prop('action', '?');
@@ -284,7 +289,7 @@
             </div>
 
             <form id="form1">
-                <!--<input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>-->
+                <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
                 <div class="board_top">
                     <div>
                         <div class="total_num"><b th:text="${params.paginationInfo.totalRecordCount}">0</b> 개의 글이 있습니다.

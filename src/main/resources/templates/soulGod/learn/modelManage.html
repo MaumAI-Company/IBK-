@@ -391,7 +391,7 @@
             });
         }
 
-        function fn_result(el){
+        function fn_result(el) {
             let itexPrecision = $(el).data('itex-precision');
             let itexRecall = $(el).data('itex-recall');
             let itexF1Score = $(el).data('itex-f1-score');
@@ -440,6 +440,7 @@
 
 
             <form role="form" id="aform" method="post" enctype="multipart/form-data" class="form-horizontal">
+                <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
                 <div class="board_top">
                     <div>
                         <div class="total_num"><b th:text="${params.paginationInfo.totalRecordCount}">0</b> 개의 글이 있습니다.
