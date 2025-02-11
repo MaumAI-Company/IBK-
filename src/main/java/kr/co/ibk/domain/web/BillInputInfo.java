@@ -31,10 +31,13 @@ public class BillInputInfo {
     private LocalDateTime lsmdTs;
     private String lsmdEmn;
     private Integer no;
+    private String bdgtItexFrcsCon;
+    private String bdgtBsnsFrcsCon;
+    private String bdgtPrfrRsnFrcsCon;
 
     private String bdgtItexFrcsPrbCon;
-    private String bdgtPrfrRsnFrcsCon;
     private String bdgtBsnsFrcsPrbCon;
+    private String bdgtPrfrRsnFrcsPrbCon;
     private String rsreYmd;
 
 }

@@ -10,8 +10,8 @@
         LEARNING_SCHEDULER ls
         INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
         INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
-        INNER JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
-        INNER JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
+        LEFT JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
+        LEFT JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
         <include refid="where"></include>
     </select>
 
@@ -21,14 +21,14 @@
         , t.TEMPLATE_NAME
         , hm.MEM_NAME as regNm
         , lm.DEPLOY_DT
-        , ld.HDQR_BOB_DCD
-        , ld.LEARNING_TYPE
+        , t.HDQR_BOB_DCD
+        , t.LEARNING_TYPE
         from
         LEARNING_SCHEDULER ls
         INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
         INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
-        INNER JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
-        INNER JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
+        LEFT JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
+        LEFT JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
         <include refid="where"></include>
         ORDER BY
         ls.REG_DT
@@ -49,25 +49,24 @@
         select
         <include refid="columns"></include>
         , t.TEMPLATE_NAME
-        , lm.EPOCH
-        , lm.LEARNING_RATE
-        , lm.BATCH_SIZE
-        , TIMESTAMPDIFF(MONTH, ld.START_DT, ld.END_DT) AS bdgtPrfrYmTerm
+        , ls.EPOCH
+        , ls.LEARNING_RATE
+        , ls.BATCH_SIZE
         from
         LEARNING_SCHEDULER ls
         INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
         INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
-        INNER JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
-        INNER JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
+        LEFT JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
+        LEFT JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
         where ls.DEL_AT = 'N'
         and ls.SCHED_ID = #{id}
     </select>
 
     <insert id="setInsert" useGeneratedKeys="true" keyProperty="schedId" keyColumn="sched_id" parameterType="LearningSchedulerForm">
         insert into maummcc.LEARNING_SCHEDULER
-        (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, TEMPLATE_ID, DES)
+        (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, TEMPLATE_ID, DES, EPOCH, LEARNING_RATE, BATCH_SIZE)
         values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(),
-                #{modId}, current_timestamp(), 'N', #{templateId}, #{des});
+                #{modId}, current_timestamp(), 'N', #{templateId}, #{des}, #{epoch}, #{learningRate}, #{batchSize});
     </insert>
 
     <update id="setUpdate" parameterType="LearningSchedulerForm">
@@ -81,7 +80,10 @@
             MOD_ID       = #{modId},
             MOD_DT       = current_timestamp(),
             TEMPLATE_ID  = #{templateId},
-            DES  = #{des}
+            DES  = #{des},
+            EPOCH  = #{epoch},
+            LEARNING_RATE  = #{learningRate},
+            BATCH_SIZE  = #{batchSize}
         where SCHED_ID = #{schedId};
     </update>
 
@@ -118,12 +120,12 @@
 
         /*대상 검색*/
         <if test="searchTarget != null and searchTarget != ''">
-            AND ld.HDQR_BOB_DCD = #{searchTarget}
+            AND t.HDQR_BOB_DCD = #{searchTarget}
         </if>
 
         /*구분 검색*/
         <if test="searchLearningType != null and ''.toString != searchLearningType">
-            AND ld.LEARNING_TYPE = #{searchLearningType}
+            AND t.LEARNING_TYPE = #{searchLearningType}
         </if>
 
         <if test="searchKeyword != null  and searchKeyword != ''">
