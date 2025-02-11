@@ -59,7 +59,7 @@
             $('#schedId').val('');
             $('#schedNm').val('');
             $('#templateId').val('').niceSelect('update');
-            $('#bdgtPrfrYmTerm').val('').niceSelect('update');
+            $('#searchMm').val('').niceSelect('update');
             $('#epoch').val('10');
             $('#learningRate').val('3');
             $('#batchSize').val('16');
@@ -86,9 +86,9 @@
                 contentType: 'application/json;charset=utf-8',
                 success: function (data) {
                     $('#schedId').val(data.schedId);
-                    $('#schedNm').val(data.schedNm);
+                    $('#schedNm').val(data.schedNm).niceSelect('update');
                     $('#templateId').val(data.templateId).niceSelect('update');
-                    $('#bdgtPrfrYmTerm').val(data.bdgtPrfrYmTerm).niceSelect('update');
+                    $('#searchMm').val(data.searchMm).niceSelect('update');
                     $('#epoch').val(data.epoch);
                     $('#learningRate').val(data.learningRate);
                     $('#batchSize').val(data.batchSize);
@@ -113,7 +113,7 @@
         function fn_schedulerSaveChk() {
             let schedNm = $('#schedNm').val();
             let templateId = $('#templateId').val();
-            let bdgtPrfrYmTerm = $('#bdgtPrfrYmTerm').val();
+            let searchMm = $('#searchMm').val();
             let epoch = $('#epoch').val();
             let learningRate = $('#learningRate').val();
             let batchSize = $('#batchSize').val();
@@ -133,7 +133,7 @@
                 return false;
             }
 
-            if (!$.trim(bdgtPrfrYmTerm)) {
+            if (!$.trim(searchMm)) {
                 showAlert('warning', '예산집행년월 선택은 필수입니다.');
                 return false;
             }
@@ -182,7 +182,7 @@
                     "schedId": $('#schedId').val(),
                     "schedNm": $('#schedNm').val(),
                     "templateId": $('#templateId').val(),
-                    "bdgtPrfrYmTerm": $('#bdgtPrfrYmTerm').val(),
+                    "searchMm": $('#searchMm').val(),
                     "epoch": $('#epoch').val(),
                     "learningRate": $('#learningRate').val(),
                     "batchSize": $('#batchSize').val(),
@@ -497,13 +497,13 @@
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="bdgtPrfrYmTerm">예산집행년월</label>
+                        <label for="searchMm">예산집행년월</label>
                         <span class="aster"></span>
                     </th>
                     <td>
                         <div class="df" style="align-items:center;">
                             <span>최근 </span>
-                            <select id="bdgtPrfrYmTerm">
+                            <select id="searchMm">
                                 <option value="" disabled selected>선택</option>
                                 <option th:each="month : ${#numbers.sequence(1, 12)}"
                                         th:value="${month}"

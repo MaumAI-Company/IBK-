@@ -64,9 +64,11 @@
 
     <insert id="setInsert" useGeneratedKeys="true" keyProperty="schedId" keyColumn="sched_id" parameterType="LearningSchedulerForm">
         insert into maummcc.LEARNING_SCHEDULER
-        (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, TEMPLATE_ID, DES, EPOCH, LEARNING_RATE, BATCH_SIZE)
+        (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, TEMPLATE_ID,
+         DES, EPOCH, LEARNING_RATE, BATCH_SIZE, SEARCH_MM)
         values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(),
-                #{modId}, current_timestamp(), 'N', #{templateId}, #{des}, #{epoch}, #{learningRate}, #{batchSize});
+                #{modId}, current_timestamp(), 'N', #{templateId}, #{des}, #{epoch}, #{learningRate}, #{batchSize},
+                #{searchMm});
     </insert>
 
     <update id="setUpdate" parameterType="LearningSchedulerForm">
@@ -83,7 +85,8 @@
             DES  = #{des},
             EPOCH  = #{epoch},
             LEARNING_RATE  = #{learningRate},
-            BATCH_SIZE  = #{batchSize}
+            BATCH_SIZE  = #{batchSize},
+            SEARCH_MM  = #{searchMm}
         where SCHED_ID = #{schedId};
     </update>
 
@@ -113,6 +116,10 @@
         , ls.ST_TIME
         , ls.USE_AT
         , ls.DES
+        , ls.EPOCH
+        , ls.LEARNING_RATE
+        , ls.BATCH_SIZE
+        , ls.SEARCH_MM
     </sql>
 
     <sql id="where">

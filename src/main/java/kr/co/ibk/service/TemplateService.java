@@ -80,6 +80,7 @@ public class TemplateService extends _BaseService {
     public TemplateInfo getLoad(TemplateForm form) {
         TemplateInfo info = templateRepository.getLoad(form.getId());
         info.setInputList(templateInputRepository.getPartList(form.getId(), InOutGbnType.INPUT.name()));
+        info.setOutputList(templateInputRepository.getPartList(form.getId(), InOutGbnType.OUTPUT.name()));
         return info;
     }
 
