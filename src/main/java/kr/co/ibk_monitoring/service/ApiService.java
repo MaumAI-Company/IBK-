@@ -1,5 +1,7 @@
 package kr.co.ibk_monitoring.service;
 
+import kr.co.ibk_monitoring.domain.web.MemberInfo;
+import kr.co.ibk_monitoring.repository.AdminMemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
@@ -12,15 +14,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -28,6 +27,7 @@ import java.util.Map;
 public class ApiService {
 
     private final IbkMailSender ibkMailSender;
+    private final AdminMemberRepository adminMemberRepository;
     private final String TITLE = "서버에서 장애가 발생했습니다.";
 
     @Value("${Globals.domain.mcc}")
@@ -48,30 +48,15 @@ public class ApiService {
     @Value("${Globals.check.messenger}")
     private Boolean messengerCheck;
 
-    @Value("${Globals.mail.senderId}")
-    private String mailSenderId;
-    @Value("${Globals.mail.receiverId}")
-    private String mailReceiverId;
-
     @Value("${Globals.messenger.domain}")
     private String messengerDomain;
     @Value("${Globals.messenger.srvCode}")
     private String messengerSrvCode;
-    @Value("${Globals.messenger.senderId}")
-    private String messengerSenderId;
-    @Value("${Globals.messenger.receiverId}")
-    private String messengerReceiverId;
-
-    private Map<String, String> userMap = new HashMap<>();
 
     public void serverCheck() {
-//        A99442-박성진, A88545-임유경, A00661-이동은, 025629-심중재, 043885-강승모
-        userMap.put("A99442", "박성진");
-        userMap.put("A88545", "임유경");
-        userMap.put("A00661", "이동은");
-        userMap.put("025629", "심중재");
-        userMap.put("043885", "강승모");
-        userMap.put("042353", "강다영");
+
+        MemberInfo sender = adminMemberRepository.getSender();
+        List<MemberInfo> receiverList = adminMemberRepository.getReceiverList();
 
         String title = TITLE;
         try {
@@ -80,7 +65,7 @@ public class ApiService {
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애! : " + resMCC);
                     title = "MCC " + TITLE;
-                    callAlarm(title, title);
+                    callAlarm(sender, receiverList, title, title);
                 }
             }
             if (webCheck) {
@@ -88,11 +73,11 @@ public class ApiService {
                 if (resWeb == null || resWeb != 200) {
                     log.debug("### WEB 서버 장애! : "+resWeb);
                     title = "WEB " + TITLE;
-                    callAlarm(title, title);
+                    callAlarm(sender, receiverList, title, title);
                 }
             }
         } catch (Exception e) {
-            callAlarm(title, title);
+            callAlarm(sender, receiverList, title, title);
         }
     }
 
@@ -126,8 +111,16 @@ public class ApiService {
         }*/
     }
 
-    private void sendMessenger(String title, String body) throws IOException {
+    private void sendMessenger(MemberInfo sender, List<MemberInfo> receiverList, String title, String body) throws IOException {
         String url = messengerDomain + "/servlet/AnnounceService";
+
+        String recipient = "";
+        for (MemberInfo memberInfo : receiverList) {
+            recipient += "," + memberInfo.getMemSno();
+        }
+        if (!"".equals(recipient)) {
+            recipient = recipient.substring(1);
+        }
 
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(url);
@@ -135,9 +128,9 @@ public class ApiService {
         // 파라미터 만들기
         List<NameValuePair> param = new ArrayList<NameValuePair>();
         param.add(new BasicNameValuePair("SRV_CODE", messengerSrvCode));
-        param.add(new BasicNameValuePair("RECIPIENT", messengerReceiverId));
-        param.add(new BasicNameValuePair("SEND", messengerSenderId));
-        param.add(new BasicNameValuePair("SENDER_ALIAS", userMap.get(messengerSenderId)));
+        param.add(new BasicNameValuePair("RECIPIENT", recipient));
+        param.add(new BasicNameValuePair("SEND", sender.getMemSno()));
+        param.add(new BasicNameValuePair("SENDER_ALIAS", sender.getMemName()));
         param.add(new BasicNameValuePair("TITLE", title));
         param.add(new BasicNameValuePair("BODY", body));
         // 파라미터적용
@@ -169,24 +162,21 @@ public class ApiService {
         System.out.println("contents" + contents);
     }
 
-    private void callAlarm(String title, String message) {
+    private void callAlarm(MemberInfo sender, List<MemberInfo> receiverList, String title, String message) {
         if (mailCheck) {
 //            System.out.println("메일 발송");
-            if (!ObjectUtils.isEmpty(mailReceiverId) && !ObjectUtils.isEmpty(userMap.get(mailReceiverId))) {
-                String[] idArr = mailReceiverId.split(",");
-                for (int i = 0; i < idArr.length; i++) {
-                    try {
-                        ibkMailSender.sendMail(mailSenderId, idArr[i], userMap.get(mailSenderId), userMap.get(idArr[i]), title, message);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            for (MemberInfo memberInfo : receiverList) {
+                try {
+                    ibkMailSender.sendMail(sender.getMemSno(), memberInfo.getMemSno(), sender.getMemName(), memberInfo.getMemName(), title, message);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }
         if (messengerCheck) {
 //            System.out.println("메신저 발송");
             try {
-                sendMessenger(title, message);
+                sendMessenger(sender, receiverList, title, message);
             } catch (Exception e) {
                 e.printStackTrace();
             }
