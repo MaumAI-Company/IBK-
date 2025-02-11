@@ -1,6 +1,7 @@
 package kr.co.ibk.service;
 
 import kr.co.ibk.domain.enums.InOutGbnType;
+import kr.co.ibk.domain.enums.TermType;
 import kr.co.ibk.domain.web.LearningSchedulerInfo;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.domain.web.TemplateInfo;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -166,7 +168,27 @@ public class LearningSchedulerService extends _BaseService {
         return mapList;
     }
 
-    public List<Integer> getBatchList() {
-        return learningSchedulerRepository.getBatchList();
+    public List<LearningSchedulerInfo> getBatchList() {
+        List<LearningSchedulerInfo> rtnList = new ArrayList<>();
+        List<LearningSchedulerInfo> list = learningSchedulerRepository.getBatchList();
+        for (LearningSchedulerInfo info : list) {
+            try {
+                if (info != null) {
+                    LocalDate dd = LocalDate.parse(info.getStYmd(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    LocalDate now = LocalDate.now();
+                    while (dd.equals(now) || dd.isBefore(now)) {
+                        if (dd.equals(now)) {
+                            rtnList.add(info);
+                            break;
+                        }
+                        dd = dd.plusWeeks(info.getTermTy().getWeek());
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return rtnList;
     }
 }

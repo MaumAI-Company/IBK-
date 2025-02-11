@@ -161,17 +161,14 @@
     </update>
 
     <!-- TODO : 배치 실행할 모델 목록 -->
-    <select id="getBatchList" resultType="int">
+    <select id="getBatchList" resultType="LearningSchedulerInfo">
         SELECT
-            ls.SCHED_ID
-        FROM
-            LEARNING_SCHEDULER ls
-                INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
-        WHERE
-            ls.DEL_AT = 'N'
-          AND ls.USE_AT = 'Y'
-          AND ls.ST_YMD >= DATE_FORMAT(NOW(), '%Y%m%d')
-          AND ls.ST_TIME = DATE_FORMAT(NOW(), '%H:%i')
+        <include refid="columns"></include>
+        from LEARNING_SCHEDULER ls
+        where ls.USE_AT = 'Y'
+        and ls.DEL_AT = 'N'
+        and DAYOFWEEK(now()) = DAYOFWEEK(ls.ST_YMD)
+        and date_format(now(), '%H:%i') = time_format(ls.ST_TIME , '%H:%i')
     </select>
 
 </mapper>

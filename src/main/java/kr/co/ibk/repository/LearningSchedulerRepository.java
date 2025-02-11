@@ -25,5 +25,5 @@ public interface LearningSchedulerRepository {
 
     Long deleteAllById(Integer[] idArr, @Param("memId") String memId);
 
-    List<Integer> getBatchList();
+    List<LearningSchedulerInfo> getBatchList();
 }

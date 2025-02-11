@@ -1,5 +1,6 @@
 package kr.co.ibk.common.batch;
 
+import kr.co.ibk.domain.web.LearningSchedulerInfo;
 import kr.co.ibk.model.LearningModelForm;
 import kr.co.ibk.service.LearningModelService;
 import kr.co.ibk.service.LearningSchedulerService;
@@ -19,14 +20,14 @@ public class MinSchedule {
 
     //@Scheduled(fixedRate = 60000) // 60초마다 실행
     public void schedulerBatch() {
-        List<Integer> batchList = learningSchedulerService.getBatchList();
+        List<LearningSchedulerInfo> batchList = learningSchedulerService.getBatchList();
         // 학습 api 실행
-        if (!batchList.isEmpty()) {
+        /*if (!batchList.isEmpty()) {
             for (Integer schedId : batchList) {
                 LearningModelForm form = new LearningModelForm();
                 form.setLearningId(schedId);
                 learningModelService.learning(form);
             }
-        }
+        }*/
     }
 }
