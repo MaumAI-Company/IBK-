@@ -48,13 +48,21 @@ public class BillInputService extends _BaseService {
             list.forEach(item -> {
                 String[] strArr;
                 String str;
-                if (!ObjectUtils.isEmpty(item.getBdgtItexFrcsPrbCon())) {
+                if (!ObjectUtils.isEmpty(item.getBdgtItexFrcsCon())) {
                     str = "";
-                    strArr = item.getBdgtItexFrcsPrbCon().split("\\|");
+                    strArr = item.getBdgtItexFrcsCon().split("\\|");
                     for (int i = 0; i < strArr.length; i++) {
                         str += (i + 1) + "순위 " + strArr[i] + "\r\n";
                     }
-                    item.setBdgtItexFrcsPrbCon(str);
+                    item.setBdgtItexFrcsCon(str);
+                }
+                if (!ObjectUtils.isEmpty(item.getBdgtBsnsFrcsCon())) {
+                    str = "";
+                    strArr = item.getBdgtBsnsFrcsCon().split("\\|");
+                    for (int i = 0; i < strArr.length; i++) {
+                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
+                    }
+                    item.setBdgtBsnsFrcsCon(str);
                 }
                 if (!ObjectUtils.isEmpty(item.getBdgtPrfrRsnFrcsCon())) {
                     str = "";
@@ -63,14 +71,6 @@ public class BillInputService extends _BaseService {
                         str += (i + 1) + "순위 " + strArr[i] + "\r\n";
                     }
                     item.setBdgtPrfrRsnFrcsCon(str);
-                }
-                if (!ObjectUtils.isEmpty(item.getBdgtBsnsFrcsPrbCon())) {
-                    str = "";
-                    strArr = item.getBdgtBsnsFrcsPrbCon().split("\\|");
-                    for (int i = 0; i < strArr.length; i++) {
-                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
-                    }
-                    item.setBdgtBsnsFrcsPrbCon(str);
                 }
             });
         }
@@ -149,8 +149,8 @@ public class BillInputService extends _BaseService {
                     row.createCell(cellCnt++).setCellValue(item.getSplrItmsNm() == null ? "-" : item.getSplrItmsNm());
                     row.createCell(cellCnt++).setCellValue(item.getIssAmt() == null ? "-" : item.getIssAmt().toString());
                     row.createCell(cellCnt++).setCellValue(item.getTxblLsarNm() == null ? "-" : item.getTxblLsarNm());
-                    row.createCell(cellCnt++).setCellValue(item.getBdgtItexFrcsPrbCon() == null ? "-" : item.getBdgtItexFrcsPrbCon());
-                    row.createCell(cellCnt++).setCellValue(item.getBdgtBsnsFrcsPrbCon() == null ? "-" : item.getBdgtBsnsFrcsPrbCon());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtItexFrcsCon() == null ? "-" : item.getBdgtItexFrcsCon());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtBsnsFrcsCon() == null ? "-" : item.getBdgtBsnsFrcsCon());
                     row.createCell(cellCnt++).setCellValue(item.getBdgtPrfrRsnFrcsCon() == null ? "-" : item.getBdgtPrfrRsnFrcsCon());
                     row.createCell(cellCnt++).setCellValue(item.getRsreYmd() == null ? "-" : item.getRsreYmd());
 

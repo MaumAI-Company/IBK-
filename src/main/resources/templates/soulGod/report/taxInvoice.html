@@ -484,9 +484,9 @@
                         <td th:text="${#numbers.formatDecimal(item.issAmt, 1, 0)}"></td>
                         <td th:text="${item.txblLsarNm}"></td>
 
-                        <td class="wsp" style="background-color:#f9f9ff" th:text="${item.bdgtItexFrcsPrbCon}"></td>
+                        <td class="wsp" style="background-color:#f9f9ff" th:text="${item.bdgtItexFrcsCon}"></td>
+                        <td class="wsp" style="background-color:#f9f9ff" th:text="${item.bdgtBsnsFrcsCon}"></td>
                         <td class="wsp" style="background-color:#f9f9ff" th:text="${item.bdgtPrfrRsnFrcsCon}"></td>
-                        <td class="wsp" style="background-color:#f9f9ff" th:text="${item.bdgtBsnsFrcsPrbCon}"></td>
                         <td th:text="${item.rsreYmd != null and item.rsreYmd != '' ?
                             (item.rsreYmd.length() == 8 ? item.rsreYmd.substring(0, 4) + '.' + item.rsreYmd.substring(4, 6) + '.' + item.rsreYmd.substring(6, 8) : '')
                              : ''}"></td>
