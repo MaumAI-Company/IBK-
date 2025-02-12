@@ -5,6 +5,7 @@ import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.BillInputForm;
 import kr.co.ibk.model.CardInputForm;
 import kr.co.ibk.model.StatisticInfoForm;
+import kr.co.ibk.model.paging.PageDto;
 import kr.co.ibk.service.*;
 import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -42,10 +44,6 @@ public class ReportController extends BaseCont {
         if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
             params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
         }
-
-        List<CardInputInfo> list = cardInputService.page(params);
-
-        model.addAttribute("list", list);
         model.addAttribute("pagingInfo", params.getPaginationInfo());
         model.addAttribute("params", params);
         model.addAttribute("mc", "ico_chart");
@@ -53,6 +51,23 @@ public class ReportController extends BaseCont {
 
         return "/soulGod/report/card";
 
+    }
+
+    @ResponseBody
+    @PostMapping("/soulGod/report/card/list")
+    public Map<String, Object> getCardList(@RequestBody CardInputForm params) {
+
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+
+        List<CardInputInfo> list = cardInputService.page(params);
+        PageDto pageDto = new PageDto(params.getPaginationInfo(), params.getRecordsPerPage());
+
+        return Map.of(
+                "list", list,
+                "pageInfo", pageDto
+        );
     }
 
     @GetMapping("/soulGod/report/card/xlsDown")
@@ -103,9 +118,6 @@ public class ReportController extends BaseCont {
             params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
         }
 
-        List<BillInputInfo> list = billInputService.page(params);
-
-        model.addAttribute("list", list);
         model.addAttribute("pagingInfo", params.getPaginationInfo());
         model.addAttribute("params", params);
         model.addAttribute("mc", "ico_chart");
@@ -114,6 +126,22 @@ public class ReportController extends BaseCont {
         return "/soulGod/report/taxInvoice";
     }
 
+    @ResponseBody
+    @PostMapping("/soulGod/report/bill/list")
+    public Map<String, Object> getBillList(@RequestBody BillInputForm params) {
+
+        if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
+            params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+        }
+
+        List<BillInputInfo> list = billInputService.page(params);
+        PageDto pageDto = new PageDto(params.getPaginationInfo(), params.getRecordsPerPage());
+
+        return Map.of(
+                "list", list,
+                "pageInfo", pageDto
+        );
+    }
 
     @ResponseBody
     @PostMapping(value = {"/soulGod/report/bill/detail"})

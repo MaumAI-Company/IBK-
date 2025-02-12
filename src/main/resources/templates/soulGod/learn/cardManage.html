@@ -375,13 +375,18 @@
         }
 
         function fn_reset() {
-            $('#searchStartDate').val('');
-            $('#searchEndDate').val('');
-            $('#searchTarget').val('').niceSelect('update');
             $('#searchType').val('').niceSelect('update');
             $('#searchKeyword').val('');
             $('#searchJson').val('');
             $('#searchTypeJson').val('');
+
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = String(today.getMonth() + 1).padStart(2, '0');
+
+            $('#searchStartDate').val(`${year - 2}-${month}`);
+            $('#searchEndDate').val(`${year}-${month}`);
+            $('[name=searchTarget]').first().prop('checked', true);
 
             fn_search();
         }

@@ -479,7 +479,7 @@
                 <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
                     <caption>학습 데이터 관리 : No, 구분, 대상, 템플릿 명, 등록자, 등록일시</caption>
                     <colgroup>
-                        <col style="width: 10%">
+                        <col style="width: 3.5%;min-width: 44px;">
                         <col style="width: 10%">
                         <col style="width: 12%">
                         <col style="width: 10%;">
@@ -715,7 +715,7 @@
                                         <div class="input">
                                             <input type="text" id="learningRate" value="3"
                                                    placeholder="Learning Rate를 입력하세요." onkeyup="fn_numberOnly(this, 10)"
-                                                   oninput="fn_numberOnly(this, 100)">
+                                                   oninput="fn_numberOnly(this, 10)">
                                             <button type="button" class="btn_del" tabindex="-1">
                                                 <span class="blind">삭제</span>
                                             </button>
@@ -739,7 +739,7 @@
                                         <div class="input">
                                             <input type="text" id="batchSize" value="16"
                                                    placeholder="Batch Size를 입력하세요." onkeyup="fn_numberOnly(this, 16)"
-                                                   oninput="fn_numberOnly(this, 100)">
+                                                   oninput="fn_numberOnly(this, 16)">
                                             <button type="button" class="btn_del" tabindex="-1">
                                                 <span class="blind">삭제</span>
                                             </button>
