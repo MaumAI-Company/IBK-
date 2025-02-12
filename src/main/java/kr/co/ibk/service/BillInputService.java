@@ -95,7 +95,7 @@ public class BillInputService extends _BaseService {
         int fileIndex = 1;
         int processedRecords = 0;
         String zipFileName = "세금계산서_지급결의_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".zip";
-        String tempDir = System.getProperty("java.io.tmpdir");
+        String tempDir = System.getProperty("java.io.tmpdir");  // OS별 임시 폴더 사용
         List<File> generatedFiles = new java.util.ArrayList<>();
 
         while (processedRecords < totalRecords) {
@@ -109,7 +109,6 @@ public class BillInputService extends _BaseService {
 
                 Sheet sheet = workbook.createSheet("세금계산서 지급결의 내역");
 
-                // ✅ 열 제목
                 String[] colNames1 = {
                         "No", "대상", "세금계산서구분코드", "공급자사업자번호", "공급자상호명", "공급자업태명", "공급자종목명",
                         "발행금액", "세금계산서품목명", "예산관리비목관리번호", "예산집행사유코드", "사업세부사업", "결과등록년월일"
@@ -200,5 +199,6 @@ public class BillInputService extends _BaseService {
             file.delete();
         }
         zipFile.delete();
+
     }
 }
