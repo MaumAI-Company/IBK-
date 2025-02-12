@@ -2,6 +2,7 @@ package kr.co.ibk.repository;
 
 import java.util.Map;
 
+import kr.co.ibk.model.MemberForm;
 import org.springframework.stereotype.Repository;
 
 import kr.co.ibk.domain.web.MemberInfo;
@@ -66,5 +67,6 @@ public interface MemberRepository {
      * @return
      */
     public long addPasswordFailCnt(MemberInfo params);
-    
+
+    int confirmMemSno(MemberForm form);
 }

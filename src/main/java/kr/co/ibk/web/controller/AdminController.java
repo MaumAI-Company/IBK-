@@ -7,6 +7,7 @@ import kr.co.ibk.common.utils.CustomMap;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.DeptForm;
 import kr.co.ibk.model.LearningSchedulerForm;
+import kr.co.ibk.model.MemberForm;
 import kr.co.ibk.model.TemplateForm;
 import kr.co.ibk.service.*;
 import lombok.RequiredArgsConstructor;
@@ -274,6 +275,15 @@ public class AdminController {
         map.put("cnt", adminUserService.getUserCount(userId));
 
         return map;
+    }
+
+    /**
+     * 사번 중복확인 (true=중복)
+     */
+    @PostMapping(value = {"/soulGod/admin/user/confirmMemSno"})
+    @ResponseBody
+    public Boolean confirmMemSno(@RequestBody MemberForm form) {
+        return adminUserService.confirmMemSno(form);
     }
 
     @PostMapping(value = {"/soulGod/admin/user/add"})

@@ -16,6 +16,11 @@
                     }
                 });
             });
+
+            $('#modMemSno, #addMemSno').on('change', function (){
+                chkMemSno = false;
+                dupMemSno = false;
+            });
         });
 
 
@@ -225,12 +230,13 @@
             </button>
         </div>
         <div class="pop_cont">
+            <input type="hidden" name="memSeq" id="memSeq">
             <table class="tbl_write">
                 <caption>사용자 수정 : 부서명/부서ID, 아이디, 비밀번호, 이름, 성별, 생년월일, 이메일, 휴대폰 번호, 직급, 부서, 주소, 사용여부로 구성</caption>
                 <colgroup>
-                    <col style="width:140px">
+                    <col style="width:150px">
                     <col style="width:calc(50% - 140px)">
-                    <col style="width:140px">
+                    <col style="width:150px">
                     <col style="width:calc(50% - 140px)">
                 </colgroup>
                 <tbody>
@@ -276,6 +282,25 @@
                                 <span>비밀번호 초기화</span>
                             </button>
                         </th:block>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="addMemId">사번</label>
+                        <span class="aster"></span>
+                    </th>
+                    <td colspan="3">
+                        <div class="df">
+                            <div class="input flb223">
+                                <input type="text" id="modMemSno" name="modMemSno" placeholder="사번을 입력하세요.">
+                                <button type="button" class="btn_del" tabindex="-1">
+                                    <span class="blind">삭제</span>
+                                </button>
+                            </div>
+                            <button type="button" class="btn line_cool_grey30" onclick="fn_confirmMemSno('mod')">
+                                <span>중복확인</span>
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -358,7 +383,7 @@
                         <label for="modMemColumn1">IP 주소</label>
                     </th>
                     <td>
-                        <div class="input">
+                        <div class="input">ㄹ
                             <input type="text" id="modMemColumn1" name="modMemColumn1"
                                    placeholder="xxx.xxx.xxx.xxx, ..." onKeyUp="javascript:noEnKo(this)">
                             <button type="button" class="btn_del" tabindex="-1">
@@ -378,6 +403,43 @@
                             <div class="radio txt">
                                 <input type="radio" name="modMemColumn2" id="modMemColumn2_N" value="N">
                                 <label for="modMemColumn2_N">미사용</label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        장애발생 발신 여부
+                        <span class="aster"></span>
+                    </th>
+                    <td colspan="3">
+                        <div class="df">
+                            <div class="radio txt">
+                                <input type="radio" name="modSndYn" id="modSndY" value="Y" checked>
+                                <label for="modSndY">사용</label>
+                            </div>
+                            <div class="radio txt">
+                                <input type="radio" name="modSndYn" id="modSndN" value="N">
+                                <label for="modSndN">미사용</label>
+                            </div>
+                            <div class="txt_guide fc_primary">※ 발신인은 한 명만 설정할 수 있으며, 사용으로 등록 시 다른 발신인은 자동으로 미사용 처리됩니다.</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        장애발생 수신 여부
+                        <span class="aster"></span>
+                    </th>
+                    <td colspan="3">
+                        <div class="df">
+                            <div class="radio txt">
+                                <input type="radio" name="modRecvYn" id="modRecvY" value="Y" checked>
+                                <label for="modRecvY">사용</label>
+                            </div>
+                            <div class="radio txt">
+                                <input type="radio" name="modRecvYn" id="modRecvN" value="N">
+                                <label for="modRecvN">미사용</label>
                             </div>
                         </div>
                     </td>
@@ -429,9 +491,9 @@
             <table class="tbl_write">
                 <caption>사용자 등록 : 부서명/부서ID, 아이디, 성별, 이름, 생년월일, 이메일, 휴대폰 번호, 직급, 부서, 주소, 사용여부로 구성</caption>
                 <colgroup>
-                    <col style="width:140px">
+                    <col style="width:150px">
                     <col style="width:330px"> <!-- calc(50% - 140px) -->
-                    <col style="width:140px">
+                    <col style="width:150px">
                     <col style="width:330px"> <!-- calc(50% - 140px) -->
                 </colgroup>
                 <tbody>
@@ -477,6 +539,25 @@
                                 </button>
                             </div>
                             <button type="button" class="btn line_cool_grey30" onclick="addCheckUserId();">
+                                <span>중복확인</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="addMemId">사번</label>
+                        <span class="aster"></span>
+                    </th>
+                    <td colspan="3">
+                        <div class="df">
+                            <div class="input flb223">
+                                <input type="text" id="addMemSno" name="addMemSno" placeholder="사번을 입력하세요.">
+                                <button type="button" class="btn_del" tabindex="-1">
+                                    <span class="blind">삭제</span>
+                                </button>
+                            </div>
+                            <button type="button" class="btn line_cool_grey30" onclick="fn_confirmMemSno('add')">
                                 <span>중복확인</span>
                             </button>
                         </div>
@@ -608,6 +689,43 @@
                             <div class="radio txt">
                                 <input type="radio" name="addMemColumn2" id="addMemColumn2_N" value="N">
                                 <label for="addMemColumn2_N">미사용</label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        장애발생 발신 여부
+                        <span class="aster"></span>
+                    </th>
+                    <td colspan="3">
+                        <div class="df">
+                            <div class="radio txt">
+                                <input type="radio" name="addSndYn" id="addSndY" value="Y" checked>
+                                <label for="addSndY">사용</label>
+                            </div>
+                            <div class="radio txt">
+                                <input type="radio" name="addSndYn" id="addSndN" value="N">
+                                <label for="addSndN">미사용</label>
+                            </div>
+                            <div class="txt_guide fc_primary">※ 발신인은 한 명만 설정할 수 있으며, 사용으로 등록 시 다른 발신인은 자동으로 미사용 처리됩니다.</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        장애발생 수신 여부
+                        <span class="aster"></span>
+                    </th>
+                    <td colspan="3">
+                        <div class="df">
+                            <div class="radio txt">
+                                <input type="radio" name="addRecvYn" id="addRecvY" value="Y" checked>
+                                <label for="addRecvY">사용</label>
+                            </div>
+                            <div class="radio txt">
+                                <input type="radio" name="addRecvYn" id="addRecvN" value="N">
+                                <label for="addRecvN">미사용</label>
                             </div>
                         </div>
                     </td>
@@ -849,7 +967,7 @@
         $('#addMemPhone').val($('#addMemPhone').val().trim()); // 전화번호
         $('#checkUserId').val($('#checkUserId').val().trim());
         $('#checkUserYN').val($('#checkUserYN').val().trim());
-
+        $('#addMemSno').val($('#addMemSno').val().trim());
         $('#addMemColumn1').val($('#addMemColumn1').val().trim());//IP 주소
 
         // value Get
@@ -863,14 +981,15 @@
         let $addMemBirthday = $('#addMemBirthday').val();
         let $addMemPhone = $('#addMemPhone').val();
         let $addMemEmail = $addMemEmail1 + "@" + $addMemEmail2;
-
+        let $addMemSno = $('#addMemSno').val();
         let $addMemColumn1 = $('#addMemColumn1').val();
 
         // radio
         let $addMemGender = $("input[name='addMemGender']:checked").val(); // 성별
         let $addMemStat = $("input[name='addMemStat']:checked").val(); // 상태
         let $addMemRoleId = $("input[name='addMemRoleId']:checked").val(); // 상태
-
+        let $addSndYn = $("input[name='addSndYn']:checked").val();
+        let $addRecvYn = $("input[name='addRecvYn']:checked").val();
         let $addMemColumn2 = $("input[name='addMemColumn2']:checked").val(); // IP 체크여부
 
         // 아이디 중복 관련
@@ -897,6 +1016,17 @@
                     $('#addMemId').focus();
                     return;
                 }
+            }
+        }
+        if ($addMemSno.length < 1) {
+            showAlert('warning', "사번을 입력해주세요.");
+            $('#addMemSno').focus();
+            return;
+        } else {
+            if (!chkMemSno || !dupMemSno) {
+                showAlert('warning', "사번 중복확인이 필요합니다.");
+                $('#addMemSno').focus();
+                return;
             }
         }
         if ($addMemName.length < 1) {
@@ -935,9 +1065,14 @@
             , memColumn2: $addMemColumn2
             , memRegId: $('#sessionMemId').val()
             , memModId: $('#sessionMemId').val()
+            , memSno: $addMemSno
+            , sndYn: $addSndYn
+            , recvYn: $addRecvYn
         };
         // 사용자 추가 실행
-        ajaxAddUser(jsonData);
+        showConfirm('message', '추가 하시겠습니까?', () => {
+            ajaxAddUser(jsonData);
+        });
     }
 
     //사용자 데이터 체크 - 사용자 아이디 중복체크
@@ -950,8 +1085,8 @@
             dataType: "json",
             success: function (data) {
                 if ("SUCCESS" == data.status) {
-                    showAlert('complete', data.msg, () => {
-                        addUserClose();// 사용자 관리 추가 모달 CLOSE
+                    showAlert('complete', '저장되었습니다.', () => {
+                        addUserClose();
                         searchUser();
                     });
 
@@ -1078,6 +1213,8 @@
     // 사용자 등록 데이터 초기화
     function addUserClear() {
         // input 초기화
+        $('#memSeq').val('');
+        $('#addMemSno').val('');
         $('#addDeptId').val(''); // 부서 ID
         $('#addDeptName').val('');
         $('#addDeptCode').val('');
@@ -1093,10 +1230,14 @@
         $("input[name='addMemGender'][value='M']").prop("checked", true);
         $("input[name='addMemStat'][value='use']").prop("checked", true);
         $("input[name='addMemColumn2'][value='N']").prop("checked", true);
+        $("input[name='addRecvYn'][value='N']").prop("checked", false);
+        $("input[name='addSndYn'][value='N']").prop("checked", false);
 
         // 아이디 중복 관련
         $('#checkUserId').val(''); // 중복체크된 아이디
         $('#checkUserYN').val('N'); // 중복체크된 아이디
+        chkMemSno = false;
+        dupMemSno = false;
     }
 
     //사용자 추가
@@ -1111,8 +1252,8 @@
         $('#modMemEmail2').val($('#modMemEmail2').val().trim());
         $('#modMemBirthday').val($('#modMemBirthday').val().trim()); // 생년월일 yyyymmdd
         $('#modMemPhone').val($('#modMemPhone').val().trim()); // 전화번호
-
         $('#modMemColumn1').val($('#modMemColumn1').val().trim());//IP 주소
+        $('#modMemSno').val($('#modMemSno').val().trim());
 
         // value Get
         let $modDeptId = $('#modDeptId').val();
@@ -1125,8 +1266,11 @@
         let $modMemBirthday = $('#modMemBirthday').val();
         let $modMemPhone = $('#modMemPhone').val();
         let $modMemEmail = $modMemEmail1 + "@" + $modMemEmail2;
-
         let $modMemColumn1 = $('#modMemColumn1').val();
+
+        let $modMemSno = $('#modMemSno').val();
+        let $modSndYn = $("input[name='modSndYn']:checked").val();
+        let $modRecvYn = $("input[name='modRecvYn']:checked").val();
 
         // radio
         let $modMemGender = $("input[name='modMemGender']:checked").val(); // 성별
@@ -1140,6 +1284,19 @@
             showAlert("warning", "부서 정보를 입력해주세요.");
             return;
         }
+
+        if ($modMemSno.length < 1) {
+            showAlert('warning', "사번을 입력해주세요.");
+            $('#modMemSno').focus();
+            return;
+        } else {
+            if (!chkMemSno || !dupMemSno) {
+                showAlert('warning', "사번 중복확인이 필요합니다.");
+                $('#modMemSno').focus();
+                return;
+            }
+        }
+
         if ("@" == $modMemEmail) {
             $modMemEmail = "";
         } else {
@@ -1158,6 +1315,7 @@
 
         let jsonData = {
             deptId: $modDeptId
+            , memSeq: $('#memSeq').val()
             , memId: $modMemId
             , memBirthday: $modMemBirthday
             , memPhone: $modMemPhone
@@ -1168,9 +1326,14 @@
             , memColumn1: $modMemColumn1
             , memColumn2: $modMemColumn2
             , memModId: $('#sessionMemId').val()
+            , memSno: $modMemSno
+            , sndYn: $modSndYn
+            , recvYn: $modRecvYn
         };
         // 사용자 추가 실행
-        ajaxModUser(jsonData);
+        showConfirm('message', '저장 하시겠습니까?', () => {
+            ajaxModUser(jsonData);
+        });
     }
 
     //사용자 데이터 체크 - 사용자 아이디 중복체크
@@ -1183,9 +1346,10 @@
             dataType: "json",
             success: function (data) {
                 if ("SUCCESS" == data.status) {
-                    showAlert('complete', data.msg);
-                    modUserClose();// 사용자 관리 추가 모달 CLOSE
-                    searchUser();
+                    showAlert('complete', '저장되었습니다.', () => {
+                        modUserClose();// 사용자 관리 추가 모달 CLOSE
+                        searchUser();
+                    });
                 } else if ("FAIL" == data.status) {
                     showAlert('warning', data.msg);
                     modUserClose();// 사용자 관리 추가 모달 CLOSE
@@ -1203,6 +1367,8 @@
     // 사용자 수정 데이터 초기화
     function modUserClear() {
         // input 초기화
+        $('#memSeq').val('');
+        $('#modMemSno').val('');
         $('#modDeptId').val(''); // 부서 ID
         $('#modDeptName').val('');
         $('#modDeptCode').val('');
@@ -1221,7 +1387,11 @@
         $("input[name='modMemStat']").prop("checked", false);
         $("input[name='modMemRoleId']").prop("checked", false);
         $("input[name='modMemColumn2']").prop("checked", false);
+        $("input[name='modRecvYn']").prop("checked", false);
+        $("input[name='modSndYn']").prop("checked", false);
 
+        chkMemSno = false;
+        dupMemSno = false;
     }
 
     // 추가할 사용자 ID 중복 확인
@@ -1332,6 +1502,7 @@
                 }
 
                 // input 값 입력
+                $('#memSeq').val(info.memSeq); // 부서 ID
                 $('#modDeptId').val(info.deptId); // 부서 ID
                 $('#modDeptName').val(info.deptName);
                 $('#modDeptCode').val(info.deptCode);
@@ -1344,6 +1515,7 @@
                 $('#modMemBirthday').val(info.memBirthday); // 생년월일 yyyymmdd
                 $('#modMemPhone').val(info.memPhone); // 전화번호
                 $('#modMemColumn1').val(info.memColumn1); // IP
+                $('#modMemSno').val(info.memSno);
 
                 if ($('#superUnset').length) {
                     $('#superUnset').hide();
@@ -1388,6 +1560,12 @@
                 $("input[name='modMemStat'][value='" + memStat + "']").prop("checked", true);
                 $("input[name='modMemRoleId'][value='" + roleId + "']").prop("checked", true);
                 $("input[name='modMemColumn2'][value='" + memColumn2 + "']").prop("checked", true);
+                $('[name="modRecvYn"][value=' + info.recvYn + ']').prop("checked", true);
+                $('[name="modSndYn"][value=' + info.sndYn + ']').prop("checked", true);
+
+                chkMemSno = true;
+                dupMemSno = true;
+
             },
             error: function () {
                 console.log("error");
@@ -1654,6 +1832,44 @@
         $('#searchKeyword').val('');
         $('#searchType').val('all');
         $('#searchType').niceSelect('update');
+    }
+
+    let chkMemSno = false;
+    let dupMemSno = false;
+
+    function fn_confirmMemSno(pre){
+        chkMemSno = true;
+
+        let memSno = $('#' + pre + 'MemSno').val();
+        if (memSno.length === 0) {
+            showAlert("warning", "사번을 입력해주세요.");
+            return false;
+        }
+
+        let jsonData = {
+            memSeq : $('#memSeq').val(),
+            memSno : memSno
+        }
+
+        $.ajax({
+            url: "/soulGod/admin/user/confirmMemSno",
+            type: "post",
+            async: false,
+            data: JSON.stringify(jsonData),
+            contentType: 'application/json;charset=utf-8',
+            success: function (data) {
+                if (data) {
+                    showAlert('warning', '사용중인 사번입니다.');
+                    dupMemSno = false;
+                } else {
+                    showAlert('complete', '사용가능한 사번입니다.');
+                    dupMemSno = true;
+                }
+            },
+            error: function () {
+                //console.log("error");
+            }
+        });
     }
 </script>
 </body>

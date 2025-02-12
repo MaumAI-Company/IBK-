@@ -15,22 +15,24 @@
     </select>
     
     <select id="getUserTotalCount" parameterType="MemberInfo" resultType="int">
-        SELECT 
-            COUNT(1)
-        FROM 
-	       ( SELECT 
-	            <include refid="hc_member_columns"><property name="alias" value="hm."/></include>
-	            , (SELECT hd.DEPT_CODE FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_CODE
-	        	, (SELECT hd.DEPT_NAME FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_NAME
-	        	, (SELECT hd.DEPT_ENG_NAME FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_ENG_NAME
-	        FROM 
-	        	HC_MEMBER AS hm
-	        WHERE 
-	        	hm.MEM_STAT != 'delete' ) hm
-        WHERE 
-        	1=1
-        	<include refid="kr.co.ibk.repository.CommonRepository.searchUser" />
-    </select>
+		SELECT
+		COUNT(1)
+		FROM
+		( SELECT
+		<include refid="hc_member_columns">
+			<property name="alias" value="hm."/>
+		</include>
+		, (SELECT hd.DEPT_CODE FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_CODE
+		, (SELECT hd.DEPT_NAME FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_NAME
+		, (SELECT hd.DEPT_ENG_NAME FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_ENG_NAME
+		FROM
+		HC_MEMBER AS hm
+		WHERE
+		hm.MEM_STAT != 'delete' ) hm
+		WHERE
+		1=1
+		<include refid="kr.co.ibk.repository.CommonRepository.searchUser"/>
+	</select>
 
     <select id="getUserList" parameterType="MemberInfo" resultType="MemberInfo">
     	SELECT *
@@ -71,12 +73,12 @@
 		    (DEPT_ID, MEM_ID, MEM_NAME, MEM_TYPE,
 		     MEM_STAT, MEM_BEFO_PWD, MEM_PWD, MEM_GENDER, MEM_BIRTHDAY,
 		     MEM_PHONE, MEM_EMAIL, MEM_REG_ID, MEM_REG_DT, MEM_MOD_ID,
-		     MEM_MOD_DT, MEM_LST_DT, MEM_FAIL_CNT, MEM_FAIL_DT, MEM_COLUMN1, MEM_COLUMN2)
+		     MEM_MOD_DT, MEM_LST_DT, MEM_FAIL_CNT, MEM_FAIL_DT, MEM_COLUMN1, MEM_COLUMN2, MEM_SNO, RECV_YN, SND_YN)
 		VALUES
 			(#{deptId}, #{memId}, #{memName}, NULL,
 			#{memStat}, #{memBefoPwd}, #{memPwd}, #{memGender}, #{memBirthday},
 			#{memPhone}, #{memEmail}, #{memRegId}, sysdate(), #{memModId},
-			sysdate(), sysdate(), 0, SYSDATE(), #{memColumn1}, #{memColumn2})
+			sysdate(), sysdate(), 0, SYSDATE(), #{memColumn1}, #{memColumn2}, #{memSno}, #{recvYn}, #{sndYn})
     </update>
     
     <update id="deleteUser" parameterType="MemberInfo">
@@ -174,7 +176,10 @@
 		    , MEM_MOD_DT = sysdate()
 		    , MEM_COLUMN1 = #{memColumn1}
 		    , MEM_COLUMN2 = #{memColumn2}
-		WHERE 
+		    , MEM_SNO = #{memSno}
+		    , RECV_YN = #{recvYn}
+		    , SND_YN = #{sndYn}
+		WHERE
     		1=1
         	AND MEM_STAT != 'delete'
 	    	AND MEM_ID = #{memId}
@@ -209,6 +214,9 @@
 		, ${alias}MEM_COLUMN3
 		, ${alias}MEM_COLUMN4
 		, ${alias}MEM_COLUMN5
+		, ${alias}MEM_SNO
+		, ${alias}RECV_YN
+		, ${alias}SND_YN
     </sql>
     <sql id="hc_role_columns">
 		${alias}ROLE_SEQ
@@ -226,4 +234,14 @@
 		, ${alias}ROLE_COLUMN4
 		, ${alias}ROLE_COLUMN5
     </sql>
+
+	<update id="updateSndN">
+		UPDATE
+			HC_MEMBER
+		SET
+			SND_YN = 'N'
+		WHERE
+			1=1
+	    	AND MEM_SEQ != #{memSeq}
+	</update>
 </mapper>
