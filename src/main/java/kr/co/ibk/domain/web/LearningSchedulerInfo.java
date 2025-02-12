@@ -1,6 +1,7 @@
 package kr.co.ibk.domain.web;
 
 import kr.co.ibk.domain.enums.LearningType;
+import kr.co.ibk.domain.enums.TermType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +17,10 @@ public class LearningSchedulerInfo {
     /**
      * 학습 스케줄러 테이블
      */
-    private String schedId; /*학습 스케줄러 ID*/
+    private Integer schedId; /*학습 스케줄러 ID*/
     private String schedNm; /*학습 스케줄러명*/
     private String hdqrBobDcd; /*학습 대상 : 1 본부, 2 영업점*/
-    private String termTy; /*학습 주기*/
+    private TermType termTy; /*학습 주기*/
     private String stYmd; /*학습 시작 일자*/
     private String stTime; /*학습 시작 시간*/
     private String useAt; /*사용여부*/
@@ -29,7 +30,7 @@ public class LearningSchedulerInfo {
     private LocalDateTime modDt; /*수정일자*/
     private String delAt; /*삭제여부*/
     private String learningModelId; /*모델관리 ID*/
-    private Long templateId; /* 템플릿 ID*/
+    private Integer templateId; /* 템플릿 ID*/
     private String des; /* 배치설명 */
 
     private String templateName; /* 템플릿 명*/
@@ -39,7 +40,7 @@ public class LearningSchedulerInfo {
     private String batchSize;
     private LocalDateTime deployDt;  //'배포일',
     private LearningType learningType;
-    private String bdgtPrfrYmTerm;
+    private String searchMm;
 
 }
 

@@ -319,11 +319,11 @@
                         }
 
                         let buttonHtml = '';
-                        if (['0', '2', '3'].includes(item.deployStatus)) {
+                        if (['0', '1', '2', '4'].includes(item.deployStatus)) {
                             buttonHtml = `
                                 <button type="button" class="btn fill"
-                                    onclick="${item.deployStatus === 2 ? 'fn_stopLearning(' + item.id + ')' : 'fn_goLearning(' + item.id + ')'}">
-                                    <span>${item.deployStatus === 2 ? '학습 중단' : '학습'}</span>
+                                    onclick="${item.deployStatus === '2' ? 'fn_stopLearning(' + item.id + ')' : 'fn_goLearning(' + item.id + ')'}">
+                                    <span>${item.deployStatus === '2' ? '학습 중단' : '학습'}</span>
                                 </button>
                             `;
                         }
@@ -466,7 +466,7 @@
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter">
                                 <i class="ico_filter"></i>
-                                <span>필터</span>
+                                <span>검색</span>
                             </button>
 
                             <div class="filter">

@@ -145,6 +145,8 @@
         const outPrefix = 'output_';
 
         function fn_templateDetailOpen(el) {
+            $('#dataName').val(''); // 입력값 초기화
+
             let id = $(el).data('id');
             let learningTy = $(el).data('learning-ty');
             let learningTyNm = $(el).data('learning-ty-nm');

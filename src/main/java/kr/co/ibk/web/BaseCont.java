@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.ibk.common.AppWebResult;
 import kr.co.ibk.common.Base;
 import kr.co.ibk.common.utils.RequestUtil;
+import kr.co.ibk.domain.web.TemplateInputInfo;
 import org.springframework.ui.Model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public abstract class BaseCont extends Base {
@@ -112,5 +115,36 @@ public abstract class BaseCont extends Base {
         return map;
     }
 
+    public String hashMapToJson(HashMap<String, String> map) {
+        List<List<String>> listFormat = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String result = "";
+
+        try {
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                List<String> pair = new ArrayList<>();
+                pair.add(entry.getKey());
+                pair.add(entry.getValue());
+                listFormat.add(pair);
+            }
+            result = objectMapper.writeValueAsString(listFormat);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
+    public List<Map<String, Object>> templateInputInfoToMap(List<TemplateInputInfo> list) {
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        for (TemplateInputInfo info : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", info.getColName());
+            map.put("sno", info.getSno());
+            mapList.add(map);
+        }
+        return mapList;
+    }
 
 }

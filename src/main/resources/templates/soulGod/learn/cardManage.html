@@ -275,6 +275,7 @@
         }
 
         function fn_search() {
+            $('.fc_error').hide();
             let searchStartDate = $('#searchStartDate').val();
             let searchEndDate = $('#searchEndDate').val();
             if ((!$.trim(searchStartDate) || !$.trim(searchEndDate))

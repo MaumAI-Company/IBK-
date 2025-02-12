@@ -67,7 +67,7 @@
         </if>
 
         /*상태 검색*/
-        <if test="statusType != null and statusType != ''">
+        <if test="statusType != null and statusType.toString != ''">
             AND lm.DEPLOY_STATUS = #{statusType}
         </if>
 

@@ -29,6 +29,7 @@ public class TemplateInfo {
 
     /*deail*/
     private List<TemplateInputInfo> inputList;
+    private List<TemplateInputInfo> outputList;
 }
 
 

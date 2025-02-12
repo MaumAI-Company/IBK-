@@ -46,10 +46,11 @@
 
     <select id="getTotalCount" resultType="int" parameterType="LearningDataForm">
         select
-            count(*)
+        count(*)
         from
-            LEARNING_DATA ld
+        LEARNING_DATA ld
         inner join HC_MEMBER hm on ld.REG_ID = hm.MEM_ID
+        left join TEMPLATE t on ld.TEMPLATE_ID = t.ID
         <include refid="where"></include>
     </select>
 
@@ -107,6 +108,7 @@
         </if>
         <if test="searchKeyword != null and searchKeyword != ''">
             AND (ld.DATA_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    or t.TEMPLATE_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
                     or hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
         </if>
     </sql>

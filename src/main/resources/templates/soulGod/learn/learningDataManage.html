@@ -187,7 +187,7 @@
                         $('#searchJson').val(item.selectCon);
                         $('#searchTypeJson').val('');
 
-                        fn_settingChip(item.selectCon); //템플릿의 선택조건
+                        fn_settingChip(item.selectCon);
                         $('.chipArea').html($('.selected_filter').html());
                         $('.chipArea .chip button').remove();
 
@@ -382,7 +382,7 @@
                     <div>
                         <div class="total_num"><b
                                 th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? #numbers.formatInteger(pagingInfo.totalRecordCount , '0', 'COMMA') : 0}"></b>
-                            건의 학습 템플릿이 있습니다.
+                            건의 학습 데이터가 있습니다.
                         </div>
                     </div>
                     <div class="mla">
@@ -445,7 +445,7 @@
                                             <div class="search_form">
                                                 <div class="search">
                                                     <input type="search" id="searchKeyword" name="searchKeyword"
-                                                           placeholder="학습데이터 명 또는 등록자 명을 입력하세요."
+                                                           placeholder="학습데이터, 템플릿 명, 등록자를 입력하세요."
                                                            th:value="${params.searchKeyword}">
                                                     <button type="button" class="btn_del" tabindex="-1">
                                                         <span class="blind">삭제</span>
@@ -691,7 +691,8 @@
                                     <div class="td">
                                         <div class="input">
                                             <input type="text" id="epoch" value="10" placeholder="Epoch를 입력하세요."
-                                                   onkeyup="fn_numberOnly(this, 100)">
+                                                   onkeyup="fn_numberOnly(this, 100)"
+                                                   oninput="fn_numberOnly(this, 100)">
                                             <button type="button" class="btn_del" tabindex="-1">
                                                 <span class="blind">삭제</span>
                                             </button>
@@ -713,7 +714,8 @@
                                     <div class="td df w200">
                                         <div class="input">
                                             <input type="text" id="learningRate" value="3"
-                                                   onkeyup="fn_numberOnly(this, 10)">
+                                                   placeholder="Learning Rate를 입력하세요." onkeyup="fn_numberOnly(this, 10)"
+                                                   oninput="fn_numberOnly(this, 100)">
                                             <button type="button" class="btn_del" tabindex="-1">
                                                 <span class="blind">삭제</span>
                                             </button>
@@ -736,7 +738,8 @@
                                     <div class="td">
                                         <div class="input">
                                             <input type="text" id="batchSize" value="16"
-                                                   placeholder="Batch Size를 입력하세요." onkeyup="fn_numberOnly(this, 16)">
+                                                   placeholder="Batch Size를 입력하세요." onkeyup="fn_numberOnly(this, 16)"
+                                                   oninput="fn_numberOnly(this, 100)">
                                             <button type="button" class="btn_del" tabindex="-1">
                                                 <span class="blind">삭제</span>
                                             </button>
