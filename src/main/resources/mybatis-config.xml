@@ -9,6 +9,7 @@
     </settings>
 
     <typeAliases>
+        <typeAlias type="kr.co.ibk_monitoring.domain.web.MemberInfo" alias="MemberInfo"/>
     	<typeAlias type="kr.co.ibk_monitoring.common.utils.CustomMap" alias="cMap"/>
     	
         <package name="kr.co.ibk_monitoring.model"/>
