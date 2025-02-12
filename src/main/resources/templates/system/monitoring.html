@@ -599,16 +599,20 @@
 
         function fn_getMccServerCheck(){
             $.ajax({
-                url : "[[${mccDomain}]]" + "/check-engine/",
+                url : "/api/v1/o/mccServerCheck",
                 type : "post",
                 async : true,
                 data: {},
                 //dataType: "json",
-                contentType: "application/json",
+                contentType: "text",
                 // timeout: 10000,// timeout : 10초간 서버와의 통신기다리는 시간.
                 cache: false,
                 success : function(resp) {
-                    $("#systemStatusMcc").prop("class", "fc_primary").text("정상");
+                    if (resp == '200') {
+                        $("#systemStatusMcc").prop("class", "fc_primary").text("정상");
+                    } else {
+                        $("#systemStatusMcc").prop("class", "fc_error").text("장애");
+                    }
                 },
                 /*beforeSend: function() { //로딩이미지 보여주기
                     $("#wrap-loading").show();
@@ -624,16 +628,20 @@
 
         function fn_getWebServerCheck(){
             $.ajax({
-                url : "[[${webDomain}]]" + "/api/v1/o/check-engine",
+                url : "/api/v1/o/webServerCheck",
                 type : "post",
                 async : true,
                 data: {},
                 //dataType: "json",
-                contentType: "application/json",
+                contentType: "text",
                 // timeout: 10000,// timeout : 10초간 서버와의 통신기다리는 시간.
                 cache: false,
                 success : function(resp) {
-                    $("#systemStatusWeb").prop("class", "fc_primary").text("정상");
+                    if (resp == 200) {
+                        $("#systemStatusWeb").prop("class", "fc_primary").text("정상");
+                    } else {
+                        $("#systemStatusWeb").prop("class", "fc_error").text("장애");
+                    }
                 },
                 /*beforeSend: function() { //로딩이미지 보여주기
                     $("#wrap-loading").show();
@@ -647,7 +655,7 @@
             });
         }
 
-        let serverCheckInterval = 10000;//1000 * 60 * 10;
+        let serverCheckInterval = 1000 * 60 * 10;
         let mccCheck = [[${mccCheck}]];
         let webCheck = [[${webCheck}]];
         $(async function () {

@@ -61,23 +61,38 @@ public class ApiService {
         String title = TITLE;
         try {
             if (mccCheck) {
-                Integer resMCC = sendPost(mccDomain, "/check-engine/");
+                Integer resMCC = mccServerCheck();
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애! : " + resMCC);
                     title = "MCC " + TITLE;
-                    callAlarm(sender, receiverList, title, title);
                 }
             }
             if (webCheck) {
-                Integer resWeb = sendPost(webDomain, "/api/v1/o/check-engine");
+                Integer resWeb = webServerCheck();
                 if (resWeb == null || resWeb != 200) {
-                    log.debug("### WEB 서버 장애! : "+resWeb);
+                    log.debug("### WEB 서버 장애! : " + resWeb);
                     title = "WEB " + TITLE;
                     callAlarm(sender, receiverList, title, title);
                 }
             }
         } catch (Exception e) {
             callAlarm(sender, receiverList, title, title);
+        }
+    }
+
+    public Integer mccServerCheck() {
+        try {
+            return sendPost(mccDomain, "/check-engine/");
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public Integer webServerCheck() {
+        try {
+            return sendPost(webDomain, "/api/v1/o/check-engine");
+        } catch (Exception e) {
+            throw e;
         }
     }
 

@@ -1,10 +1,13 @@
 package kr.co.ibk_monitoring.web.controller;
 
+import kr.co.ibk_monitoring.service.ApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,6 +25,8 @@ public class SystemController {
     @Value("${Globals.check.web}")
     private Boolean webCheck;
 
+    private final ApiService apiService;
+
     @RequestMapping( "/system/monitoring")
     public String monitoring(Model model) {
 
@@ -35,5 +40,29 @@ public class SystemController {
 
         return "system/monitoring";
 
+    }
+
+    @ResponseBody
+    @PostMapping( "/api/v1/o/mccServerCheck")
+    public String mccServerCheck() {
+        Integer code = null;
+        try {
+            code = apiService.mccServerCheck();
+        } catch (Exception e) {
+            code = 500;
+        }
+        return code.toString();
+    }
+
+    @ResponseBody
+    @PostMapping( "/api/v1/o/webServerCheck")
+    public String webServerCheck() {
+        Integer code = null;
+        try {
+            code = apiService.webServerCheck();
+        } catch (Exception e) {
+            code = 500;
+        }
+        return code.toString();
     }
 }
