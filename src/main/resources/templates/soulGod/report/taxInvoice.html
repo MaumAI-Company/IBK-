@@ -216,6 +216,8 @@
                         `;
                     }
 
+                    $('#searchType').val('').niceSelect('update');
+                    $('#searchKeyword').prop('disabled', true);
                     $('.pagination').html(paginationHtml);
                     $('#loading').removeClass('active');
                 },
