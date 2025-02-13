@@ -99,10 +99,6 @@ public class LearningModelService extends BaseCont {
                 if (!ObjectUtils.isEmpty(load.getSelectCon())) {
                     learningDataForm.setSearchJsonMap(jsonToHashMap(load.getSelectCon()));
                 }
-                if (!ObjectUtils.isEmpty(load.getStartDt()) && !ObjectUtils.isEmpty(load.getEndDt())) {
-                    learningDataForm.setSearchStartDate(load.getStartDt().format(DateTimeFormatter.ofPattern("yyyy-MM")));
-                    learningDataForm.setSearchEndDate(load.getEndDt().format(DateTimeFormatter.ofPattern("yyyy-MM")));
-                }
                 List<CardLearningDataInfo> dataList = cardLearningDataRepository.getLearningList(learningDataForm);
                 fileCon = cardLearningFileContent(dataList, list);
 
@@ -110,10 +106,6 @@ public class LearningModelService extends BaseCont {
                 BillLearningDataForm learningDataForm = new BillLearningDataForm();
                 if (!ObjectUtils.isEmpty(load.getSelectCon())) {
                     learningDataForm.setSearchJsonMap(jsonToHashMap(load.getSelectCon()));
-                }
-                if (!ObjectUtils.isEmpty(load.getStartDt()) && !ObjectUtils.isEmpty(load.getEndDt())) {
-                    learningDataForm.setSearchStartDate(load.getStartDt().format(DateTimeFormatter.ofPattern("yyyy-MM")));
-                    learningDataForm.setSearchEndDate(load.getEndDt().format(DateTimeFormatter.ofPattern("yyyy-MM")));
                 }
                 List<BillLearningDataInfo> dataList = billLearningDataRepository.getLearningList(learningDataForm);
                 fileCon = billLearningFileContent(dataList, list);
