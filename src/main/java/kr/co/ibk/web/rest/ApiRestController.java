@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiRestController {
 
     @PostMapping("/check-engine")
-    public ResponseEntity<?> saveToken() {
+    public ResponseEntity<?> checkEngine() {
 
         return new ResponseEntity<>(new ResponseDto<>(ResultCodeType.SUCCESS, "성공", null), HttpStatus.OK);
     }
