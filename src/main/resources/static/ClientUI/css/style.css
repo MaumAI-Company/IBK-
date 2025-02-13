@@ -100,6 +100,7 @@
 .selected_filter:not(:empty){padding-bottom:12px}
 
 /*** box ***/
+.sub_tit{margin-bottom:14px;font-size:16px;font-weight:500}
 .area{display:flex;flex-wrap:wrap;gap:20px}
 .area .box{flex:1;align-content:flex-start}
 .box{display:flex;flex-wrap:wrap;align-items:center;column-gap:12px;padding:20px;border-radius:8px;background-color:#fff;box-shadow:0 0 15px 0 rgba(0, 0, 0, 0.06)}
@@ -109,7 +110,6 @@
 .box .nice-select,
 .box .input{width:200px}
 .box > .sub_tit{width:100%}
-.box .sub_tit{margin-bottom:14px;font-size:16px;font-weight:500}
 .box .sub_tit:not(:first-child){margin-top:20px}
 .box .tit_area{width:100%;margin-bottom:18px}
 .box .tit_area .sub_tit{margin-bottom:0}

@@ -715,29 +715,50 @@
             </div>
 
             <div class="graph_area">
-                <div class="graph" style="height:430px;">
-                    <div id="diskUse">디스크 사용량</div>
+                <div class="graph" style="height:470px;">
+                    <h4 class="sub_tit" id="diskUse">디스크 사용량</h4>
                     <div id="chartdiv" style="height:366px"></div>
                 </div>
-                <div class="graph" style="height:430px;">
-                    <div>웹 어플리케이션 CPU 사용량</div>
+                <div class="graph" style="height:470px;">
+                    <h4 class="sub_tit">웹 어플리케이션 CPU 사용량</h4>
                     <div id="cpuUseChartdiv" style="height:366px"></div>
                 </div>
-                <div class="graph" style="height:430px;">
-                    <div>JVM MEMORY</div>
+                <div class="graph" style="height:470px;">
+                    <h4 class="sub_tit">JVM MEMORY</h4>
                     <div id="jvmMemory" style="height:366px"></div>
                 </div>
-                <div class="graph" style="height:430px;">
-                    <div>업타임</div>
+                <div class="graph" style="height:470px;">
+                    <h4 class="sub_tit">업타임</h4>
                     <div id="processUptime"></div>
-                    <div class="box">
-                        <p>AI 엔진</p>
-                        <b id="systemStatusMcc" class="fc_primary">확인중</b>
-                        <!--<b class="fc_error">비정상</b>-->
-                        <p>API 서버</p>
-                        <b id="systemStatusWeb" class="fc_primary">확인중</b>
-                        <!--<b class="fc_error">비정상</b>-->
-                    </div>
+                    <table class="tbl_list mt15">
+                        <caption>서비스 명, 서비스 상태로 구성</caption>
+                        <colgroup>
+                            <col style="width: 50%;">
+                            <col style="width: 50%;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th scope="col" class="tal">서비스 명</th>
+                            <th scope="col">서비스 상태</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="tal">AI 엔진</td>
+                            <td>
+                                <b id="systemStatusMcc" class="fc_primary">확인중</b>
+                                <!--<b class="fc_error">비정상</b>-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tal">API 서버</td>
+                            <td>
+                                <b id="systemStatusWeb" class="fc_primary">확인중</b>
+                                <!--<b class="fc_error">비정상</b>-->
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
