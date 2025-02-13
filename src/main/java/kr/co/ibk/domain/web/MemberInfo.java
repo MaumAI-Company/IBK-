@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MemberInfo extends PageForm implements Serializable{
+public class MemberInfo extends PageForm implements Serializable {
     /* HC_MEMBER */
     private String memSeq; // '회원일련번호'
     private String deptId; // '부서아이디'
@@ -45,36 +45,39 @@ public class MemberInfo extends PageForm implements Serializable{
     private String memColumn3; // 커스텀컬럼
     private String memColumn4; // 커스텀컬럼
     private String memColumn5; // 커스텀컬럼
-    
+    private String memSno; // 사번
+    private String recvYn;
+    private String sndYn;
+
     // 조회
     private String roleId; // 권한 ID
-	private String deptCode; //  '부서코드'
-	private String deptName; //  '부서명'
-	private String deptEngName; //  '부서명(영문)'
-	
-	private List<RoleInfo> roleList; // 역할(권한) 목록
-	
+    private String deptCode; //  '부서코드'
+    private String deptName; //  '부서명'
+    private String deptEngName; //  '부서명(영문)'
+
+    private List<RoleInfo> roleList; // 역할(권한) 목록
+
     @Override
     public String toString() {
-    	CustomMap map = new CustomMap();
-    	map.put("deptId", StringUtil.nvl(this.deptId,""));
-    	map.put("memId", StringUtil.nvl(this.memId,""));
-    	map.put("memName", StringUtil.nvl(this.memName,""));
-    	map.put("memType", StringUtil.nvl(this.memType,""));
-    	map.put("memStat", StringUtil.nvl(this.memStat,""));
-    	map.put("memRank", StringUtil.nvl(this.memRank,""));
-    	map.put("deptCode", StringUtil.nvl(this.deptCode,""));
-    	map.put("deptName", StringUtil.nvl(this.deptName,""));
-    	
-    	if (roleList != null) {
-        	for(int i=0; i < this.roleList.size(); i++) {
-        		RoleInfo role = this.roleList.get(i);
-        		map.put("roleId_"+Integer.toString(i), StringUtil.nvl(role.getRoleId(),""));
-        		map.put("roleType_"+Integer.toString(i), StringUtil.nvl(role.getRoleType(),""));
-        		map.put("roleName_"+Integer.toString(i), StringUtil.nvl(role.getRoleName(),""));
-        	}	
-    	}
-    	return map.toString();
+        CustomMap map = new CustomMap();
+        map.put("deptId", StringUtil.nvl(this.deptId, ""));
+        map.put("memId", StringUtil.nvl(this.memId, ""));
+        map.put("memName", StringUtil.nvl(this.memName, ""));
+        map.put("memType", StringUtil.nvl(this.memType, ""));
+        map.put("memStat", StringUtil.nvl(this.memStat, ""));
+        map.put("memRank", StringUtil.nvl(this.memRank, ""));
+        map.put("deptCode", StringUtil.nvl(this.deptCode, ""));
+        map.put("deptName", StringUtil.nvl(this.deptName, ""));
+
+        if (roleList != null) {
+            for (int i = 0; i < this.roleList.size(); i++) {
+                RoleInfo role = this.roleList.get(i);
+                map.put("roleId_" + Integer.toString(i), StringUtil.nvl(role.getRoleId(), ""));
+                map.put("roleType_" + Integer.toString(i), StringUtil.nvl(role.getRoleType(), ""));
+                map.put("roleName_" + Integer.toString(i), StringUtil.nvl(role.getRoleName(), ""));
+            }
+        }
+        return map.toString();
     }
 
     @Builder

@@ -146,4 +146,13 @@
 		, ${alias}ROLE_COLUMN4
 		, ${alias}ROLE_COLUMN5
     </sql>
+
+	<select id="confirmMemSno" parameterType="MemberForm" resultType="int">
+		SELECT COUNT(*)
+		FROM HC_MEMBER hm
+		WHERE hm.MEM_SNO = #{memSno}
+		<if test="memSeq != null">
+			AND hm.MEM_SEQ != #{memSeq}
+		</if>
+	</select>
 </mapper>
