@@ -19,16 +19,24 @@
     <script type="text/javascript" src="/ClientUI/js/style.js"></script>
     <script type="text/javascript" src="/ClientUI/js/common.js"></script>
 
+    <style>
+        .txt_guide {
+            margin-top: 8px
+        }
+    </style>
+
     <script type="text/javascript">
         $(function () {
+
+
             let loginId = getCookie("loginId");
             if (loginId) {
                 $("#userId").val(loginId);
                 $("#remember-me").prop("checked", true);
             }
-            let errormsg = $("#errormsg").val();
-            if (errormsg) {
-                showAlert("warning", errormsg);
+            let errMsg = $("#errMsg").val();
+            if (errMsg) {
+                showAlert("warning", errMsg);
             }
             $('input[id="userId"]').keydown(function (e) {
                 if (e.keyCode === 13) {
@@ -74,6 +82,7 @@
     </script>
 </head>
 <body>
+    <input type="hidden" name="errMsg" id="errMsg" th:value="${ERRORMSG}">
     <div id="wrap">
         <div id="container">
             <div class="left_cont">
@@ -131,6 +140,9 @@
                                         </button>
                                     </li>
                                 </ul>-->
+                            </div>
+                            <div class="txt_guide fc_primary">
+                                <span>로그인 오류 발생 시 관리자(000-000-000)에게 문의바랍니다.</span>
                             </div>
                         </fieldset>
                     </form>
