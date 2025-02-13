@@ -14,6 +14,9 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Service
 @RequiredArgsConstructor
@@ -116,16 +119,12 @@ public class MccService {
             params.put("model_id", info.getId());
             params.put("model_name", info.getLearnName());
 
-            final Boolean[] result = {false};
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<Boolean> future = executor.submit(() -> sendPost("/replace-model/", params, info.getLearningType()));
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    result[0] = sendPost("/replace-model/", params, info.getLearningType());
-                }
-            }).start();
-
-            return result[0];
+            Boolean result = future.get();
+            executor.shutdown();
+            return result;
         } catch (Exception e) {
             return false;
         }
