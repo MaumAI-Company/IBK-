@@ -397,11 +397,11 @@
                     <td>
                         <div class="df">
                             <div class="radio txt">
-                                <input type="radio" name="modMemColumn2" id="modMemColumn2_Y" value="Y" checked>
+                                <input type="radio" name="modMemColumn2" id="modMemColumn2_Y" value="Y">
                                 <label for="modMemColumn2_Y">사용</label>
                             </div>
                             <div class="radio txt">
-                                <input type="radio" name="modMemColumn2" id="modMemColumn2_N" value="N">
+                                <input type="radio" name="modMemColumn2" id="modMemColumn2_N" value="N" checked>
                                 <label for="modMemColumn2_N">미사용</label>
                             </div>
                         </div>
@@ -415,11 +415,11 @@
                     <td colspan="3">
                         <div class="df">
                             <div class="radio txt">
-                                <input type="radio" name="modSndYn" id="modSndY" value="Y" checked>
+                                <input type="radio" name="modSndYn" id="modSndY" value="Y">
                                 <label for="modSndY">사용</label>
                             </div>
                             <div class="radio txt">
-                                <input type="radio" name="modSndYn" id="modSndN" value="N">
+                                <input type="radio" name="modSndYn" id="modSndN" value="N" checked>
                                 <label for="modSndN">미사용</label>
                             </div>
                             <div class="txt_guide fc_primary">※ 발신인은 한 명만 설정할 수 있으며, 사용으로 등록 시 다른 발신인은 자동으로 미사용 처리됩니다.</div>
@@ -701,11 +701,11 @@
                     <td colspan="3">
                         <div class="df">
                             <div class="radio txt">
-                                <input type="radio" name="addSndYn" id="addSndY" value="Y" checked>
+                                <input type="radio" name="addSndYn" id="addSndY" value="Y">
                                 <label for="addSndY">사용</label>
                             </div>
                             <div class="radio txt">
-                                <input type="radio" name="addSndYn" id="addSndN" value="N">
+                                <input type="radio" name="addSndYn" id="addSndN" value="N" checked>
                                 <label for="addSndN">미사용</label>
                             </div>
                             <div class="txt_guide fc_primary">※ 발신인은 한 명만 설정할 수 있으며, 사용으로 등록 시 다른 발신인은 자동으로 미사용 처리됩니다.</div>
@@ -720,11 +720,11 @@
                     <td colspan="3">
                         <div class="df">
                             <div class="radio txt">
-                                <input type="radio" name="addRecvYn" id="addRecvY" value="Y" checked>
+                                <input type="radio" name="addRecvYn" id="addRecvY" value="Y">
                                 <label for="addRecvY">사용</label>
                             </div>
                             <div class="radio txt">
-                                <input type="radio" name="addRecvYn" id="addRecvN" value="N">
+                                <input type="radio" name="addRecvYn" id="addRecvN" value="N" checked>
                                 <label for="addRecvN">미사용</label>
                             </div>
                         </div>
@@ -1251,8 +1251,8 @@
         $("input[name='addMemGender'][value='M']").prop("checked", true);
         $("input[name='addMemStat'][value='use']").prop("checked", true);
         $("input[name='addMemColumn2'][value='N']").prop("checked", true);
-        $("input[name='addRecvYn'][value='N']").prop("checked", false);
-        $("input[name='addSndYn'][value='N']").prop("checked", false);
+        $("input[name='addRecvYn'][value='N']").prop("checked", true);
+        $("input[name='addSndYn'][value='N']").prop("checked", true);
 
         // 아이디 중복 관련
         $('#checkUserId').val(''); // 중복체크된 아이디
@@ -1423,8 +1423,8 @@
         $("input[name='modMemStat']").prop("checked", false);
         $("input[name='modMemRoleId']").prop("checked", false);
         $("input[name='modMemColumn2']").prop("checked", false);
-        $("input[name='modRecvYn']").prop("checked", false);
-        $("input[name='modSndYn']").prop("checked", false);
+        $("input[name='modRecvYn'][value='N']").prop("checked", true);
+        $("input[name='modSndYn'][value='N']").prop("checked", true);
 
         chkMemSno = false;
         dupMemSno = false;
