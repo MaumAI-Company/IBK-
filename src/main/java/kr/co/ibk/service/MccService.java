@@ -113,14 +113,15 @@ public class MccService {
 
         try {
             JSONObject params = new JSONObject();
-            params.put("model_id", modelId);
+            params.put("model_id", info.getId());
+            params.put("model_name", info.getLearnName());
 
             final Boolean[] result = {false};
 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    result[0] = sendPost("/stop-model/", params, info.getLearningType());
+                    result[0] = sendPost("/replace-model/", params, info.getLearningType());
                 }
             }).start();
 
