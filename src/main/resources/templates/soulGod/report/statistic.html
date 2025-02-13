@@ -520,6 +520,14 @@
                         strokeOpacity: 0
                     });
 
+                    series.columns.template.adapters.add("fill", function (fill, target) {
+                        return target.dataItem && target.dataItem.dataContext.per < 100 ? am5.color(0xf28d8e) : fill;
+                    });
+
+                    series.columns.template.adapters.add("stroke", function (stroke, target) {
+                        return target.dataItem && target.dataItem.dataContext.per < 100 ? am5.color(0xf28d8e) : stroke;
+                    });
+
                     series.data.setAll(data);
 
                     series.appear();
@@ -576,7 +584,7 @@
 
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 
-            makeSeries1("추론 데이터 수", "outCnt");
+            makeSeries1("지급결의된 추론데이터 수", "outCnt");
             makeSeries1("전체", "total");
 
             chart.appear(1000, 100);
@@ -684,7 +692,7 @@
 
             let series2 = chart.series.push(
                 am5xy.LineSeries.new(root, {
-                    name: "추론 데이터 수",
+                    name: "지급결의된 추론데이터 수",
                     xAxis: xAxis,
                     yAxis: yAxis,
                     valueYField: "total",

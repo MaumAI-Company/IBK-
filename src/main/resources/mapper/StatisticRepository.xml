@@ -8,7 +8,7 @@
             sub.dd,
             sub.total,
             sub.outCnt,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
         FROM (
              SELECT
                 <include refid="inferDateGrouping"/> AS dd,
@@ -31,9 +31,9 @@
             sub.hitCnt1,
             sub.hitCnt2,
             sub.hitCnt3,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per
         FROM
             (
                 SELECT
@@ -72,7 +72,7 @@
             sub.dd,
             sub.total,
             sub.outCnt,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
         FROM(
             SELECT
                 <include refid="inferDateGrouping"></include> AS dd,
@@ -96,9 +96,9 @@
             sub.hitCnt1,
             sub.hitCnt2,
             sub.hitCnt3,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per
         FROM
             (
                 SELECT
@@ -142,7 +142,7 @@
 
         /*일자 검색*/
         <if test="searchStartDate != null and searchEndDate != null">
-            AND co.BDGT_PRFR_YM BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+            AND ci.RSRE_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
         </if>
     </sql>
 
@@ -165,14 +165,17 @@
 
     <sql id="usageDateGrouping">
         <choose>
+            <when test="searchCycle == null or searchCycle == '' or searchCycle == 1">
+                SUBSTRING(ci.RSRE_YMD, 1, 8) <!-- 일별 -->
+            </when>
             <when test="searchCycle == 2">
-                SUBSTRING(co.BDGT_PRFR_YM, 1, 6) <!-- 월별 -->
+                SUBSTRING(ci.RSRE_YMD, 1, 6) <!-- 월별 -->
             </when>
             <when test="searchCycle == 3">
-                SUBSTRING(co.BDGT_PRFR_YM, 1, 4) <!-- 연도별 -->
+                SUBSTRING(ci.RSRE_YMD, 1, 4) <!-- 연도별 -->
             </when>
             <otherwise>
-                SUBSTRING(co.BDGT_PRFR_YM, 1, 6) <!-- 월별 -->
+                SUBSTRING(ci.RSRE_YMD, 1, 8) <!-- 기본값: 일별 -->
             </otherwise>
         </choose>
     </sql>
