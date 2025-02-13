@@ -12,7 +12,7 @@
         ON
         bi.TXBL_SRN = bo.TXBL_SRN
         AND bi.BASE_YM = bo.BASE_YM
-        AND bi.ISS_SRN = bo.ISS_SRN
+        AND bi.BRCD = bo.BRCD
         WHERE bi.BRCD is not null
         <include refid="where"></include>
     </select>
@@ -26,7 +26,7 @@
         ON
         bi.TXBL_SRN = bo.TXBL_SRN
         AND bi.BASE_YM = bo.BASE_YM
-        AND bi.ISS_SRN = bo.ISS_SRN
+        AND bi.BRCD = bo.BRCD
         WHERE bi.BRCD is not null
         <include refid="where"></include>
         ORDER BY
@@ -114,7 +114,7 @@
         ON
         bi.TXBL_SRN = bo.TXBL_SRN
         AND bi.BASE_YM = bo.BASE_YM
-        AND bi.ISS_SRN = bo.ISS_SRN
+        AND bi.BRCD = bo.BRCD
         WHERE bi.ISS_SRN = #{issSrn}
             AND bi.BRCD = #{brcd}
     </select>
@@ -128,7 +128,7 @@
         ON
         bi.TXBL_SRN = bo.TXBL_SRN
         AND bi.BASE_YM = bo.BASE_YM
-        AND bi.ISS_SRN = bo.ISS_SRN
+        AND bi.BRCD = bo.BRCD
         WHERE bi.BRCD is not null
         <include refid="where"></include>
         ORDER BY
@@ -152,7 +152,7 @@
         ON
         bi.TXBL_SRN = bo.TXBL_SRN
         AND bi.BASE_YM = bo.BASE_YM
-        AND bi.ISS_SRN = bo.ISS_SRN
+        AND bi.BRCD = bo.BRCD
         WHERE
             bi.BRCD is not null
         <include refid="where"></include>
