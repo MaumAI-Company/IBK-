@@ -61,7 +61,7 @@ public class MccService {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    sendPost("/train-model", params, info.getLearningType());
+                    sendPost("/train-model/", params, info.getLearningType());
                 }
             }).start();
         } catch (Exception e) {
@@ -92,7 +92,7 @@ public class MccService {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    sendPost("/stop-model", params, info.getLearningType());
+                    sendPost("/stop-model/", params, info.getLearningType());
                 }
             }).start();
         } catch (Exception e) {
@@ -120,7 +120,7 @@ public class MccService {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    result[0] = sendPost("/stop-model", params, info.getLearningType());
+                    result[0] = sendPost("/stop-model/", params, info.getLearningType());
                 }
             }).start();
 
