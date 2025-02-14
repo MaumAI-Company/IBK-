@@ -10,7 +10,7 @@ public enum DeployStatusType {
     LEARN_COMPLETE(3, "학습 완료"),
     LEARN_ERROR(4, "학습 오류"),
     DEPLOY_ING(5, "배포 중"),
-    DEPLOY_COMPLETE(6, "배포 완료"),
+//    DEPLOY_COMPLETE(6, "배포 완료"),
     DEPLOY_STOP(7, "배포 중지"),
     DEPLOY_FAIL(8, "배포 실패");
 
@@ -31,6 +31,6 @@ public enum DeployStatusType {
     }
 
     public static List<DeployStatusType> getDeployStatusList() {
-        return Arrays.asList(LEARN_COMPLETE, DEPLOY_ING, DEPLOY_COMPLETE, DEPLOY_STOP, DEPLOY_FAIL);
+        return Arrays.asList(LEARN_COMPLETE, DEPLOY_ING, DEPLOY_STOP, DEPLOY_FAIL);
     }
 }

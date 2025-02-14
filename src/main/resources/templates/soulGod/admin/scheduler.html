@@ -505,7 +505,7 @@
                             <span>최근 </span>
                             <select id="searchMm">
                                 <option value="" disabled selected>선택</option>
-                                <option th:each="month : ${#numbers.sequence(1, 12)}"
+                                <option th:each="month : ${#numbers.sequence(1, 48)}"
                                         th:value="${month}"
                                         th:text="${month}">
                                 </option>
@@ -530,7 +530,7 @@
                                         <button type="button" class="btn_help">
                                             <span class="blind">안내</span>
                                         </button>
-                                        <div class="th_help">학습 데이셋을 학습하는 회수</div>
+                                        <div class="th_help">학습 데이터 셋을 학습하는 횟수 (1 ~ 100)</div>
                                     </div>
                                 </div>
                                 <div class="td">
@@ -552,7 +552,7 @@
                                         <button type="button" class="btn_help">
                                             <span class="blind">안내</span>
                                         </button>
-                                        <div class="th_help">학습률, 최적 값을 찾기 위한 기울기의 이동 정도</div>
+                                        <div class="th_help">학습률, 최적 값을 찾기 위한 기울기의 이동 정도 (1 ~ 10)</div>
                                     </div>
                                 </div>
                                 <div class="td df w200">
@@ -576,7 +576,7 @@
                                         <button type="button" class="btn_help">
                                             <span class="blind">안내</span>
                                         </button>
-                                        <div class="th_help">학습 데이터셋 중, 몇 개의 데이터를 묶어서 가중치 값을 갱신할 지 지정하는 단위</div>
+                                        <div class="th_help">학습 데이터셋 중 몇 개의 데이터를 묶어서 가중치 값을 갱신할 지 지정하는 단위 (1 ~ 16)</div>
                                     </div>
                                 </div>
                                 <div class="td">
