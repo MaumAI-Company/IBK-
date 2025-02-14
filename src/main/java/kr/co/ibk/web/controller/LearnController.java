@@ -70,10 +70,12 @@ public class LearnController extends BaseCont {
         params.setPagingAt("N");
         params.setLimitCnt(20);
         List<CardLearningDataInfo> list = cardLearningDataService.getList(params);
+        int totalCount = cardLearningDataService.getTotalCount(params);
 
         return Map.of(
                 "list", list,
-                "params", params
+                "params", params,
+                "totalCount", totalCount
         );
     }
 
@@ -148,10 +150,12 @@ public class LearnController extends BaseCont {
         params.setPagingAt("N");
         params.setLimitCnt(20);
         List<BillLearningDataInfo> list = billLearningDataService.getList(params);
+        int totalCount = billLearningDataService.getTotalCount(params);
 
         return Map.of(
                 "list", list,
-                "params", params
+                "params", params,
+                "totalCount", totalCount
         );
     }
 
@@ -296,11 +300,11 @@ public class LearnController extends BaseCont {
     public String modelManage(Model model,
                               @ModelAttribute LearningModelForm params) {
 
-        Integer[] deployStatusArr = DeployStatusType.getModelStatusList()
+        /*Integer[] deployStatusArr = DeployStatusType.getModelStatusList()
                 .stream()
                 .map(DeployStatusType::getCode)
                 .toArray(Integer[]::new);
-        params.setDeployStatusArr(deployStatusArr);
+        params.setDeployStatusArr(deployStatusArr);*/
 
         List<LearningModelInfo> list = learningModelService.getList(params);
 

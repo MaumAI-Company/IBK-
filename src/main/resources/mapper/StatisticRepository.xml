@@ -8,7 +8,7 @@
             sub.dd,
             sub.total,
             sub.outCnt,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
         FROM (
              SELECT
                 <include refid="inferDateGrouping"/> AS dd,
@@ -19,7 +19,7 @@
                      ci.TSTM_YMD = co.TSTM_YMD
                          AND ci.TSTM_NO = co.TSTM_NO
                          AND ci.BRCD = co.BRCD
-            <include refid="inferWhere"></include>
+             WHERE <include refid="inferWhere"></include>
              GROUP BY dd
         ) sub
     </select>
@@ -28,32 +28,23 @@
         SELECT
             sub.dd,
             sub.total,
+            top.topCnt,
             sub.hitCnt1,
             sub.hitCnt2,
             sub.hitCnt3,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per
+            totalOutput.totalOutCnt,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per
         FROM
             (
+            /* 지급결의된 개수 */
                 SELECT
                     <include refid="usageDateGrouping"/> AS dd,
                     COUNT(*) AS total,
-                    SUM(CASE
-                            WHEN co.TSTM_YMD IS NOT NULL
-                                AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO)
-                                THEN 1 ELSE 0
-                        END) AS hitCnt1,
-                    SUM(CASE
-                            WHEN co.TSTM_YMD IS NOT NULL
-                                AND INSTR(ci.BDGT_BSNS_FRCS_CON, CONCAT(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON))
-                                THEN 1 ELSE 0
-                        END) AS hitCnt2,
-                    SUM(CASE
-                            WHEN co.TSTM_YMD IS NOT NULL
-                                AND INSTR(ci.BDGT_PRFR_RSN_FRCS_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON))
-                                THEN 1 ELSE 0
-                        END) AS hitCnt3
+                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
+                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_BSNS_FRCS_CON, CONCAT(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
+                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_PRFR_RSN_FRCS_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0  END) AS hitCnt3
                 FROM
                     CARD_OUTPUT ci
                         INNER JOIN CARD_LEARNING_DATA co
@@ -61,9 +52,34 @@
                                        ci.TSTM_YMD = co.TSTM_YMD
                                            AND ci.TSTM_NO = co.TSTM_NO
                                            AND ci.BRCD = co.BRCD
-                <include refid="usageWhere"></include>
+                WHERE <include refid="usageWhere"></include>
                 GROUP BY dd
             ) sub
+        LEFT JOIN (
+        /* top3 개수 */
+            SELECT
+                <include refid="usageDateGrouping"/> AS dd,
+                COUNT(*) AS topCnt
+            FROM CARD_OUTPUT ci
+                INNER JOIN CARD_LEARNING_DATA co ON
+                ci.TSTM_YMD = co.TSTM_YMD
+                AND ci.TSTM_NO = co.TSTM_NO
+                AND ci.BRCD = co.BRCD
+            WHERE <include refid="usageWhere"></include>
+            AND (
+            FIND_IN_SET(co.BDMN_ITEX_MNGM_NO, REPLACE(ci.BDGT_ITEX_FRCS_CON, '|', ',')) > 0
+            )
+        GROUP BY dd
+        ) top ON sub.dd = top.dd
+        LEFT JOIN (
+        /* 전체 output 개수 */
+        SELECT
+            <include refid="usageDateGrouping"/> AS dd,
+            COUNT(*) AS totalOutCnt
+        FROM CARD_OUTPUT ci
+            WHERE <include refid="usageWhere"></include>
+        GROUP BY dd
+        ) totalOutput ON sub.dd = totalOutput.dd
     </select>
 
 
@@ -72,7 +88,7 @@
             sub.dd,
             sub.total,
             sub.outCnt,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
         FROM(
             SELECT
                 <include refid="inferDateGrouping"></include> AS dd,
@@ -84,7 +100,7 @@
                 ci.TXBL_SRN = co.TXBL_SRN
                 AND ci.BASE_YM = co.BASE_YM
                 AND ci.TXBL_SRN = co.TXBL_SRN
-            <include refid="inferWhere"></include>
+            WHERE <include refid="inferWhere"></include>
             GROUP BY dd
         ) sub
     </select>
@@ -93,14 +109,17 @@
         SELECT
             sub.dd,
             sub.total,
+            top.topCnt,
             sub.hitCnt1,
             sub.hitCnt2,
             sub.hitCnt3,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
-            ROUND(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per
+            totalOutput.totalOutCnt,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per
         FROM
             (
+        /* 지급결의된 개수 */
                 SELECT
                     <include refid="usageDateGrouping"/> AS dd,
                     count(*) AS total,
@@ -113,13 +132,38 @@
                         ci.BASE_YM = co.BASE_YM
                             AND ci.TXBL_SRN = co.TXBL_SRN
                             AND ci.BRCD = co.BRCD
-                <include refid="usageWhere"></include>
+                WHERE <include refid="usageWhere"></include>
                 GROUP BY dd
             ) sub
+        LEFT JOIN (
+        /* top3 개수 */
+            SELECT
+                <include refid="usageDateGrouping"/> AS dd,
+                COUNT(*) AS topCnt
+            FROM BILL_OUTPUT ci
+            INNER JOIN BILL_LEARNING_DATA co ON
+                ci.BASE_YM = co.BASE_YM
+                AND ci.TXBL_SRN = co.TXBL_SRN
+                AND ci.BRCD = co.BRCD
+            WHERE <include refid="usageWhere"></include>
+            AND (
+            FIND_IN_SET(co.BDMN_ITEX_MNGM_NO, REPLACE(ci.BDGT_ITEX_FRCS_CON, '|', ',')) > 0
+            )
+            GROUP BY dd
+        ) top ON sub.dd = top.dd
+        LEFT JOIN (
+        /* 전체 output 개수 */
+        SELECT
+            <include refid="usageDateGrouping"/> AS dd,
+            COUNT(*) AS totalOutCnt
+        FROM BILL_OUTPUT ci
+        WHERE <include refid="usageWhere"></include>
+        GROUP BY dd
+        ) totalOutput ON sub.dd = totalOutput.dd
     </select>
 
     <sql id="inferWhere">
-        WHERE 1=1
+        1=1
 
         /*대상 검색*/
         <if test="searchTarget != null and searchTarget != ''">
@@ -133,7 +177,7 @@
     </sql>
 
     <sql id="usageWhere">
-        WHERE 1=1
+        1=1
 
         /*대상 검색*/
         <if test="searchTarget != null and searchTarget != ''">
@@ -142,7 +186,7 @@
 
         /*일자 검색*/
         <if test="searchStartDate != null and searchEndDate != null">
-            AND co.BDGT_PRFR_YM BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+            AND ci.RSRE_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
         </if>
     </sql>
 
@@ -165,14 +209,17 @@
 
     <sql id="usageDateGrouping">
         <choose>
+            <when test="searchCycle == null or searchCycle == '' or searchCycle == 1">
+                SUBSTRING(ci.RSRE_YMD, 1, 8) <!-- 일별 -->
+            </when>
             <when test="searchCycle == 2">
-                SUBSTRING(co.BDGT_PRFR_YM, 1, 6) <!-- 월별 -->
+                SUBSTRING(ci.RSRE_YMD, 1, 6) <!-- 월별 -->
             </when>
             <when test="searchCycle == 3">
-                SUBSTRING(co.BDGT_PRFR_YM, 1, 4) <!-- 연도별 -->
+                SUBSTRING(ci.RSRE_YMD, 1, 4) <!-- 연도별 -->
             </when>
             <otherwise>
-                SUBSTRING(co.BDGT_PRFR_YM, 1, 6) <!-- 월별 -->
+                SUBSTRING(ci.RSRE_YMD, 1, 8) <!-- 기본값: 일별 -->
             </otherwise>
         </choose>
     </sql>

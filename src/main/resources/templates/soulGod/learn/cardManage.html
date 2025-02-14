@@ -345,7 +345,6 @@
                         $('.nodata').show().find('p').text('검색 결과가 없습니다.');
                         $('.contentsArea').hide();
                     }
-
                     if (data.params) {
                         let params = data.params;
                         $('#searchJson').val(params.searchJson);
@@ -357,7 +356,7 @@
                         $('#searchKeyword').val('');
                     }
                     $('#contents').html(contents);
-                    $('.totalCnt').text(data.list.length);
+                    $('.totalCnt').text(fn_setCommas(data.totalCount));
                     fn_settingChip($('#searchJson').val(), true);
 
                     // 검색 조건 있는 경우 등록버튼 활성화

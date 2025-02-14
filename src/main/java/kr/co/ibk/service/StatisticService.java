@@ -11,7 +11,6 @@ import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,19 +38,12 @@ public class StatisticService extends _BaseService {
     }
 
     public List<StatisticInfo> usageStatistic(StatisticInfoForm form) {
-        List<StatisticInfo> infos = new ArrayList<>();
-
-        if (form.getSearchCycle().equals("1")) {
-            return infos;
-        }
-
+        List<StatisticInfo> infos;
         if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
             form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
             form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
         }
         LearningType learningType = form.getSearchLearningType() != null ? form.getSearchLearningType() : LearningType.CARD;
-        form.setSearchStartDate(trimLastTwoChars(form.getSearchStartDate().replaceAll("/.", "")));
-        form.setSearchEndDate(trimLastTwoChars(form.getSearchEndDate()));
 
         if (learningType.equals(LearningType.CARD)) {
             infos = statisticRepository.cardUsageStatistic(form);
@@ -59,12 +51,5 @@ public class StatisticService extends _BaseService {
             infos = statisticRepository.billUsageStatistic(form);
         }
         return infos;
-    }
-
-    private String trimLastTwoChars(String value) {
-        if (value != null && value.length() > 2) {
-            return value.substring(0, value.length() - 2);
-        }
-        return value;
     }
 }

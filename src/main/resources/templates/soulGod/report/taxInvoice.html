@@ -145,6 +145,7 @@
                                 <tr>
                                     <td>${no}</td>
                                     <td>${item.hdqrBobDcd == null ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}</td>
+                                    <td>${item.brcd}</td>
                                     <td>${item.txblDcd}</td>
                                     <td>${item.splrBsnnNo}</td>
                                     <td>${item.splrFrm}</td>
@@ -298,10 +299,9 @@
                                             </colgroup>
                                             <tbody>`;
                         $.each(data.inputList, function (idx, item) {
-                            let inputColumnVal = item.inputColumnVal != null && item.inputColumnVal !== '' ? item.inputColumnVal : '-';
                             inputContents += '<tr> ' +
                                 '                        <th scope="row">' + item.inputColumnNm + '</th> ' +
-                                '                        <td>' + inputColumnVal + '</td> ' +
+                                '                        <td>' + item.inputColumnVal + '</td> ' +
                                 '                    </tr>';
                         })
                         inputContents += `</tbody>
@@ -545,6 +545,7 @@
                     <colgroup>
                         <col style="width: 5%;min-width: 44px;">
                         <col style="width: 5%;">
+                        <col style="width: 5%;">
                         <col style="width: 9%;min-width: 65px;">
                         <col style="width: 7%;">
                         <col style="width: 7%;">
@@ -560,13 +561,14 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <th scope="col" colspan="9" style="text-align:center;">input</th>
+                        <th scope="col" colspan="10" style="text-align:center;">input</th>
                         <th scope="col" colspan="5" style="background-color:#f9f9ff;text-align:center;">output</th>
                     </tr>
                     <tr>
                         <!-- Input -->
                         <th scope="col">No</th>
                         <th scope="col">대상</th>
+                        <th scope="col">부점코드</th>
                         <th scope="col">세금계산서구분코드</th>
                         <th scope="col">공급자사업자번호</th>
                         <th scope="col">공급자상호명</th>

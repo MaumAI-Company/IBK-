@@ -68,4 +68,8 @@ public class BillLearningDataService extends _BaseService {
     public List<BillLearningDataInfo> getList(BillLearningDataForm form) {
         return billLearningDataRepository.getList(form);
     }
+
+    public int getTotalCount(BillLearningDataForm form) {
+        return billLearningDataRepository.getTotalCount(form);
+    }
 }
