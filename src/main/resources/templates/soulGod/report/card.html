@@ -303,10 +303,9 @@
                                             </colgroup>
                                             <tbody>`;
                         $.each(data.inputList, function (idx, item) {
-                            let inputColumnVal = item.inputColumnVal != null && item.inputColumnVal !== '' ? item.inputColumnVal : '-';
                             inputContents += '<tr> ' +
                                 '                        <th scope="row">' + item.inputColumnNm + '</th> ' +
-                                '                        <td>' + inputColumnVal + '</td> ' +
+                                '                        <td>' + item.inputColumnVal + '</td> ' +
                                 '                    </tr>';
                         })
                         inputContents += `</tbody>
