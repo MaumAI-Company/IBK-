@@ -300,12 +300,6 @@ public class LearnController extends BaseCont {
     public String modelManage(Model model,
                               @ModelAttribute LearningModelForm params) {
 
-        /*Integer[] deployStatusArr = DeployStatusType.getModelStatusList()
-                .stream()
-                .map(DeployStatusType::getCode)
-                .toArray(Integer[]::new);
-        params.setDeployStatusArr(deployStatusArr);*/
-
         List<LearningModelInfo> list = learningModelService.getList(params);
 
         model.addAttribute("pagingInfo", params.getPaginationInfo());
