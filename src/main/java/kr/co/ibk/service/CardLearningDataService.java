@@ -68,4 +68,8 @@ public class CardLearningDataService extends _BaseService {
     public List<CardLearningDataInfo> getList(CardLearningDataForm form) {
         return cardLearningDataRepository.getList(form);
     }
+
+    public int getTotalCount(CardLearningDataForm form) {
+        return cardLearningDataRepository.getTotalCount(form);
+    }
 }
