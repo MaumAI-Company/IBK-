@@ -192,7 +192,7 @@ public class CardInputService extends _BaseService {
         }
 
         response.setContentType("application/zip");
-        response.setHeader("Content-Disposition", "attachment;filename=" + new String(zipFileName.getBytes("KSC5601"), "8859_1"));
+        response.setHeader("Content-Disposition", "attachment;filename=" + new String(zipFileName.getBytes("UTF-8"), "8859_1"));
 
         try (InputStream inputStream = Files.newInputStream(Paths.get(zipFile.getAbsolutePath()));
              OutputStream outputStream = response.getOutputStream()) {
