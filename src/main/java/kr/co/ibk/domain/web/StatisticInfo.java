@@ -14,17 +14,19 @@ public class StatisticInfo {
     private String dd;
     private Integer total;
 
-    /* statics input */
+    /* InferResult statics (추론 결과 수 톨계)*/
     private Integer outCnt;
     private Double per;
 
-    /* statics output */
+    /* Usage statics (사용자 활용 현황 톨계)*/
     private Integer hitCnt1;
     private Integer hitCnt2;
     private Integer hitCnt3;
     private Double hitCnt1Per;
     private Double hitCnt2Per;
     private Double hitCnt3Per;
+    private Integer topCnt;
+    private Integer totalOutCnt;
 
 }
 
