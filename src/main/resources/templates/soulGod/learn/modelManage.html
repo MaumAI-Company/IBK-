@@ -505,7 +505,7 @@
                                         <dd>
                                             <select name="statusType" id="statusType">
                                                 <option value="" selected>전체</option>
-                                                <option th:each="item : ${T(kr.co.ibk.domain.enums.DeployStatusType).getModelStatusList()}"
+                                                <option th:each="item : ${T(kr.co.ibk.domain.enums.DeployStatusType).values()}"
                                                         th:class="${item}"
                                                         th:text="${item.statusNm}"
                                                         th:value="${item.code}"

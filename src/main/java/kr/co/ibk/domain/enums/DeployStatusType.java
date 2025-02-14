@@ -30,10 +30,6 @@ public enum DeployStatusType {
         return statusNm;
     }
 
-    public static List<DeployStatusType> getModelStatusList() {
-        return Arrays.asList(REGISTER_COMPLETE, LEARN_DATA_ERROR, LEARN_ING, LEARN_COMPLETE, LEARN_ERROR);
-    }
-
     public static List<DeployStatusType> getDeployStatusList() {
         return Arrays.asList(LEARN_COMPLETE, DEPLOY_ING, DEPLOY_COMPLETE, DEPLOY_STOP, DEPLOY_FAIL);
     }
