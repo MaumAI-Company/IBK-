@@ -433,12 +433,22 @@ public class LearningModelService extends BaseCont {
         return learningModelRepository.modelNmCount(form.getLearnName());
     }
 
+    @Transactional
     public HashMap<String, Object> delete(LearningModelForm form, MemberInfo memberInfo) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("status", "FAIL");
 
-        Long deleteCnt;
+        Long deleteCnt = 0L;
         if (!ObjectUtils.isEmpty(form.getIdArr()) && form.getIdArr().length > 0) {
+            // 삭제 불가능한 배포 상태값 check
+            int modelCnt = learningModelRepository.countByInIDAndDeployArr(form.getIdArr(), DeployStatusType.getUndeletableList()
+                    .stream()
+                    .map(DeployStatusType::getCode)
+                    .toArray(Integer[]::new));
+
+            if (modelCnt > 0) {
+                return map;
+            }
             deleteCnt = learningModelRepository.deleteAllById(form.getIdArr(), memberInfo.getMemId());
             if (deleteCnt > 0) {
                 map.put("status", "SUCCESS");

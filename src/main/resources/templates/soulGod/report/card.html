@@ -162,7 +162,7 @@
                                     <td>
                                         <button type="button" class="badge"
                                                 onclick="fn_detail(${idx})">
-                                            <input type="hidden" id="${idx + '_' + item.no}" value="${(idx == 0 || idx == data.list.size - 1) ? (idx == 0 ? 'first' : 'final') : ''}">
+                                            <input type="hidden" id="${idx + '_' + item.no}" value="${(idx == 0 || idx == data.list.length - 1) ? (idx == 0 ? 'first' : 'final') : ''}">
                                             <i class="ico_plus"></i>
                                             <span>상세보기</span>
                                         </button>

@@ -150,6 +150,7 @@
         from
             LEARNING_MODEL lm
         where
+            lm.DELETE_YN = 'N' and
             lm.LEARNING_ID in
         <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
             #{item}
@@ -176,4 +177,32 @@
             #{item}
         </foreach>
     </update>
+
+    <update id="updateNullAllByLearningId">
+        update LEARNING_MODEL lm
+        set
+        LEARNING_ID = null
+        where
+        lm.LEARNING_ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="countByInIDAndDeployArr" resultType="int">
+        select
+            count(*)
+        from
+        LEARNING_MODEL lm
+        where
+        lm.DEPLOY_STATUS in
+        <foreach collection="deployArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        and
+        lm.ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
 </mapper>
