@@ -3,269 +3,324 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <script type="text/javascript">
-        $(function(){
+        $(function () {
         });
     </script>
-	<!-- RSA 평문전송 방지 -->
-	<script type="text/javascript" src="/ClientUI/js/rsa/rsa.js"></script>
-	<script type="text/javascript" src="/ClientUI/js/rsa/jsbn.js"></script>
-	<script type="text/javascript" src="/ClientUI/js/rsa/prng4.js"></script>
-	<script type="text/javascript" src="/ClientUI/js/rsa/rng.js"></script>    
+    <!-- RSA 평문전송 방지 -->
+    <script type="text/javascript" src="/ClientUI/js/rsa/rsa.js"></script>
+    <script type="text/javascript" src="/ClientUI/js/rsa/jsbn.js"></script>
+    <script type="text/javascript" src="/ClientUI/js/rsa/prng4.js"></script>
+    <script type="text/javascript" src="/ClientUI/js/rsa/rng.js"></script>
 </head>
 <body>
-    <div id="wrap">
-        <th:block th:insert="~{soulGod/fragments/header}"></th:block>
+<div id="wrap">
+    <th:block th:insert="~{soulGod/fragments/header}"></th:block>
 
-        <div id="container">
-            <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+    <div id="container">
+        <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
 
-            <div class="contents">
-                <div class="page_top">
-                    <div class="tit_area">
-                        <div class="one_depth">-</div>
-                        <h2 class="page_tit">계정</h2>
-                    </div>
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <div class="one_depth">-</div>
+                    <h2 class="page_tit">계정</h2>
                 </div>
-				<input type="hidden" id="userId" th:value="${memberInfo.memId}">
-				<input type="hidden" id="RSAModulus" th:value="${RSAModulus}"/>
-				<input type="hidden" id="RSAExponent" th:value="${RSAExponent}"/>				
-                <table class="tbl_list">
-                    <caption>계정 : 사용자 이름, 아이디, 사용자 그룹, 비밀번호 변경으로 구성</caption>
-                    <colgroup>
-                        <col style="width:8%;min-width:113px">
-                        <col style="width:8%;min-width:125px">
-                        <col style="width:8%;min-width:113px">
-                        <col style="width:auto">
-                    </colgroup>
-                    <thead>
-                    <tr>
-                        <th scope="col" class="tal">사용자 이름</th>
-                        <th scope="col">아이디</th>
-                        <th scope="col">사용자 그룹</th>
-                        <th scope="col">비밀번호 변경</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td class="tal" th:text="${memberInfo.memName}"></td>
-                        <td th:text="${memberInfo.memId}"></td>
-                        <td th:text="${memberInfo.deptName}"></td>
-                        <td>
-                            <button type="button" class="badge" onclick="layerShow('popPw')">
-                                <span>비밀번호 변경</span>
+            </div>
+            <input type="hidden" id="userId" th:value="${memberInfo.memId}">
+            <input type="hidden" id="RSAModulus" th:value="${RSAModulus}"/>
+            <input type="hidden" id="RSAExponent" th:value="${RSAExponent}"/>
+            <table class="tbl_list">
+                <caption>계정 : 사용자 이름, 아이디, 사용자 그룹, 비밀번호 변경으로 구성</caption>
+                <colgroup>
+                    <col style="width:8%;min-width:113px">
+                    <col style="width:8%;min-width:125px">
+                    <col style="width:8%;min-width:113px">
+                    <col style="width:auto">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col" class="tal">사용자 이름</th>
+                    <th scope="col">아이디</th>
+                    <th scope="col">사용자 그룹</th>
+                    <th scope="col">비밀번호 변경</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="tal" th:text="${memberInfo.memName}"></td>
+                    <td th:text="${memberInfo.memId}"></td>
+                    <td th:text="${memberInfo.deptName}"></td>
+                    <td>
+                        <button type="button" class="badge" onclick="fn_openPopPw()">
+                            <span>비밀번호 변경</span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!--상세 팝업 : s-->
+<div id="popPw" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_head">
+            <strong class="pop_tit">비밀번호 변경</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popPw')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <table class="tbl_write">
+                <caption>비밀번호 변경 : 기존 비밀번호, 새 비밀번호, 새 비밀번호 확인으로 구성</caption>
+                <colgroup>
+                    <col style="width:140px">
+                    <col style="width:auto">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">
+                        <label for="chkPwd">기존 비밀번호</label>
+                    </th>
+                    <td>
+                        <div class="input">
+                            <input type="password" id="chkPwd" placeholder="기존 비밀번호를 입력하세요."
+                                   autocomplete="new-password">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
                             </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="newPwd">새 비밀번호</label>
+                    </th>
+                    <td>
+                        <div class="input">
+                            <input type="password" id="newPwd" placeholder="새 비밀번호를 입력하세요." autocomplete="new-password">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="newPwdConfirm">새 비밀번호 확인</label>
+                    </th>
+                    <td>
+                        <div class="input">
+                            <input type="password" id="newPwdConfirm" placeholder="새 비밀번호를 입력하세요."
+                                   autocomplete="new-password">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn fill" onclick="changePassword()">
+                <span>비밀번호 변경</span>
+            </button>
         </div>
     </div>
+</div>
+<!--상세 팝업 : e-->
 
-    <!--상세 팝업 : s-->
-    <div id="popPw" class="pop_layer">
-        <div class="dim"></div>
-        <div class="popup">
-            <div class="pop_head">
-                <strong class="pop_tit">비밀번호 변경</strong>
-                <button type="button" class="btn_close" onclick="layerHide('popPw')">
-                    <span class="blind">닫기</span>
-                </button>
-            </div>
-            <div class="pop_cont">
-                <table class="tbl_write">
-                    <caption>비밀번호 변경 : 기존 비밀번호, 새 비밀번호, 새 비밀번호 확인으로 구성</caption>
-                    <colgroup>
-                        <col style="width:140px">
-                        <col style="width:auto">
-                    </colgroup>
-                    <tbody>
-                    <tr>
-                        <th scope="row">
-                            <label for="chkPwd">기존 비밀번호</label>
-                        </th>
-                        <td>
-                            <div class="input">
-                                <input type="password" id="chkPwd" placeholder="기존 비밀번호를 입력하세요.">
-                                <button type="button" class="btn_del" tabindex="-1">
-                                    <span class="blind">삭제</span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <label for="newPwd">새 비밀번호</label>
-                        </th>
-                        <td>
-                            <div class="input">
-                                <input type="password" id="newPwd" placeholder="새 비밀번호를 입력하세요.">
-                                <button type="button" class="btn_del" tabindex="-1">
-                                    <span class="blind">삭제</span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <label for="newPwdConfirm">새 비밀번호 확인</label>
-                        </th>
-                        <td>
-                            <div class="input">
-                                <input type="password" id="newPwdConfirm" placeholder="새 비밀번호를 입력하세요.">
-                                <button type="button" class="btn_del" tabindex="-1">
-                                    <span class="blind">삭제</span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="pop_foot">
-                <button type="button" class="btn fill" onclick="changePassword()">
-                    <span>비밀번호 변경</span>
-                </button>
-            </div>
+<!--얼럿 : s-->
+<div id="alertWarning" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_warning"></i>
+            <strong class="pop_tit" id="failMsg"></strong> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+            <p class="pop_txt"> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+            </p>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn fill" onclick="layerHide('alertWarning')">
+                <span>확인</span>
+            </button>
         </div>
     </div>
-    <!--상세 팝업 : e-->
+</div>
+<!--얼럿 : e-->
 
-	<!--얼럿 : s-->
-	<div id="alertWarning" class="system_alert">
-	    <div class="dim"></div>
-	    <div class="popup">
-            <div class="pop_cont">
-                <i class="ico ico_warning"></i>
-                <strong class="pop_tit" id="failMsg"></strong> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
-                <p class="pop_txt"> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
-                </p>
-            </div>
-	        <div class="pop_foot">
-	            <button type="button" class="btn fill" onclick="layerHide('alertWarning')">
-	                <span>확인</span>
-	            </button>
-	        </div>
-	    </div>
-	</div>
-	<!--얼럿 : e-->    
-	
-    <!--얼럿 : s-->
-    <div id="alertComplete" class="system_alert">
-        <div class="dim"></div>
-        <div class="popup">
-            <div class="pop_cont">
-                <i class="ico ico_complete"></i>
-                <strong class="pop_tit">비밀번호 변경이 완료되었습니다.</strong> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
-                <p class="pop_txt" id="pwdMsg"> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
-                </p>
-            </div>
-            <div class="pop_foot">
-                <button type="button" class="btn fill" onclick="layerHide('alertComplete')">
-                    <span>확인</span>
-                </button>
-            </div>
+<!--얼럿 : s-->
+<div id="alertComplete" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_complete"></i>
+            <strong class="pop_tit">비밀번호 변경이 완료되었습니다.</strong> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+            <p class="pop_txt" id="pwdMsg"> <!--얼럿 상황에 따라 문구 바꿔서 사용-->
+            </p>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn fill" onclick="layerHide('alertComplete')">
+                <span>확인</span>
+            </button>
         </div>
     </div>
-    <!--얼럿 : e-->	
-<script type="text/javascript">    
-function changePassword(){
-	var $userId = $('#userId').val();
-	var $chkPwd = $('#chkPwd').val();
-	var $newPwd = $('#newPwd').val();
-	var $newPwdConfirm = $('#newPwdConfirm').val();
+</div>
+<!--얼럿 : e-->
+<script type="text/javascript">
 
-	// 1. 암호 규칙 체크 필요
-	
-	// 2. 변경할 암호가 일치하는지 확인필요
-	
-	// 입력 안한 경우 체크
-	if ($chkPwd.length <= 0){
-		//layerShow('alertWarning');
-        showAlert('warning', '기존 암호를 입력해주세요');
-		$('#chkPwd').focus();
-		return;
-	} else if ($newPwd.length <= 0){
-        showAlert('warning', '새 암호를 입력해주세요');
-		$('#newPwd').focus();
-		return;
-	} else if ($newPwdConfirm.length <= 0){
-        showAlert('warning', '새 암호 확인을 입력해주세요');
-		$('#newPwdConfirm').focus();
-		return;
-	}
-	
-	var passMin = 8;
-	var passMax = 12; 
-	
-	// 입력한 경우 새로운 비밀번호는 8자리 이상인지 12자리 이하인지 체크.
-	// 패스워드는 하나 이상의 대문자, 소문자, 숫자, 특수문자를 포함한 8글자에서 12글자 내로 이루어져아합니다.
-	if (!($newPwd.length >= passMin && $newPwd.length <= passMax)){
-        showAlert('warning', '새 암호의 길이는 '+passMin+'글자 이상 '+passMax+'이하로 이루어져야합니다.');
-		$('#newPwd').focus();
-		return;
-	} else if (!($newPwdConfirm.length >= passMin && $newPwdConfirm.length <= passMax)){
-        showAlert('warning', '새 암호의 길이는 '+passMin+'글자 이상 '+passMax+'이하로 이루어져야합니다.');
-		$('#newPwdConfirm').focus();
-		return;
-	}
-	
-	// 입력한 경우 체크 동일 암호 체크	
-	if ($newPwd != $newPwdConfirm){
-        showAlert('warning', '암호가 일치하지 않습니다');
-		$('#newPwdConfirm').focus();
-		return;
-	} else {
-		// 3. 암호 변경 Ajax 요청 수행
-		
-	    // rsa 암호화	
-		var rsa = new RSAKey();
-		rsa.setPublic($('#RSAModulus').val(), $('#RSAExponent').val());
+    function fn_openPopPw() {
+        $('#chkPwd').val('');
+        $('#newPwd').val('');
+        $('#newPwdConfirm').val('');
 
-		var jsonData = {
-				"userId" : rsa.encrypt($userId)
-				, "chkPwd" : rsa.encrypt($chkPwd)
-				, "newPwd" : rsa.encrypt($newPwd)
-		};
+        layerShow('popPw');
+    }
 
-        showConfirm('message', '암호를 변경하시겠습니까?', () => {
-            ajaxChangePassword(jsonData);
-            // 모달창 close 및 입력한 정보 초기화
-            $('#chkPwd').val('');
-            $('#newPwd').val('');
-            $('#newPwdConfirm').val('');
-        })
-	}
-}
+    function changePassword() {
+        let $userId = $('#userId').val();
+        let $chkPwd = $('#chkPwd').val();
+        let $newPwd = $('#newPwd').val();
+        let $newPwdConfirm = $('#newPwdConfirm').val();
 
-function ajaxChangePassword(jsonData){
-	// 암호 변경 Ajax
-	var result = "";
+        if ($chkPwd.length <= 0) {
+            showAlert('warning', '기존 비밀번호를 입력해주세요');
+            $('#chkPwd').focus();
+            return;
+        } else if ($newPwd.length <= 0) {
+            showAlert('warning', '새 비밀번호를 입력해주세요');
+            $('#newPwd').focus();
+            return;
+        } else if ($newPwdConfirm.length <= 0) {
+            showAlert('warning', '새 비밀번호 확인을 입력해주세요');
+            $('#newPwdConfirm').focus();
+            return;
+        }
+        let pwdRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,12}$/; //영문, 숫자, 특수문자 포함 8~12자 이내
+        if (!pwdRegex.test($newPwd)) {
+            showAlert('warning', '영문, 숫자, 특수문자를 포함한 8~12자 이내로 입력해주세요.');
+            return;
+        }
+        if (fn_isSamePwd($newPwd)) {
+            showAlert('warning', '4회 연속된 동일 문자는 사용할 수 없습니다.');
+            return;
+        }
+        if (fn_isContinuedPwd($newPwd)) {
+            showAlert('warning', '4회 연속된 키보드 문자는 사용할 수 없습니다.');
+            return;
+        }
+        if ($newPwd != $newPwdConfirm) {
+            showAlert('warning', '새 비밀번호 확인이 일치하지 않습니다');
+            $('#newPwdConfirm').focus();
+            return;
+        }
 
-	$.ajax({
-		url : "/soulGod/user/changeUserPassword",
-		type : "post",
-		async : false,
-		data : JSON.stringify(jsonData),
-		dataType: "json",
-        contentType: "application/json",
-		success : function(data) {
-			console.log(data);
-			result = data;
-			if ("SUCCESS" == data.status){
-				$('#pwdMsg').html(data.msg);
-				layerShow('alertComplete');
-			} else {
-				$('#failMsg').html(data.msg);
-				layerShow('alertWarning');
-			}
-		},
-		error : function() {
-			console.log("error");
-		}
-	});
-	return result;
-}    
+        // rsa 암호화
+        let rsa = new RSAKey();
+        rsa.setPublic($('#RSAModulus').val(), $('#RSAExponent').val());
+
+        let jsonData = {
+            "userId": rsa.encrypt($userId)
+            , "chkPwd": rsa.encrypt($chkPwd)
+            , "newPwd": rsa.encrypt($newPwd)
+        };
+
+        // 기존 비밀번호와 새 비밀번호 일치 여부 check
+        fn_confirmNewPassword(jsonData);
+    }
+
+    function fn_confirmNewPassword(jsonData) {
+        // 암호 변경 Ajax
+        let result = "";
+
+        $.ajax({
+            url: "/soulGod/user/confirmNewPassword",
+            type: "post",
+            async: false,
+            data: JSON.stringify(jsonData),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                console.log(data);
+                if ("SUCCESS" === data.status) {
+                    showConfirm('message', '비밀번호를 변경하시겠습니까?', () => {
+                        ajaxChangePassword(jsonData);
+                    });
+                } else {
+                    showAlert('warning', data.message);
+                }
+            },
+            error: function () {
+                showAlert('warning', '실패하였습니다.', () => {
+                    location.reload();
+                });
+            }
+        });
+        return result;
+    }
+
+    function ajaxChangePassword(jsonData) {
+        // 암호 변경 Ajax
+        let result = "";
+
+        $.ajax({
+            url: "/soulGod/user/changeUserPassword",
+            type: "post",
+            async: false,
+            data: JSON.stringify(jsonData),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                //console.log(data);
+                result = data;
+                if ("SUCCESS" == data.status) {
+                    showAlert('complete', '비밀번호를 변경하였습니다.', () => {
+                        location.reload();
+                    });
+                } else {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    });
+                }
+            },
+            error: function () {
+                showAlert('warning', '실패하였습니다.', () => {
+                    location.reload();
+                });
+            }
+        });
+        return result;
+    }
+
+
+    // 동일 문자 체크 ex) 1111, aaaa
+    function fn_isSamePwd(value) {
+        let intCnt = 0;
+        for (let i = 0; i < value.length; i++) {
+            if (value.charAt(i) == value.charAt(i + 1) && value.charAt(i) == value.charAt(i + 2) && value.charAt(i) == value.charAt(i + 3)) {
+                intCnt++;
+            }
+        }
+        return intCnt > 0;
+    }
+
+    // 연속된 키보드 문자열 체크 ex) qwer, asdf
+    function fn_isContinuedPwd(password) {
+        const keyboard = ["1234567890", "qwertyuiop", "asdfghjkl", "zxcvbnm"];
+
+        for (let i = 0; i < password.length - 3; i++) {
+            const sliceValue = password.substring(i, i + 4);
+
+            if (keyboard.some((code) => code.includes(sliceValue))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 </script>
 </body>
 </html>
