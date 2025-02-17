@@ -3,20 +3,18 @@
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <style>
-        .tbl_wrap .tbl_list > tbody > tr > td.wsp {
-            white-space: pre
+        .tbl_wrap {
+            width: 100%;
+            overflow-x: auto;
+            white-space: nowrap
         }
 
-        @media screen and (max-width: 1851px) {
-            .tbl_wrap {
-                width: 100%;
-                overflow-x: auto;
-                white-space: nowrap
-            }
-
-            .tbl_list {
-                width: auto
-            }
+        .tbl_list {
+            overflow: hidden;
+            width: auto
+        }
+        .tbl_wrap .tbl_list > tbody > tr > td.wsp {
+            white-space: pre
         }
 
         #popDetail .tbl_write table th,
