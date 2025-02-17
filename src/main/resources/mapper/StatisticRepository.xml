@@ -136,7 +136,7 @@
                 WHERE <include refid="usageWhere"></include>
                 GROUP BY dd
             ) sub
-        /*LEFT JOIN (
+        <!--LEFT JOIN (
         /* top3 개수 */
             SELECT
                 <include refid="usageDateGrouping"/> AS dd,
@@ -161,7 +161,7 @@
         FROM BILL_OUTPUT ci
         WHERE <include refid="usageWhere"></include>
         GROUP BY dd
-        ) totalOutput ON sub.dd = totalOutput.dd- */
+        ) totalOutput ON sub.dd = totalOutput.dd -->
     </select>
 
     <sql id="inferWhere">
