@@ -28,6 +28,7 @@ public class LearningDataService extends _BaseService {
     private final TemplateInputRepository templateInputRepository;
     private final LearningModelRepository learningModelRepository;
 
+    @Transactional
     public HashMap<String, Object> save(LearningDataForm form, MemberInfo memberInfo) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("status", "FAIL");
@@ -106,6 +107,7 @@ public class LearningDataService extends _BaseService {
         return info;
     }
 
+    @Transactional
     public HashMap<String, Object> delete(LearningModelForm form) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("status", "FAIL");
@@ -118,9 +120,10 @@ public class LearningDataService extends _BaseService {
                 return map;
             }
 
-            learningDataInputRepository.deleteAllByDataId(form.getIdArr());
+            learningModelRepository.updateNullAllByLearningId(form.getIdArr()); // 모델 > 학습 데이터 ID 삭제
+            learningDataInputRepository.deleteAllByDataId(form.getIdArr()); // 학습 데이터 INPUT 삭제
 
-            deleteCnt = learningDataRepository.deleteAllById(form.getIdArr());
+            deleteCnt = learningDataRepository.deleteAllById(form.getIdArr()); // 학습 데이터 삭제
             if (deleteCnt > 0) {
                 map.put("status", "SUCCESS");
             }
