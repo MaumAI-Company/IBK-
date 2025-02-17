@@ -65,13 +65,14 @@
         inner join HC_MEMBER hm on ld.REG_ID = hm.MEM_ID
         left join TEMPLATE t on ld.TEMPLATE_ID = t.ID
         LEFT JOIN (
-        SELECT
-        count(*) AS modelCnt,
-        lm.LEARNING_ID
-        FROM
-        LEARNING_MODEL lm
-        GROUP BY
-        lm.LEARNING_ID
+            SELECT
+                count(*) AS modelCnt,
+                lm.LEARNING_ID
+            FROM
+                LEARNING_MODEL lm
+            WHERE lm.DELETE_YN = 'N'
+            GROUP BY
+            lm.LEARNING_ID
         ) model ON ld.ID = model.LEARNING_ID
         <include refid="where"></include>
         order by
