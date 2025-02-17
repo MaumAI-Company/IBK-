@@ -31,4 +31,6 @@ public interface LearningModelRepository {
     Long deleteAllById(Integer[] idArr, @Param("memId") String memId);
 
     void updateNullAllByLearningId(Integer[] idArr);
+
+    int countByInIDAndDeployArr(Integer[] idArr, Integer[] deployArr);
 }

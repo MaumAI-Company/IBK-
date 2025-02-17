@@ -600,7 +600,7 @@
                     <td>
                         <div class="checkbox">
                             <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
-                                   th:disabled="${item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).DEPLOY_ING.getCode().toString()}">
+                                   th:disabled="${item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).DEPLOY_ING.getCode().toString() || item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).LEARN_ING.getCode().toString()}">
                             <label th:for="${'chk_' + item.id}">
                                 <span class="blind">선택</span>
                             </label>

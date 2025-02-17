@@ -30,6 +30,11 @@ public enum DeployStatusType {
         return statusNm;
     }
 
+    // 삭제 불가능한 배포 상태 목록
+    public static List<DeployStatusType> getUndeletableList() {
+        return Arrays.asList(LEARN_ING, DEPLOY_ING);
+    }
+
     public static List<DeployStatusType> getDeployStatusList() {
         return Arrays.asList(LEARN_COMPLETE, DEPLOY_ING, DEPLOY_COMPLETE, DEPLOY_STOP, DEPLOY_FAIL);
     }
