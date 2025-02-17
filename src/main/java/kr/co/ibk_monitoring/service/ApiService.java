@@ -98,13 +98,15 @@ public class ApiService {
 
     private Integer sendPost(String domain, String path) {
 //        BufferedReader in = null;
+        HttpURLConnection connection = null;
         try {
             URL url = new URL(domain + path);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json");
+            connection.setConnectTimeout(10000);
 
             //            System.out.println("Response Code : " + responseCode);
             /*in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -117,13 +119,16 @@ public class ApiService {
             return connection.getResponseCode();
         } catch (IOException e) {
             return null;
-        }/* finally {
-            try {
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+            /*try {
                 if (in != null) in.close();
             } catch (IOException e2) {
                 // do nothing
-            }
-        }*/
+            }*/
+        }
     }
 
     private void sendMessenger(MemberInfo sender, List<MemberInfo> receiverList, String title, String body) throws IOException {
