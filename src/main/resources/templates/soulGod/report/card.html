@@ -375,7 +375,7 @@
         function fn_excelDownload() {
             fn_searchConditionSet();
 
-            //showAlert('warning', '다운로드중');
+            layerShow('alertWarning');
 
             let form = document.getElementById('form1');
             let formData = new FormData(form);
@@ -386,7 +386,14 @@
                 .join('&');
 
             let downloadUrl = '/soulGod/report/card/xlsDown' + (queryString ? '?' + queryString : '');
-            window.open(downloadUrl, '_blank');
+            let downloadWindow = window.open(downloadUrl, '_blank');
+
+            let timer = setInterval(function () {
+                if (downloadWindow.closed) {
+                    clearInterval(timer);
+                    layerHide('alertWarning');
+                }
+            }, 1000);
         }
 
     </script>
@@ -755,6 +762,21 @@
     </div>
 </div>
 <!--상세 팝업 : e-->
+<!--얼럿 : s-->
+<div id="alertWarning" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_warning"></i>
+            <strong class="pop_tit">지급 결의 내역을 엑셀 다운로드 중입니다.</strong>
+            <p class="pop_txt">
+                다운로드가 완료될 때까지 새 창을 닫지 마세요. <br>
+                완료되면 창이 자동으로 닫힙니다.
+            </p>
+        </div>
+    </div>
+</div>
+<!--얼럿 : e-->
 <!--로딩중 : s-->
 <div id="loading" class="loading_layer active"> <!--노출 원할 시 클래스 active 추가-->
     <div class="loading">
