@@ -51,7 +51,7 @@ public class SystemController {
         } catch (Exception e) {
             code = 500;
         }
-        return code.toString();
+        return code == null ? "500" : code.toString();
     }
 
     @ResponseBody
@@ -63,6 +63,6 @@ public class SystemController {
         } catch (Exception e) {
             code = 500;
         }
-        return code.toString();
+        return code == null ? "500" : code.toString();
     }
 }

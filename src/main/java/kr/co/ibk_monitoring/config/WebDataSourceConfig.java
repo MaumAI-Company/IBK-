@@ -26,7 +26,7 @@ public class WebDataSourceConfig {
     public DataSource dataSource() {
         HikariDataSource dataSource = DataSourceBuilder.create().type(HikariDataSource.class).build();
         // maximum-pool 사이즈 설정
-        dataSource.setMaximumPoolSize(30); // 예시: 최대 50개의 연결로 제한
+//        dataSource.setMaximumPoolSize(30); // 예시: 최대 50개의 연결로 제한
         return dataSource;
 //        return DataSourceBuilder.create().build();
     }
