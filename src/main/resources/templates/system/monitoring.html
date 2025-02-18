@@ -597,9 +597,9 @@
             }
         }
 
-        function fn_getMccServerCheck(){
+        function fn_getMccServerCheck1(){
             $.ajax({
-                url : "/api/v1/o/mccServerCheck",
+                url : "/api/v1/o/mccServerCheck1",
                 type : "post",
                 async : true,
                 data: {},
@@ -609,9 +609,14 @@
                 cache: false,
                 success : function(resp) {
                     if (resp == '200') {
-                        $("#systemStatusMcc").prop("class", "fc_primary").text("정상");
+                        $("#systemStatusMcc1_1").prop("class", "fc_primary").text("정상");
+                        $("#systemStatusMcc1_2").prop("class", "fc_primary").text("정상");
+                    } else if (resp == '500') {
+                        $("#systemStatusMcc1_1").prop("class", "fc_primary").text("정상");
+                        $("#systemStatusMcc1_2").prop("class", "fc_error").text("장애");
                     } else {
-                        $("#systemStatusMcc").prop("class", "fc_error").text("장애");
+                        $("#systemStatusMcc1_1").prop("class", "fc_error").text("장애");
+                        $("#systemStatusMcc1_2").prop("class", "fc_error").text("알수없음");
                     }
                 },
                 /*beforeSend: function() { //로딩이미지 보여주기
@@ -621,7 +626,43 @@
                     $("#wrap-loading").hide();
                 },*/
                 error : function(jqXHR, textStatus) {
-                    $("#systemStatusMcc").prop("class", "fc_error").text("장애");
+                    $("#systemStatusMcc1_1").prop("class", "fc_error").text("장애");
+                    $("#systemStatusMcc1_2").prop("class", "fc_error").text("알수없음");
+                }
+            });
+        }
+
+        function fn_getMccServerCheck2(){
+            $.ajax({
+                url : "/api/v1/o/mccServerCheck2",
+                type : "post",
+                async : true,
+                data: {},
+                //dataType: "json",
+                contentType: "text",
+                // timeout: 10000,// timeout : 10초간 서버와의 통신기다리는 시간.
+                cache: false,
+                success : function(resp) {
+                    if (resp == '200') {
+                        $("#systemStatusMcc2_1").prop("class", "fc_primary").text("정상");
+                        $("#systemStatusMcc2_2").prop("class", "fc_primary").text("정상");
+                    } else if (resp == '500') {
+                        $("#systemStatusMcc2_1").prop("class", "fc_primary").text("정상");
+                        $("#systemStatusMcc2_2").prop("class", "fc_error").text("장애");
+                    } else {
+                        $("#systemStatusMcc2_1").prop("class", "fc_error").text("장애");
+                        $("#systemStatusMcc2_2").prop("class", "fc_error").text("알수없음");
+                    }
+                },
+                /*beforeSend: function() { //로딩이미지 보여주기
+                    $("#wrap-loading").show();
+                },
+                complete: function() { //로딩이미지 숨기기
+                    $("#wrap-loading").hide();
+                },*/
+                error : function(jqXHR, textStatus) {
+                    $("#systemStatusMcc2_1").prop("class", "fc_error").text("장애");
+                    $("#systemStatusMcc2_2").prop("class", "fc_error").text("알수없음");
                 }
             });
         }
@@ -656,7 +697,8 @@
         }
 
         let serverCheckInterval = 1000 * 60 * 10;
-        let mccCheck = [[${mccCheck}]];
+        let mccCheck1 = [[${mccCheck1}]];
+        let mccCheck2 = [[${mccCheck2}]];
         let webCheck = [[${webCheck}]];
         $(async function () {
             // status, 디스크 사용량 조회
@@ -686,9 +728,14 @@
 
             drawCpuUsage();
 
-            if (mccCheck == true) {
-                fn_getMccServerCheck();
-                setInterval(fn_getMccServerCheck, serverCheckInterval);
+            if (mccCheck1 == true) {
+                fn_getMccServerCheck1();
+                setInterval(fn_getMccServerCheck1, serverCheckInterval);
+            }
+
+            if (mccCheck2 == true) {
+                fn_getMccServerCheck2();
+                setInterval(fn_getMccServerCheck2, serverCheckInterval);
             }
             if (webCheck == true) {
                 fn_getWebServerCheck();
@@ -744,10 +791,21 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td class="tal">API서버/AI엔진</td>
+                            <td class="tal">API서버 / AI엔진 :: BC카드</td>
                             <td>
-                                <b id="systemStatusMcc" class="fc_primary">확인중</b>
+                                <b id="systemStatusMcc1_1" class="fc_primary">확인중</b>
                                 <!--<b class="fc_error">비정상</b>-->
+                                /
+                                <b id="systemStatusMcc1_2" class="fc_primary">확인중</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tal">API서버 / AI엔진 :: 세금계산서</td>
+                            <td>
+                                <b id="systemStatusMcc2_1" class="fc_primary">확인중</b>
+                                <!--<b class="fc_error">비정상</b>-->
+                                /
+                                <b id="systemStatusMcc2_2" class="fc_primary">확인중</b>
                             </td>
                         </tr>
                         <tr>

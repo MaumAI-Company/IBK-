@@ -30,14 +30,18 @@ public class ApiService {
     private final AdminMemberRepository adminMemberRepository;
     private final String TITLE = "서버에서 장애가 발생했습니다.";
 
-    @Value("${Globals.domain.mcc}")
-    private String mccDomain;
+    @Value("${Globals.domain.mcc1}")
+    private String mccDomain1;
+    @Value("${Globals.domain.mcc2}")
+    private String mccDomain2;
 
     @Value("${Globals.domain.web}")
     private String webDomain;
 
-    @Value("${Globals.check.mcc}")
-    private Boolean mccCheck;
+    @Value("${Globals.check.mcc1}")
+    private Boolean mccCheck1;
+    @Value("${Globals.check.mcc2}")
+    private Boolean mccCheck2;
 
     @Value("${Globals.check.web}")
     private Boolean webCheck;
@@ -56,10 +60,18 @@ public class ApiService {
     public void serverCheck() {
         String title = TITLE;
         try {
-            if (mccCheck) {
-                Integer resMCC = mccServerCheck();
+            if (mccCheck1) {
+                Integer resMCC = mccServerCheck1();
                 if (resMCC == null || resMCC != 200) {
-                    log.debug("### MCC 서버 장애! : " + resMCC);
+                    log.debug("### MCC 서버 장애!(BC카드) : " + resMCC);
+                    title = "MCC " + TITLE;
+                    callAlarm(title, title);
+                }
+            }
+            if (mccCheck2) {
+                Integer resMCC = mccServerCheck2();
+                if (resMCC == null || resMCC != 200) {
+                    log.debug("### MCC 서버 장애!(세금계산서) : " + resMCC);
                     title = "MCC " + TITLE;
                     callAlarm(title, title);
                 }
@@ -77,9 +89,17 @@ public class ApiService {
         }
     }
 
-    public Integer mccServerCheck() {
+    public Integer mccServerCheck1() {
         try {
-            return sendPost(mccDomain, "/check-engine/");
+            return sendPost(mccDomain1, "/check-engine/");
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public Integer mccServerCheck2() {
+        try {
+            return sendPost(mccDomain2, "/check-engine/");
         } catch (Exception e) {
             throw e;
         }
