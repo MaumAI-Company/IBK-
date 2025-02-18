@@ -661,7 +661,7 @@
                     }));
                 }
 
-                let tooltipText = fieldName != 'topCnt' ? "{valueY}개 / {" + per + "}%" : "{valueY}개";
+                let tooltipText = fieldName != 'hitCnt4' ? "{valueY}개 / {" + per + "}%" : "{valueY}개";
 
                 if (series) {
                     series.columns.template.setAll({
@@ -694,10 +694,10 @@
 
             let series2 = chart.series.push(
                 am5xy.LineSeries.new(root, {
-                    name: "지급결의된 추론데이터 수",
+                    name: "추론데이터 수",
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "total",
+                    valueYField: "totalOutCnt",
                     categoryXField: "dd",
                     tooltip: am5.Tooltip.new(root, {
                         pointerOrientation: "horizontal",
@@ -724,14 +724,15 @@
                     })
                 });
             });
+
             legend.data.push(series2);
 
-            /*let series3 = chart.series.push(
+            let series3 = chart.series.push(
                 am5xy.LineSeries.new(root, {
-                    name: "추론데이터 수",
+                    name: "지급결의된 추론데이터 수",
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "totalOutCnt",
+                    valueYField: "total",
                     categoryXField: "dd",
                     tooltip: am5.Tooltip.new(root, {
                         pointerOrientation: "horizontal",
@@ -758,17 +759,16 @@
                     })
                 });
             });
-
-            legend.data.push(series3);*/
+            legend.data.push(series3);
 
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 
             makeSeries2("예산비목정보_적중수", "hitCnt1", "hitCnt1Per");
             makeSeries2("예산사업ID_적중수", "hitCnt2", "hitCnt2Per");
             makeSeries2("비목집행사유_적중수", "hitCnt3", "hitCnt3Per");
-            //makeSeries2("예산비목정보_예산사업ID_적중수", "topCnt");
+            makeSeries2("예산비목정보_예산사업ID_적중수", "hitCnt4");
             makeSeries2("전체", "total");
-            //makeSeries2("추론데이터 수", "totalOutCnt");
+            makeSeries2("추론데이터 수", "totalOutCnt");
 
             chart.appear(1000, 100);
         }
@@ -782,8 +782,8 @@
             tableBody.append(inputTitleRow);
 
             let dateRow = $('<tr><th scope="row">날짜</th></tr>');
-            let totalRow = $('<tr><th scope="row">전체</th></tr>');
-            let outCntRow = $('<tr><th scope="row">학습수</th></tr>');
+            let totalRow = $('<tr><th scope="row">INPUT 데이터 수</th></tr>');
+            let outCntRow = $('<tr><th scope="row">추론데이터 수</th></tr>');
             let perRow = $('<tr><th scope="row" class="fc_primary">학습 비율</th></tr>');
 
             $.each(inputData, function (index, item) {
@@ -804,25 +804,29 @@
             tableBody.append(outputTitleRow);
 
             let dateOutputRow = $('<tr><th scope="row">날짜</th></tr>');
-            let totalOutputRow = $('<tr><th scope="row">전체</th></tr>');
+            let totalOutputRow = $('<tr><th scope="row">추론데이터 수</th></tr>');
+            let outputRow = $('<tr><th scope="row">지급결의된 추론데이터 수</th></tr>');
             let hitCnt1Row = $('<tr><th scope="row">예산비목정보_적중수</th></tr>');
             let hitCnt1PerRow = $('<tr><th scope="row">예산비목정보_적중비율</th></tr>');
             let hitCnt2Row = $('<tr><th scope="row">예산사업ID_적중수</th></tr>');
             let hitCnt2PerRow = $('<tr><th scope="row">예산사업ID_적중비율</th></tr>');
             let hitCnt3Row = $('<tr><th scope="row">비목집행사유_적중수</th></tr>');
             let hitCnt3PerRow = $('<tr><th scope="row">비목집행사유_적중비율</th></tr>');
+            let hitCnt4Row = $('<tr><th scope="row">예산비목정보_예산사업ID_적중수</th></tr>');
 
             $.each(outputData, function (index, item) {
                 dateOutputRow.append(`<td>${item.dd}</td>`);
-                totalOutputRow.append(`<td>${fn_setCommas(item.total)}</td>`);
+                totalOutputRow.append(`<td>${fn_setCommas(item.totalOutCnt)}</td>`);
+                outputRow.append(`<td>${fn_setCommas(item.total)}</td>`);
                 hitCnt1Row.append(`<td>${fn_setCommas(item.hitCnt1) || 0}</td>`);
                 hitCnt1PerRow.append(`<td>${item.hitCnt1Per || 0}%</td>`);
                 hitCnt2Row.append(`<td>${fn_setCommas(item.hitCnt2) || 0}</td>`);
                 hitCnt2PerRow.append(`<td>${item.hitCnt2Per || 0}%</td>`);
                 hitCnt3Row.append(`<td>${fn_setCommas(item.hitCnt3) || 0}</td>`);
                 hitCnt3PerRow.append(`<td>${item.hitCnt3Per || 0}%</td>`);
+                hitCnt4Row.append(`<td>${fn_setCommas(item.hitCnt4) || 0}</td>`);
             });
-            tableBody.append(dateOutputRow, totalOutputRow, hitCnt1Row, hitCnt1PerRow, hitCnt2Row, hitCnt2PerRow, hitCnt3Row, hitCnt3PerRow);
+            tableBody.append(dateOutputRow, totalOutputRow, outputRow, hitCnt1Row, hitCnt1PerRow, hitCnt2Row, hitCnt2PerRow, hitCnt3Row, hitCnt3PerRow, hitCnt4Row);
             // Output 대비 적중 통계 타이틀 : e
         }
 
