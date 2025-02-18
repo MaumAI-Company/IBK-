@@ -64,7 +64,7 @@ public class ApiService {
                 Integer resMCC = mccServerCheck1();
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애!(BC카드) : " + resMCC);
-                    title = "MCC " + TITLE;
+                    title = "MCC(BC카드) " + TITLE;
                     callAlarm(title, title);
                 }
             }
@@ -72,7 +72,7 @@ public class ApiService {
                 Integer resMCC = mccServerCheck2();
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애!(세금계산서) : " + resMCC);
-                    title = "MCC " + TITLE;
+                    title = "MCC(세금계산서) " + TITLE;
                     callAlarm(title, title);
                 }
             }
