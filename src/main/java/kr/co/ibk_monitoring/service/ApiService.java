@@ -54,10 +54,6 @@ public class ApiService {
     private String messengerSrvCode;
 
     public void serverCheck() {
-
-        MemberInfo sender = adminMemberRepository.getSender();
-        List<MemberInfo> receiverList = adminMemberRepository.getReceiverList();
-
         String title = TITLE;
         try {
             if (mccCheck) {
@@ -65,6 +61,7 @@ public class ApiService {
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애! : " + resMCC);
                     title = "MCC " + TITLE;
+                    callAlarm(title, title);
                 }
             }
             if (webCheck) {
@@ -72,11 +69,11 @@ public class ApiService {
                 if (resWeb == null || resWeb != 200) {
                     log.debug("### WEB 서버 장애! : " + resWeb);
                     title = "WEB " + TITLE;
-                    callAlarm(sender, receiverList, title, title);
+                    callAlarm(title, title);
                 }
             }
         } catch (Exception e) {
-            callAlarm(sender, receiverList, title, title);
+            callAlarm(title, title);
         }
     }
 
@@ -182,23 +179,28 @@ public class ApiService {
         System.out.println("contents" + contents);
     }
 
-    private void callAlarm(MemberInfo sender, List<MemberInfo> receiverList, String title, String message) {
-        if (mailCheck) {
+    private void callAlarm(String title, String message) {
+        if (mailCheck || messengerCheck) {
+            MemberInfo sender = adminMemberRepository.getSender();
+            List<MemberInfo> receiverList = adminMemberRepository.getReceiverList();
+
+            if (mailCheck) {
 //            System.out.println("메일 발송");
-            for (MemberInfo memberInfo : receiverList) {
+                for (MemberInfo memberInfo : receiverList) {
+                    try {
+                        ibkMailSender.sendMail(sender.getMemSno(), memberInfo.getMemSno(), sender.getMemName(), memberInfo.getMemName(), title, message);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (messengerCheck) {
+//            System.out.println("메신저 발송");
                 try {
-                    ibkMailSender.sendMail(sender.getMemSno(), memberInfo.getMemSno(), sender.getMemName(), memberInfo.getMemName(), title, message);
+                    sendMessenger(sender, receiverList, title, message);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-        }
-        if (messengerCheck) {
-//            System.out.println("메신저 발송");
-            try {
-                sendMessenger(sender, receiverList, title, message);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
