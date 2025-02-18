@@ -216,65 +216,67 @@
             </div>
             <!--데이터가 없을 때 : e-->
 
-            <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
-                <caption>배포 관리 : No, 학습 모델 명, 등록자, 상태, 배포 여부, 배포일시, 등록일시로 구성</caption>
-                <colgroup>
-                    <col style="width: 3.5%;min-width: 44px;">
-                    <col style="width: 3.5%;min-width: 44px;">
-                    <col style="width: 19%;">
-                    <col style="width: 7%;">
-                    <col style="width: 7%;">
-                    <col style="width: 11%;">
-                    <col style="width: 11%;">
-                    <col style="width: 11%;min-width: 106px;">
-                    <col style="width:auto">
-                </colgroup>
-                <thead>
-                <tr>
-                    <th scope="col">선택</th>
-                    <th scope="col">No</th>
-                    <th scope="col">학습 모델 명</th>
-                    <th scope="col">구분</th>
-                    <th scope="col">대상</th>
-                    <th scope="col">등록자</th>
-                    <th scope="col">상태</th>
-                    <th scope="col">배포일시</th>
-                    <th scope="col">중단일시</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="item,idx: ${list}">
-                    <td>
-                        <div class="radio">
-                            <input type="radio" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
-                                   th:disabled="${item.deployStatus eq T(kr.co.ibk.domain.enums.DeployStatusType).DEPLOY_ING.getCode().toString()}">
-                            <label th:for="${'chk_' + item.id}">
-                                <span class="blind">선택</span>
-                            </label>
-                        </div>
-                    </td>
-                    <td th:text="${(params.paginationInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
-                    <td th:text="${item.learnName}" th:onclick="|fn_learningDataOpen(${item.id})|">카드지급결의 통합모델_A</td>
-                    <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}">BC카드</td>
-                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
-                    <td th:text="${item.regName}">홍길녀</td>
-                    <td>
-                        <!--3:학습 완료,  5: 배포 중, 6: 배포 완료, 7: 배포 중지, 8: 배포 실패 -->
-                        <div th:if="${item.deployStatus eq '3'}" class="badge fill_blue_green">학습 완료</div>
-                        <div th:if="${item.deployStatus eq '5'}" class="badge fill_purple">배포 중</div>
-                        <div th:if="${item.deployStatus eq '6'}" class="badge fill_purple">배포 완료</div>
-                        <div th:if="${item.deployStatus eq '7'}" class="badge fill_error10">배포 중지</div>
-                        <div th:if="${item.deployStatus eq '8'}" class="badge fill_error10">배포 실패</div>
-                    </td>
-                    <td th:text="${item.deployDt != null ? #temporals.format(item.deployDt, 'yyyy-MM-dd') : '-'}">
-                        2022.07.30
-                    </td>
-                    <td th:text="${item.rollbackDt != null ? #temporals.format(item.rollbackDt, 'yyyy-MM-dd') : '-'}">
-                        2022.07.30
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="tbl_wrap">
+                <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
+                    <caption>배포 관리 : No, 학습 모델 명, 등록자, 상태, 배포 여부, 배포일시, 등록일시로 구성</caption>
+                    <colgroup>
+                        <col style="width: 3.5%;min-width: 44px;">
+                        <col style="width: 3.5%;min-width: 44px;">
+                        <col style="width: 19%;">
+                        <col style="width: 7%;">
+                        <col style="width: 7%;">
+                        <col style="width: 11%;">
+                        <col style="width: 11%;">
+                        <col style="width: 11%;min-width: 106px;">
+                        <col style="width:auto">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col">선택</th>
+                        <th scope="col">No</th>
+                        <th scope="col">학습 모델 명</th>
+                        <th scope="col">구분</th>
+                        <th scope="col">대상</th>
+                        <th scope="col">등록자</th>
+                        <th scope="col">상태</th>
+                        <th scope="col">배포일시</th>
+                        <th scope="col">중단일시</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item,idx: ${list}">
+                        <td>
+                            <div class="radio">
+                                <input type="radio" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
+                                       th:disabled="${item.deployStatus eq T(kr.co.ibk.domain.enums.DeployStatusType).DEPLOY_ING.getCode().toString()}">
+                                <label th:for="${'chk_' + item.id}">
+                                    <span class="blind">선택</span>
+                                </label>
+                            </div>
+                        </td>
+                        <td th:text="${(params.paginationInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                        <td th:text="${item.learnName}" th:onclick="|fn_learningDataOpen(${item.id})|">카드지급결의 통합모델_A</td>
+                        <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}">BC카드</td>
+                        <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                        <td th:text="${item.regName}">홍길녀</td>
+                        <td>
+                            <!--3:학습 완료,  5: 배포 중, 6: 배포 완료, 7: 배포 중지, 8: 배포 실패 -->
+                            <div th:if="${item.deployStatus eq '3'}" class="badge fill_blue_green">학습 완료</div>
+                            <div th:if="${item.deployStatus eq '5'}" class="badge fill_purple">배포 중</div>
+                            <div th:if="${item.deployStatus eq '6'}" class="badge fill_purple">배포 완료</div>
+                            <div th:if="${item.deployStatus eq '7'}" class="badge fill_error10">배포 중지</div>
+                            <div th:if="${item.deployStatus eq '8'}" class="badge fill_error10">배포 실패</div>
+                        </td>
+                        <td th:text="${item.deployDt != null ? #temporals.format(item.deployDt, 'yyyy-MM-dd') : '-'}">
+                            2022.07.30
+                        </td>
+                        <td th:text="${item.rollbackDt != null ? #temporals.format(item.rollbackDt, 'yyyy-MM-dd') : '-'}">
+                            2022.07.30
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
         </div>
