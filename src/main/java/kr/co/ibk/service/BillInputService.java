@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -29,6 +30,9 @@ import java.util.zip.ZipOutputStream;
 public class BillInputService extends _BaseService {
 
     private final BillInputRepository billInputRepository;
+
+    @Value("${excel.data.partition.count}")
+    private int partitionCount;
 
     public List<BillInputInfo> page(BillInputForm params) {
         int totalCount = billInputRepository.getTotalCount(params);
@@ -90,7 +94,7 @@ public class BillInputService extends _BaseService {
     }
 
     public void reportBillExcelDown(HttpServletResponse response, List<BillInputInfo> excelList) throws IOException {
-        final int batchSize = 20000;
+        int batchSize = partitionCount;
         int totalRecords = excelList.size();
         int fileIndex = 1;
         int processedRecords = 0;

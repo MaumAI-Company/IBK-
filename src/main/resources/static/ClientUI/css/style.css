@@ -120,3 +120,6 @@
 .graph_area:last-child{margin-top:20px}
 .graph_area .graph{flex:1;min-width:calc(50% - 10px)}
 .graph{padding:31px 39px;border:1px solid #ebeff2;border-radius:8px;background-color:#fff}
+
+.tbl_wrap{width: 100%;overflow-x: auto;white-space: nowrap}
+.tbl_wrap .tbl_list{width: auto;}

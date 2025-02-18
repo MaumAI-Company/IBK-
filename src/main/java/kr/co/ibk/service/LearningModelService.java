@@ -88,71 +88,72 @@ public class LearningModelService extends BaseCont {
     @Transactional
     public HashMap<String, Object> learning(LearningModelForm form) {
         HashMap<String, Object> map = new HashMap<>();
+        map.put("status", "SUCCESS");
+
         LearningModelInfo load = learningModelRepository.getLoad(form.getId());
         map.put("learnName", load.getLearnName());
-        try {
-            List<LearningModelInputInfo> list = learningModelInputRepository.getList(form.getId());
-            Map<String, StringBuilder> fileCon = new HashMap<>();
-            if (load.getLearningType().equals(LearningType.CARD)) {
-
-                CardLearningDataForm learningDataForm = new CardLearningDataForm();
-                if (!ObjectUtils.isEmpty(load.getSelectCon())) {
-                    learningDataForm.setSearchJsonMap(jsonToHashMap(load.getSelectCon()));
-                }
-                List<CardLearningDataInfo> dataList = cardLearningDataRepository.getLearningList(learningDataForm);
-                fileCon = cardLearningFileContent(dataList, list);
-
-            } else if (load.getLearningType().equals(LearningType.BILL)) {
-                BillLearningDataForm learningDataForm = new BillLearningDataForm();
-                if (!ObjectUtils.isEmpty(load.getSelectCon())) {
-                    learningDataForm.setSearchJsonMap(jsonToHashMap(load.getSelectCon()));
-                }
-                List<BillLearningDataInfo> dataList = billLearningDataRepository.getLearningList(learningDataForm);
-                fileCon = billLearningFileContent(dataList, list);
-            }
-
-            StringBuilder header = fileCon.get("header");
-            StringBuilder body = fileCon.get("body");
-
-            System.out.println(header.toString());
-            System.out.println(body.toString());
-
-            String filePath = filepath + File.separator + "learning" + File.separator + form.getId();
-            File dir = new File(filePath);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            String fileName = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".txt";
-            File file = new File(filePath + File.separator + fileName);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileWriter fw = new FileWriter(file);
-            BufferedWriter writer = new BufferedWriter(fw);
-            writer.write(header.append(body).toString());
-            writer.close();
-
-            LearningModelForm update = new LearningModelForm();
-            update.setId(form.getId());
-            update.setFilePath(filePath);
-            update.setFileName(fileName);
-            update.setEpoch(form.getEpoch());
-            update.setLearningRate(form.getLearningRate());
-            update.setBatchSize(form.getBatchSize());
-            learningModelRepository.updateFile(update);
-
-            mccService.trainModel(form.getId());
-
-            map.put("status", "SUCCESS");
-        } catch (Exception e) {
+        new Thread(() -> {
             try {
-                form.setDeployStatus(DeployStatusType.LEARN_DATA_ERROR.getCode().toString());
-                learningModelRepository.updateStatus(form);
-                map.put("status", "FAIL");
-            } catch (Exception ex) {
-                map.put("status", "FAIL");
+                List<LearningModelInputInfo> list = learningModelInputRepository.getList(form.getId());
+                Map<String, StringBuilder> fileCon = new HashMap<>();
+                if (load.getLearningType().equals(LearningType.CARD)) {
+
+                    CardLearningDataForm learningDataForm = new CardLearningDataForm();
+                    if (!ObjectUtils.isEmpty(load.getSelectCon())) {
+                        learningDataForm.setSearchJsonMap(jsonToHashMap(load.getSelectCon()));
+                    }
+                    List<CardLearningDataInfo> dataList = cardLearningDataRepository.getLearningList(learningDataForm);
+                    fileCon = cardLearningFileContent(dataList, list);
+
+                } else if (load.getLearningType().equals(LearningType.BILL)) {
+                    BillLearningDataForm learningDataForm = new BillLearningDataForm();
+                    if (!ObjectUtils.isEmpty(load.getSelectCon())) {
+                        learningDataForm.setSearchJsonMap(jsonToHashMap(load.getSelectCon()));
+                    }
+                    List<BillLearningDataInfo> dataList = billLearningDataRepository.getLearningList(learningDataForm);
+                    fileCon = billLearningFileContent(dataList, list);
+                }
+
+                StringBuilder header = fileCon.get("header");
+                StringBuilder body = fileCon.get("body");
+
+                System.out.println(header.toString());
+                System.out.println(body.toString());
+
+                String filePath = filepath + File.separator + "learning" + File.separator + form.getId();
+                File dir = new File(filePath);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                String fileName = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".txt";
+                File file = new File(filePath + File.separator + fileName);
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                FileWriter fw = new FileWriter(file);
+                BufferedWriter writer = new BufferedWriter(fw);
+                writer.write(header.append(body).toString());
+                writer.close();
+
+                LearningModelForm update = new LearningModelForm();
+                update.setId(form.getId());
+                update.setFilePath(filePath);
+                update.setFileName(fileName);
+                update.setEpoch(form.getEpoch());
+                update.setLearningRate(form.getLearningRate());
+                update.setBatchSize(form.getBatchSize());
+                learningModelRepository.updateFile(update);
+
+                mccService.trainModel(form.getId());
+            } catch (Exception e) {
+                try {
+                    form.setDeployStatus(DeployStatusType.LEARN_DATA_ERROR.getCode().toString());
+                    learningModelRepository.updateStatus(form);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
-        }
+        }).start();
         return map;
     }
 
