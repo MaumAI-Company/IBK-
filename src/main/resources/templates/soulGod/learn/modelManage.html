@@ -189,10 +189,6 @@
                             showAlert('complete', '학습이 완료되었습니다.', () => {
                                 location.reload();
                             });
-                        } else if ("FAIL" == res.status) {
-                            showAlert('warning', '학습 데이터 생성 오류가 발생되었습니다.', () => {
-                                location.reload();
-                            });
                         } else {
                             showAlert('warning', '실패하였습니다.', () => {
                                 location.reload();
@@ -837,7 +833,8 @@
                                             <button type="button" class="btn_help">
                                                 <span class="blind">안내</span>
                                             </button>
-                                            <div class="th_help">학습 데이터셋 중 몇 개의 데이터를 묶어서 가중치 값을 갱신할 지 지정하는 단위 (1 ~ 16)</div>
+                                            <div class="th_help">학습 데이터셋 중 몇 개의 데이터를 묶어서 가중치 값을 갱신할 지 지정하는 단위 (1 ~ 16)
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="td">

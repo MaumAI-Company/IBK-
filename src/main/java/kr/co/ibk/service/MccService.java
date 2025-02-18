@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -37,6 +40,7 @@ public class MccService {
     /**
      * 학습 API
      * 해당옵션으로 학습
+     *
      * @param modelId
      */
     public void trainModel(Integer modelId) {
@@ -46,11 +50,6 @@ public class MccService {
         }
 
         try {
-            /*LearningModelForm form = new LearningModelForm();
-            form.setId(modelId);
-            form.setDeployStatus("3");
-            learningModelRepository.updateStatus(form);*/
-
             JSONObject params = new JSONObject();
             params.put("model_id", modelId);
             JSONObject modelCfg = new JSONObject();
@@ -59,14 +58,8 @@ public class MccService {
             modelCfg.put("epochs", info.getEpoch());
             params.put("model_cfg", modelCfg);
             params.put("file_name", info.getFileName());
-//            params.put("file_name", "test.txt");
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    sendPost("/train-model/", params, info.getLearningType());
-                }
-            }).start();
+            sendPost("/train-model/", params, info.getLearningType());
         } catch (Exception e) {
             return;
         }
@@ -75,6 +68,7 @@ public class MccService {
     /**
      * 학습 중지 API
      * 학습중인 모델 중지
+     *
      * @param modelId
      */
     public void stopModel(Integer modelId) {
@@ -106,6 +100,7 @@ public class MccService {
     /**
      * 배포 API
      * 지정된 모델로 배포
+     *
      * @param modelId
      */
     public Boolean replaceModel(Integer modelId) {
@@ -135,9 +130,9 @@ public class MccService {
         BufferedReader in = null;
         try {
             String domain;
-            if(learningType.equals(LearningType.CARD)) {
+            if (learningType.equals(LearningType.CARD)) {
                 domain = cardMccDomain;
-            } else if(learningType.equals(LearningType.BILL)) {
+            } else if (learningType.equals(LearningType.BILL)) {
                 domain = billMccDomain;
             } else {
                 return false;
