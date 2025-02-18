@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -29,6 +30,9 @@ import java.util.zip.ZipOutputStream;
 public class CardInputService extends _BaseService {
 
     private final CardInputRepository cardInputRepository;
+
+    @Value("${excel.data.partition.count}")
+    private int partitionCount;
 
     public List<CardInputInfo> page(CardInputForm params) {
         int totalCount = cardInputRepository.getTotalCount(params);
@@ -91,7 +95,7 @@ public class CardInputService extends _BaseService {
 
 
     public void reportCardExcelDown(HttpServletResponse response, List<CardInputInfo> excelList) throws IOException {
-        final int batchSize = 20000;
+        int batchSize = partitionCount;
         int totalRecords = excelList.size();
         int fileIndex = 1;
         int processedRecords = 0;
