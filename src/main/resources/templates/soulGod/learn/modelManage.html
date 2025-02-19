@@ -173,7 +173,7 @@
         }
 
         function fn_goLearning(modelId) {
-            showConfirm('message', '학습하시겠습니까?', () => {
+            showConfirm('message', '배포 중인 모델은 중단 됩니다.<br/> 학습하시겠습니까?', () => {
                 let jsonData = {
                     idArr: [modelId]
                 }
@@ -338,7 +338,7 @@
 
         function fn_trainModel(modelId) {
 
-            showConfirm('message', '학습하시겠습니까?', () => {
+            showConfirm('message', '배포 중인 모델은 중단 됩니다.<br/> 학습하시겠습니까?', () => {
                 let jsonData = {
                     id: modelId
                 }
