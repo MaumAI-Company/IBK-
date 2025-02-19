@@ -331,9 +331,10 @@ body{color:#252729;font-size:14px;font-family:'Pretendard',Malgun Gothic,'맑은
 .fill{overflow:hidden;color:#fff !important;border:0;background:linear-gradient(93deg, #21c0aa -46.25%, #66f 158.95%)}
 .btn.fill:before{content:'';position:absolute;top:50%;left:50%;width:120%;height:0;padding-bottom:110%;border:1px solid #004c9d;border-radius:50%;background-color:#004c9d;transform:translate3d(-50%,-50%,0) scale3d(0,0,1)}
 .btn.fill:hover{background-color:#004c9d}
-.btn.fill:hover:before{transition:transform .4s cubic-bezier(.1,0,.3,1);transform:translate3d(-50%,-50%,0) scale3d(1,1,1)}
-.fill_primary{color:#fff !important;border-color:#004c9d;background-color:#004c9d}
-.btn.fill_primary:hover{border-color:#591248;background-color:#591248}
+.btn.fill:hover:before,
+.btn.fill_primary:hover:before{transition:transform .4s cubic-bezier(.1,0,.3,1);transform:translate3d(-50%,-50%,0) scale3d(1,1,1)}
+.fill_primary{overflow:hidden;color:#fff !important;border:0;background-color:#004c9d}
+.btn.fill_primary:before{content:'';position:absolute;top:50%;left:50%;width:120%;height:0;padding-bottom:110%;border-radius:50%;background:linear-gradient(93deg, #21c0aa -46.25%, #66f 158.95%);transform:translate3d(-50%,-50%,0) scale3d(0,0,1)}
 .badge.fill_primary{color:#7678ed !important;border-color:#e9e9fc;background-color:#e9e9fc}
 .fill_coral{color:#fff !important;border-color:#ff7a55;background-color:#ff7a55}
 .badge.fill_coral{color:#ff7a55 !important;background-color:#ffe4dd }
