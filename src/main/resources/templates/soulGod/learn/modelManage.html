@@ -549,110 +549,108 @@
             </div>
             <!--데이터가 없을 때 : e-->
 
-            <div class="tbl_wrap">
-                <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
-                    <caption>모델 관리 : No, 학습 모델 명, 구분, 대상, 등록자, 상태, Precision, recall, F-1 Score, epoch, Learning Rate, Batch
-                        Size,
-                        생성일시로 구성
-                    </caption>
-                    <colgroup>
-                        <col style="width: 3.5%;min-width: 44px;">
-                        <col style="width: 3.5%;min-width: 44px;">
-                        <col style="width: 19%;">
-                        <col style="width: 7%;">
-                        <col style="width: 7%;">
-                        <col style="width: 7%;">
-                        <col style="width: 7%;">
-                        <col style="width: 7%;">
-                        <col style="width: 7%;">
-                        <col style="width: 7%;">
-                        <col style="width:8%;">
-                        <col style="width:8%;">
-                    </colgroup>
-                    <thead>
-                    <tr>
-                        <th scope="col">
-                            <div class="checkbox">
-                                <input type="checkbox" name="chk" id="allChk" class="all_chk">
-                                <label for="allChk">
-                                    <span class="blind">전체선택</span>
-                                </label>
-                            </div>
-                        </th>
-                        <th scope="col">No</th>
-                        <th scope="col">학습 모델 명</th>
-                        <th scope="col">구분</th>
-                        <th scope="col">대상</th>
-                        <th scope="col">등록자</th>
-                        <th scope="col">상태</th>
-                        <th scope="col">epoch</th>
-                        <th scope="col">Learning <span class="dib">Rate</span></th>
-                        <th scope="col">Batch <span class="dib">Size</span></th>
-                        <th scope="col">생성일시</th>
-                        <th scope="col">결과보기</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="item,idx: ${list}">
-                        <td>
-                            <div class="checkbox">
-                                <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
-                                       th:disabled="${item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).DEPLOY_ING.getCode().toString() || item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).LEARN_ING.getCode().toString()}">
-                                <label th:for="${'chk_' + item.id}">
-                                    <span class="blind">선택</span>
-                                </label>
-                            </div>
-                        </td>
-                        <td th:text="${(params.paginationInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
-                        <td>
-                            <a href="javascript:void(0)" th:class="${'link templateName' + item.id}"
-                               th:text="${item.learnName}"
-                               th:data-id="${item.id}"
-                               th:data-nm="${item.learnName}"
-                               th:data-learning-ty="${item.learningType}"
-                               th:data-learning-ty-nm="${item.learningType?.getName()}"
-                               th:data-is-card="${item.learningType eq T(kr.co.ibk.domain.enums.LearningType).CARD}"
-                               onclick="fn_learningDataOpen(this)">admin</a>
-                        </td>
-                        <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}">BC카드</td>
-                        <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
-                        <td th:text="${item.regName}">홍길녀</td>
-                        <td>
-                            <!--0: 등록 완료, 1: 학습 데이터 생성 오류, 2: 학습 중, 3: 학습 완료 4: 학습 오류 -->
-                            <div th:if="${item.deployStatus eq '0'}" class="badge fill_bg20">등록 완료</div>
-                            <div th:if="${item.deployStatus eq '1'}" class="badge fill_error10">학습 데이터 생성 오류</div>
-                            <div th:if="${item.deployStatus eq '2'}" class="badge fill_progress10">학습 중</div>
-                            <div th:if="${item.deployStatus eq '3'}" class="badge fill_blue_green">학습 완료</div>
-                            <div th:if="${item.deployStatus eq '4'}" class="badge fill_error10">학습 오류</div>
-                            <div th:if="${item.deployStatus eq '5'}" class="badge fill_purple">배포 중</div>
-                            <div th:if="${item.deployStatus eq '6'}" class="badge fill_purple">배포 완료</div>
-                            <div th:if="${item.deployStatus eq '7'}" class="badge fill_error10">배포 중지</div>
-                            <div th:if="${item.deployStatus eq '8'}" class="badge fill_error10">배포 실패</div>
-                        </td>
-                        <td th:text="${item.epoch ne null ? item.epoch : '-'}">100</td>
-                        <td th:text="${item.learningRate ne null ? item.learningRate : '-'}">0.02</td>
-                        <td th:text="${item.batchSize ne null ? item.batchSize : '-'}">32</td>
-                        <td th:text="${#temporals.format(item.createDtm, 'yyyy-MM-dd')}">2022.07.30</td>
-                        <td>
-                            <button type="button" class="badge" onclick="fn_result(this)"
-                                    th:data-itex-precision="${item.bdgtItexFrcsConPrecision}"
-                                    th:data-itex-recall="${item.bdgtItexFrcsConRecall}"
-                                    th:data-itex-f1-score="${item.bdgtItexFrcsConF1Score}"
-                                    th:data-bsns-precision="${item.bdgtBsnsFrcsConPrecision}"
-                                    th:data-bsns-recall="${item.bdgtBsnsFrcsConRecall}"
-                                    th:data-bsns-f1-score="${item.bdgtBsnsFrcsConF1Score}"
-                                    th:data-prfr-precision="${item.bdgtPrfrRsnFrcsConPrecision}"
-                                    th:data-prfr-recall="${item.bdgtPrfrRsnFrcsConRecall}"
-                                    th:data-prfr-f1-score="${item.bdgtPrfrRsnFrcsConF1Score}">
-                                <input type="hidden" id="0_1" value="first">
-                                <i class="ico_plus"></i>
-                                <span>결과보기</span>
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+            <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
+                <caption>모델 관리 : No, 학습 모델 명, 구분, 대상, 등록자, 상태, Precision, recall, F-1 Score, epoch, Learning Rate, Batch
+                    Size,
+                    생성일시로 구성
+                </caption>
+                <colgroup>
+                    <col style="width: 3.5%;min-width: 44px;">
+                    <col style="width: 3.5%;min-width: 44px;">
+                    <col style="width: 19%;">
+                    <col style="width: 7%;">
+                    <col style="width: 7%;">
+                    <col style="width: 7%;">
+                    <col style="width: 7%;">
+                    <col style="width: 7%;">
+                    <col style="width: 7%;">
+                    <col style="width: 7%;">
+                    <col style="width:8%;">
+                    <col style="width:8%;">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="allChk" class="all_chk">
+                            <label for="allChk">
+                                <span class="blind">전체선택</span>
+                            </label>
+                        </div>
+                    </th>
+                    <th scope="col">No</th>
+                    <th scope="col">학습 모델 명</th>
+                    <th scope="col">구분</th>
+                    <th scope="col">대상</th>
+                    <th scope="col">등록자</th>
+                    <th scope="col">상태</th>
+                    <th scope="col">epoch</th>
+                    <th scope="col">Learning <span class="dib">Rate</span></th>
+                    <th scope="col">Batch <span class="dib">Size</span></th>
+                    <th scope="col">생성일시</th>
+                    <th scope="col">결과보기</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item,idx: ${list}">
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
+                                   th:disabled="${item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).DEPLOY_ING.getCode().toString() || item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).LEARN_ING.getCode().toString()}">
+                            <label th:for="${'chk_' + item.id}">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td th:text="${(params.paginationInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                    <td>
+                        <a href="javascript:void(0)" th:class="${'link templateName' + item.id}"
+                           th:text="${item.learnName}"
+                           th:data-id="${item.id}"
+                           th:data-nm="${item.learnName}"
+                           th:data-learning-ty="${item.learningType}"
+                           th:data-learning-ty-nm="${item.learningType?.getName()}"
+                           th:data-is-card="${item.learningType eq T(kr.co.ibk.domain.enums.LearningType).CARD}"
+                           onclick="fn_learningDataOpen(this)">admin</a>
+                    </td>
+                    <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}">BC카드</td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td th:text="${item.regName}">홍길녀</td>
+                    <td>
+                        <!--0: 등록 완료, 1: 학습 데이터 생성 오류, 2: 학습 중, 3: 학습 완료 4: 학습 오류 -->
+                        <div th:if="${item.deployStatus eq '0'}" class="badge fill_bg20">등록 완료</div>
+                        <div th:if="${item.deployStatus eq '1'}" class="badge fill_error10">학습 데이터 생성 오류</div>
+                        <div th:if="${item.deployStatus eq '2'}" class="badge fill_progress10">학습 중</div>
+                        <div th:if="${item.deployStatus eq '3'}" class="badge fill_blue_green">학습 완료</div>
+                        <div th:if="${item.deployStatus eq '4'}" class="badge fill_error10">학습 오류</div>
+                        <div th:if="${item.deployStatus eq '5'}" class="badge fill_purple">배포 중</div>
+                        <div th:if="${item.deployStatus eq '6'}" class="badge fill_purple">배포 완료</div>
+                        <div th:if="${item.deployStatus eq '7'}" class="badge fill_error10">배포 중지</div>
+                        <div th:if="${item.deployStatus eq '8'}" class="badge fill_error10">배포 실패</div>
+                    </td>
+                    <td th:text="${item.epoch ne null ? item.epoch : '-'}">100</td>
+                    <td th:text="${item.learningRate ne null ? item.learningRate : '-'}">0.02</td>
+                    <td th:text="${item.batchSize ne null ? item.batchSize : '-'}">32</td>
+                    <td th:text="${#temporals.format(item.createDtm, 'yyyy-MM-dd')}">2022.07.30</td>
+                    <td>
+                        <button type="button" class="badge" onclick="fn_result(this)"
+                                th:data-itex-precision="${item.bdgtItexFrcsConPrecision}"
+                                th:data-itex-recall="${item.bdgtItexFrcsConRecall}"
+                                th:data-itex-f1-score="${item.bdgtItexFrcsConF1Score}"
+                                th:data-bsns-precision="${item.bdgtBsnsFrcsConPrecision}"
+                                th:data-bsns-recall="${item.bdgtBsnsFrcsConRecall}"
+                                th:data-bsns-f1-score="${item.bdgtBsnsFrcsConF1Score}"
+                                th:data-prfr-precision="${item.bdgtPrfrRsnFrcsConPrecision}"
+                                th:data-prfr-recall="${item.bdgtPrfrRsnFrcsConRecall}"
+                                th:data-prfr-f1-score="${item.bdgtPrfrRsnFrcsConF1Score}">
+                            <input type="hidden" id="0_1" value="first">
+                            <i class="ico_plus"></i>
+                            <span>결과보기</span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
             <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
         </div>
     </div>
