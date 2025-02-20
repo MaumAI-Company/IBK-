@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public abstract class BaseCont extends Base {
@@ -147,4 +150,87 @@ public abstract class BaseCont extends Base {
         return mapList;
     }
 
+
+
+    /**
+     * 검색어 파싱
+     * @param map
+     * @param type 컬럼명 replace 1:BC카드 조회, 2:..., 3:...
+     * @return
+     */
+    protected String makeSearchQuery(Map<String, String> map, int type) {
+        if (map == null) return null;
+        List<String> conList = new ArrayList<>();
+        AtomicBoolean isCon = new AtomicBoolean(false);
+        try {
+            map.forEach((s, s2) -> {
+                StringBuilder tempQuery = new StringBuilder();
+                String col = s;
+                if (type == 1) {
+                    if ("BDMN_ITEX_MNGM_NO".equals(col)) {
+                        col = "co.BDGT_BSNS_FRCS_CON";
+                    }
+                    if (!"BDMN_ITEX_MNGM_NO".equals(col) && !"BDGT_PRFR_RSN_FRCS_CON".equals(col) && !"BDGT_BSNS_FRCS_CON".equals(col)) {
+                        col = "ci." + col;
+                    }
+                    if (!"BDMN_ITEX_MNGM_NO".equals(col) && ("BDGT_PRFR_RSN_FRCS_CON".equals(col) || "BDGT_BSNS_FRCS_CON".equals(col))) {
+                        col = "co." + col;
+                    }
+                }
+                if (s2.contains("&&") || s2.contains("||") || s2.contains("!")) {
+                    isCon.set(true);
+                    String tempS = s2.trim();
+                    while(!tempS.isEmpty()) {
+                        String patternStr = "&&|\\|\\|";
+                        Pattern pattern = Pattern.compile(patternStr);
+                        Matcher matcher = pattern.matcher(tempS);
+                        String value = "";
+                        String oper = "";
+                        if (matcher.find()) {
+                            value = tempS.substring(0, matcher.start()).trim();
+                            oper = tempS.substring(matcher.start(), matcher.end());
+                            tempS = tempS.substring(matcher.end());
+                        } else {
+                            value = tempS;
+                            tempS = "";
+                        }
+
+                        if (value.startsWith("!") && value.length() > 1) {
+                            tempQuery.append(col).append(" NOT LIKE CONCAT('%', '").append(value.substring(1)).append("', '%')");
+                        } else {
+                            tempQuery.append(col).append(" LIKE CONCAT('%', '").append(value).append("', '%')");
+                        }
+                        if ("&&".equals(oper)) {
+                            tempQuery.append(" AND ");
+                        } else if ("||".equals(oper)) {
+                            tempQuery.append(" OR ");
+                        }
+//                        System.out.println(value);
+//                        System.out.println(oper);
+//                        System.out.println(tempQuery);
+                    }
+                } else {
+                    tempQuery = new StringBuilder(col + " LIKE CONCAT('%', '" + s2 + "', '%')");
+                }
+                conList.add(tempQuery.toString());
+            });
+
+            StringBuilder rstQuery = new StringBuilder();
+            boolean isFirst = true;
+            for (String s : conList) {
+                if (isFirst) {
+                    isFirst = false;
+                } else {
+                    rstQuery.append(" AND ");
+                }
+                rstQuery.append("(").append(s).append(")");
+            }
+//            System.out.println(rstQuery);
+
+            return isCon.get() ? rstQuery.toString() : null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

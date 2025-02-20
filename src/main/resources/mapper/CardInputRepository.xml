@@ -91,7 +91,7 @@
         </if>
 
         /*검색어 검색*/
-        <if test="searchJsonMap != null">
+        <if test="searchJsonMap != null and searchRegex == null">
             <foreach collection="searchJsonMap" item="value" index="key">
                 <if test="key == 'BDMN_ITEX_MNGM_NO'">
                     AND co.BDGT_BSNS_FRCS_CON LIKE CONCAT('%', #{value}, '%')
@@ -103,6 +103,9 @@
                     AND co.${key} LIKE CONCAT('%', #{value}, '%')
                 </if>
             </foreach>
+        </if>
+        <if test="searchRegex != null">
+            AND ${searchRegex}
         </if>
     </sql>
 
