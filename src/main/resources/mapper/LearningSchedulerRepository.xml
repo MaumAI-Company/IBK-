@@ -148,6 +148,7 @@
         from
         LEARNING_SCHEDULER ls
         where
+        ls.DEL_AT = 'N' and
         ls.TEMPLATE_ID in
         <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
             #{item}

@@ -34,6 +34,17 @@ public class BillOutputService extends _BaseService {
             inputInfos = learningModelInputRepository.getPartList(info.getLearningModelId(), InOutGbnType.INPUT.name(), LearningType.BILL.name());
         }
 
+        if (ObjectUtils.isEmpty(inputInfos)) {
+            List<LearningModelInputInfo> defaultInputList = new ArrayList<>();
+
+            for (InputColumnBillType value : InputColumnBillType.values()) {
+                LearningModelInputInfo defaultInput = new LearningModelInputInfo();
+                defaultInput.setInputColumnBillType(value);
+                defaultInputList.add(defaultInput);
+            }
+            inputInfos = defaultInputList;
+        }
+
         Map<InputColumnBillType, LearningModelInputInfo> inputInfoMap = inputInfos.stream()
                 .collect(Collectors.toMap(LearningModelInputInfo::getInputColumnBillType, infoItem -> infoItem));
 
