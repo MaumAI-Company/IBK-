@@ -172,36 +172,6 @@
             }
         }
 
-        function fn_goLearning(modelId) {
-            showConfirm('message', '배포 중인 모델은 중단 됩니다.<br/> 학습하시겠습니까?', () => {
-                let jsonData = {
-                    idArr: [modelId]
-                }
-                $.ajax({
-                    url: "/soulGod/model/learning",
-                    type: "post",
-                    async: false,
-                    data: JSON.stringify(jsonData),
-                    contentType: 'application/json;charset=utf-8',
-                    success: function (data) {
-                        let res = data[0];
-                        if ("SUCCESS" == res.status) {
-                            showAlert('complete', '학습이 완료되었습니다.', () => {
-                                location.reload();
-                            });
-                        } else {
-                            showAlert('warning', '실패하였습니다.', () => {
-                                location.reload();
-                            });
-                        }
-                    },
-                    error: function () {
-                        showAlert('warning', '실패하였습니다.');
-                    }
-                });
-            });
-        }
-
         const inPrefix = 'input_';
         const outPrefix = 'output_';
 
@@ -336,27 +306,31 @@
             });
         }
 
-        function fn_trainModel(modelId) {
-
+        function fn_goLearning(modelId) {
             showConfirm('message', '배포 중인 모델은 중단 됩니다.<br/> 학습하시겠습니까?', () => {
                 let jsonData = {
-                    id: modelId
+                    idArr: [modelId]
                 }
                 $.ajax({
-                    url: "/soulGod/model/trainModel",
+                    url: "/soulGod/model/learning",
                     type: "post",
                     async: false,
                     data: JSON.stringify(jsonData),
                     contentType: 'application/json;charset=utf-8',
                     success: function (data) {
-                        showAlert('complete', '학습이 완료되었습니다.', () => {
-                            location.reload();
-                        });
+                        let res = data[0];
+                        if ("SUCCESS" == res.status) {
+                            showAlert('complete', '학습을 시작합니다.', () => {
+                                location.reload();
+                            });
+                        } else {
+                            showAlert('warning', '실패하였습니다.', () => {
+                                location.reload();
+                            });
+                        }
                     },
                     error: function () {
-                        showAlert('warning', '실패하였습니다.', () => {
-                            location.reload();
-                        });
+                        showAlert('warning', '실패하였습니다.');
                     }
                 });
             });
