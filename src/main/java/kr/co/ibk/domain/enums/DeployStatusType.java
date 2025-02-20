@@ -12,7 +12,9 @@ public enum DeployStatusType {
     DEPLOY_ING(5, "배포 중"),
 //    DEPLOY_COMPLETE(6, "배포 완료"),
     DEPLOY_STOP(7, "배포 중지"),
-    DEPLOY_FAIL(8, "배포 실패");
+    DEPLOY_FAIL(8, "배포 실패"),
+    LEARN_DATA_ING(9, "학습 데이터 생성 중"),
+    LEARN_STOP(10, "학습 중지");
 
     private final Integer code;
     private final String statusNm;
@@ -32,7 +34,7 @@ public enum DeployStatusType {
 
     // 삭제 불가능한 배포 상태 목록
     public static List<DeployStatusType> getUndeletableList() {
-        return Arrays.asList(LEARN_ING, DEPLOY_ING);
+        return Arrays.asList(LEARN_ING, DEPLOY_ING, LEARN_DATA_ING);
     }
 
     public static List<DeployStatusType> getDeployStatusList() {

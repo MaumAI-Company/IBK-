@@ -315,7 +315,7 @@
                         }
 
                         let buttonHtml = '';
-                        if (['0', '1', '2', '4'].includes(item.deployStatus)) {
+                        if (['0', '1', '2', '4', '10'].includes(item.deployStatus)) {
                             buttonHtml = `
                                 <button type="button" class="btn fill"
                                     onclick="${item.deployStatus === '2' ? 'fn_stopLearning(' + item.id + ')' : 'fn_goLearning(' + item.id + ')'}">
@@ -596,7 +596,9 @@
                     <td>
                         <div class="checkbox">
                             <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
-                                   th:disabled="${item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).DEPLOY_ING.getCode().toString() || item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).LEARN_ING.getCode().toString()}">
+                                   th:disabled="${item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).DEPLOY_ING.getCode().toString()
+                                                    || item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).LEARN_ING.getCode().toString()
+                                                    || item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).LEARN_DATA_ING.getCode().toString()}">
                             <label th:for="${'chk_' + item.id}">
                                 <span class="blind">선택</span>
                             </label>
@@ -627,6 +629,8 @@
                         <div th:if="${item.deployStatus eq '6'}" class="badge fill_purple">배포 완료</div>
                         <div th:if="${item.deployStatus eq '7'}" class="badge fill_error10">배포 중지</div>
                         <div th:if="${item.deployStatus eq '8'}" class="badge fill_error10">배포 실패</div>
+                        <div th:if="${item.deployStatus eq '9'}" class="badge fill_progress10">학습 데이터 생성 중</div>
+                        <div th:if="${item.deployStatus eq '10'}" class="badge fill_error10">학습 중지</div>
                     </td>
                     <td th:text="${item.epoch ne null ? item.epoch : '-'}">100</td>
                     <td th:text="${item.learningRate ne null ? item.learningRate : '-'}">0.02</td>
