@@ -374,9 +374,15 @@
                     data: JSON.stringify(jsonData),
                     contentType: 'application/json;charset=utf-8',
                     success: function (data) {
-                        showAlert('complete', '학습 중단이 완료되었습니다.', () => {
-                            location.reload();
-                        });
+                        if (data) {
+                            showAlert('complete', '학습 중단이 완료되었습니다.', () => {
+                                location.reload();
+                            });
+                        } else {
+                            showAlert('warning', '학습 중단에 실패하였습니다.', () => {
+                                location.reload();
+                            });
+                        }
                     },
                     error: function () {
                         showAlert('warning', '실패하였습니다.', () => {
