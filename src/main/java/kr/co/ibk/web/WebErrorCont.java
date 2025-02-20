@@ -29,10 +29,10 @@ public class WebErrorCont implements ErrorController {
             int statusCode = Integer.parseInt(status.toString());
 
             if (statusCode == HttpStatus.NOT_FOUND.value()) {
-                return "/soulGod/error";
+                return "/error";
             }
         }
-        return "/soulGod/error";
+        return "/error";
     }
 
 }
