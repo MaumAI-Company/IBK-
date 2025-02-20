@@ -225,8 +225,7 @@ public abstract class BaseCont extends Base {
                 }
                 rstQuery.append("(").append(s).append(")");
             }
-
-            System.out.println(rstQuery);
+//            System.out.println(rstQuery);
 
             return isCon.get() ? rstQuery.toString() : null;
         } catch (Exception e) {
