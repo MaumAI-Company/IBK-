@@ -65,6 +65,7 @@ public class LearnController extends BaseCont {
     public Map<String, Object> learnDataList(@RequestBody CardLearningDataForm params) {
         if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
             params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+            params.setSearchRegex(makeSearchQuery(params.getSearchJsonMap(), 0));
         }
 
         params.setPagingAt("N");
@@ -145,6 +146,7 @@ public class LearnController extends BaseCont {
     public Map<String, Object> billLearnDataList(@RequestBody BillLearningDataForm params) {
         if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
             params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+            params.setSearchRegex(makeSearchQuery(params.getSearchJsonMap(), 0));
         }
 
         params.setPagingAt("N");

@@ -102,7 +102,13 @@ public class LearningModelService extends BaseCont {
 
                     CardLearningDataForm learningDataForm = new CardLearningDataForm();
                     if (!ObjectUtils.isEmpty(load.getSelectCon())) {
-                        learningDataForm.setSearchJsonMap(jsonToHashMap(load.getSelectCon()));
+                        HashMap<String, String> searchJsonMap = jsonToHashMap(load.getSelectCon());
+                        learningDataForm.setSearchStartDate(searchJsonMap.remove("searchStartDate"));
+                        learningDataForm.setSearchEndDate(searchJsonMap.remove("searchEndDate"));
+                        learningDataForm.setSearchTarget(searchJsonMap.remove("searchTarget"));
+                        learningDataForm.setSearchJsonMap(searchJsonMap);
+
+                        learningDataForm.setSearchRegex(makeSearchQuery(learningDataForm.getSearchJsonMap(), 0));
                     }
                     List<CardLearningDataInfo> dataList = cardLearningDataRepository.getLearningList(learningDataForm);
                     fileCon = cardLearningFileContent(dataList, list);
@@ -110,7 +116,13 @@ public class LearningModelService extends BaseCont {
                 } else if (load.getLearningType().equals(LearningType.BILL)) {
                     BillLearningDataForm learningDataForm = new BillLearningDataForm();
                     if (!ObjectUtils.isEmpty(load.getSelectCon())) {
-                        learningDataForm.setSearchJsonMap(jsonToHashMap(load.getSelectCon()));
+                        HashMap<String, String> searchJsonMap = jsonToHashMap(load.getSelectCon());
+                        learningDataForm.setSearchStartDate(searchJsonMap.remove("searchStartDate"));
+                        learningDataForm.setSearchEndDate(searchJsonMap.remove("searchEndDate"));
+                        learningDataForm.setSearchTarget(searchJsonMap.remove("searchTarget"));
+                        learningDataForm.setSearchJsonMap(searchJsonMap);
+
+                        learningDataForm.setSearchRegex(makeSearchQuery(learningDataForm.getSearchJsonMap(), 0));
                     }
                     List<BillLearningDataInfo> dataList = billLearningDataRepository.getLearningList(learningDataForm);
                     fileCon = billLearningFileContent(dataList, list);
