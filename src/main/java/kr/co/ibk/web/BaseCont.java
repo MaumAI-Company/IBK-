@@ -189,9 +189,9 @@ public abstract class BaseCont extends Base {
                         if (matcher.find()) {
                             value = tempS.substring(0, matcher.start()).trim();
                             oper = tempS.substring(matcher.start(), matcher.end());
-                            tempS = tempS.substring(matcher.end());
+                            tempS = tempS.substring(matcher.end()).trim();
                         } else {
-                            value = tempS;
+                            value = tempS.trim();
                             tempS = "";
                         }
 
