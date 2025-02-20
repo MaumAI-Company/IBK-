@@ -32,6 +32,7 @@
                     ls.TEMPLATE_ID
                 from
                     LEARNING_SCHEDULER ls
+                where ls.DEL_AT = 'N'
                 group by
                     ls.TEMPLATE_ID
             ) scheduler on t.ID = scheduler.TEMPLATE_ID

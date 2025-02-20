@@ -89,6 +89,8 @@ public class LearningModelService extends BaseCont {
     public HashMap<String, Object> learning(LearningModelForm form) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("status", "SUCCESS");
+        form.setDeployStatus(DeployStatusType.LEARN_DATA_ING.getCode().toString());
+        learningModelRepository.updateStatus(form);
 
         LearningModelInfo load = learningModelRepository.getLoad(form.getId());
         map.put("learnName", load.getLearnName());

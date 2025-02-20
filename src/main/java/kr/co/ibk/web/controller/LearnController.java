@@ -343,8 +343,8 @@ public class LearnController extends BaseCont {
 
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/stopModel"})
-    public void stopModel(@RequestBody LearningModelForm form) {
-        mccService.stopModel(form.getId());
+    public Boolean stopModel(@RequestBody LearningModelForm form) {
+        return mccService.stopModel(form.getId());
     }
     //모델관리 : e
 

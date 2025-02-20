@@ -71,10 +71,10 @@ public class MccService {
      *
      * @param modelId
      */
-    public void stopModel(Integer modelId) {
+    public Boolean stopModel(Integer modelId) {
         LearningModelInfo info = learningModelRepository.getLoad(modelId);
         if (info == null) {
-            return;
+            return false;
         }
 
         try {
@@ -86,14 +86,14 @@ public class MccService {
             JSONObject params = new JSONObject();
             params.put("model_id", modelId);
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    sendPost("/stop-model/", params, info.getLearningType());
-                }
-            }).start();
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<Boolean> future = executor.submit(() -> sendPost("/stop-model/", params, info.getLearningType()));
+
+            Boolean result = future.get();
+            executor.shutdown();
+            return result;
         } catch (Exception e) {
-            return;
+            return false;
         }
     }
 

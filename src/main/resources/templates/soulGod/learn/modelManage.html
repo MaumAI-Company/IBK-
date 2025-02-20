@@ -172,36 +172,6 @@
             }
         }
 
-        function fn_goLearning(modelId) {
-            showConfirm('message', '배포 중인 모델은 중단 됩니다.<br/> 학습하시겠습니까?', () => {
-                let jsonData = {
-                    idArr: [modelId]
-                }
-                $.ajax({
-                    url: "/soulGod/model/learning",
-                    type: "post",
-                    async: false,
-                    data: JSON.stringify(jsonData),
-                    contentType: 'application/json;charset=utf-8',
-                    success: function (data) {
-                        let res = data[0];
-                        if ("SUCCESS" == res.status) {
-                            showAlert('complete', '학습이 완료되었습니다.', () => {
-                                location.reload();
-                            });
-                        } else {
-                            showAlert('warning', '실패하였습니다.', () => {
-                                location.reload();
-                            });
-                        }
-                    },
-                    error: function () {
-                        showAlert('warning', '실패하였습니다.');
-                    }
-                });
-            });
-        }
-
         const inPrefix = 'input_';
         const outPrefix = 'output_';
 
@@ -315,7 +285,7 @@
                         }
 
                         let buttonHtml = '';
-                        if (['0', '1', '2', '4'].includes(item.deployStatus)) {
+                        if (['0', '1', '2', '4', '10'].includes(item.deployStatus)) {
                             buttonHtml = `
                                 <button type="button" class="btn fill"
                                     onclick="${item.deployStatus === '2' ? 'fn_stopLearning(' + item.id + ')' : 'fn_goLearning(' + item.id + ')'}">
@@ -336,27 +306,31 @@
             });
         }
 
-        function fn_trainModel(modelId) {
-
+        function fn_goLearning(modelId) {
             showConfirm('message', '배포 중인 모델은 중단 됩니다.<br/> 학습하시겠습니까?', () => {
                 let jsonData = {
-                    id: modelId
+                    idArr: [modelId]
                 }
                 $.ajax({
-                    url: "/soulGod/model/trainModel",
+                    url: "/soulGod/model/learning",
                     type: "post",
                     async: false,
                     data: JSON.stringify(jsonData),
                     contentType: 'application/json;charset=utf-8',
                     success: function (data) {
-                        showAlert('complete', '학습이 완료되었습니다.', () => {
-                            location.reload();
-                        });
+                        let res = data[0];
+                        if ("SUCCESS" == res.status) {
+                            showAlert('complete', '학습을 시작합니다.', () => {
+                                location.reload();
+                            });
+                        } else {
+                            showAlert('warning', '실패하였습니다.', () => {
+                                location.reload();
+                            });
+                        }
                     },
                     error: function () {
-                        showAlert('warning', '실패하였습니다.', () => {
-                            location.reload();
-                        });
+                        showAlert('warning', '실패하였습니다.');
                     }
                 });
             });
@@ -374,9 +348,15 @@
                     data: JSON.stringify(jsonData),
                     contentType: 'application/json;charset=utf-8',
                     success: function (data) {
-                        showAlert('complete', '학습 중단이 완료되었습니다.', () => {
-                            location.reload();
-                        });
+                        if (data) {
+                            showAlert('complete', '학습 중단이 완료되었습니다.', () => {
+                                location.reload();
+                            });
+                        } else {
+                            showAlert('warning', '학습 중단에 실패하였습니다.', () => {
+                                location.reload();
+                            });
+                        }
                     },
                     error: function () {
                         showAlert('warning', '실패하였습니다.', () => {
@@ -596,7 +576,9 @@
                     <td>
                         <div class="checkbox">
                             <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
-                                   th:disabled="${item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).DEPLOY_ING.getCode().toString() || item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).LEARN_ING.getCode().toString()}">
+                                   th:disabled="${item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).DEPLOY_ING.getCode().toString()
+                                                    || item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).LEARN_ING.getCode().toString()
+                                                    || item.deployStatus == T(kr.co.ibk.domain.enums.DeployStatusType).LEARN_DATA_ING.getCode().toString()}">
                             <label th:for="${'chk_' + item.id}">
                                 <span class="blind">선택</span>
                             </label>
@@ -627,6 +609,8 @@
                         <div th:if="${item.deployStatus eq '6'}" class="badge fill_purple">배포 완료</div>
                         <div th:if="${item.deployStatus eq '7'}" class="badge fill_error10">배포 중지</div>
                         <div th:if="${item.deployStatus eq '8'}" class="badge fill_error10">배포 실패</div>
+                        <div th:if="${item.deployStatus eq '9'}" class="badge fill_progress10">학습 데이터 생성 중</div>
+                        <div th:if="${item.deployStatus eq '10'}" class="badge fill_error10">학습 중지</div>
                     </td>
                     <td th:text="${item.epoch ne null ? item.epoch : '-'}">100</td>
                     <td th:text="${item.learningRate ne null ? item.learningRate : '-'}">0.02</td>
