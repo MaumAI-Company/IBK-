@@ -155,7 +155,7 @@ public abstract class BaseCont extends Base {
      * 검색어 파싱
      *
      * @param map
-     * @param type 컬럼명 replace 0:기타 1:BC카드 지급결의 내역, 2:세금계산서 지급결의 내역, 3:...
+     * @param type 컬럼명 replace 0:기타 1:BC카드 지급결의 내역, 2:세금계산서 지급결의 내역, 3: spector OR
      * @return
      */
     protected String makeSearchQuery(Map<String, String> map, int type) {
@@ -186,10 +186,6 @@ public abstract class BaseCont extends Base {
                     }
                     if (!"BDMN_ITEX_MNGM_NO".equals(col) && ("BDGT_PRFR_RSN_FRCS_CON".equals(col) || "BDGT_BSNS_FRCS_CON".equals(col))) {
                         col = "bo." + col;
-                    }
-                } else if (type == 3) {
-                    if ("searchStartDate".equals(col)) {
-                        col = "bo.BDGT_BSNS_FRCS_CON";
                     }
                 }
                 if (s2.contains("&&") || s2.contains("||") || s2.contains("!")) {
@@ -232,11 +228,13 @@ public abstract class BaseCont extends Base {
 
             StringBuilder rstQuery = new StringBuilder();
             boolean isFirst = true;
+            String joinOperator = (type == 3) ? " OR " : " AND ";
             for (String s : conList) {
                 if (isFirst) {
                     isFirst = false;
                 } else {
-                    rstQuery.append(" AND ");
+                    //rstQuery.append(" AND ");
+                    rstQuery.append(joinOperator);
                 }
                 rstQuery.append("(").append(s).append(")");
             }

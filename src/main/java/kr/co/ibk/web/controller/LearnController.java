@@ -218,6 +218,12 @@ public class LearnController extends BaseCont {
     @RequestMapping("/soulGod/learn/templateManage")
     public String templateManage(Model model,
                                  @ModelAttribute TemplateForm params) {
+        if (!ObjectUtils.isEmpty(params.getSearchKeyword())) {
+            Map<String, String> paramMap = new HashMap<>();
+            paramMap.put("t.TEMPLATE_NAME", params.getSearchKeyword());
+            paramMap.put("hm.MEM_NAME", params.getSearchKeyword());
+            params.setSearchRegex(makeSearchQuery(paramMap, 3));
+        }
 
         List<TemplateInfo> list = templateService.page(params);
 
@@ -256,7 +262,13 @@ public class LearnController extends BaseCont {
     @RequestMapping("/soulGod/learn/learningDataManage")
     public String learningDataManage(Model model,
                                      @ModelAttribute LearningDataForm params) {
-
+        if (!ObjectUtils.isEmpty(params.getSearchKeyword())) {
+            Map<String, String> paramMap = new HashMap<>();
+            paramMap.put("ld.DATA_NAME", params.getSearchKeyword());
+            paramMap.put("t.TEMPLATE_NAME", params.getSearchKeyword());
+            paramMap.put("hm.MEM_NAME", params.getSearchKeyword());
+            params.setSearchRegex(makeSearchQuery(paramMap, 3));
+        }
         List<LearningDataInfo> list = learningDataService.page(params);
 
         model.addAttribute("list", list);
@@ -301,7 +313,12 @@ public class LearnController extends BaseCont {
     @RequestMapping("/soulGod/learn/modelManage")
     public String modelManage(Model model,
                               @ModelAttribute LearningModelForm params) {
-
+        if (!ObjectUtils.isEmpty(params.getSearchKeyword())) {
+            Map<String, String> paramMap = new HashMap<>();
+            paramMap.put("lm.LEARN_NAME", params.getSearchKeyword());
+            paramMap.put("hm.MEM_NAME", params.getSearchKeyword());
+            params.setSearchRegex(makeSearchQuery(paramMap, 3));
+        }
         List<LearningModelInfo> list = learningModelService.getList(params);
 
         model.addAttribute("pagingInfo", params.getPaginationInfo());
@@ -359,6 +376,13 @@ public class LearnController extends BaseCont {
                 .map(DeployStatusType::getCode)
                 .toArray(Integer[]::new);
         params.setDeployStatusArr(deployStatusArr);
+
+        if (!ObjectUtils.isEmpty(params.getSearchKeyword())) {
+            Map<String, String> paramMap = new HashMap<>();
+            paramMap.put("lm.LEARN_NAME", params.getSearchKeyword());
+            paramMap.put("hm.MEM_NAME", params.getSearchKeyword());
+            params.setSearchRegex(makeSearchQuery(paramMap, 3));
+        }
 
         List<LearningModelInfo> list = learningModelService.getList(params);
 

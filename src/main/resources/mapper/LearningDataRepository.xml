@@ -107,10 +107,13 @@
         <if test="searchLearningType != null and searchLearningType != ''">
             AND ld.LEARNING_TYPE = #{searchLearningType}
         </if>
-        <if test="searchKeyword != null and searchKeyword != ''">
+        <if test="searchKeyword != null and searchKeyword != '' and searchRegex == null">
             AND (ld.DATA_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
                     or t.TEMPLATE_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
                     or hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
+        </if>
+        <if test="searchRegex != null">
+            AND ${searchRegex}
         </if>
     </sql>
     <sql id="column">

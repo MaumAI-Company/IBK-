@@ -81,20 +81,20 @@
 	<!-- MariaDB 검색 -->
 	<sql id="searchUser">
 		<!-- 검색 키워드가 있을 때 -->
-		<if test="searchKeyword != null and searchKeyword != ''">
+		<if test="searchKeyword != null and searchKeyword != '' and searchRegex == null">
 			<choose>
 				<!-- 검색 유형이 있을 때 -->
 				<when test="searchType != null and searchType != ''">
 					<choose>
 						<when test="'all'.equals(searchType)">
-						AND
-						(
+							AND
+							(
 							MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
 							OR MEM_ID LIKE CONCAT('%', #{searchKeyword}, '%')
 							OR DEPT_CODE LIKE CONCAT('%', #{searchKeyword}, '%')
 							OR DEPT_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
 							OR DEPT_ENG_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
-						)
+							)
 						</when>
 						<when test="'memName'.equals(searchType)">
 							AND MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
@@ -115,16 +115,19 @@
 				</when>
 				<!-- 검색 유형이 없을 때 -->
 				<otherwise>
-						AND
-						(
-							MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
-							OR MEM_ID LIKE CONCAT('%', #{searchKeyword}, '%')
-							OR DEPT_CODE LIKE CONCAT('%', #{searchKeyword}, '%')
-							OR DEPT_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
-							OR DEPT_ENG_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
-						)
+					AND
+					(
+					MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+					OR MEM_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+					OR DEPT_CODE LIKE CONCAT('%', #{searchKeyword}, '%')
+					OR DEPT_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+					OR DEPT_ENG_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+					)
 				</otherwise>
 			</choose>
+		</if>
+		<if test="searchRegex != null">
+			AND ${searchRegex}
 		</if>
 	</sql>
 	
@@ -233,7 +236,7 @@
 				</when>				
 			</choose>
 		</if>
-		<if test="searchAuthType != null and searchAuthType != '' and searchKeyword != null and searchKeyword != ''">		
+		<if test="searchAuthType != null and searchAuthType != '' and searchKeyword != null and searchKeyword != '' and searchRegex == null">
 			<choose>
 				<when test="'all'.equals(searchCriteria)">
 				AND 
@@ -257,6 +260,9 @@
 					AND mem.MEM_PHONE LIKE CONCAT('%', #{searchKeyword}, '%')
 				</when>				
 			</choose>
+		</if>
+		<if test="searchRegex != null">
+			AND ${searchRegex}
 		</if>
 	</sql>
 	
