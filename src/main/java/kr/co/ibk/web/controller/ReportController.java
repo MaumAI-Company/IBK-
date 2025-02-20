@@ -59,6 +59,7 @@ public class ReportController extends BaseCont {
 
         if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
             params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+            params.setSearchRegex(makeSearchQuery(params.getSearchJsonMap(), 1));
         }
 
         List<CardInputInfo> list = cardInputService.page(params);

@@ -52,6 +52,7 @@ public class Criteria {
     private String searchJson;
     private HashMap<String, String> searchJsonMap;
     private String searchTypeJson;
+    private String searchRegex;
 
 	/*public String getSearchStartDate() {
 		if (this.searchStartDate == null || this.searchStartDate.length() < 1) {
