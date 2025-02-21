@@ -50,7 +50,7 @@
             });
             jsondata.menuList = dataArr;
             jsondata.menuIdCnt = dataArr.length;
-            console.log('jsondata', jsondata);
+            //console.log('jsondata', jsondata);
 
             layerHide('alertWarning');
 
@@ -62,11 +62,11 @@
                 }
                 , function (resp) {// 성공
                     showAlert('complete', '메뉴가 삭제 되었습니다.');
-                    console.log(resp);
+                    //console.log(resp);
                     fnDeleteMenuSuccessHandler(resp.menuTree, resp.menuTreeOrderCount);
                 }
                 , function (jqXHR, textStatus, errorThrown) {//실패
-                    console.log('restCall fail' + '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
+                    //console.log('restCall fail' + '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
                     showAlert('warning', '메뉴 추가처리에 실패하였습니다.\n관리자에게 문의하세요.');
                 }
             );
@@ -273,11 +273,11 @@
                         </tbody>
                     </table>
                     <div class="btn_area">
-                        <button type="button" class="btn line_cool_grey30"
+                        <button type="button" class="btn line_cool_grey30 modBtn"
                                 onclick="fnGetRevertDetailLayoutData(); return false;">
                             <span>되돌리기</span>
                         </button>
-                        <button type="button" class="btn fill" onclick="fnUpdateMenuSave(); return false;">
+                        <button type="button" class="btn fill modBtn" onclick="fnUpdateMenuSave(); return false;">
                             <span>수정</span>
                         </button>
                     </div>
@@ -610,6 +610,9 @@
 
     //메뉴 정보 상세 초기화
     function fnClearDetailLayout() {
+        // 버튼 초기화
+        $('.modBtn').prop('disabled', true);
+
         let input = $('#detail_layout').find('input');
         //input의 text타입을 초기화한다.
         $.each(input, function (idx, obj) {
@@ -772,6 +775,7 @@
             'tree.select',
             function (event) {
                 if (event.node) {
+                    $('.modBtn').prop('disabled', false);
                     let menuId = event.node.id
                     let keys = Object.keys(treeList[0]);
                     $.each(keys, function (idx, key) {
@@ -905,7 +909,7 @@
                 fnAddMenuSuccessHandler(resp.menuTree, resp.menuTreeOrderCount);
             }
             , function (jqXHR, textStatus, errorThrown) {//실패
-                console.log('restCall fail' + '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
+                //console.log('restCall fail' + '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
                 showAlert('warning', '메뉴 추가처리에 실패하였습니다.\n관리자에게 문의하세요.');
             }
         );
@@ -1292,12 +1296,15 @@
                 async: false,
             }
             , function (resp) {// 성공
-                showAlert('complete', '수정 되었습니다.');
-                fnUpdateMenuSuccessHandler(resp.menuTree, resp.menuTreeOrderCount);
+                showAlert('complete', '수정 되었습니다.', () => {
+                    fnUpdateMenuSuccessHandler(resp.menuTree, resp.menuTreeOrderCount);
+                });
             }
             , function (jqXHR, textStatus, errorThrown) {//실패
-                console.log('restCall fail' + '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
-                showAlert('warning', '메뉴 추가처리에 실패하였습니다.\n관리자에게 문의하세요.');
+                //console.log('restCall fail' + '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
+                showAlert('warning', '메뉴 추가처리에 실패하였습니다.\n관리자에게 문의하세요.', () => {
+                    location.reload();
+                });
             }
         );
     }

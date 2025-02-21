@@ -47,6 +47,9 @@
 
         //메뉴 정보 상세 초기화
         function fnClearDetailLayout() {
+            // 버튼 초기화
+            $('.modBtn').prop('disabled', true);
+
             let input = $('#detail_layout').find('input');
             //input의 text타입을 초기화한다.
             $.each(input, function (idx, obj) {
@@ -93,7 +96,6 @@
 
             //라디오 지정
             if (id == 'deptStat') {
-                console.log('deptStat', val);
                 $('input:radio[name="detail_deptStat"][value="' + val + '"]').prop('checked', true);
                 $('input:radio[name="detail_deptStat"]').prop('disabled', false);
             }
@@ -137,7 +139,6 @@
                 data: data,
                 onCreateLi: function (node, $li) {
                     // Add 'icon' span before title
-                    console.log('createLi : ', node);
                     let deptId = node.id
                     let keys = Object.keys(treeList[0]);
                     $.each(keys, function (idx, key) {
@@ -156,7 +157,7 @@
                 'tree.select',
                 function (event) {
                     if (event.node) {
-                        console.log('tree.select : ', event.node);
+                        $('.modBtn').prop('disabled', false);
                         let deptId = event.node.id
                         let keys = Object.keys(treeList[0]);
                         $.each(keys, function (idx, key) {
@@ -183,6 +184,12 @@
         });
 
         function modDept() {
+
+            if(!$.trim($('#detail_deptId').val())){
+                showAlert('warning', '부서를 먼저 선택해 주세요.');
+                return false;
+            }
+
             // 공백제거
             $('#detail_deptId').val($('#detail_deptId').val().trim()); // 부서 ID
             $('#detail_deptCodePrev').val($('#detail_deptCodePrev').val().trim()); // 이전 부서코드
@@ -233,8 +240,9 @@
                 dataType: "json",
                 success: function (data) {
                     if ("SUCCESS" == data.status) {
-                        showAlert('complete', data.msg);
-                        location.href = "/soulGod/admin/department";
+                        showAlert('complete', data.msg, () => {
+                            location.reload();
+                        });
                     } else if ("EXIST" == data.status) {
                         showAlert('warning', data.msg);
                     } else if ("FAIL" == data.status) {
@@ -244,7 +252,9 @@
                     }
                 },
                 error: function () {
-                    console.log("error");
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    });
                 }
             });
         }
@@ -292,7 +302,9 @@
                     }
                 },
                 error: function () {
-                    console.log("error");
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    });
                 }
             });
         }
@@ -411,7 +423,9 @@
                     }*/
                 },
                 error: function () {
-                    console.log("error");
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    });
                 }
             });
         }
@@ -570,7 +584,9 @@
                     htmlPagination += '</div>';
                 },
                 error: function () {
-                    console.log("error");
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    });
                 }
             });
             $("#srch_dptmt_tbody").html(htmlDeptList);
@@ -608,10 +624,6 @@
                 // 하나의 부서가 선택되었음
                 $("input[name='chkBoxDept']:checked").each(function () {
                     let chkDeptId = $(this).val();
-                    console.log($("#" + chkDeptId + "_deptId").val());
-                    console.log($("#" + chkDeptId + "_deptCode").val());
-                    console.log($("#" + chkDeptId + "_deptName").val());
-                    console.log($("#" + chkDeptId + "_deptEngName").val());
 
                     $("#" + type + "ParDeptId").val($("#" + chkDeptId + "_deptId").val());
                     $("#" + type + "ParDeptName").val($("#" + chkDeptId + "_deptName").val());
@@ -767,10 +779,10 @@
                         </tbody>
                     </table>
                     <div class="btn_area">
-                        <button type="button" class="btn line_cool_grey30" onclick="fnGetRevertDetailLayoutData();">
+                        <button type="button" class="btn line_cool_grey30 modBtn" onclick="fnGetRevertDetailLayoutData();">
                             <span>되돌리기</span>
                         </button>
-                        <button type="button" class="btn fill" onclick="modDept();">
+                        <button type="button" class="btn fill modBtn" onclick="modDept();">
                             <span>수정</span>
                         </button>
                     </div>
