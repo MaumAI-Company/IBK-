@@ -77,6 +77,71 @@
                     });
 
                     inputData = data;
+
+                    /*data =
+                        [
+                            {
+                                "dd": "2024년 1월",
+                                "outCnt": 243,
+                                "total": 256,
+                                "per": 94.92
+                            }, {
+                            "dd": "2024년 2월",
+                            "outCnt": 288,
+                            "total": 303,
+                            "per": 95.04
+                        }, {
+                            "dd": "2024년 3월",
+                            "outCnt": 298,
+                            "total": 310,
+                            "per": 96.12
+                        }, {
+                            "dd": "2024년 4월",
+                            "outCnt": 316,
+                            "total": 339,
+                            "per": 93.21
+                        }, {
+                            "dd": "2024년 5월",
+                            "outCnt": 376,
+                            "total": 405,
+                            "per": 92.83
+                        }, {
+                            "dd": "2024년 6월",
+                            "outCnt": 407,
+                            "total": 423,
+                            "per": 96.21
+                        }, {
+                            "dd": "2024년 7월",
+                            "outCnt": 374,
+                            "total": 385,
+                            "per": 97.14
+                        }, {
+                            "dd": "2024년 8월",
+                            "outCnt": 325,
+                            "total": 337,
+                            "per": 94.92
+                        }, {
+                            "dd": "2024년 9월",
+                            "outCnt": 289,
+                            "total": 310,
+                            "per": 94.92
+                        }, {
+                            "dd": "2024년 10월",
+                            "outCnt": 312,
+                            "total": 321,
+                            "per": 94.92
+                        }, {
+                            "dd": "2024년 11월",
+                            "outCnt": 298,
+                            "total": 298,
+                            "per": 94.92
+                        }, {
+                            "dd": "2024년 12월",
+                            "outCnt": 298,
+                            "total": 298,
+                            "per": 94.92
+                        }];*/
+
                     fn_drawChart1(data);
                 },
                 error: function () {
@@ -111,70 +176,83 @@
                     /*data =
                         [
                             {
-                        "dd": "9/1",
-                        "hitCnt1": 40,
-                        "hitCnt1Per": 20,
-                        "hitCnt2": 20,
-                        "hitCnt2Per": 10,
-                        "hitCnt3": 100,
-                        "hitCnt3Per": 50,
-                        "total": 200
-                    }, {
-                        "dd": "9/2",
-                        "hitCnt1": 50,
-                        "hitCnt1Per": 10,
-                        "hitCnt2": 150,
-                        "hitCnt2Per": 30,
-                        "hitCnt3": 100,
-                        "hitCnt3Per": 20,
-                        "total": 500
-                    }, {
-                        "dd": "9/3",
-                        "hitCnt1": 30,
-                        "hitCnt1Per": 10,
-                        "hitCnt2": 60,
-                        "hitCnt2Per": 20,
-                        "hitCnt3": 200,
-                        "hitCnt3Per": 66.66,
-                        "total": 300
-                    }, {
-                        "dd": "9/4",
-                        "hitCnt1": 50,
-                        "hitCnt1Per": 20,
-                        "hitCnt2": 250,
-                        "hitCnt2Per": 100,
-                        "hitCnt3": 250,
-                        "hitCnt3Per": 100,
-                        "total": 250
-                    }, {
-                        "dd": "9/5",
-                        "hitCnt1": 200,
-                        "hitCnt1Per": 50,
-                        "hitCnt2": 400,
-                        "hitCnt2Per": 100,
-                        "hitCnt3": 360,
-                        "hitCnt3Per": 90,
-                        "total": 400
-                    }, {
-                        "dd": "9/6",
-                        "hitCnt1": 40,
-                        "hitCnt1Per": 20,
-                        "hitCnt2": 20,
-                        "hitCnt2Per": 10,
-                        "hitCnt3": 100,
-                        "hitCnt3Per": 50,
-                        "total": 200
-                    }, {
-                        "dd": "9/7",
-                        "hitCnt1": 40,
-                        "hitCnt1Per": 20,
-                        "hitCnt2": 20,
-                        "hitCnt2Per": 10,
-                        "hitCnt3": 100,
-                        "hitCnt3Per": 50,
-                        "total": 200
-                    },
-                        {
+                                "dd": "9/1",
+                                "hitCnt1": 40,
+                                "hitCnt1Per": 20,
+                                "hitCnt2": 20,
+                                "hitCnt2Per": 10,
+                                "hitCnt3": 100,
+                                "hitCnt3Per": 50,
+                                "total": 200,
+                                "hitCnt4": 100,
+                                "totalOutCnt": 100
+                            }, {
+                            "dd": "9/2",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 150,
+                            "hitCnt2Per": 30,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 20,
+                            "total": 500,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/3",
+                            "hitCnt1": 30,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 60,
+                            "hitCnt2Per": 20,
+                            "hitCnt3": 200,
+                            "hitCnt3Per": 66.66,
+                            "total": 300,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/4",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 250,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 250,
+                            "hitCnt3Per": 100,
+                            "total": 250,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/5",
+                            "hitCnt1": 200,
+                            "hitCnt1Per": 50,
+                            "hitCnt2": 400,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 360,
+                            "hitCnt3Per": 90,
+                            "total": 400,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/6",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/7",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
                             "dd": "9/8",
                             "hitCnt1": 40,
                             "hitCnt1Per": 20,
@@ -182,7 +260,9 @@
                             "hitCnt2Per": 10,
                             "hitCnt3": 100,
                             "hitCnt3Per": 50,
-                            "total": 200
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/9",
                             "hitCnt1": 50,
@@ -191,7 +271,9 @@
                             "hitCnt2Per": 30,
                             "hitCnt3": 100,
                             "hitCnt3Per": 20,
-                            "total": 500
+                            "total": 500,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/10",
                             "hitCnt1": 30,
@@ -200,7 +282,9 @@
                             "hitCnt2Per": 20,
                             "hitCnt3": 200,
                             "hitCnt3Per": 66.66,
-                            "total": 300
+                            "total": 300,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/11",
                             "hitCnt1": 50,
@@ -209,7 +293,9 @@
                             "hitCnt2Per": 100,
                             "hitCnt3": 250,
                             "hitCnt3Per": 100,
-                            "total": 250
+                            "total": 250,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/12",
                             "hitCnt1": 200,
@@ -218,7 +304,9 @@
                             "hitCnt2Per": 100,
                             "hitCnt3": 360,
                             "hitCnt3Per": 90,
-                            "total": 400
+                            "total": 400,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/13",
                             "hitCnt1": 40,
@@ -227,7 +315,9 @@
                             "hitCnt2Per": 10,
                             "hitCnt3": 100,
                             "hitCnt3Per": 50,
-                            "total": 200
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/14",
                             "hitCnt1": 40,
@@ -236,9 +326,10 @@
                             "hitCnt2Per": 10,
                             "hitCnt3": 100,
                             "hitCnt3Per": 50,
-                            "total": 200
-                        },
-                        {
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
                             "dd": "9/15",
                             "hitCnt1": 40,
                             "hitCnt1Per": 20,
@@ -246,7 +337,9 @@
                             "hitCnt2Per": 10,
                             "hitCnt3": 100,
                             "hitCnt3Per": 50,
-                            "total": 200
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/16",
                             "hitCnt1": 50,
@@ -255,7 +348,9 @@
                             "hitCnt2Per": 30,
                             "hitCnt3": 100,
                             "hitCnt3Per": 20,
-                            "total": 500
+                            "total": 500,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/17",
                             "hitCnt1": 30,
@@ -264,7 +359,9 @@
                             "hitCnt2Per": 20,
                             "hitCnt3": 200,
                             "hitCnt3Per": 66.66,
-                            "total": 300
+                            "total": 300,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/18",
                             "hitCnt1": 50,
@@ -273,7 +370,9 @@
                             "hitCnt2Per": 100,
                             "hitCnt3": 250,
                             "hitCnt3Per": 100,
-                            "total": 250
+                            "total": 250,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/19",
                             "hitCnt1": 200,
@@ -282,7 +381,9 @@
                             "hitCnt2Per": 100,
                             "hitCnt3": 360,
                             "hitCnt3Per": 90,
-                            "total": 400
+                            "total": 400,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/20",
                             "hitCnt1": 40,
@@ -291,7 +392,9 @@
                             "hitCnt2Per": 10,
                             "hitCnt3": 100,
                             "hitCnt3Per": 50,
-                            "total": 200
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/21",
                             "hitCnt1": 40,
@@ -300,9 +403,10 @@
                             "hitCnt2Per": 10,
                             "hitCnt3": 100,
                             "hitCnt3Per": 50,
-                            "total": 200
-                        },
-                        {
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
                             "dd": "9/22",
                             "hitCnt1": 40,
                             "hitCnt1Per": 20,
@@ -310,7 +414,9 @@
                             "hitCnt2Per": 10,
                             "hitCnt3": 100,
                             "hitCnt3Per": 50,
-                            "total": 200
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/23",
                             "hitCnt1": 50,
@@ -319,7 +425,9 @@
                             "hitCnt2Per": 30,
                             "hitCnt3": 100,
                             "hitCnt3Per": 20,
-                            "total": 500
+                            "total": 500,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/24",
                             "hitCnt1": 30,
@@ -328,7 +436,9 @@
                             "hitCnt2Per": 20,
                             "hitCnt3": 200,
                             "hitCnt3Per": 66.66,
-                            "total": 300
+                            "total": 300,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/25",
                             "hitCnt1": 50,
@@ -337,7 +447,9 @@
                             "hitCnt2Per": 100,
                             "hitCnt3": 250,
                             "hitCnt3Per": 100,
-                            "total": 250
+                            "total": 250,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/26",
                             "hitCnt1": 200,
@@ -346,7 +458,9 @@
                             "hitCnt2Per": 100,
                             "hitCnt3": 360,
                             "hitCnt3Per": 90,
-                            "total": 400
+                            "total": 400,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/27",
                             "hitCnt1": 40,
@@ -355,7 +469,9 @@
                             "hitCnt2Per": 10,
                             "hitCnt3": 100,
                             "hitCnt3Per": 50,
-                            "total": 200
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }, {
                             "dd": "9/28",
                             "hitCnt1": 40,
@@ -364,7 +480,9 @@
                             "hitCnt2Per": 10,
                             "hitCnt3": 100,
                             "hitCnt3Per": 50,
-                            "total": 200
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
                         }];*/
                     fn_drawChart2(data);
                 },
@@ -414,68 +532,6 @@
                 })
             );
 
-            /*let data = [{
-                "dd": "2024년 1월",
-                "outCnt": 243,
-                "total": 256,
-                "per": 94.92
-            }, {
-                "dd": "2024년 2월",
-                "outCnt": 288,
-                "total": 303,
-                "per": 95.04
-            }, {
-                "dd": "2024년 3월",
-                "outCnt": 298,
-                "total": 310,
-                "per": 96.12
-            }, {
-                "dd": "2024년 4월",
-                "outCnt": 316,
-                "total": 339,
-                "per": 93.21
-            }, {
-                "dd": "2024년 5월",
-                "outCnt": 376,
-                "total": 405,
-                "per": 92.83
-            }, {
-                "dd": "2024년 6월",
-                "outCnt": 407,
-                "total": 423,
-                "per": 96.21
-            }, {
-                "dd": "2024년 7월",
-                "outCnt": 374,
-                "total": 385,
-                "per": 97.14
-            }, {
-                "dd": "2024년 8월",
-                "outCnt": 325,
-                "total": 337,
-                "per": 94.92
-            }, {
-                "dd": "2024년 9월",
-                "outCnt": 289,
-                "total": 310,
-                "per": 94.92
-            }, {
-                "dd": "2024년 10월",
-                "outCnt": 312,
-                "total": 321,
-                "per": 94.92
-            }, {
-                "dd": "2024년 11월",
-                "outCnt": 298,
-                "total": 298,
-                "per": 94.92
-            }, {
-                "dd": "2024년 12월",
-                "outCnt": 298,
-                "total": 298,
-                "per": 94.92
-            }]*/
-
             let xRenderer = am5xy.AxisRendererX.new(root, {
                 cellStartLocation: 0.1,
                 cellEndLocation: 0.9,
@@ -500,7 +556,7 @@
                 })
             }));
 
-            function makeSeries1(name, fieldName) {
+            function makeSeries1(name, fieldName, color) {
                 let series;
                 if (fieldName != 'total') {
                     series = chart.series.push(am5xy.ColumnSeries.new(root, {
@@ -517,15 +573,16 @@
                         tooltipText: "{valueY}개 / {per}%",
                         width: am5.percent(90),
                         tooltipY: 0,
-                        strokeOpacity: 0
+                        strokeOpacity: 0,
+                        fill: am5.color(color)
                     });
 
                     series.columns.template.adapters.add("fill", function (fill, target) {
-                        return target.dataItem && target.dataItem.dataContext.per < 100 ? am5.color(0xff5733) : fill;
+                        return target.dataItem && target.dataItem.dataContext.per < 100 ? am5.color(color) : fill;
                     });
 
                     series.columns.template.adapters.add("stroke", function (stroke, target) {
-                        return target.dataItem && target.dataItem.dataContext.per < 100 ? am5.color(0xff5733) : stroke;
+                        return target.dataItem && target.dataItem.dataContext.per < 100 ? am5.color(color) : stroke;
                     });
 
                     series.data.setAll(data);
@@ -559,7 +616,8 @@
                     tooltip: am5.Tooltip.new(root, {
                         pointerOrientation: "horizontal",
                         labelText: "{valueY}개"
-                    })
+                    }),
+                    stroke: am5.color(0x004C9D)
                 })
             );
 
@@ -574,7 +632,7 @@
                 return am5.Bullet.new(root, {
                     sprite: am5.Circle.new(root, {
                         strokeWidth: 3,
-                        stroke: series2.get("stroke"),
+                        stroke: am5.color(0x004C9D),
                         radius: 5,
                         fill: root.interfaceColors.get("background")
                     })
@@ -584,7 +642,8 @@
 
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 
-            makeSeries1("추론데이터 수", "outCnt");
+            // 004C9D / 6D7175 / F69192 / 74C8E6 /7AE674 /9854C6
+            makeSeries1("추론데이터 수", "outCnt", 0xF69192);
             makeSeries1("전체", "total");
 
             chart.appear(1000, 100);
@@ -649,7 +708,7 @@
                 })
             }));
 
-            function makeSeries2(name, fieldName, per) {
+            function makeSeries2(name, fieldName, per, color) {
                 let series;
                 if (fieldName != 'total' && fieldName != 'totalOutCnt') {
                     series = chart.series.push(am5xy.ColumnSeries.new(root, {
@@ -668,7 +727,16 @@
                         tooltipText: tooltipText,
                         width: am5.percent(90),
                         tooltipY: 0,
-                        strokeOpacity: 0
+                        strokeOpacity: 0,
+                        fill: am5.color(color)
+                    });
+
+                    series.columns.template.adapters.add("fill", function (fill, target) {
+                        return color ? am5.color(color) : fill;
+                    });
+
+                    series.columns.template.adapters.add("stroke", function (stroke, target) {
+                        return color ? am5.color(color) : stroke;
                     });
 
                     series.data.setAll(data);
@@ -684,7 +752,7 @@
                                 centerY: 0,
                                 centerX: am5.p50,
                                 populateText: true
-                            })
+                            }),
                         });
                     });
 
@@ -702,7 +770,8 @@
                     tooltip: am5.Tooltip.new(root, {
                         pointerOrientation: "horizontal",
                         labelText: "{valueY}개"
-                    })
+                    }),
+                    stroke: am5.color(0x004C9D)
                 })
             );
 
@@ -718,7 +787,7 @@
                 return am5.Bullet.new(root, {
                     sprite: am5.Circle.new(root, {
                         strokeWidth: 3,
-                        stroke: series2.get("stroke"),
+                        stroke: am5.color(0x004C9D),
                         radius: 5,
                         fill: root.interfaceColors.get("background")
                     })
@@ -737,7 +806,8 @@
                     tooltip: am5.Tooltip.new(root, {
                         pointerOrientation: "horizontal",
                         labelText: "{valueY}개"
-                    })
+                    }),
+                    stroke: am5.color(0x6D7175)
                 })
             );
 
@@ -753,7 +823,7 @@
                 return am5.Bullet.new(root, {
                     sprite: am5.Circle.new(root, {
                         strokeWidth: 3,
-                        stroke: series3.get("stroke"),
+                        stroke: am5.color(0x6D7175),
                         radius: 5,
                         fill: root.interfaceColors.get("background")
                     })
@@ -763,10 +833,11 @@
 
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 
-            makeSeries2("예산비목정보_적중수", "hitCnt1", "hitCnt1Per");
-            makeSeries2("예산사업ID_적중수", "hitCnt2", "hitCnt2Per");
-            makeSeries2("비목집행사유_적중수", "hitCnt3", "hitCnt3Per");
-            makeSeries2("예산비목정보_예산사업ID_적중수", "hitCnt4");
+            // 004C9D / 6D7175 / F69192 / 74C8E6 /7AE674 /9854C6
+            makeSeries2("예산비목정보_적중수", "hitCnt1", "hitCnt1Per", 0xF69192);
+            makeSeries2("예산사업ID_적중수", "hitCnt2", "hitCnt2Per", 0x74C8E6);
+            makeSeries2("비목집행사유_적중수", "hitCnt3", "hitCnt3Per", 0x9854C6);
+            makeSeries2("예산비목정보_예산사업ID_적중수", "hitCnt4", "", 0x7AE674);
             makeSeries2("전체", "total");
             makeSeries2("추론데이터 수", "totalOutCnt");
 
