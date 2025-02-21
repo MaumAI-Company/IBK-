@@ -10,11 +10,13 @@ import kr.co.ibk.model.LearningSchedulerForm;
 import kr.co.ibk.model.MemberForm;
 import kr.co.ibk.model.TemplateForm;
 import kr.co.ibk.service.*;
+import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -28,7 +30,7 @@ import java.util.Map;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-public class AdminController {
+public class AdminController extends BaseCont {
     private final AdminDeptService adminDeptService;
     private final AdminUserService adminUserService;
     private final AdminAuthManagementService adminAuthManagementService;
@@ -68,6 +70,35 @@ public class AdminController {
         model.addAttribute("mc", "ico_manage");
         model.addAttribute("pageTitle", "사용자 관리");
 
+        if (!ObjectUtils.isEmpty(nowMember.getSearchKeyword())) {
+            Map<String, String> paramMap = new HashMap<>();
+            String searchKeyword = nowMember.getSearchKeyword();
+
+            if (searchKeyword.isBlank()) {
+                paramMap.put("MEM_NAME", searchKeyword);
+                paramMap.put("MEM_ID", searchKeyword);
+                paramMap.put("DEPT_CODE", searchKeyword);
+                paramMap.put("DEPT_NAME", searchKeyword);
+                paramMap.put("DEPT_ENG_NAME", searchKeyword);
+                nowMember.setSearchRegex(makeSearchQuery(paramMap, 3)); // type 3: OR 조건
+            } else if ("memName".equals(searchKeyword)) {
+                paramMap.put("MEM_NAME", searchKeyword);
+                nowMember.setSearchRegex(makeSearchQuery(paramMap, 0)); // type 0: 기본 AND 조건
+            } else if ("memId".equals(searchKeyword)) {
+                paramMap.put("MEM_ID", searchKeyword);
+                nowMember.setSearchRegex(makeSearchQuery(paramMap, 0));
+            } else if ("deptCode".equals(searchKeyword)) {
+                paramMap.put("DEPT_CODE", searchKeyword);
+                nowMember.setSearchRegex(makeSearchQuery(paramMap, 0));
+            } else if ("deptName".equals(searchKeyword)) {
+                paramMap.put("DEPT_NAME", searchKeyword);
+                nowMember.setSearchRegex(makeSearchQuery(paramMap, 0));
+            } else if ("deptEngName".equals(searchKeyword)) {
+                paramMap.put("DEPT_ENG_NAME", searchKeyword);
+                nowMember.setSearchRegex(makeSearchQuery(paramMap, 0));
+            }
+        }
+
         // user 관련
         List<MemberInfo> userList = adminUserService.getUserList(nowMember);
 
@@ -91,6 +122,31 @@ public class AdminController {
     @RequestMapping("/soulGod/admin/auth")
     public String auth(Model model,
                        @CurrentUser MemberInfo memberInfo, MenuAuthMember param) {
+        if (!ObjectUtils.isEmpty(param.getSearchKeyword())) {
+            Map<String, String> paramMap = new HashMap<>();
+            String searchCriteria = param.getSearchCriteria();
+            String searchKeyword = param.getSearchKeyword();
+
+            if ("all".equals(searchCriteria)) {
+                paramMap.put("mem.MEM_NAME", searchKeyword);
+                paramMap.put("mem.MEM_ID", searchKeyword);
+                paramMap.put("mem.DEPT_NAME", searchKeyword);
+                paramMap.put("mem.MEM_PHONE", searchKeyword);
+                param.setSearchRegex(makeSearchQuery(paramMap, 3)); // type 3: OR 조건
+            } else if ("memId".equals(searchCriteria)) {
+                paramMap.put("mem.MEM_ID", searchKeyword);
+                param.setSearchRegex(makeSearchQuery(paramMap, 0)); // type 0: 기본 AND 조건
+            } else if ("memName".equals(searchCriteria)) {
+                paramMap.put("mem.MEM_NAME", searchKeyword);
+                param.setSearchRegex(makeSearchQuery(paramMap, 0));
+            } else if ("deptName".equals(searchCriteria)) {
+                paramMap.put("mem.DEPT_NAME", searchKeyword);
+                param.setSearchRegex(makeSearchQuery(paramMap, 0));
+            } else if ("memPhone".equals(searchCriteria)) {
+                paramMap.put("mem.MEM_PHONE", searchKeyword);
+                param.setSearchRegex(makeSearchQuery(paramMap, 0));
+            }
+        }
 
         log.info("##### URI :: { /admin/auth/main } #####");
         ObjectMapper mapper = new ObjectMapper();
@@ -530,6 +586,14 @@ public class AdminController {
     @RequestMapping("/soulGod/admin/scheduler")
     public String getScheduler(Model model,
                                @ModelAttribute LearningSchedulerForm params) {
+
+        if (!ObjectUtils.isEmpty(params.getSearchKeyword())) {
+            Map<String, String> paramMap = new HashMap<>();
+            paramMap.put("ls.SCHED_NM", params.getSearchKeyword());
+            paramMap.put("t.TEMPLATE_NAME", params.getSearchKeyword());
+            paramMap.put("hm.MEM_NAME", params.getSearchKeyword());
+            params.setSearchRegex(makeSearchQuery(paramMap, 3));
+        }
         List<LearningSchedulerInfo> list = learningSchedulerService.getPage(params);
 
         TemplateForm templateForm = new TemplateForm();
