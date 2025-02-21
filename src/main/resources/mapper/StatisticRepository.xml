@@ -84,7 +84,7 @@
             LEFT JOIN BILL_OUTPUT co ON
                 ci.TXBL_SRN = co.TXBL_SRN
                 AND ci.BASE_YM = co.BASE_YM
-                AND ci.TXBL_SRN = co.TXBL_SRN
+                AND ci.BRCD = co.BRCD
             WHERE <include refid="inferWhere"></include>
             GROUP BY dd
         ) sub

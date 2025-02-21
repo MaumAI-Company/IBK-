@@ -1,5 +1,6 @@
 package kr.co.ibk.service;
 
+import kr.co.ibk.common.utils.FileUtilHelper;
 import kr.co.ibk.domain.enums.*;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.BillLearningDataForm;
@@ -454,20 +455,37 @@ public class LearningModelService extends BaseCont {
         map.put("status", "FAIL");
 
         Long deleteCnt = 0L;
-        if (!ObjectUtils.isEmpty(form.getIdArr()) && form.getIdArr().length > 0) {
-            // 삭제 불가능한 배포 상태값 check
-            int modelCnt = learningModelRepository.countByInIDAndDeployArr(form.getIdArr(), DeployStatusType.getUndeletableList()
-                    .stream()
-                    .map(DeployStatusType::getCode)
-                    .toArray(Integer[]::new));
+        Integer[] idArr = form.getIdArr();
 
-            if (modelCnt > 0) {
-                return map;
+        try {
+            if (!ObjectUtils.isEmpty(form.getIdArr()) && form.getIdArr().length > 0) {
+                // 삭제 불가능한 배포 상태값 check
+                int modelCnt = learningModelRepository.countByInIDAndDeployArr(idArr, DeployStatusType.getUndeletableList()
+                        .stream()
+                        .map(DeployStatusType::getCode)
+                        .toArray(Integer[]::new));
+
+                if (modelCnt > 0) {
+                    return map;
+                }
+
+                // 모델 폴더 삭제
+                for (Integer id : idArr) {
+                    boolean result = FileUtilHelper.removeDirectory("models", String.valueOf(id));
+                    if (!result) {
+                        return map;
+                    }
+                }
+
+                // 모델 삭제
+                deleteCnt = learningModelRepository.deleteAllById(idArr, memberInfo.getMemId());
+                if (deleteCnt > 0) {
+                    map.put("status", "SUCCESS");
+                }
             }
-            deleteCnt = learningModelRepository.deleteAllById(form.getIdArr(), memberInfo.getMemId());
-            if (deleteCnt > 0) {
-                map.put("status", "SUCCESS");
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return map;
         }
         return map;
     }
