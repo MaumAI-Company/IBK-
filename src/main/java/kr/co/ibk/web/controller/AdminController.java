@@ -73,27 +73,28 @@ public class AdminController extends BaseCont {
         if (!ObjectUtils.isEmpty(nowMember.getSearchKeyword())) {
             Map<String, String> paramMap = new HashMap<>();
             String searchKeyword = nowMember.getSearchKeyword();
+            String searchType = nowMember.getSearchType();
 
-            if (searchKeyword.isBlank()) {
+            if ("all".equals(searchType)) {
                 paramMap.put("MEM_NAME", searchKeyword);
                 paramMap.put("MEM_ID", searchKeyword);
                 paramMap.put("DEPT_CODE", searchKeyword);
                 paramMap.put("DEPT_NAME", searchKeyword);
                 paramMap.put("DEPT_ENG_NAME", searchKeyword);
                 nowMember.setSearchRegex(makeSearchQuery(paramMap, 3)); // type 3: OR 조건
-            } else if ("memName".equals(searchKeyword)) {
+            } else if ("memName".equals(searchType)) {
                 paramMap.put("MEM_NAME", searchKeyword);
                 nowMember.setSearchRegex(makeSearchQuery(paramMap, 0)); // type 0: 기본 AND 조건
-            } else if ("memId".equals(searchKeyword)) {
+            } else if ("memId".equals(searchType)) {
                 paramMap.put("MEM_ID", searchKeyword);
                 nowMember.setSearchRegex(makeSearchQuery(paramMap, 0));
-            } else if ("deptCode".equals(searchKeyword)) {
+            } else if ("deptCode".equals(searchType)) {
                 paramMap.put("DEPT_CODE", searchKeyword);
                 nowMember.setSearchRegex(makeSearchQuery(paramMap, 0));
-            } else if ("deptName".equals(searchKeyword)) {
+            } else if ("deptName".equals(searchType)) {
                 paramMap.put("DEPT_NAME", searchKeyword);
                 nowMember.setSearchRegex(makeSearchQuery(paramMap, 0));
-            } else if ("deptEngName".equals(searchKeyword)) {
+            } else if ("deptEngName".equals(searchType)) {
                 paramMap.put("DEPT_ENG_NAME", searchKeyword);
                 nowMember.setSearchRegex(makeSearchQuery(paramMap, 0));
             }
