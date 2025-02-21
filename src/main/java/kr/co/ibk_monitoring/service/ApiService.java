@@ -30,7 +30,7 @@ public class ApiService {
 
     private final IbkMailSender ibkMailSender;
     private final AdminMemberRepository adminMemberRepository;
-    private final String TITLE = "서버에서 장애가 발생했습니다.";
+    private final String TITLE = "[자동지급결의AI시스템] ##서버이름## 서버에서 장애가 발생했습니다.";
 
     @Value("${Globals.domain.mcc1}")
     private String mccDomain1;
@@ -66,7 +66,7 @@ public class ApiService {
                 Integer resMCC = mccServerCheck1();
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애!(BC카드) : " + resMCC);
-                    title = "MCC(BC카드) " + TITLE;
+                    title = TITLE.replaceAll("##서버이름##", "MCC(BC카드)");
                     callAlarm(title, title);
                 }
             }
@@ -74,7 +74,7 @@ public class ApiService {
                 Integer resMCC = mccServerCheck2();
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애!(세금계산서) : " + resMCC);
-                    title = "MCC(세금계산서) " + TITLE;
+                    title = TITLE.replaceAll("##서버이름##", "MCC(세금계산서)");
                     callAlarm(title, title);
                 }
             }
@@ -82,7 +82,7 @@ public class ApiService {
                 Integer resWeb = webServerCheck();
                 if (resWeb == null || resWeb != 200) {
                     log.debug("### WEB 서버 장애! : " + resWeb);
-                    title = "WEB " + TITLE;
+                    title = TITLE.replaceAll("##서버이름##", "WEB");
                     callAlarm(title, title);
                 }
             }
