@@ -913,7 +913,7 @@
             + "&recordsPerPage=" + $('#h_recordsPerPage').val()
             + "&pageSize=" + $('#h_pageSize').val()
             + "&searchType=" + $('#searchType').val()
-            + "&searchKeyword=" + $('#searchKeyword').val();
+            + "&searchKeyword=" + encodeURIComponent($('#searchKeyword').val());
 
         location.href = uri + queryString;
     }
