@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -164,12 +166,12 @@ public class ApiService {
 
         // 파라미터 만들기
         List<NameValuePair> param = new ArrayList<NameValuePair>();
-        param.add(new BasicNameValuePair("SRV_CODE", messengerSrvCode));
-        param.add(new BasicNameValuePair("RECIPIENT", recipient));
-        param.add(new BasicNameValuePair("SEND", sender.getMemSno()));
-        param.add(new BasicNameValuePair("SENDER_ALIAS", sender.getMemName()));
-        param.add(new BasicNameValuePair("TITLE", title));
-        param.add(new BasicNameValuePair("BODY", body));
+        param.add(new BasicNameValuePair("SRV_CODE", URLEncoder.encode(messengerSrvCode, StandardCharsets.UTF_8)));
+        param.add(new BasicNameValuePair("RECIPIENT", URLEncoder.encode(recipient, StandardCharsets.UTF_8)));
+        param.add(new BasicNameValuePair("SEND", URLEncoder.encode(sender.getMemSno(), StandardCharsets.UTF_8)));
+        param.add(new BasicNameValuePair("SENDER_ALIAS", URLEncoder.encode(sender.getMemName(), StandardCharsets.UTF_8)));
+        param.add(new BasicNameValuePair("TITLE", URLEncoder.encode(title, StandardCharsets.UTF_8)));
+        param.add(new BasicNameValuePair("BODY", URLEncoder.encode(body, StandardCharsets.UTF_8)));
         // 파라미터적용
         httpPost.setEntity(new UrlEncodedFormEntity(param));
 
