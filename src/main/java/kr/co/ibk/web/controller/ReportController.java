@@ -86,6 +86,7 @@ public class ReportController extends BaseCont {
 
         if (!ObjectUtils.isEmpty(searchTypeJson)) {
             params.setSearchJsonMap(jsonToHashMap(searchTypeJson));
+            params.setSearchRegex(makeSearchQuery(params.getSearchJsonMap(), 1));
         }
 
         if (!ObjectUtils.isEmpty(sorting)) {
@@ -133,6 +134,7 @@ public class ReportController extends BaseCont {
 
         if (!ObjectUtils.isEmpty(params.getSearchTypeJson())) {
             params.setSearchJsonMap(jsonToHashMap(params.getSearchTypeJson()));
+            params.setSearchRegex(makeSearchQuery(params.getSearchJsonMap(), 2));
         }
 
         List<BillInputInfo> list = billInputService.page(params);
@@ -168,6 +170,7 @@ public class ReportController extends BaseCont {
 
         if (!ObjectUtils.isEmpty(searchTypeJson)) {
             params.setSearchJsonMap(jsonToHashMap(searchTypeJson));
+            params.setSearchRegex(makeSearchQuery(params.getSearchJsonMap(), 2));
         }
 
         if (!ObjectUtils.isEmpty(sorting)) {

@@ -151,11 +151,11 @@ public abstract class BaseCont extends Base {
     }
 
 
-
     /**
      * 검색어 파싱
+     *
      * @param map
-     * @param type 컬럼명 replace 1:BC카드 조회, 2:..., 3:...
+     * @param type 컬럼명 replace 0:기타 1:BC카드 지급결의 내역, 2:세금계산서 지급결의 내역, 3: spector OR
      * @return
      */
     protected String makeSearchQuery(Map<String, String> map, int type) {
@@ -166,6 +166,7 @@ public abstract class BaseCont extends Base {
             map.forEach((s, s2) -> {
                 StringBuilder tempQuery = new StringBuilder();
                 String col = s;
+
                 if (type == 1) {
                     if ("BDMN_ITEX_MNGM_NO".equals(col)) {
                         col = "co.BDGT_BSNS_FRCS_CON";
@@ -176,11 +177,21 @@ public abstract class BaseCont extends Base {
                     if (!"BDMN_ITEX_MNGM_NO".equals(col) && ("BDGT_PRFR_RSN_FRCS_CON".equals(col) || "BDGT_BSNS_FRCS_CON".equals(col))) {
                         col = "co." + col;
                     }
+                } else if (type == 2) {
+                    if ("BDMN_ITEX_MNGM_NO".equals(col)) {
+                        col = "bo.BDGT_BSNS_FRCS_CON";
+                    }
+                    if (!"BDMN_ITEX_MNGM_NO".equals(col) && !"BDGT_PRFR_RSN_FRCS_CON".equals(col) && !"BDGT_BSNS_FRCS_CON".equals(col)) {
+                        col = "bi." + col;
+                    }
+                    if (!"BDMN_ITEX_MNGM_NO".equals(col) && ("BDGT_PRFR_RSN_FRCS_CON".equals(col) || "BDGT_BSNS_FRCS_CON".equals(col))) {
+                        col = "bo." + col;
+                    }
                 }
                 if (s2.contains("&&") || s2.contains("||") || s2.contains("!")) {
                     isCon.set(true);
                     String tempS = s2.trim();
-                    while(!tempS.isEmpty()) {
+                    while (!tempS.isEmpty()) {
                         String patternStr = "&&|\\|\\|";
                         Pattern pattern = Pattern.compile(patternStr);
                         Matcher matcher = pattern.matcher(tempS);
@@ -217,11 +228,13 @@ public abstract class BaseCont extends Base {
 
             StringBuilder rstQuery = new StringBuilder();
             boolean isFirst = true;
+            String joinOperator = (type == 3) ? " OR " : " AND ";
             for (String s : conList) {
                 if (isFirst) {
                     isFirst = false;
                 } else {
-                    rstQuery.append(" AND ");
+                    //rstQuery.append(" AND ");
+                    rstQuery.append(joinOperator);
                 }
                 rstQuery.append("(").append(s).append(")");
             }
