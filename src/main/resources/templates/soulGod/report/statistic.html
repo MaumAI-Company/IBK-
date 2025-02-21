@@ -720,7 +720,7 @@
                     }));
                 }
 
-                let tooltipText = fieldName != 'hitCnt4' ? "{valueY}개 / {" + per + "}%" : "{valueY}개";
+                let tooltipText = "{valueY}개 / {" + per + "}%";
 
                 if (series) {
                     series.columns.template.setAll({
@@ -837,7 +837,7 @@
             makeSeries2("예산비목정보_적중수", "hitCnt1", "hitCnt1Per", 0xF69192);
             makeSeries2("예산사업ID_적중수", "hitCnt2", "hitCnt2Per", 0x74C8E6);
             makeSeries2("비목집행사유_적중수", "hitCnt3", "hitCnt3Per", 0x9854C6);
-            makeSeries2("예산비목정보_예산사업ID_적중수", "hitCnt4", "", 0x7AE674);
+            makeSeries2("예산비목정보_예산사업ID_적중수", "hitCnt4", "hitCnt4Per", 0x7AE674);
             makeSeries2("전체", "total");
             makeSeries2("추론데이터 수", "totalOutCnt");
 

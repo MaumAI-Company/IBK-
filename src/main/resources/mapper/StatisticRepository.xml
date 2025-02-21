@@ -43,9 +43,9 @@
                     <include refid="usageDateGrouping"/> AS dd,
                     COUNT(*) AS total,
                     SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
-                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_BSNS_FRCS_CON, CONCAT(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
-                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_PRFR_RSN_FRCS_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0  END) AS hitCnt3,
-                    SUM(CASE WHEN FIND_IN_SET(co.BDMN_ITEX_MNGM_NO, REPLACE(ci.BDGT_ITEX_FRCS_CON, '|', ',')) > 0 AND FIND_IN_SET(co.BDGT_BSNS_FRCS_CON, REPLACE(ci.BDGT_BSNS_FRCS_CON, '|', ',')) > 0 THEN 1 ELSE 0 end) AS hitCnt4
+                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_BSNS_FRCS_CON, concat(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
+                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_PRFR_RSN_FRCS_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt3,
+                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO) AND INSTR(ci.BDGT_BSNS_FRCS_CON, concat(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt4
                 FROM
                     CARD_OUTPUT ci
                         INNER JOIN CARD_LEARNING_DATA co
@@ -101,17 +101,18 @@
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt4 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt4Per,
             totalOutput.totalOutCnt
         FROM
             (
             /* 지급결의된 개수 */
             SELECT
                 <include refid="usageDateGrouping"/> AS dd,
-                count(*) AS total,
-                sum(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_PRB_CON, co.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
-                sum(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_BSNS_FRCS_PRB_CON, concat(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
-                sum(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_PRFR_RSN_FRCS_PRB_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt3,
-                SUM(CASE WHEN FIND_IN_SET(co.BDMN_ITEX_MNGM_NO, REPLACE(ci.BDGT_ITEX_FRCS_CON, '|', ',')) > 0 THEN 1 ELSE 0 end) AS hitCnt4
+                COUNT(*) AS total,
+                SUM(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
+                SUM(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_BSNS_FRCS_CON, concat(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
+                SUM(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_PRFR_RSN_FRCS_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt3,
+                SUM(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO) AND INSTR(ci.BDGT_BSNS_FRCS_CON, concat(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt4
             FROM
                 BILL_OUTPUT ci
                     INNER JOIN BILL_LEARNING_DATA co ON

@@ -26,6 +26,7 @@ public class StatisticInfo {
     private Double hitCnt1Per;
     private Double hitCnt2Per;
     private Double hitCnt3Per;
+    private Double hitCnt4Per;
     private Integer totalOutCnt;
 
 }
