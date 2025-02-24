@@ -39,6 +39,7 @@ public class ApiService {
             "3. 호스트명 : ##HOSTNAME##<br/>" +
             "4. 메시지그룹 : ##MESSAGEGROUP##<br/>" +
             "5. 이벤트 내용 : ##EVENT##";
+    private final String BODY_MESSENGER = "장애가 발생했습니다.";
 
     @Value("${Globals.domain.mcc1}")
     private String mccDomain1;
@@ -272,7 +273,7 @@ public class ApiService {
             if (messengerCheck) {
 //            System.out.println("메신저 발송");
                 try {
-                    sendMessenger(sender, receiverList, title, message);
+                    sendMessenger(sender, receiverList, title, BODY_MESSENGER);
                 } catch (Exception e) {
                     log.debug("messengerCheck", e);
                 }
