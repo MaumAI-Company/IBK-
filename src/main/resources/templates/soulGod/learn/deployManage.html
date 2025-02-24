@@ -266,10 +266,10 @@
                         <div th:if="${item.deployStatus eq '7'}" class="badge fill_error10">배포 중지</div>
                         <div th:if="${item.deployStatus eq '8'}" class="badge fill_error10">배포 실패</div>
                     </td>
-                    <td th:text="${item.deployDt != null ? #temporals.format(item.deployDt, 'yyyy-MM-dd') : '-'}">
+                    <td th:text="${item.deployDt != null ? #temporals.format(item.deployDt, 'yyyy-MM-dd HH:mm:ss') : '-'}">
                         2022.07.30
                     </td>
-                    <td th:text="${item.deployStopDt != null ? #temporals.format(item.deployStopDt, 'yyyy-MM-dd') : '-'}">
+                    <td th:text="${item.deployStopDt != null ? #temporals.format(item.deployStopDt, 'yyyy-MM-dd HH:mm:ss') : '-'}">
                         2022.07.30
                     </td>
                 </tr>

@@ -615,7 +615,7 @@
                     <td th:text="${item.epoch ne null ? item.epoch : '-'}">100</td>
                     <td th:text="${item.learningRate ne null ? item.learningRate : '-'}">0.02</td>
                     <td th:text="${item.batchSize ne null ? item.batchSize : '-'}">32</td>
-                    <td th:text="${#temporals.format(item.createDtm, 'yyyy-MM-dd')}">2022.07.30</td>
+                    <td th:text="${#temporals.format(item.createDtm, 'yyyy-MM-dd HH:mm:ss')}">2022.07.30</td>
                     <td>
                         <button type="button" class="badge" onclick="fn_result(this)"
                                 th:data-itex-precision="${item.bdgtItexFrcsConPrecision}"
