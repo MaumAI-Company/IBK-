@@ -50,26 +50,24 @@ public class BillOutputService extends _BaseService {
 
         List<LearningModelInputInfo> inputList = new ArrayList<>();
         for (InputColumnBillType type : InputColumnBillType.values()) {
-            if (type != InputColumnBillType.HDQR_BOB_DCD) { // 세금계산서 상세 > 대상(본부, 영업점) 제외 (20250214 안나 매니저님 요청)
-                LearningModelInputInfo input = new LearningModelInputInfo();
-                input.setInputColumnBillType(type);
-                input.setInputColumnNm(type.getName());
+            LearningModelInputInfo input = new LearningModelInputInfo();
+            input.setInputColumnBillType(type);
+            input.setInputColumnNm(type.getName());
 
-                if (inputInfoMap.containsKey(type)) {
-                    String columnName = type.getCamelColumn();
-                    try {
-                        String getterMethodName = "get" + columnName.substring(0, 1).toUpperCase() + columnName.substring(1);
-                        Method method = info.getClass().getMethod(getterMethodName);
-                        Object columnValue = method.invoke(info);
-                        input.setInputColumnVal(columnValue != null ? columnValue.toString() : null);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    input.setInputColumnVal("-");
+            if (inputInfoMap.containsKey(type)) {
+                String columnName = type.getCamelColumn();
+                try {
+                    String getterMethodName = "get" + columnName.substring(0, 1).toUpperCase() + columnName.substring(1);
+                    Method method = info.getClass().getMethod(getterMethodName);
+                    Object columnValue = method.invoke(info);
+                    input.setInputColumnVal(columnValue != null ? columnValue.toString() : null);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                inputList.add(input);
+            } else {
+                input.setInputColumnVal("-");
             }
+            inputList.add(input);
         }
 
         info.setInputList(inputList);
