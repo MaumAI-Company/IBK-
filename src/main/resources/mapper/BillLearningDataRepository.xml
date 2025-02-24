@@ -57,7 +57,7 @@
             <include refid="columns"></include>
         from BILL_LEARNING_DATA bld
         where <include refid="where"></include>
-        order by bld.FRRG_TS desc limit 100
+        order by bld.FRRG_TS desc
     </select>
 
     <sql id="where">
