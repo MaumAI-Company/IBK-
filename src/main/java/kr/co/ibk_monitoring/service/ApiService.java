@@ -20,6 +20,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,13 @@ public class ApiService {
 
     private final IbkMailSender ibkMailSender;
     private final AdminMemberRepository adminMemberRepository;
-    private final String TITLE = "[자동지급결의AI시스템] ##서버이름## 서버에서 장애가 발생했습니다.";
+    private final String TITLE = "[자동지급결의AI시스템] ##SERVERNAME## 서버에서 장애가 발생했습니다.";
+    private final String BODY = "[IBK 예산관리시스템 자동지급결의 AI 시스템 장애 감지 알림]\n" +
+            "1. 발생시간 : ##DATETIME##\n" +
+            "2. 등급 : ##GRADE##\n" +
+            "3. 호스트명 : ##HOSTNAME##\n" +
+            "4. 메시지그룹 : ##MESSAGEGROUP##\n" +
+            "5. 이벤트 내용 : ##EVENT##";
 
     @Value("${Globals.domain.mcc1}")
     private String mccDomain1;
@@ -61,33 +69,71 @@ public class ApiService {
 
     public void serverCheck() {
         String title = TITLE;
-        try {
-            if (mccCheck1) {
+        String body = BODY;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+
+        if (mccCheck1) {
+            title = title.replaceAll("##SERVERNAME##", "MCC(BC카드)");
+            body = body.replaceAll("##GRADE##", "CRITICAL");
+            body = body.replaceAll("##HOSTNAME##", "pmvscbl3");
+            body = body.replaceAll("##MESSAGEGROUP##", "AI");
+            try {
                 Integer resMCC = mccServerCheck1();
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애!(BC카드) : " + resMCC);
-                    title = TITLE.replaceAll("##서버이름##", "MCC(BC카드)");
-                    callAlarm(title, title);
+                    String now = LocalDateTime.now().format(formatter);
+                    body = body.replaceAll("##DATETIME##", now);
+                    body = body.replaceAll("##EVENT##", "학습 API나 AI 엔진에서 장애시 학습서버 컨테이너를 확인해주세요.");
+                    callAlarm(title, body);
                 }
+            } catch (Exception e) {
+                String now = LocalDateTime.now().format(formatter);
+                body = body.replaceAll("##DATETIME##", now);
+                body = body.replaceAll("##EVENT##", e.getMessage());
+                callAlarm(title, body);
             }
-            if (mccCheck2) {
+        }
+        if (mccCheck2) {
+            try {
+                title = title.replaceAll("##SERVERNAME##", "MCC(세금계산서)");
+                body = body.replaceAll("##GRADE##", "CRITICAL");
+                body = body.replaceAll("##HOSTNAME##", "pmvscbl3");
+                body = body.replaceAll("##MESSAGEGROUP##", "AI");
                 Integer resMCC = mccServerCheck2();
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애!(세금계산서) : " + resMCC);
-                    title = TITLE.replaceAll("##서버이름##", "MCC(세금계산서)");
-                    callAlarm(title, title);
+                    String now = LocalDateTime.now().format(formatter);
+                    body = body.replaceAll("##DATETIME##", now);
+                    body = body.replaceAll("##EVENT##", "학습 API나 AI 엔진에서 장애시 학습서버 컨테이너를 확인해주세요.");
+                    callAlarm(title, body);
                 }
+            } catch (Exception e) {
+                String now = LocalDateTime.now().format(formatter);
+                body = body.replaceAll("##DATETIME##", now);
+                body = body.replaceAll("##EVENT##", e.getMessage());
+                callAlarm(title, body);
             }
-            if (webCheck) {
+        }
+        if (webCheck) {
+            try {
+                title = title.replaceAll("##SERVERNAME##", "WEB");
+                body = body.replaceAll("##GRADE##", "NORMAL");
+                body = body.replaceAll("##HOSTNAME##", "pmvscbl2");
+                body = body.replaceAll("##MESSAGEGROUP##", "WAS");
                 Integer resWeb = webServerCheck();
                 if (resWeb == null || resWeb != 200) {
                     log.debug("### WEB 서버 장애! : " + resWeb);
-                    title = TITLE.replaceAll("##서버이름##", "WEB");
-                    callAlarm(title, title);
+                    String now = LocalDateTime.now().format(formatter);
+                    body = body.replaceAll("##DATETIME##", now);
+                    body = body.replaceAll("##EVENT##", "web 서버 컨테이너를 확인해주세요.");
+                    callAlarm(title, body);
                 }
+            } catch (Exception e) {
+                String now = LocalDateTime.now().format(formatter);
+                body = body.replaceAll("##DATETIME##", now);
+                body = body.replaceAll("##EVENT##", e.getMessage());
+                callAlarm(title, body);
             }
-        } catch (Exception e) {
-            callAlarm(title, title);
         }
     }
 
