@@ -240,7 +240,7 @@ public abstract class BaseCont extends Base {
             }
 //            System.out.println(rstQuery);
 
-            return isCon.get() ? rstQuery.toString() : null;
+            return isCon.get() ? "(" + rstQuery.toString() + ")" : null;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
