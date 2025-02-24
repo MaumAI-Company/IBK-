@@ -28,7 +28,9 @@ public class WebErrorCont implements ErrorController {
         if (status != null) {
             int statusCode = Integer.parseInt(status.toString());
 
-            if (statusCode == HttpStatus.NOT_FOUND.value()) {
+            if (statusCode == HttpStatus.BAD_REQUEST.value()) {
+                return "/error";
+            } else if (statusCode == HttpStatus.NOT_FOUND.value()) {
                 return "/error";
             }
         }
