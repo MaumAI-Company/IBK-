@@ -50,18 +50,18 @@
             }
 
             showConfirm('message', '모델을 배포(Deploy) 하시겠습니까? <br/> 현재 배포 중인 모델은 중지 됩니다.', () => {
-
                 let jsonData = {
                     "id": checked,
                 }
+                layerShow('deployAlert');
 
                 $.ajax({
                     url: "/soulGod/model/replaceModel",
                     type: "post",
-                    async: false,
                     data: JSON.stringify(jsonData),
                     contentType: 'application/json;charset=utf-8',
                     success: function (data) {
+                        layerHide('deployAlert');
                         if (data) {
                             showAlert('complete', '모델 배포(Deploy)가 완료 되었습니다.', () => {
                                 location.reload();
@@ -73,6 +73,7 @@
                         }
                     },
                     error: function () {
+                        layerHide('deployAlert');
                         showAlert('warning', '실패하였습니다.', () => {
                             location.reload();
                         });
@@ -268,7 +269,7 @@
                     <td th:text="${item.deployDt != null ? #temporals.format(item.deployDt, 'yyyy-MM-dd') : '-'}">
                         2022.07.30
                     </td>
-                    <td th:text="${item.rollbackDt != null ? #temporals.format(item.rollbackDt, 'yyyy-MM-dd') : '-'}">
+                    <td th:text="${item.deployStopDt != null ? #temporals.format(item.deployStopDt, 'yyyy-MM-dd') : '-'}">
                         2022.07.30
                     </td>
                 </tr>
@@ -279,5 +280,19 @@
         </div>
     </div>
 </div>
+<!--얼럿 : s-->
+<div id="deployAlert" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_message"></i>
+            <strong class="pop_tit">배포 요청 중</strong>
+            <p class="pop_txt">
+                배포 요청 중입니다. 잠시만 기다려 주세요.
+            </p>
+        </div>
+    </div>
+</div>
+<!--얼럿 : e-->
 </body>
 </html>

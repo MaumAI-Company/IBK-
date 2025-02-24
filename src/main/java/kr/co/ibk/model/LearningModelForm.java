@@ -28,7 +28,7 @@ public class LearningModelForm extends PageForm {
     private String learningResult;
     private String deployStatus;  //'0: 배포안됨, 1: 오류, 2: 배포완료, 3: 롤백완료, 4: 배포중',
     private LocalDateTime deployDt;  //'배포일',
-    private LocalDateTime rollbackDt;   //'롤백일',
+    private LocalDateTime deployStopDt;   //'중단일',
     private String resultCode;  //결과 코드',
     private String resultMsg;  //결과 메시지',
     private LocalDateTime createDtm;   //'생성시간',

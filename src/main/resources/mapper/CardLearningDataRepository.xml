@@ -103,7 +103,7 @@
              , cld.BDGT_BSNS_FRCS_CON
         from CARD_LEARNING_DATA cld
         where <include refid="where"></include>
-        order by cld.FRRG_TS desc limit 100
+        order by cld.FRRG_TS desc
     </select>
     <sql id="where">
         1=1

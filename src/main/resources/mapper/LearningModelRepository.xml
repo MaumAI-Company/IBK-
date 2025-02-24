@@ -101,7 +101,7 @@
         lm.LEARNING_RATE,
         lm.BATCH_SIZE,
         lm.DEPLOY_DT,
-        lm.ROLLBACK_DT,
+        lm.DEPLOY_STOP_DT,
         lm.LEARNING_RESULT,
         lm.DEPLOY_STATUS,
         lm.LEARNING_TYPE,
