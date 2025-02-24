@@ -5,6 +5,7 @@ import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.LearningModelInfo;
 import kr.co.ibk.repository.LearningModelRepository;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -144,24 +145,31 @@ public class MccService {
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
 
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = params.toString().getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
 
-            int responseCode = connection.getResponseCode();
-            //System.out.println("url : " + url);
-            //System.out.println("Response Code : " + responseCode);
-
             in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String inputLine;
             StringBuilder response = new StringBuilder();
+            int codeValue;
 
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
-            return responseCode == HttpURLConnection.HTTP_OK;
+
+            try {
+                JSONObject jsonObj = new JSONObject(response.toString());
+                codeValue = jsonObj.getInt("code");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return codeValue == HttpURLConnection.HTTP_OK;
         } catch (IOException e) {
             return null;
         } finally {
