@@ -33,11 +33,11 @@ public class ApiService {
     private final IbkMailSender ibkMailSender;
     private final AdminMemberRepository adminMemberRepository;
     private final String TITLE = "[자동지급결의AI시스템] ##SERVERNAME## 서버에서 장애가 발생했습니다.";
-    private final String BODY = "[IBK 예산관리시스템 자동지급결의 AI 시스템 장애 감지 알림]\n" +
-            "1. 발생시간 : ##DATETIME##\n" +
-            "2. 등급 : ##GRADE##\n" +
-            "3. 호스트명 : ##HOSTNAME##\n" +
-            "4. 메시지그룹 : ##MESSAGEGROUP##\n" +
+    private final String BODY = "[IBK 예산관리시스템 자동지급결의 AI 시스템 장애 감지 알림]<br/>" +
+            "1. 발생시간 : ##DATETIME##<br/>" +
+            "2. 등급 : ##GRADE##<br/>" +
+            "3. 호스트명 : ##HOSTNAME##<br/>" +
+            "4. 메시지그룹 : ##MESSAGEGROUP##<br/>" +
             "5. 이벤트 내용 : ##EVENT##";
 
     @Value("${Globals.domain.mcc1}")
@@ -87,6 +87,7 @@ public class ApiService {
                     callAlarm(title, body);
                 }
             } catch (Exception e) {
+                log.debug("mccCheck1", e);
                 String now = LocalDateTime.now().format(formatter);
                 body = body.replaceAll("##DATETIME##", now);
                 body = body.replaceAll("##EVENT##", e.getMessage());
@@ -108,6 +109,7 @@ public class ApiService {
                     callAlarm(title, body);
                 }
             } catch (Exception e) {
+                log.debug("mccCheck2", e);
                 String now = LocalDateTime.now().format(formatter);
                 body = body.replaceAll("##DATETIME##", now);
                 body = body.replaceAll("##EVENT##", e.getMessage());
@@ -129,6 +131,7 @@ public class ApiService {
                     callAlarm(title, body);
                 }
             } catch (Exception e) {
+                log.debug("webCheck", e);
                 String now = LocalDateTime.now().format(formatter);
                 body = body.replaceAll("##DATETIME##", now);
                 body = body.replaceAll("##EVENT##", e.getMessage());
@@ -183,6 +186,7 @@ public class ApiService {
             }*/
             return connection.getResponseCode();
         } catch (IOException e) {
+            log.debug("sendPost", e);
             return null;
         } finally {
             if (connection != null) {
@@ -206,6 +210,9 @@ public class ApiService {
         if (!"".equals(recipient)) {
             recipient = recipient.substring(1);
         }
+
+        System.out.println("fromId#="+sender.getMemSno());
+        System.out.println("toId="+recipient);
 
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(url);
@@ -258,7 +265,7 @@ public class ApiService {
                     try {
                         ibkMailSender.sendMail(sender.getMemSno(), memberInfo.getMemSno(), sender.getMemName(), memberInfo.getMemName(), title, message);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.debug("mailCheck", e);
                     }
                 }
             }
@@ -267,7 +274,7 @@ public class ApiService {
                 try {
                     sendMessenger(sender, receiverList, title, message);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.debug("messengerCheck", e);
                 }
             }
         }
