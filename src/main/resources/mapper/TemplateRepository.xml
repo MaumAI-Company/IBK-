@@ -60,12 +60,9 @@
         <if test="searchLearningType != null and ''.toString != searchLearningType">
             and t.LEARNING_TYPE = #{searchLearningType}
         </if>
-        <if test="searchKeyword != null and ''.toString != searchKeyword and searchRegex == null">
+        <if test="searchKeyword != null and ''.toString != searchKeyword">
             and (t.TEMPLATE_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
             or hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
-        </if>
-        <if test="searchRegex != null">
-            AND ${searchRegex}
         </if>
     </sql>
 

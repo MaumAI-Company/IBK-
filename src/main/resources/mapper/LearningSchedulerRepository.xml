@@ -135,13 +135,10 @@
             AND t.LEARNING_TYPE = #{searchLearningType}
         </if>
 
-        <if test="searchKeyword != null  and searchKeyword != '' and searchRegex == null">
+        <if test="searchKeyword != null  and searchKeyword != ''">
             AND (ls.SCHED_NM LIKE CONCAT('%', #{searchKeyword}, '%')
             OR t.TEMPLATE_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
             OR hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
-        </if>
-        <if test="searchRegex != null">
-            AND ${searchRegex}
         </if>
     </sql>
 

@@ -6,7 +6,7 @@
 
 	<!-- Sub Menu -->
     <select id="getMenuTree" resultType="cMap" parameterType="cMap">
-		SELECT 
+		SELECT
 			  al.REAL_DEPTH
 			, al.MENU_SEQ
 			, IFNULL(al.ROLE_ID, "") AS ROLE_ID
@@ -26,7 +26,7 @@
 			, IFNULL(al.MENU_MOD_ID, "") AS MENU_MOD_ID
 			, al.MENU_MOD_DT
 			, al.MENU_MOD_TIME
-			, IFNULL(al.MENU_URL, "") AS MENU_URL			
+			, IFNULL(al.MENU_URL, "") AS MENU_URL
 			, IFNULL(hmm.MEM_SEQ, "") AS AUTH_MEM_SEQ
 			, IFNULL(hmm.MEM_ID, "") AS AUTH_MEM_ID
 			, IFNULL(hmm.MENU_ID, "") AS AUTH_MENU_ID
@@ -34,7 +34,7 @@
 			, IFNULL(hmm.MENU_USE, "") AS AUTH_MENU_USE
 			, al.MENU_COLUMN1
 		FROM (
-				SELECT 
+				SELECT
 					  fnc.LEVEL AS REAL_DEPTH
 					, hc_mn.MENU_SEQ
 					, hc_mn.ROLE_ID
@@ -57,7 +57,7 @@
 					, hc_mn.MENU_URL
 					, hc_mn.MENU_COLUMN1
 				FROM (
-				  		SELECT 
+				  		SELECT
 				  			FNGETMENUTREE() AS MENU_ID
 				  			, @level AS LEVEL
 			    		FROM (SELECT @start_with:=0, @menu_id:='system', @level:=0) vars
@@ -66,11 +66,11 @@
 				) fnc
 				LEFT JOIN HC_MENU hc_mn ON fnc.MENU_ID = hc_mn.MENU_ID
 		) al LEFT OUTER JOIN HC_MEMBER_MENU hmm ON al.MENU_ID = hmm.MENU_ID AND hmm.MEM_SEQ = #{seq} AND hmm.MEM_ID = #{memId}
-		WHERE 1=1 
+		WHERE 1=1
 		AND al.MENU_STAT = 'use'
 		AND (hmm.MENU_USE IS NULL || hmm.MENU_USE = 'Y' )
 		AND (al.ROLE_ID = 'ALL' OR al.ROLE_ID = #{roleId})
-    </select>   
+    </select>
 
 	<!-- MariaDB 페이징 -->
 	<sql id="paging">
@@ -81,7 +81,7 @@
 	<!-- MariaDB 검색 -->
 	<sql id="searchUser">
 		<!-- 검색 키워드가 있을 때 -->
-		<if test="searchKeyword != null and searchKeyword != '' and searchRegex == null">
+		<if test="searchKeyword != null and searchKeyword != ''">
 			<choose>
 				<!-- 검색 유형이 있을 때 -->
 				<when test="searchType != null and searchType != ''">
@@ -126,11 +126,8 @@
 				</otherwise>
 			</choose>
 		</if>
-		<if test="searchRegex != null">
-			AND ${searchRegex}
-		</if>
 	</sql>
-	
+
 	<!-- MariaDB 검색 -->
 	<sql id="searchDept">
 		<!-- 검색 키워드가 있을 때 -->
@@ -174,7 +171,7 @@
 			</choose>
 		</if>
 	</sql>
-	
+
 	<!-- MariaDB 검색 -->
 	<sql id="searchScan">
 		<!-- 검색 키워드가 있을 때 -->
@@ -210,20 +207,20 @@
 		<if test="searchEdpsCsn != null and searchEdpsCsn != ''">
 			AND EDPS_CSN LIKE CONCAT('%', #{searchEdpsCsn}, '%')
 		</if>
-		
+
 		<!-- 날짜 검색 유형이 있을 때 -->
 		<if test="searchStartDate != null and searchStartDate != ''">
-			<![CDATA[ 
+			<![CDATA[
 				AND DATE_FORMAT( CREATE_DTM, '%Y-%m-%d') >= #{searchStartDate}
 			 ]]>
 		</if>
 		<if test="searchEndDate != null and searchEndDate != ''">
-			<![CDATA[ 
+			<![CDATA[
 				AND DATE_FORMAT( CREATE_DTM, '%Y-%m-%d') <= #{searchEndDate}
 			 ]]>
 		</if>
 	</sql>
-	
+
 	<!-- MariaDB 검색 -->
 	<sql id="searchAuthMenuUser">
 		<if test="searchAuthType != null and searchAuthType != ''">
@@ -233,13 +230,13 @@
 				</when>
 				<when test="'admin'.equals(searchAuthType)">
 					AND hmr.ROLE_ID = 'ADMIN'
-				</when>				
+				</when>
 			</choose>
 		</if>
-		<if test="searchAuthType != null and searchAuthType != '' and searchKeyword != null and searchKeyword != '' and searchRegex == null">
+		<if test="searchAuthType != null and searchAuthType != '' and searchKeyword != null and searchKeyword != ''">
 			<choose>
 				<when test="'all'.equals(searchCriteria)">
-				AND 
+				AND
 				(
 					mem.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
 					OR mem.MEM_ID LIKE CONCAT('%', #{searchKeyword}, '%')
@@ -258,14 +255,11 @@
 				</when>
 				<when test="'memPhone'.equals(searchCriteria)">
 					AND mem.MEM_PHONE LIKE CONCAT('%', #{searchKeyword}, '%')
-				</when>				
+				</when>
 			</choose>
 		</if>
-		<if test="searchRegex != null">
-			AND ${searchRegex}
-		</if>
 	</sql>
-	
+
 	<!-- MariaDB MSG_RESULT 테이블 검색 -->
 	<sql id="searchMsg">
 		<!-- 대상 검색 키워드가 있을 때 -->
@@ -300,7 +294,7 @@
 				</otherwise>
 			</choose>
 		</if>
-		
+
 		<!-- 채널 -->
 		<if test="searchChannel != null and searchChannel != ''">
 			<choose>
@@ -326,7 +320,7 @@
 				</otherwise>
 			</choose>
 		</if>
-		
+
 		<!-- 채널 -->
 		<if test="searchSelect != null and searchSelect != ''">
 			<choose>
@@ -360,7 +354,7 @@
 				</otherwise>
 			</choose>
 		</if>
-		
+
 		<!-- 채널 -->
 		<if test="searchSelect != null and searchSelect != ''">
 			<choose>
@@ -394,7 +388,7 @@
 				</otherwise>
 			</choose>
 		</if>
-		
+
 		<!-- 검증 조건 -->
 		<if test="searchResult != null and searchResult != ''">
 			<choose>
@@ -415,7 +409,7 @@
 				</otherwise>
 			</choose>
 		</if>
-		
+
 		<!-- 날짜 검색 유형이 있을 때 -->
 		<if test="searchStartDate != null and searchStartDate != ''">
 			<![CDATA[ 
