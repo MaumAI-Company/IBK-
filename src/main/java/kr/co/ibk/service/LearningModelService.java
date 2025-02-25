@@ -298,7 +298,7 @@ public class LearningModelService extends BaseCont {
     public Map<String, StringBuilder> billLearningFileContent(List<BillLearningDataInfo> dataList, List<LearningModelInputInfo> list) {
         Map<String, StringBuilder> fileContent = new HashMap<>();
 
-        String sep = "<<|SEP|>>AMSL_AMT";
+        String sep = "<<|SEP|>>ISS_AMT";
         // 헤더
         StringBuilder header = new StringBuilder();
         String separator = " ";
@@ -389,11 +389,11 @@ public class LearningModelService extends BaseCont {
                     String value = null;
                     OutputColumnBillType outputColumnType = OutputColumnBillType.valueOf(info.getColName());
                     if (OutputColumnBillType.BDGT_ITEX_FRCS_CON.equals(outputColumnType)) {
-                        value = data.getBdmnItexMngmNo();
+                        value = data.getBdmnItexMngmNo().trim();
                     } else if (OutputColumnBillType.BDGT_PRFR_RSN_FRCS_CON.equals(outputColumnType)) {
-                        value = data.getBdgtPrfrRsnFrcsCon();
+                        value = data.getBdgtPrfrRsnFrcsCon().trim();
                     } else if (OutputColumnBillType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
-                        value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
+                        value = data.getBrcd().trim() + "-" + data.getBdgtBsnsFrcsCon().trim();
                     }
                     body.append(value);
                 }
