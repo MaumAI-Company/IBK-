@@ -199,7 +199,24 @@
             $('#newPwdConfirm').focus();
             return;
         }
-        let pwdRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,12}$/; //영문, 숫자, 특수문자 포함 8~12자 이내
+
+        // rsa 암호화
+        let rsa = new RSAKey();
+        rsa.setPublic($('#RSAModulus').val(), $('#RSAExponent').val());
+
+        let jsonData = {
+            "userId": rsa.encrypt($userId)
+            , "chkPwd": rsa.encrypt($chkPwd)
+            , "newPwd": rsa.encrypt($newPwd)
+        };
+
+        // 기존 비밀번호와 새 비밀번호 일치 여부 check
+        if(!confirmOldPassword(jsonData)) {
+            showAlert('warning', '기존 비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        let pwdRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*()]{8,12}$/; //영문, 숫자, 특수문자 포함 8~12자 이내
         if (!pwdRegex.test($newPwd)) {
             showAlert('warning', '영문, 숫자, 특수문자를 포함한 8~12자 이내로 입력해주세요.');
             return;
@@ -213,28 +230,24 @@
             return;
         }
         if ($newPwd != $newPwdConfirm) {
-            showAlert('warning', '새 비밀번호 확인이 일치하지 않습니다');
+            showAlert('warning', '새 비밀번호 확인이 일치하지 않습니다.');
             $('#newPwdConfirm').focus();
             return;
         }
 
-        // rsa 암호화
-        let rsa = new RSAKey();
-        rsa.setPublic($('#RSAModulus').val(), $('#RSAExponent').val());
-
-        let jsonData = {
-            "userId": rsa.encrypt($userId)
-            , "chkPwd": rsa.encrypt($chkPwd)
-            , "newPwd": rsa.encrypt($newPwd)
-        };
-
         // 기존 비밀번호와 새 비밀번호 일치 여부 check
-        fn_confirmNewPassword(jsonData);
+        if(!fn_confirmNewPassword(jsonData)) {
+            showAlert('warning', '기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.');
+            return;
+        }
+
+        showConfirm('message', '비밀번호를 변경하시겠습니까?', () => {
+            ajaxChangePassword(jsonData);
+        });
     }
 
     function fn_confirmNewPassword(jsonData) {
-        // 암호 변경 Ajax
-        let result = "";
+        let result = false;
 
         $.ajax({
             url: "/soulGod/user/confirmNewPassword",
@@ -244,14 +257,29 @@
             dataType: "json",
             contentType: "application/json",
             success: function (data) {
-                console.log(data);
-                if ("SUCCESS" === data.status) {
-                    showConfirm('message', '비밀번호를 변경하시겠습니까?', () => {
-                        ajaxChangePassword(jsonData);
-                    });
-                } else {
-                    showAlert('warning', data.message);
-                }
+                result = data;
+            },
+            error: function () {
+                showAlert('warning', '실패하였습니다.', () => {
+                    location.reload();
+                });
+            }
+        });
+        return result;
+    }
+
+    function confirmOldPassword(jsonData) {
+        let result = false;
+
+        $.ajax({
+            url: "/soulGod/user/confirmOldPassword",
+            type: "post",
+            async: false,
+            data: JSON.stringify(jsonData),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                result = data;
             },
             error: function () {
                 showAlert('warning', '실패하였습니다.', () => {

@@ -69,32 +69,56 @@ public class UserController {
     }
 
     /**
-     * 기존 비밀번호와 새 비밀번호 일치 여부 (true=일치)
+     * 기존 비밀번호와 일치 여부
      */
-    @PostMapping(value = {"/soulGod/user/confirmNewPassword"})
+    @PostMapping(value = {"/soulGod/user/confirmOldPassword"})
     @ResponseBody
-    public HashMap<String, Object> confirmNewPassword(@RequestBody HashMap<String, Object> paramMap) {
+    public Boolean confirmOldPassword(@RequestBody HashMap<String, Object> paramMap) {
 
         // RSA 복호화
         String userIdRSA = (String) paramMap.get("userId");
         String chkPwdRSA = (String) paramMap.get("chkPwd");
-        String newPwdRSA = (String) paramMap.get("newPwd");
 
         // 데이터
         String userId = "";
         String chkPwd = "";
-        String newPwd = "";
 
         PrivateKey privateKey = (PrivateKey) RSAEncryptor.RSA_PRIVATE_KEY;// 복호화
 
         try {
             userId = RSAEncryptor.decryptRsa(privateKey, userIdRSA);
             chkPwd = RSAEncryptor.decryptRsa(privateKey, chkPwdRSA);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return userService.confirmOldPassword(userId, chkPwd);
+    }
+
+    /**
+     * 기존 비밀번호와 새 비밀번호 일치 여부
+     */
+    @PostMapping(value = {"/soulGod/user/confirmNewPassword"})
+    @ResponseBody
+    public Boolean confirmNewPassword(@RequestBody HashMap<String, Object> paramMap) {
+
+        // RSA 복호화
+        String userIdRSA = (String) paramMap.get("userId");
+        String newPwdRSA = (String) paramMap.get("newPwd");
+
+        // 데이터
+        String userId = "";
+        String newPwd = "";
+
+        PrivateKey privateKey = (PrivateKey) RSAEncryptor.RSA_PRIVATE_KEY;// 복호화
+
+        try {
+            userId = RSAEncryptor.decryptRsa(privateKey, userIdRSA);
             newPwd = RSAEncryptor.decryptRsa(privateKey, newPwdRSA);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return userService.confirmNewPassword(userId, chkPwd, newPwd);
+        return userService.confirmNewPassword(userId, newPwd);
     }
 }
