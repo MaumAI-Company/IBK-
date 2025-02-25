@@ -89,4 +89,6 @@ public interface AdminDeptRepository {
      * @throws Exception
      */
     public int getParDeptCount(DeptForm params);
+
+    public int checkDeptId(DeptForm params);
 }

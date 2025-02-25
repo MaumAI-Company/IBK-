@@ -389,11 +389,11 @@ public class LearningModelService extends BaseCont {
                     String value = null;
                     OutputColumnBillType outputColumnType = OutputColumnBillType.valueOf(info.getColName());
                     if (OutputColumnBillType.BDGT_ITEX_FRCS_CON.equals(outputColumnType)) {
-                        value = data.getBdmnItexMngmNo().trim();
+                        value = data.getBdmnItexMngmNo();
                     } else if (OutputColumnBillType.BDGT_PRFR_RSN_FRCS_CON.equals(outputColumnType)) {
-                        value = data.getBdgtPrfrRsnFrcsCon().trim();
+                        value = data.getBdgtPrfrRsnFrcsCon();
                     } else if (OutputColumnBillType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
-                        value = data.getBrcd().trim() + "-" + data.getBdgtBsnsFrcsCon().trim();
+                        value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
                     }
                     body.append(value);
                 }
