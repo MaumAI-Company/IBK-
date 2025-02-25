@@ -884,6 +884,7 @@
             let hitCnt3Row = $('<tr><th scope="row">비목집행사유_적중수</th></tr>');
             let hitCnt3PerRow = $('<tr><th scope="row">비목집행사유_적중비율</th></tr>');
             let hitCnt4Row = $('<tr><th scope="row">예산비목정보_예산사업ID_적중수</th></tr>');
+            let hitCnt4PerRow = $('<tr><th scope="row">예산비목정보_예산사업ID_적중비율</th></tr>');
 
             $.each(outputData, function (index, item) {
                 dateOutputRow.append(`<td>${item.dd}</td>`);
@@ -896,8 +897,9 @@
                 hitCnt3Row.append(`<td>${fn_setCommas(item.hitCnt3) || 0}</td>`);
                 hitCnt3PerRow.append(`<td>${item.hitCnt3Per || 0}%</td>`);
                 hitCnt4Row.append(`<td>${fn_setCommas(item.hitCnt4) || 0}</td>`);
+                hitCnt4PerRow.append(`<td>${fn_setCommas(item.hitCnt4Per) || 0}</td>`);
             });
-            tableBody.append(dateOutputRow, totalOutputRow, outputRow, hitCnt1Row, hitCnt1PerRow, hitCnt2Row, hitCnt2PerRow, hitCnt3Row, hitCnt3PerRow, hitCnt4Row);
+            tableBody.append(dateOutputRow, totalOutputRow, outputRow, hitCnt1Row, hitCnt1PerRow, hitCnt2Row, hitCnt2PerRow, hitCnt3Row, hitCnt3PerRow, hitCnt4Row, hitCnt4PerRow);
             // Output 대비 적중 통계 타이틀 : e
         }
 
