@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 public class CustomErrorReportValve extends ErrorReportValve {
-    @Override
-    public void invoke(Request request, Response response) throws IOException, ServletException {
-        getNext().invoke(request, response);
-    }
+//    @Override
+//    public void invoke(Request request, Response response) throws IOException, ServletException {
+//        getNext().invoke(request, response);
+//    }
 
     @Override
     protected void report(Request request, Response response, Throwable t) {
