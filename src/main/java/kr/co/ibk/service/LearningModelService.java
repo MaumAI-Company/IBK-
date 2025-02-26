@@ -132,9 +132,6 @@ public class LearningModelService extends BaseCont {
                 StringBuilder header = fileCon.get("header");
                 StringBuilder body = fileCon.get("body");
 
-                System.out.println(header.toString());
-                System.out.println(body.toString());
-
                 String filePath = filepath + File.separator + "learning" + File.separator + form.getId();
                 File dir = new File(filePath);
                 if (!dir.exists()) {
@@ -261,7 +258,7 @@ public class LearningModelService extends BaseCont {
                     if (value != null) {
                         body.append(inputColumnType.name())
                                 .append(" : ")
-                                .append(value);
+                                .append(value.replaceAll("\r", "").replaceAll("\n", "").trim());
                     }
                 } else {
                     if (outputFirst && isAmslAmt) {
@@ -281,7 +278,7 @@ public class LearningModelService extends BaseCont {
                     } else if (OutputColumnCardType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
                         value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
                     }
-                    body.append(value);
+                    body.append(value.replaceAll("\r", "").replaceAll("\n", "").trim());
                 }
                 first = false;
             }
@@ -375,11 +372,12 @@ public class LearningModelService extends BaseCont {
                     if (value != null) {
                         body.append(inputColumnType.name())
                                 .append(" : ")
-                                .append(value);
+                                .append(value.replaceAll("\r", "").replaceAll("\n", "").trim());
                     }
                 } else {
                     if (outputFirst && isIssAmt) {
-                        body.append(sep.replace("ISS_AMT", String.valueOf(data.getIssAmt())));
+                        String issAmtStr = sep.replace("ISS_AMT", String.valueOf(data.getIssAmt()));
+                        body.append(issAmtStr);
                         outputFirst = false;
                     }
                     separator = "\t";
@@ -395,7 +393,7 @@ public class LearningModelService extends BaseCont {
                     } else if (OutputColumnBillType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
                         value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
                     }
-                    body.append(value);
+                    body.append(value.replaceAll("\r", "").replaceAll("\n", "").trim());
                 }
                 first = false;
             }
