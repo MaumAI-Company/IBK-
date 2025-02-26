@@ -132,9 +132,6 @@ public class LearningModelService extends BaseCont {
                 StringBuilder header = fileCon.get("header");
                 StringBuilder body = fileCon.get("body");
 
-                System.out.println(header.toString());
-                System.out.println(body.toString());
-
                 String filePath = filepath + File.separator + "learning" + File.separator + form.getId();
                 File dir = new File(filePath);
                 if (!dir.exists()) {
@@ -379,7 +376,8 @@ public class LearningModelService extends BaseCont {
                     }
                 } else {
                     if (outputFirst && isIssAmt) {
-                        body.append(sep.replace("ISS_AMT", String.valueOf(data.getIssAmt())));
+                        String issAmtStr = sep.replace("ISS_AMT", String.valueOf(data.getIssAmt()));
+                        body.append(issAmtStr);
                         outputFirst = false;
                     }
                     separator = "\t";
@@ -391,7 +389,10 @@ public class LearningModelService extends BaseCont {
                     if (OutputColumnBillType.BDGT_ITEX_FRCS_CON.equals(outputColumnType)) {
                         value = data.getBdmnItexMngmNo();
                     } else if (OutputColumnBillType.BDGT_PRFR_RSN_FRCS_CON.equals(outputColumnType)) {
-                        value = data.getBdgtPrfrRsnFrcsCon();
+                        value = data.getBdgtPrfrRsnFrcsCon()
+                                .replaceAll("\r", "")
+                                .replaceAll("\n", "")
+                                .trim();
                     } else if (OutputColumnBillType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
                         value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
                     }
