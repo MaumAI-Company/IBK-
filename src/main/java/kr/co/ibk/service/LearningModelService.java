@@ -258,7 +258,7 @@ public class LearningModelService extends BaseCont {
                     if (value != null) {
                         body.append(inputColumnType.name())
                                 .append(" : ")
-                                .append(value);
+                                .append(value.replaceAll("\r", "").replaceAll("\n", "").trim());
                     }
                 } else {
                     if (outputFirst && isAmslAmt) {
@@ -278,7 +278,7 @@ public class LearningModelService extends BaseCont {
                     } else if (OutputColumnCardType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
                         value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
                     }
-                    body.append(value);
+                    body.append(value.replaceAll("\r", "").replaceAll("\n", "").trim());
                 }
                 first = false;
             }
@@ -372,7 +372,7 @@ public class LearningModelService extends BaseCont {
                     if (value != null) {
                         body.append(inputColumnType.name())
                                 .append(" : ")
-                                .append(value);
+                                .append(value.replaceAll("\r", "").replaceAll("\n", "").trim());
                     }
                 } else {
                     if (outputFirst && isIssAmt) {
@@ -389,14 +389,11 @@ public class LearningModelService extends BaseCont {
                     if (OutputColumnBillType.BDGT_ITEX_FRCS_CON.equals(outputColumnType)) {
                         value = data.getBdmnItexMngmNo();
                     } else if (OutputColumnBillType.BDGT_PRFR_RSN_FRCS_CON.equals(outputColumnType)) {
-                        value = data.getBdgtPrfrRsnFrcsCon()
-                                .replaceAll("\r", "")
-                                .replaceAll("\n", "")
-                                .trim();
+                        value = data.getBdgtPrfrRsnFrcsCon();
                     } else if (OutputColumnBillType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
                         value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
                     }
-                    body.append(value);
+                    body.append(value.replaceAll("\r", "").replaceAll("\n", "").trim());
                 }
                 first = false;
             }
