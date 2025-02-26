@@ -525,7 +525,7 @@
         let selector = $('#detail_menuMaxOrder');
 
         if (menuMoveOptionVal == undefined) {
-            $('#detail_menuMoveOption').attr('selected', true).val('2');
+            $('#detail_menuMoveOption').val('2').niceSelect('update');
         }
 
         if (menuMoveOptionVal == 1) {
@@ -535,7 +535,7 @@
             let parId = treeList.LookUp('menuId', menuId, 'parId');
             if (parId == 'system') {
                 showAlert('warning', '최상위 레벨의 메뉴입니다.');
-                $('#detail_menuMoveOption').attr('selected', true).val('2');
+                $('#detail_menuMoveOption').val('2').niceSelect('update');
                 return false;
             }
 
@@ -632,8 +632,8 @@
 
 
         //메뉴 이동 유형
-        $('#detail_menuMoveOption').attr('selected', true).val('2');
-        $('#detail_menuMoveOption').prop('disabled', true);
+        $('#detail_menuMoveOption').val('2').niceSelect('update');
+        //$('#detail_menuMoveOption').prop('disabled', true);
 
         //순번 초기화
         $('#detail_menuMaxOrder').prop('disabled', true);
@@ -718,9 +718,9 @@
                 fnGetDetailLayoutData(id, val);
             });
             //메뉴 이동 유형
-            $('#detail_menuMoveOption').attr('selected', true).val('2');
+            $('#detail_menuMoveOption').val('2').niceSelect('update');
             //$('#detail_menuMoveOption').prop('disabled',false);
-            $('#detail_menuMoveOption').prop('disabled', true);
+            //$('#detail_menuMoveOption').prop('disabled', true);
 
             //순번
             $('#detail_menuMaxOrder').prop('disabled', false);
@@ -795,9 +795,9 @@
                         fnGetDetailLayoutData(id, val);
                     });
                     //메뉴 이동 유형
-                    $('#detail_menuMoveOption').attr('selected', true).val('2');
+                    $('#detail_menuMoveOption').val('2').niceSelect('update');
                     //$('#detail_menuMoveOption').prop('disabled',false);
-                    $('#detail_menuMoveOption').prop('disabled', true);
+                    //$('#detail_menuMoveOption').prop('disabled', true);
 
                     //순번
                     $('#detail_menuMaxOrder').prop('disabled', false);
@@ -865,7 +865,7 @@
             let subParId = treeList.LookUp('menuId', menuId, 'parId');
             if (subParId == 'system') {
                 showAlert('warning', '최상위 레벨의 메뉴입니다.');
-                $('#add_menuMoveOption').attr('selected', true).val('2');
+                $('#add_menuMoveOption').val('2').niceSelect('update');
                 return false;
             }
 
@@ -1061,8 +1061,8 @@
         //$('input:radio[name="add_roleId"]').prop('disabled', false);			
 
         //메뉴 이동 유형
-        $('#add_menuMoveOption').attr('selected', true).val('2');
-        $('#add_menuMoveOption').prop('disabled', false);
+        $('#add_menuMoveOption').val('2').niceSelect('update');
+        //$('#add_menuMoveOption').prop('disabled', false);
 
         //메뉴권한
         let roleId = treeList.LookUp('menuId', node.id, 'roleId');
@@ -1098,8 +1098,8 @@
 
 
         //메뉴 이동 유형
-        $('#add_menuMoveOption').attr('selected', true).val('2');
-        $('#add_menuMoveOption').prop('disabled', true);
+        $('#add_menuMoveOption').val('2').niceSelect('update');
+        //$('#add_menuMoveOption').prop('disabled', true);
 
         //순번 초기화
         $('#add_menuMaxOrder').prop('disabled', true);
@@ -1128,7 +1128,7 @@
         let selector = $('#add_menuMaxOrder');
 
         if (menuMoveOptionVal == undefined) {
-            $('#add_menuMoveOption').attr('selected', true).val('2');
+            $('#add_menuMoveOption').val('2').niceSelect('update');
         }
 
         if (menuMoveOptionVal == 1) {
@@ -1138,7 +1138,7 @@
             let parId = treeList.LookUp('menuId', menuId, 'parId');
             if (parId == 'system') {
                 showAlert('warning', '최상위 레벨의 메뉴입니다.');
-                $('#add_menuMoveOption').attr('selected', true).val('2');
+                $('#add_menuMoveOption').val('2').niceSelect('update');
                 return false;
             }
 
@@ -1254,7 +1254,7 @@
             let parId = treeList.LookUp('menuId', menuId, 'parId');
             if (parId == 'system') {
                 showAlert('warning', '최상위 레벨의 메뉴입니다.');
-                $('#detail_menuMoveOption').attr('selected', true).val('2');
+                $('#detail_menuMoveOption').val('2').niceSelect('update');
                 return false;
             }
 
