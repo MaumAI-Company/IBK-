@@ -35,6 +35,7 @@
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt4 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt4Per,
             totalOutput.totalOutCnt
         FROM
             (
