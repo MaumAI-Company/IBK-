@@ -648,6 +648,11 @@ function fn_settingChip(searchJson, isRadio) {
         if (searchMap.get("searchType")) {
             searchMap.get("searchType").forEach((value, key) => {
                 let keyNm = $('.' + key).first().text();
+
+                if (fn_containsXSS(value)) {
+                    return;
+                }
+
                 searchTypeTags += `
                     <div class="chip">
                         <div class="chip_${key}">${keyNm} : ${value}</div>
@@ -694,7 +699,6 @@ function fn_settingChip(searchJson, isRadio) {
     }
 
     tags += searchTypeTags;
-
     $('.selected_filter').html(tags);
 }
 
@@ -902,4 +906,16 @@ function fn_selectBoxReset(id) {
     if (id) {
         $('#' + id).val('').niceSelect('update');
     }
+}
+
+function fn_containsXSS(value) {
+    let lowerValue = value.toLowerCase();
+    return (
+        lowerValue.includes('<script') ||
+        lowerValue.includes('onerror') ||
+        lowerValue.includes('javascript:') ||
+        lowerValue.includes('<iframe') ||
+        lowerValue.includes('eval(') ||
+        lowerValue.includes('expression(')
+    );
 }
