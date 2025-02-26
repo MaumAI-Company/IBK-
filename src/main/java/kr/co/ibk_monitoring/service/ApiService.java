@@ -226,6 +226,13 @@ public class ApiService {
         param.add(new BasicNameValuePair("SENDER_ALIAS", sender.getMemName()));
         param.add(new BasicNameValuePair("TITLE", URLEncoder.encode(title, StandardCharsets.UTF_8)));
         param.add(new BasicNameValuePair("BODY", URLEncoder.encode(body, StandardCharsets.UTF_8)));
+
+        log.debug("params Start");
+        for (NameValuePair nameValuePair : param) {
+            log.debug(nameValuePair.getName() + ": " + nameValuePair.getValue());
+        }
+        log.debug("params End");
+
         // 파라미터적용
         httpPost.setEntity(new UrlEncodedFormEntity(param));
 
