@@ -862,15 +862,15 @@
         if (menuMoveOption == '1') {
             let menuId = node.id;
             //parId
-            let parId = treeList.LookUp('menuId', menuId, 'parId');
-            if (parId == 'system') {
+            let subParId = treeList.LookUp('menuId', menuId, 'parId');
+            if (subParId == 'system') {
                 showAlert('warning', '최상위 레벨의 메뉴입니다.');
                 $('#add_menuMoveOption').attr('selected', true).val('2');
                 return false;
             }
 
             //상위부서의 parId를 구해온다.
-            parId = treeList.LookUp('menuId', parId, 'parId');
+            parId = treeList.LookUp('menuId', subParId, 'parId');
         } else if (menuMoveOption == '2') {
             //menuId
             let menuId = node.id;
