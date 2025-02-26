@@ -77,12 +77,9 @@
         </if>
 
         /*키워드 검색*/
-        <if test="searchKeyword != null and searchKeyword != '' and searchRegex == null">
+        <if test="searchKeyword != null and searchKeyword != ''">
             AND (lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
             OR hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
-        </if>
-        <if test="searchRegex != null">
-            AND ${searchRegex}
         </if>
     </sql>
     <select id="getList" resultType="LearningModelInfo" parameterType="LearningModelForm">

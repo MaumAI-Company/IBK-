@@ -183,7 +183,10 @@
         	AND hd.PAR_ID = #{deptId}
         	AND hd.DEPT_STAT != 'delete' 
     </select>
-    
+
+	<select id="checkDeptId" parameterType="DeptForm" resultType="int">
+		SELECT count(*) FROM HC_MEMBER hm WHERE hm.MEM_STAT != 'delete' AND  hm.DEPT_ID = #{deptId}
+	</select>
 
     <sql id="hc_dept_columns">
 		${alias}DEPT_SEQ

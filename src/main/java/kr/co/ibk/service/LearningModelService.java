@@ -298,7 +298,7 @@ public class LearningModelService extends BaseCont {
     public Map<String, StringBuilder> billLearningFileContent(List<BillLearningDataInfo> dataList, List<LearningModelInputInfo> list) {
         Map<String, StringBuilder> fileContent = new HashMap<>();
 
-        String sep = "<<|SEP|>>AMSL_AMT";
+        String sep = "<<|SEP|>>ISS_AMT";
         // 헤더
         StringBuilder header = new StringBuilder();
         String separator = " ";

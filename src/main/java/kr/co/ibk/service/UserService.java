@@ -140,20 +140,15 @@ public class UserService extends _BaseService {
         return "pass";
     }
 
-    public HashMap<String, Object> confirmNewPassword(String userId, String chkPwd, String newPwd) {
-        HashMap<String, Object> map = new HashMap<>();
+    public Boolean confirmOldPassword(String userId, String chkPwd) {
         MemberInfo oldMember = memberRepository.getUserInfo(userId);
         String oldPwd = oldMember.getMemPwd();
+        return encryptConfig.passwordEncoder("bcrypt").matches(chkPwd, oldPwd);
+    }
 
-        if (!encryptConfig.passwordEncoder("bcrypt").matches(chkPwd, oldPwd)) { // 기존 비밀번호 비교
-            map.put("status", "FAIL");
-            map.put("message", "기존 비밀번호가 일치하지 않습니다.");
-        } else if (encryptConfig.passwordEncoder("bcrypt").matches(newPwd, oldPwd)) { // 사용자의 현재 비밀번호와 입력한 기존 비밀번호와 비교
-            map.put("status", "FAIL");
-            map.put("message", "기존 비밀번호는 사용할 수 없습니다.");
-        } else {
-            map.put("status", "SUCCESS");
-        }
-        return map;
+    public Boolean confirmNewPassword(String userId, String newPwd) {
+        MemberInfo oldMember = memberRepository.getUserInfo(userId);
+        String oldPwd = oldMember.getMemPwd();
+        return !encryptConfig.passwordEncoder("bcrypt").matches(newPwd, oldPwd);
     }
 }
