@@ -624,6 +624,32 @@ function fn_jsonToMap(json) {
     );
 }
 
+/**
+ * XSS 방지를 위한 HTML escaping 함수
+ * @param {string} input - 사용자 입력 값
+ * @returns {string} - 안전한 HTML 문자열
+ */
+function fn_escapeHTML(input) {
+    if (!input) return input;
+    return input
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;")
+        .replace(/\(/g, "&#40;")
+        .replace(/\)/g, "&#41;")
+        .replace(/\//g, "&#x2F;");
+}
+
+/**
+ * Chip UI 생성 함수
+ *
+ * 역할: 검색 조건을 기반으로 Chip UI를 생성하여 `.selected_filter` 영역에 추가
+ *
+ * @param {Object} searchJson - 검색 조건을 포함한 JSON 데이터
+ * @param {boolean} isRadio - 대상 선택이 라디오 버튼 방식인지 여부 (true: 라디오 버튼, false: 셀렉트 박스)
+ */
 function fn_settingChip(searchJson, isRadio) {
     let tags = '';
     let searchTypeTags = '';
@@ -634,24 +660,24 @@ function fn_settingChip(searchJson, isRadio) {
     let target = isRadio ? $('[name=searchTarget]:checked').val() : $('[name=searchTarget]').val();
 
     if (searchJson) {
-        let searchMap = fn_jsonToMap(searchJson);
+        let searchMap = fn_jsonToMap(searchJson); // JSON을 Map으로 변환하여 사용
 
+        // 시작일자/종료일자 값 업데이트
         if (searchMap.get("searchStartDate") || searchMap.get("searchEndDate")) {
             startDate = searchMap.get("searchStartDate");
             endDate = searchMap.get("searchEndDate");
         }
 
+        // 대상 값 업데이트
         if (searchMap.get("searchTarget")) {
             target = searchMap.get("searchTarget");
         }
 
+        // 검색구분 값 chip 생성
         if (searchMap.get("searchType")) {
             searchMap.get("searchType").forEach((value, key) => {
                 let keyNm = $('.' + key).first().text();
-
-                if (fn_containsXSS(value)) {
-                    return;
-                }
+                value = fn_escapeHTML(value); // XSS 방어 적용
 
                 searchTypeTags += `
                     <div class="chip">
@@ -665,6 +691,7 @@ function fn_settingChip(searchJson, isRadio) {
         }
     }
 
+    // 조회기간 칩 생성
     if (!allDateAt && (startDate || endDate)) { //템플릿은 기간이 없기때문에 체크
         tags += `
                     <div class="chip">
@@ -676,8 +703,9 @@ function fn_settingChip(searchJson, isRadio) {
                 `;
     }
 
+    // 대상 칩 생성
     if (target !== '') {
-        if (isRadio) {
+        if (isRadio) { // 대상 검색필터 > 라디오 사용하는 경우
             tags += `
                 <div class="chip">
                     <div>대상 : ${target === '1' ? '본부' : '영업점'}</div>
@@ -686,7 +714,7 @@ function fn_settingChip(searchJson, isRadio) {
                     </button>
                 </div>
             `;
-        } else {
+        } else { // 대상 검색필터 > 셀렉트 박스를 사용하는 경우
             tags += `
                 <div class="chip">
                     <div>대상 : ${target === '1' ? '본부' : '영업점'}</div>
@@ -906,16 +934,4 @@ function fn_selectBoxReset(id) {
     if (id) {
         $('#' + id).val('').niceSelect('update');
     }
-}
-
-function fn_containsXSS(value) {
-    let lowerValue = value.toLowerCase();
-    return (
-        lowerValue.includes('<script') ||
-        lowerValue.includes('onerror') ||
-        lowerValue.includes('javascript:') ||
-        lowerValue.includes('<iframe') ||
-        lowerValue.includes('eval(') ||
-        lowerValue.includes('expression(')
-    );
 }

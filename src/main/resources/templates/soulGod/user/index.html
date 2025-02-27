@@ -210,7 +210,7 @@
             , "newPwd": rsa.encrypt($newPwd)
         };
 
-        // 기존 비밀번호와 새 비밀번호 일치 여부 check
+        // 기존 비밀번호와 사용자 입력 기존 비밀번호 일치 여부 check
         if(!confirmOldPassword(jsonData)) {
             showAlert('warning', '기존 비밀번호가 일치하지 않습니다.');
             return;

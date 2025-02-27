@@ -54,6 +54,9 @@
             location.reload();
         }
 
+        /**
+         * 추론 결과 수 차트 데이터 get/set
+         */
         async function fn_getStatisticInput() {
             let jsonData = {
                 "searchLearningType": $('#searchLearningType').val(),
@@ -71,6 +74,7 @@
                 dataType: "json",
                 contentType: "application/json",
                 success: function (data) {
+                    // 검색조건 주기(일별,월별,연도별)에 따라 X축 날짜 포맷 적용
                     data.forEach(item => {
                         let strDate = item.dd.toString();
                         item.dd = fn_dateFormat(strDate);
@@ -142,14 +146,19 @@
                             "per": 94.92
                         }];*/
 
-                    fn_drawChart1(data);
+                    fn_drawChart1(data); // 추론 결과 수 차트 그리기
                 },
                 error: function () {
-                    //console.log("error");
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    });
                 }
             });
         }
 
+        /**
+         * 사용자 활용 현황 차트 데이터 get/set
+         */
         function fn_getStatisticOutput() {
             let jsonData = {
                 "searchLearningType": $('#searchLearningType').val(),
@@ -167,6 +176,7 @@
                 dataType: "json",
                 contentType: "application/json",
                 success: function (data) {
+                    // 검색조건 주기(일별,월별,연도별)에 따라 X축 날짜 포맷 적용
                     data.forEach(item => {
                         let strDate = item.dd.toString();
                         item.dd = fn_dateFormat(strDate);
@@ -484,10 +494,12 @@
                             "hitCnt4": 100,
                             "totalOutCnt": 100
                         }];*/
-                    fn_drawChart2(data);
+                    fn_drawChart2(data); // 사용자 활용 현황 차트 그리기
                 },
                 error: function () {
-                    //console.log("error");
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    });
                 }
             });
         }
@@ -642,7 +654,6 @@
 
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 
-            // 004C9D / 6D7175 / F69192 / 74C8E6 /7AE674 /9854C6
             makeSeries1("추론데이터 수", "outCnt", 0x7AE674);
             makeSeries1("전체", "total");
 
@@ -844,11 +855,17 @@
             chart.appear(1000, 100);
         }
 
+        /**
+         * 통계 정보를 엑셀 파일로 다운로드하기 위해 HTML 테이블을 동적으로 생성 (table2excel 라이브러리 사용)
+         *
+         * - 생성된 테이블은 화면에 표시되지 않음 (`display: none` 상태)
+         * - 사용자가 엑셀 다운로드를 요청하면 해당 테이블을 기반으로 데이터 변환 후 다운로드 진행
+         */
         function fn_createTable() {
             let tableBody = $("#tbody");
             tableBody.empty();
 
-            // Input 대비 학습 통계 타이틀 : s
+            // 추론 결과 수 통계 : s
             let inputTitleRow = $('<tr><th colspan="' + (inputData.length + 1) + '" class="section-title">추론 결과 수 : INPUT 데이터 기반 OUTPUT 데이터 생성 개수</th></tr>');
             tableBody.append(inputTitleRow);
 
@@ -864,13 +881,13 @@
                 perRow.append(`<td>${item.per}%</td>`);
             });
             tableBody.append(dateRow, totalRow, outCntRow, perRow);
-            // Input 대비 학습 통계 타이틀 : e
+            // 추론 결과 수 : e
 
             // 빈 행 추가
             let emptyRow = $('<tr><td colspan="' + (inputData.length + 1) + '"></td></tr>');
             tableBody.append(emptyRow);
 
-            // Output 대비 적중 통계 타이틀 : s
+            // 사용자 활용 현황 통계 : s
             let outputTitleRow = $('<tr><th colspan="' + (outputData.length + 1) + '" class="section-title">사용자 활용 현황 : 추론된 OUTPUT 데이터의 실제 사용 개수</th></tr>');
             tableBody.append(outputTitleRow);
 
@@ -900,14 +917,22 @@
                 hitCnt4PerRow.append(`<td>${fn_setCommas(item.hitCnt4Per) || 0}</td>`);
             });
             tableBody.append(dateOutputRow, totalOutputRow, outputRow, hitCnt1Row, hitCnt1PerRow, hitCnt2Row, hitCnt2PerRow, hitCnt3Row, hitCnt3PerRow, hitCnt4Row, hitCnt4PerRow);
-            // Output 대비 적중 통계 타이틀 : e
+            // 사용자 활용 현황 통계 : e
         }
 
+        /**
+         * 통계정보 다운로드 (table2excel 라이브러리 사용)
+         */
         function fn_excelDownload() {
             let fileNm = '통계정보_' + new Date().toISOString().replace(/\D/g, '').slice(2, 15);
             fnTableToExcel('table', fileNm);
         }
 
+        /**
+         * 주어진 날짜 문자열을 YYYY.MM.DD 혹은 YYYY.MM 형식으로 변환
+         * @param date 날짜 문자열(YYYY.MM.DD or YYYY.MM)
+         * @returns {*|string} 변환된 날짜 문자열 혹은 null
+         */
         function fn_dateFormat(date) {
             if (date != null) {
                 if (date.length === 8) {

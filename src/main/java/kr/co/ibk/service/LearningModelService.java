@@ -86,8 +86,19 @@ public class LearningModelService extends BaseCont {
         return map;
     }
 
+    /**
+     * 모델 학습
+     * 1. 학습 모델의 상태 "학습 데이터 생성 중" 업데이트 후 SUCESS 리턴
+     * 2. 새로운 스레드 생성
+     *   2-1. 모델의 학습 타입(BC 카드 또는 세금계산서)에 따라 학습 데이터 조회
+     *       - 조회된 데이터로 학습 데이터 파일을 생성하고, 파일경로/파일명 업데이트
+     *       - 이 과정 중 오류가 발생할 경우, 학습 모델의 상태를 "학습 데이터 생성 오류"로 업데이트
+     *   2-2. 모델 학습 API를 호출
+     * @return 학습 상태를 나타내는 HashMap. 상태는 SUCCESS로 초기화되어 반환됨.
+     */
     @Transactional
     public HashMap<String, Object> learning(LearningModelForm form) {
+        // 1. 학습 모델의 상태 "학습 데이터 생성 중" 업데이트 후 SUCESS 리턴
         HashMap<String, Object> map = new HashMap<>();
         map.put("status", "SUCCESS");
         form.setDeployStatus(DeployStatusType.LEARN_DATA_ING.getCode().toString());
@@ -99,10 +110,11 @@ public class LearningModelService extends BaseCont {
             try {
                 List<LearningModelInputInfo> list = learningModelInputRepository.getList(form.getId());
                 Map<String, StringBuilder> fileCon = new HashMap<>();
-                if (load.getLearningType().equals(LearningType.CARD)) {
 
+                // 2-1. 모델의 학습 타입(BC 카드 또는 세금계산서)에 따라 학습 데이터 조회
+                if (load.getLearningType().equals(LearningType.CARD)) {
                     CardLearningDataForm learningDataForm = new CardLearningDataForm();
-                    if (!ObjectUtils.isEmpty(load.getSelectCon())) {
+                    if (!ObjectUtils.isEmpty(load.getSelectCon())) { // 학습 모델에 저장된 선택 조건을 가져와 카드 학습 데이터 폼에 재설정
                         HashMap<String, String> searchJsonMap = jsonToHashMap(load.getSelectCon());
                         learningDataForm.setSearchStartDate(searchJsonMap.remove("searchStartDate"));
                         learningDataForm.setSearchEndDate(searchJsonMap.remove("searchEndDate"));
@@ -111,12 +123,13 @@ public class LearningModelService extends BaseCont {
 
                         learningDataForm.setSearchRegex(makeSearchQuery(learningDataForm.getSearchJsonMap(), 0));
                     }
+                    // 카드 학습데이터 목록 조회 > 파일 내용 생성
                     List<CardLearningDataInfo> dataList = cardLearningDataRepository.getLearningList(learningDataForm);
-                    fileCon = cardLearningFileContent(dataList, list);
+                    fileCon = cardLearningFileContent(dataList, list); // 파일 내용 생성
 
                 } else if (load.getLearningType().equals(LearningType.BILL)) {
                     BillLearningDataForm learningDataForm = new BillLearningDataForm();
-                    if (!ObjectUtils.isEmpty(load.getSelectCon())) {
+                    if (!ObjectUtils.isEmpty(load.getSelectCon())) {  // 학습 모델에 저장된 선택 조건을 가져와 세금계산서 학습 데이터 폼에 재설정
                         HashMap<String, String> searchJsonMap = jsonToHashMap(load.getSelectCon());
                         learningDataForm.setSearchStartDate(searchJsonMap.remove("searchStartDate"));
                         learningDataForm.setSearchEndDate(searchJsonMap.remove("searchEndDate"));
@@ -126,9 +139,10 @@ public class LearningModelService extends BaseCont {
                         learningDataForm.setSearchRegex(makeSearchQuery(learningDataForm.getSearchJsonMap(), 0));
                     }
                     List<BillLearningDataInfo> dataList = billLearningDataRepository.getLearningList(learningDataForm);
-                    fileCon = billLearningFileContent(dataList, list);
+                    fileCon = billLearningFileContent(dataList, list); // 파일 내용 생성
                 }
 
+                // - 조회된 데이터로 학습 데이터 파일을 생성하고, 지정된 파일경로/파일명 업데이트
                 StringBuilder header = fileCon.get("header");
                 StringBuilder body = fileCon.get("body");
 
@@ -156,9 +170,11 @@ public class LearningModelService extends BaseCont {
                 update.setBatchSize(form.getBatchSize());
                 learningModelRepository.updateFile(update);
 
+                // 2-2. 모델 학습 API를 호출
                 mccService.trainModel(form.getId());
             } catch (Exception e) {
                 try {
+                    // 2번 과정 중 오류가 발생할 경우, 학습 모델의 상태를 "학습 데이터 생성 오류"로 업데이트
                     form.setDeployStatus(DeployStatusType.LEARN_DATA_ERROR.getCode().toString());
                     learningModelRepository.updateStatus(form);
                 } catch (Exception ex) {

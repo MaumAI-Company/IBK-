@@ -374,6 +374,7 @@
             let downloadUrl = '/soulGod/report/bill/xlsDown' + (queryString ? '?' + queryString : '');
             let downloadWindow = window.open(downloadUrl, '_blank');
 
+            // 주기적으로 (1초마다) 새 창이 닫혔는지 확인하여 경고 레이어 닫기
             let timer = setInterval(function () {
                 if (downloadWindow.closed) {
                     clearInterval(timer);
