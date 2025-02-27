@@ -57,6 +57,9 @@ public class ApiService {
     @Value("${Globals.messenger.srvCode}")
     private String messengerSrvCode;
 
+    /**
+     * 서버 체크 > 장애 발생 시 메신저 발송
+     */
     public void serverCheck() {
         String title = TITLE;
         try {
