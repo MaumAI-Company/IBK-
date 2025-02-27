@@ -13,6 +13,7 @@ import kr.co.ibk.service.*;
 import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -194,6 +196,15 @@ public class AdminController extends BaseCont {
 
         // 부서
         List<DeptForm> deptList = adminDeptService.getDeptList(params);
+
+        // XSS 필터링 적용
+        deptList = deptList.stream().map(dept -> {
+            dept.setDeptName(StringEscapeUtils.escapeHtml4(dept.getDeptName()));
+            dept.setDeptCode(StringEscapeUtils.escapeHtml4(dept.getDeptName()));
+            dept.setDeptEngName(StringEscapeUtils.escapeHtml4(dept.getDeptEngName()));
+            dept.setDeptStat(StringEscapeUtils.escapeHtml4(dept.getDeptStat()));
+            return dept;
+        }).collect(Collectors.toList());
 
         // 리턴
         map.put("deptList", deptList);
@@ -534,7 +545,13 @@ public class AdminController extends BaseCont {
         List<LearningSchedulerInfo> list = learningSchedulerService.getPage(params);
 
         TemplateForm templateForm = new TemplateForm();
-        List<TemplateInfo> templateList = templateService.getList(templateForm);
+        List<TemplateInfo> templateList = templateService.getList(templateForm)
+                .stream()
+                .map(template -> {
+                    template.setTemplateName(StringEscapeUtils.escapeHtml4(template.getTemplateName())); // XSS 방어
+                    return template;
+                })
+                .collect(Collectors.toList());
 
         model.addAttribute("list", list);
         model.addAttribute("templateList", templateList);
