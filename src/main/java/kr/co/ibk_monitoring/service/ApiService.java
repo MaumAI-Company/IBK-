@@ -18,6 +18,10 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +32,14 @@ public class ApiService {
 
     private final IbkMailSender ibkMailSender;
     private final AdminMemberRepository adminMemberRepository;
-    private final String TITLE = "서버에서 장애가 발생했습니다.";
+    private final String TITLE = "[자동지급결의AI시스템] ##SERVERNAME## 서버에서 장애가 발생했습니다.";
+    private final String BODY = "[IBK 예산관리시스템 자동지급결의 AI 시스템 장애 감지 알림]<br/>" +
+            "1. 발생시간 : ##DATETIME##<br/>" +
+            "2. 등급 : ##GRADE##<br/>" +
+            "3. 호스트명 : ##HOSTNAME##<br/>" +
+            "4. 메시지그룹 : ##MESSAGEGROUP##<br/>" +
+            "5. 이벤트 내용 : ##EVENT##";
+    private final String BODY_MESSENGER = "장애가 발생했습니다.";
 
     @Value("${Globals.domain.mcc1}")
     private String mccDomain1;
@@ -62,33 +73,74 @@ public class ApiService {
      */
     public void serverCheck() {
         String title = TITLE;
-        try {
-            if (mccCheck1) {
+        String body = BODY;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+
+        if (mccCheck1) {
+            title = title.replaceAll("##SERVERNAME##", "MCC(BC카드)");
+            body = body.replaceAll("##GRADE##", "CRITICAL");
+            body = body.replaceAll("##HOSTNAME##", "pmvscbl3");
+            body = body.replaceAll("##MESSAGEGROUP##", "AI");
+            try {
                 Integer resMCC = mccServerCheck1();
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애!(BC카드) : " + resMCC);
-                    title = "MCC(BC카드) " + TITLE;
-                    callAlarm(title, title);
+                    String now = LocalDateTime.now().format(formatter);
+                    body = body.replaceAll("##DATETIME##", now);
+                    body = body.replaceAll("##EVENT##", "학습 API나 AI 엔진에서 장애시 학습서버 컨테이너를 확인해주세요.");
+                    callAlarm(title, body);
                 }
+            } catch (Exception e) {
+                log.debug("mccCheck1", e);
+                String now = LocalDateTime.now().format(formatter);
+                body = body.replaceAll("##DATETIME##", now);
+                body = body.replaceAll("##EVENT##", e.getMessage());
+                callAlarm(title, body);
             }
-            if (mccCheck2) {
+        }
+        if (mccCheck2) {
+            try {
+                title = title.replaceAll("##SERVERNAME##", "MCC(세금계산서)");
+                body = body.replaceAll("##GRADE##", "CRITICAL");
+                body = body.replaceAll("##HOSTNAME##", "pmvscbl3");
+                body = body.replaceAll("##MESSAGEGROUP##", "AI");
                 Integer resMCC = mccServerCheck2();
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애!(세금계산서) : " + resMCC);
-                    title = "MCC(세금계산서) " + TITLE;
-                    callAlarm(title, title);
+                    String now = LocalDateTime.now().format(formatter);
+                    body = body.replaceAll("##DATETIME##", now);
+                    body = body.replaceAll("##EVENT##", "학습 API나 AI 엔진에서 장애시 학습서버 컨테이너를 확인해주세요.");
+                    callAlarm(title, body);
                 }
+            } catch (Exception e) {
+                log.debug("mccCheck2", e);
+                String now = LocalDateTime.now().format(formatter);
+                body = body.replaceAll("##DATETIME##", now);
+                body = body.replaceAll("##EVENT##", e.getMessage());
+                callAlarm(title, body);
             }
-            if (webCheck) {
+        }
+        if (webCheck) {
+            try {
+                title = title.replaceAll("##SERVERNAME##", "WEB");
+                body = body.replaceAll("##GRADE##", "NORMAL");
+                body = body.replaceAll("##HOSTNAME##", "pmvscbl2");
+                body = body.replaceAll("##MESSAGEGROUP##", "WAS");
                 Integer resWeb = webServerCheck();
                 if (resWeb == null || resWeb != 200) {
                     log.debug("### WEB 서버 장애! : " + resWeb);
-                    title = "WEB " + TITLE;
-                    callAlarm(title, title);
+                    String now = LocalDateTime.now().format(formatter);
+                    body = body.replaceAll("##DATETIME##", now);
+                    body = body.replaceAll("##EVENT##", "web 서버 컨테이너를 확인해주세요.");
+                    callAlarm(title, body);
                 }
+            } catch (Exception e) {
+                log.debug("webCheck", e);
+                String now = LocalDateTime.now().format(formatter);
+                body = body.replaceAll("##DATETIME##", now);
+                body = body.replaceAll("##EVENT##", e.getMessage());
+                callAlarm(title, body);
             }
-        } catch (Exception e) {
-            callAlarm(title, title);
         }
     }
 
@@ -138,6 +190,7 @@ public class ApiService {
             }*/
             return connection.getResponseCode();
         } catch (IOException e) {
+            log.debug("sendPost", e);
             return null;
         } finally {
             if (connection != null) {
@@ -162,6 +215,9 @@ public class ApiService {
             recipient = recipient.substring(1);
         }
 
+        System.out.println("fromId#="+sender.getMemSno());
+        System.out.println("toId="+recipient);
+
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(url);
 
@@ -171,8 +227,15 @@ public class ApiService {
         param.add(new BasicNameValuePair("RECIPIENT", recipient));
         param.add(new BasicNameValuePair("SEND", sender.getMemSno()));
         param.add(new BasicNameValuePair("SENDER_ALIAS", sender.getMemName()));
-        param.add(new BasicNameValuePair("TITLE", title));
-        param.add(new BasicNameValuePair("BODY", body));
+        param.add(new BasicNameValuePair("TITLE", URLEncoder.encode(title, StandardCharsets.UTF_8)));
+        param.add(new BasicNameValuePair("BODY", URLEncoder.encode(body, StandardCharsets.UTF_8)));
+
+        log.debug("params Start");
+        for (NameValuePair nameValuePair : param) {
+            log.debug(nameValuePair.getName() + ": " + nameValuePair.getValue());
+        }
+        log.debug("params End");
+
         // 파라미터적용
         httpPost.setEntity(new UrlEncodedFormEntity(param));
 
@@ -213,16 +276,16 @@ public class ApiService {
                     try {
                         ibkMailSender.sendMail(sender.getMemSno(), memberInfo.getMemSno(), sender.getMemName(), memberInfo.getMemName(), title, message);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.debug("mailCheck", e);
                     }
                 }
             }
             if (messengerCheck) {
 //            System.out.println("메신저 발송");
                 try {
-                    sendMessenger(sender, receiverList, title, message);
+                    sendMessenger(sender, receiverList, title, BODY_MESSENGER);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.debug("messengerCheck", e);
                 }
             }
         }
