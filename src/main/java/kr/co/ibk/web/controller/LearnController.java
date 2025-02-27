@@ -314,6 +314,9 @@ public class LearnController extends BaseCont {
 
     }
 
+    /**
+     * 학습 실행
+     */
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/learning"})
     public List<HashMap<String, Object>> dataLearning(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
@@ -343,6 +346,11 @@ public class LearnController extends BaseCont {
         return learningModelService.delete(form, memberInfo);
     }
 
+    /**
+     * 학습 중단
+     *
+     * @return  모델 중지 성공 여부를 나타내는 Boolean 값
+     */
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/stopModel"})
     public Boolean stopModel(@RequestBody LearningModelForm form) {
@@ -350,6 +358,7 @@ public class LearnController extends BaseCont {
     }
     //모델관리 : e
 
+    // 배포관리 : s
     @RequestMapping("/soulGod/learn/deployManage")
     public String deployManage(Model model,
                                @ModelAttribute LearningModelForm params) {
@@ -372,11 +381,15 @@ public class LearnController extends BaseCont {
 
     }
 
+    /**
+     * 배포 실행
+     *
+     * @return 모델 배포 성공 여부를 나타내는 Boolean 값
+     */
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/replaceModel"})
     public Boolean replaceModel(@RequestBody LearningModelForm form) {
         return mccService.replaceModel(form.getId());
     }
-
-
+    // 배포관리 : e
 }

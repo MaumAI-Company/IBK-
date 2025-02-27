@@ -212,6 +212,10 @@
             });
         }
 
+        /**
+         * 학습데이터명 중복 체크
+         * 중복 기준: `learnDataNmCount` 값이 0보다 크면 중복된 데이터명이 존재
+         */
         function fn_learnDataNmCount() {
             let jsonData = {
                 "dataName": $.trim($('#dataName').val())
@@ -234,6 +238,10 @@
             });
         }
 
+        /**
+         * 템플릿명 중복 체크
+         * 중복 기준: `templateNmCount` 값이 0보다 크면 중복된 템플릿명이 존재
+         */
         function fn_templateNmCount() {
             let jsonData = {
                 "templateName": $.trim($('#templateName').val())

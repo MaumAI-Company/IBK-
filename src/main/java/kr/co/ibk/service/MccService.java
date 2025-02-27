@@ -36,13 +36,13 @@ public class MccService {
 
     private final LearningModelRepository learningModelRepository;
 
-    /* 0 : 등록 완료, 1 : 학습 데이터 생성 오류, 2 : 학습 중, 3 : 학습 완료, 4 : 학습 오류, 5 : 배포 중, 6 : 배포 완료, 7 : 배포 중지, 8 : 배포 실패 */
+    /* 0 : 등록 완료, 1 : 학습 데이터 생성 오류, 2 : 학습 중, 3 : 학습 완료, 4 : 학습 오류, 5 : 배포 중, 6 : 배포 완료, 7 : 배포 중지, 8 : 배포 실패, 9 : 학습 데이터 생성 중, 10 : 학습 중지*/
 
     /**
      * 학습 API
      * 해당옵션으로 학습
      *
-     * @param modelId
+     * @param modelId 모델 ID
      */
     public void trainModel(Integer modelId) {
         LearningModelInfo info = learningModelRepository.getLoad(modelId);
@@ -68,9 +68,11 @@ public class MccService {
 
     /**
      * 학습 중지 API
-     * 학습중인 모델 중지
+     * 현재 학습 중인 모델을 중지
      *
-     * @param modelId
+     * @param modelId 모델 ID
+     * @return {Boolean} 모델 중지 성공 여부를 나타내는 Boolean 값.
+     *          -API 응답 responseBody의 "code" 값이 200이면 true, 그 외에는 false 반환
      */
     public Boolean stopModel(Integer modelId) {
         LearningModelInfo info = learningModelRepository.getLoad(modelId);
@@ -102,7 +104,9 @@ public class MccService {
      * 배포 API
      * 지정된 모델로 배포
      *
-     * @param modelId
+     * @param modelId 모델 ID
+     * @return {Boolean} 모델 배포 성공 여부를 나타내는 Boolean 값.
+     *          - API 응답 responseBody의 "code" 값이 200이면 true, 그 외에는 false 반환
      */
     public Boolean replaceModel(Integer modelId) {
         LearningModelInfo info = learningModelRepository.getLoad(modelId);
@@ -126,7 +130,13 @@ public class MccService {
         }
     }
 
-
+    /**
+     * api 호출
+     * @param path  호출할 API 경로
+     * @param params 요청 바디(JSON 데이터)
+     * @param learningType 모델 타입 (BC카드 / 세금계산서)에 따라 도메인 분기
+     * @return {Boolean} API 응답 responseBody의 "code" 값이 200이면 true, 그 외에는 false 반환
+     */
     private Boolean sendPost(String path, JSONObject params, LearningType learningType) {
         BufferedReader in = null;
         try {
