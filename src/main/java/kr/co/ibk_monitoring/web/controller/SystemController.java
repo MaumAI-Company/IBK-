@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class SystemController {
 
+    // MCC 및 웹 서버 도메인 정보
     @Value("${Globals.domain.mcc1}")
     private String mccDomain1;
     @Value("${Globals.domain.mcc2}")
     private String mccDomain2;
-
     @Value("${Globals.domain.web}")
     private String webDomain;
 
+    // MCC 및 웹 서버 체크 여부
     @Value("${Globals.check.mcc1}")
     private Boolean mccCheck1;
     @Value("${Globals.check.mcc2}")
     private Boolean mccCheck2;
-
     @Value("${Globals.check.web}")
     private Boolean webCheck;
 
@@ -48,6 +48,11 @@ public class SystemController {
 
     }
 
+    /**
+     * MCC BC카드 서버 상태를 체크
+     *
+     * @return 서버 상태 코드(API 서버/AI엔진): 200(정상/정상), 500(정상/장애), ""(장애/알수없음)
+     */
     @ResponseBody
     @PostMapping( "/api/v1/o/mccServerCheck1")
     public String mccServerCheck1() {
@@ -60,6 +65,11 @@ public class SystemController {
         return code == null ? "" : code.toString();
     }
 
+    /**
+     * MCC 세금계산서 서버 상태를 체크
+     *
+     * @return 서버 상태 코드(API 서버/AI엔진): 200(정상/정상), 500(정상/장애), ""(장애/알수없음)
+     */
     @ResponseBody
     @PostMapping( "/api/v1/o/mccServerCheck2")
     public String mccServerCheck2() {
@@ -72,6 +82,11 @@ public class SystemController {
         return code == null ? "" : code.toString();
     }
 
+    /**
+     * 웹 서버 상태를 체크
+     *
+     * @return 서버 상태 코드: 200(정상), 500(장애)
+     */
     @ResponseBody
     @PostMapping( "/api/v1/o/webServerCheck")
     public String webServerCheck() {

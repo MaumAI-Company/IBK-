@@ -597,6 +597,9 @@
             }
         }
 
+        /**
+         * MCC BC카드 서버 상태를 체크
+         */
         function fn_getMccServerCheck1(){
             $.ajax({
                 url : "/api/v1/o/mccServerCheck1",
@@ -632,6 +635,9 @@
             });
         }
 
+        /**
+         * MCC 세금계산서 서버 상태를 체크
+         */
         function fn_getMccServerCheck2(){
             $.ajax({
                 url : "/api/v1/o/mccServerCheck2",
@@ -667,6 +673,9 @@
             });
         }
 
+        /**
+         * 웹 서버 상태를 체크
+         */
         function fn_getWebServerCheck(){
             $.ajax({
                 url : "/api/v1/o/webServerCheck",
