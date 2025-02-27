@@ -443,7 +443,7 @@
                     <td th:text="${item.templateName}">사용</td>
                     <td th:text="${item.regNm}">사용</td>
                     <td th:text="${item.useAt != null && item.useAt == 'Y' ? '사용' : '미사용'}">사용</td>
-                    <td th:text="${item.deployDt != null ? #temporals.format(item.deployDt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
+                    <td th:text="${item.latestRegDt != null ? #temporals.format(item.latestRegDt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
                     <td th:text="${#temporals.format(item.regDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                     <td th:text="${item.des != null && item.des != '' ? item.des : '-'}">배치설명</td>
                 </tr>

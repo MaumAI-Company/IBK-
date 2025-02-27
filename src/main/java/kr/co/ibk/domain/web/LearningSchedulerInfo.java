@@ -39,6 +39,7 @@ public class LearningSchedulerInfo {
     private String learningRate;
     private String batchSize;
     private LocalDateTime deployDt;  //'배포일',
+    private LocalDateTime latestRegDt; // 최근 동작 일시
     private LearningType learningType;
     private String searchMm;
 
