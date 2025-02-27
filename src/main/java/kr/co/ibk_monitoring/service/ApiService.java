@@ -4,26 +4,21 @@ import kr.co.ibk_monitoring.domain.web.MemberInfo;
 import kr.co.ibk_monitoring.repository.AdminMemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
 
 @Slf4j
 @Service
@@ -202,7 +197,7 @@ public class ApiService {
     }
 
     private void sendMessenger(MemberInfo sender, List<MemberInfo> receiverList, String title, String body) throws IOException {
-        String url = messengerDomain + "/servlet/AnnounceService";
+        String baseUrl = messengerDomain + "/servlet/AnnounceService";
 
         String recipient = "";
         for (MemberInfo memberInfo : receiverList) {
@@ -215,7 +210,62 @@ public class ApiService {
         System.out.println("fromId#="+sender.getMemSno());
         System.out.println("toId="+recipient);
 
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        Map<String, String> params = new HashMap<>();
+        params.put("SRV_CODE", messengerSrvCode);
+        params.put("RECIPIENT", recipient);
+        params.put("SEND", sender.getMemSno());
+        params.put("SENDER_ALIAS", sender.getMemName());
+        params.put("TITLE", title);
+        params.put("BODY", body);
+
+        // make Post Request
+        StringJoiner paramJoiner = new StringJoiner("&");
+
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (value != null && !value.isEmpty()) {
+                paramJoiner.add(key + "=" + value);
+            }
+        }
+
+        String query = paramJoiner.toString();
+        String fullUrl = baseUrl + (query.isEmpty() ? "" : "?" + query);
+        System.out.println("fullUrl :" + fullUrl);
+
+        // send Post Request
+        URL url = new URL(baseUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+
+        try (OutputStream os = connection.getOutputStream()) {
+            os.write(query.getBytes());
+            os.flush();
+        }
+
+        int responseCode = connection.getResponseCode();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                responseCode == HttpURLConnection.HTTP_OK ? connection.getInputStream() : connection.getErrorStream()));
+
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+
+        while ((inputLine = reader.readLine())!= null) {
+            response.append(inputLine);
+        }
+        reader.close();
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            System.out.println("POST 요청 성공!");
+        } else {
+            System.out.println("POST 요청 실패!");
+        }
+        System.out.println("응답값 : " + response.toString());
+
+        /*DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(url);
 
         // 파라미터 만들기
@@ -246,7 +296,7 @@ public class ApiService {
             System.out.println("header" + headers);
         }
         // 쿠키읽어보기
-        /*List<Cookie> cookies = httpClient.getCookieStore().getCookies();
+        *//*List<Cookie> cookies = httpClient.getCookieStore().getCookies();
         if (cookies.isEmpty()) {
             System.out.println("비어있음");
         } else {
@@ -255,11 +305,11 @@ public class ApiService {
                 System.out.println("쿠키값\t : " + cookieItem.getValue());
                 System.out.println("쿠키도메인 : " + cookieItem.getDomain());
             }
-        }*/
+        }*//*
         // 결과가져오기
         String contents = EntityUtils.toString(httpResponse.getEntity());
         System.out.println("------------");
-        System.out.println("contents" + contents);
+        System.out.println("contents" + contents);*/
     }
 
     private void callAlarm(String title, String message) {
