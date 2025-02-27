@@ -23,12 +23,22 @@
         , lm.DEPLOY_DT
         , t.HDQR_BOB_DCD
         , t.LEARNING_TYPE
+        , latestData.latestRegDt
         from
         LEARNING_SCHEDULER ls
         INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
         INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
         LEFT JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
         LEFT JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
+        LEFT JOIN (
+            SELECT
+                ld.SCHED_ID,
+                    MAX(ld.REG_DT) AS latestRegDt
+                FROM
+                    LEARNING_DATA ld
+                GROUP BY
+            ld.SCHED_ID
+        ) latestData ON ls.SCHED_ID = latestData.SCHED_ID
         <include refid="where"></include>
         ORDER BY
         ls.REG_DT
