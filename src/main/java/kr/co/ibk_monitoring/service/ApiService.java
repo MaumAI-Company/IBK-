@@ -67,12 +67,12 @@ public class ApiService {
      * 서버 체크 > 장애 발생 시 메신저 발송
      */
     public void serverCheck() {
-        String title = TITLE;
-        String bodyMail = BODY_MAIL;
-        String bodyMessenger = BODY_MESSENGER;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
 
         if (mccCheck1) {
+            String title = TITLE;
+            String bodyMail = BODY_MAIL;
+            String bodyMessenger = BODY_MESSENGER;
             title = title.replaceAll("##SERVERNAME##", "MCC(BC카드)");
             bodyMail = bodyMail.replaceAll("##GRADE##", "CRITICAL");
             bodyMail = bodyMail.replaceAll("##HOSTNAME##", "pmvscbl3");
@@ -96,12 +96,15 @@ public class ApiService {
             }
         }
         if (mccCheck2) {
+            String title = TITLE;
+            String bodyMail = BODY_MAIL;
+            String bodyMessenger = BODY_MESSENGER;
+            title = title.replaceAll("##SERVERNAME##", "MCC(세금계산서)");
+            bodyMail = bodyMail.replaceAll("##GRADE##", "CRITICAL");
+            bodyMail = bodyMail.replaceAll("##HOSTNAME##", "pmvscbl3");
+            bodyMail = bodyMail.replaceAll("##MESSAGEGROUP##", "AI");
+            bodyMessenger = bodyMessenger.replaceAll("##SERVERNAME##", "MCC(세금계산서)");
             try {
-                title = title.replaceAll("##SERVERNAME##", "MCC(세금계산서)");
-                bodyMail = bodyMail.replaceAll("##GRADE##", "CRITICAL");
-                bodyMail = bodyMail.replaceAll("##HOSTNAME##", "pmvscbl3");
-                bodyMail = bodyMail.replaceAll("##MESSAGEGROUP##", "AI");
-                bodyMessenger = bodyMessenger.replaceAll("##SERVERNAME##", "MCC(세금계산서)");
                 Integer resMCC = mccServerCheck2();
                 if (resMCC == null || resMCC != 200) {
                     log.debug("### MCC 서버 장애!(세금계산서) : " + resMCC);
@@ -119,12 +122,15 @@ public class ApiService {
             }
         }
         if (webCheck) {
+            String title = TITLE;
+            String bodyMail = BODY_MAIL;
+            String bodyMessenger = BODY_MESSENGER;
+            title = title.replaceAll("##SERVERNAME##", "WEB");
+            bodyMail = bodyMail.replaceAll("##GRADE##", "NORMAL");
+            bodyMail = bodyMail.replaceAll("##HOSTNAME##", "pmvscbl2");
+            bodyMail = bodyMail.replaceAll("##MESSAGEGROUP##", "WAS");
+            bodyMessenger = bodyMessenger.replaceAll("##SERVERNAME##", "WEB");
             try {
-                title = title.replaceAll("##SERVERNAME##", "WEB");
-                bodyMail = bodyMail.replaceAll("##GRADE##", "NORMAL");
-                bodyMail = bodyMail.replaceAll("##HOSTNAME##", "pmvscbl2");
-                bodyMail = bodyMail.replaceAll("##MESSAGEGROUP##", "WAS");
-                bodyMessenger = bodyMessenger.replaceAll("##SERVERNAME##", "WEB");
                 Integer resWeb = webServerCheck();
                 if (resWeb == null || resWeb != 200) {
                     log.debug("### WEB 서버 장애! : " + resWeb);
