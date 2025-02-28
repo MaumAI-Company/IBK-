@@ -36,7 +36,6 @@ public class AdminController extends BaseCont {
     private final AdminUserService adminUserService;
     private final AdminAuthManagementService adminAuthManagementService;
     private final AdminMenuManagementService adminMenuManagementService;
-    private final AdminDetectLevelService adminDetectLevelService;
     private final LearningSchedulerService learningSchedulerService;
     private final TemplateService templateService;
 
@@ -157,25 +156,6 @@ public class AdminController extends BaseCont {
 
     }
 
-    /*@RequestMapping( "/soulGod/admin/fakeCheck")
-    public String fakeCheck(Model model,
-                            @CurrentUser MemberInfo memberInfo, DetectionLevel params) {
-
-        log.info("##### URI :: { /admin/fake_check } #####");
-        
-        HashMap<String, Object> resultMap = adminDetectLevelService.getDetectionLevelList(params);
-		
-        model.addAttribute("sessionMember", memberInfo);
-        model.addAttribute("roles", "");
-        model.addAttribute("detectionLevelList", resultMap.get("detectionLevelList"));
-        model.addAttribute("status", resultMap.get("status"));
-        
-        model.addAttribute("mc", "ico_manage");
-        model.addAttribute("pageTitle", "검증 수준(Threshold) 설정");
-
-        return "/soulGod/admin/fakeCheck";
-
-    }*/
     @RequestMapping("/soulGod/admin/commonCode")
     public String commonCode(Model model,
                              @CurrentUser MemberInfo memberInfo) {
@@ -526,17 +506,6 @@ public class AdminController extends BaseCont {
         result.put("menuTreeOrderCount", resultMenuTreeOrderCount);
         log.info("access Url : /menu/main, target Method : manuManagementDeleteMenu() End View menuMainPage");
         return result;
-    }
-
-    @PostMapping(value = {"/soulGod/admin/detection_level/change"})
-    @ResponseBody
-    public HashMap<String, Object> detectionLevelChange(@RequestBody HashMap<String, Object> params, HttpServletRequest request) {
-        log.info("##### URI :: { /admin/detection_level/change } #####");
-        log.info("##### params :: " + params + " #####");
-
-        HashMap<String, Object> map = adminDetectLevelService.setDetectionLevel(params, request);
-
-        return map;
     }
 
     @RequestMapping("/soulGod/admin/scheduler")
