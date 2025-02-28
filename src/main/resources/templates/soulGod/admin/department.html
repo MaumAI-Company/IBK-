@@ -288,7 +288,6 @@
                 async: false,
                 data: jsonData,
                 dataType: "json",
-                contentType: 'application/json;charset=utf-8',
                 success: function (data) {
                     if ("SUCCESS" == data.status) {
                         showAlert('complete', data.msg, () => {
