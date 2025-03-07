@@ -23,6 +23,68 @@
     <script type="text/javascript" src="../../../static/ClientUI/js/file.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/js/style.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/js/common.js"></script>
+    <style>
+        .tbl_wrap .tbl_list > tbody > tr > td.wsp {
+            white-space: pre
+        }
+
+        #popDetail .tbl_write table th,
+        #popDetail .tbl_write table td {
+            padding-top: 2px;
+            padding-bottom: 2px;
+            vertical-align: middle;
+        }
+
+        #popDetail .tbl_write .in_table {
+            border-radius: 8px;
+            border: 1px solid #ebeff2;
+            margin-top: 4px
+        }
+
+        #popDetail .tbl_write .in_table th {
+            color: #6d7175;
+            font-weight: 600;
+            font-size: 13px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popDetail .tbl_write .in_table th + th {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popDetail .tbl_write .in_table td {
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popDetail .tbl_write .in_table td + td {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popDetail .tbl_write div + div {
+            margin-top: 12px
+        }
+
+        #popDetail .tbl_write > thead > tr > th {
+            height: 52px;
+            padding: 14px 16px;
+            font-weight: 400;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            background-color: #f9f9f9
+        }
+
+        #popDetail .tbl_write > thead > tr > td {
+            padding: 2px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+        }
+
+    </style>
     <script type="text/javascript">
         $(function(){
             fn_setDatePicker('#stDt', {
@@ -40,6 +102,10 @@
                 }
             });
         });
+
+        function fn_detail(num) {
+            layerShow('popDetail');
+        }
     </script>
 </head>
 <body>
@@ -85,7 +151,16 @@
                         <a href="javascript:void(0);">학습 관리</a>
                         <ul class="depth">
                             <li>
-                                <a href="../learn/dataManage.html">데이터 관리</a>
+                                <a href="../learn/cardManage.html">BC카드 학습 데이터 등록</a>
+                            </li>
+                            <li>
+                                <a href="../learn/billManage.html">세금계산서 학습 데이터 등록</a>
+                            </li>
+                            <li>
+                                <a href="../learn/templateManage.html">학습 템플릿 관리</a>
+                            </li>
+                            <li>
+                                <a href="../learn/learningDataManage.html">학습 데이터 관리</a>
                             </li>
                             <li>
                                 <a href="../learn/modelManage.html">모델 관리</a>
@@ -118,21 +193,13 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="../admin/auth.html">권한 관리</a>
-                            </li>
-                            <li>
                                 <a href="../admin/menu.html">메뉴 관리</a>
                             </li>
                             <li>
-                                <a href="javascript:void(0);">검증 설정</a>
-                                <ul>
-                                    <li>
-                                        <a href="../admin/fakeCheck.html">검증 수준(Threshold) 설정</a>
-                                    </li>
-                                </ul>
+                                <a href="../admin/auth.html">권한 관리</a>
                             </li>
                             <li>
-                                <a href="../admin/commonCode.html">공통코드 관리</a>
+                                <a href="../admin/scheduler.html">학습 스케줄러 관리</a>
                             </li>
                         </ul>
                     </li>
@@ -158,26 +225,26 @@
 
             <div class="board_top">
                 <div>
-                    <div class="total_num"><b>346</b> 개의 글이 있습니다.</div>
+                    <div class="total_num"><b>54,852</b> 건의 AI 결과가 있습니다.</div>
                 </div>
                 <div class="mla">
                     <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
                     <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility">
-                        <option value="10" selected>10개</option>
-                        <option value="20">20개</option>
+                        <option value="10">10개</option>
+                        <option value="20" selected>20개</option>
                         <option value="30">30개</option>
                         <option value="40">40개</option>
                         <option value="50">50개</option>
                     </select>
                     <label for="sorting" class="blind">정렬조건</label>
                     <select name="sorting" id="sorting" class="sel_board sel_sorting">
-                        <option value="asc">오름차순</option>
-                        <option value="desc" selected>내림차순</option>
+                        <option value="asc">과거순</option>
+                        <option value="desc" selected>최신순</option>
                     </select>
                     <div class="filter_area">
                         <button type="button" class="btn btn_text btn_filter active"> <!--TODO : 선택된 조건이 있을 때는 클래스 active 추가, 필터 삭제되면 클래스 active 삭제-->
                             <i class="ico_filter"></i>
-                            <span>필터</span>
+                            <span>검색</span>
                         </button>
 
                         <div class="filter">
@@ -187,10 +254,10 @@
                                     <dd>
                                         <div class="term_form">
                                             <label for="stDt" class="blind">조회 시작 날짜</label>
-                                            <input type="text" id="stDt" class="datepicker" value="2024.08.01" readonly>
+                                            <input type="text" id="stDt" class="datepicker" value="2025.02.07" readonly>
                                             <div class="swung"></div>
                                             <label for="edDt" class="blind">조회 종료 날짜</label>
-                                            <input type="text" id="edDt" class="datepicker" value="2024.08.31" readonly>
+                                            <input type="text" id="edDt" class="datepicker" value="2025.03.07" readonly>
                                         </div>
                                     </dd>
                                 </dl>
@@ -202,22 +269,32 @@
                                         <select name="target" id="target">
                                             <option value="" selected>전체</option>
                                             <option value="">본부</option>
-                                            <option value="">지역본부</option>
                                             <option value="">영업점</option>
                                         </select>
                                     </dd>
                                 </dl>
                                 <dl>
                                     <dt>
-                                        <label for="condition">선택조건</label>
+                                        <label for="searchType">검색구분</label>
                                     </dt>
                                     <dd>
-                                        <select name="condition" id="condition">
-                                            <option value="" selected>전체</option>
-                                            <option value="">비목관리번호</option>
-                                            <option value="">집행사유코드</option>
-                                            <option value="">예산(세부)사업ID</option>
-                                            <option value="">부점</option>
+                                        <select name="searchType" id="searchType">
+                                            <option value="" selected="">선택</option>
+                                            <option class="BRCD">부점코드</option>
+                                            <option class="CDN">카드번호</option>
+                                            <option class="BDGT_TSTM_USE_HMS">승인시간</option>
+                                            <option class="AMSL_AMT">매출금액</option>
+                                            <option class="AFST_NM">가맹점명</option>
+                                            <option class="TPBS_NM">업종명</option>
+                                            <option class="BZDY_YN">영업일여부</option>
+                                            <option class="AFST_DTL_ADR">가맹점상세주소</option>
+                                            <option class="BRNC_ADR">부점주소</option>
+                                            <option class="AFST_BZN">가맹점사업자등록번호</option>
+                                            <option class="AMSL_AFST_NO">매출가맹점번호</option>
+                                            <option class="AFST_TPBCD">가맹점업종코드</option>
+                                            <option class="BDMN_ITEX_MNGM_NO">예산관리비목관리번호</option>
+                                            <option class="BDGT_PRFR_RSN_FRCS_CON">예산집행사유코드</option>
+                                            <option class="BDGT_BSNS_FRCS_CON">사업세부사업</option>
                                         </select>
                                     </dd>
                                 </dl>
@@ -227,13 +304,6 @@
                                     </dt>
                                     <dd>
                                         <div class="search_form">
-                                            <label for="searchType" class="blind">검색어 타입</label>
-                                            <select name="searchType" id="searchType">
-                                                <option value="" selected>대상</option>
-                                                <option value="">부점</option>
-                                                <option value="">직원</option>
-                                                <option value="">집행사유내용</option>
-                                            </select>
                                             <div class="search">
                                                 <input type="search" id="searchKeyword" placeholder="검색어를 입력하세요.">
                                                 <button type="button" class="btn_del" tabindex="-1">
@@ -243,12 +313,18 @@
                                         </div>
                                     </dd>
                                 </dl>
+                                <p class="tip">
+                                    OR (||): 여러 조건 중 하나라도 만족 <br>
+                                    AND (&amp;&amp;): 모든 조건 만족 <br>
+                                    NOT (!): 조건의 참/거짓을 반대로 해석 <br>
+                                    (사용 예시: 00 &amp;&amp; 11 || !22)
+                                </p>
                                 <div class="btn_area">
                                     <button type="button" class="btn line_cool_grey30">
                                         <span>초기화</span>
                                     </button>
                                     <button type="button" class="btn fill">
-                                        <span>검색</span>
+                                        <span>검색 조건 추가</span>
                                     </button>
                                 </div>
                             </div>
@@ -259,13 +335,7 @@
 
             <div class="selected_filter">
                 <div class="chip">
-                    <div>2024.01.01~2024.12.30</div>
-                    <button type="button" class="btn_del">
-                        <span class="blind">삭제</span>
-                    </button>
-                </div>
-                <div class="chip">
-                    <div>본부</div>
+                    <div>결과등록년월일 : 2025.02.07 ~ 2025.03.07</div>
                     <button type="button" class="btn_del">
                         <span class="blind">삭제</span>
                     </button>
@@ -278,219 +348,546 @@
 			</div>-->
             <!--데이터가 없을 때 : e-->
 
-            <table class="tbl_list">
-                <caption>세금계산서 지급결의 내역 조회 : No, 대상, 적용일시, 부점, 직원, 예산집행사유내용, 세금계산서일련번호, 집행년월, 예산집행번호, 상세보기로 구성</caption>
-                <colgroup>
-                    <col style="width: 3.5%;min-width: 44px;">
-                    <col style="width: 8%;">
-                    <col style="width: 9%;min-width: 90px;">
-                    <col style="width: 7%;">
-                    <col style="width: 7%;">
-                    <col style="width: auto;">
-                    <col style="width: 10%;">
-                    <col style="width: 11%;">
-                    <col style="width: 10%;">
-                    <col style="width: 7.5%;min-width: 104px;">
-                </colgroup>
-                <thead>
-                <tr>
-                    <th scope="col">No</th>
-                    <th scope="col">대상</th>
-                    <th scope="col">적용일시</th>
-                    <th scope="col">부점</th>
-                    <th scope="col">직원</th>
-                    <th scope="col">예산집행사유내용</th>
-                    <th scope="col">세금계산서<span class="dib">일련번호</span></th>
-                    <th scope="col">집행년월</th>
-                    <th scope="col">예산집행번호</th>
-                    <th scope="col">상세보기</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>10</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td class="view"> <!--TODO : 상세보기를 했을 경우 클래스 view 추가-->
-                        국외점포장 전략 회의를 위한 간식 구입비
-                    </td>
-                    <td>201002</td>
-                    <td>202403</td>
-                    <td>000112</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>9</td>
-                    <td>본부</td>
-                    <td>2024.07.22</td>
-                    <td>0751</td>
-                    <td>강길동</td>
-                    <td>회의 준비 등을 위한 시간외근무</td>
-                    <td>002</td>
-                    <td>224010</td>
-                    <td>2061-8</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>8</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>201002</td>
-                    <td>202403</td>
-                    <td>000112</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>7</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>201002</td>
-                    <td>202403</td>
-                    <td>000112</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>201002</td>
-                    <td>202403</td>
-                    <td>000112</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>201002</td>
-                    <td>202403</td>
-                    <td>000112</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>201002</td>
-                    <td>202403</td>
-                    <td>000112</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>201002</td>
-                    <td>202403</td>
-                    <td>000112</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>201002</td>
-                    <td>202403</td>
-                    <td>000112</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>지역본부</td>
-                    <td>2024.07.22</td>
-                    <td>0727</td>
-                    <td>홍길녀</td>
-                    <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                    <td>201002</td>
-                    <td>202403</td>
-                    <td>000112</td>
-                    <td>
-                        <button type="button" class="badge" onclick="layerShow('popDetail')">
-                            <i class="ico_plus"></i>
-                            <span>상세보기</span>
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="tbl_wrap contentsArea" style="">
+                <table class="tbl_list">
+                    <caption>세금계산서 지급결의 내역 조회 : No, 대상, 부점코드, 세금계산서구분코드, 공급자사업자번호, 공급자상호명, 공급자종목명, 발행금액, 세금계산서품목명,
+                        예산관리비목번호, 사업세부사업, 예산집행사유코드, 결과등록년월일, 상세보기로 구성
+                    </caption>
+                    <colgroup>
+                        <col style="width: 5%;min-width: 44px;">
+                        <col style="width: 5%;">
+                        <col style="width: 5%;">
+                        <col style="width: 9%;min-width: 65px;">
+                        <col style="width: 7%;">
+                        <col style="width: 7%;">
+                        <col style="width: 7%;">
+                        <col style="width: 7%;">
+                        <col style="width: 5%;">
+                        <col style="width: 10%;">
+                        <col style="width: 9%;">
+                        <col style="width: 8%;">
+                        <col style="width: 8%;">
+                        <col style="width: 4%;">
+                        <col style="width: 5%;min-width: 90px;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col" colspan="10" style="text-align:center;">input</th>
+                        <th scope="col" colspan="5" style="background-color:#f9f9ff;text-align:center;">output</th>
+                    </tr>
+                    <tr>
+                        <!-- Input -->
+                        <th scope="col">No</th>
+                        <th scope="col">대상</th>
+                        <th scope="col">부점코드</th>
+                        <th scope="col">세금계산서구분코드</th>
+                        <th scope="col">공급자사업자번호</th>
+                        <th scope="col">공급자상호명</th>
+                        <th scope="col">공급자업태명</th>
+                        <th scope="col">공급자종목명</th>
+                        <th scope="col">발행금액</th>
+                        <th scope="col">세금계산서품목명</th>
+
+                        <!-- Output -->
+                        <th scope="col" style="background-color:#f9f9ff">예산관리비목번호</th>
+                        <th scope="col" style="background-color:#f9f9ff">사업세부사업</th>
+                        <th scope="col" class="pr" style="background-color:#f9f9ff">예산집행사유코드</th>
+                        <th scope="col">결과등록년월일</th>
+                        <th scope="col">상세보기</th>
+                    </tr>
+                    </thead>
+                    <tbody id="mainTbody">
+                    <tr>
+                        <td>108422</td>
+                        <td>본부</td>
+                        <td>0893</td>
+                        <td>S</td>
+                        <td>1048617068</td>
+                        <td>법무법인(유한)지평</td>
+                        <td></td>
+                        <td></td>
+                        <td>220</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(0)">
+                                <input type="hidden" id="0_108422" value="first">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108421</td>
+                        <td>본부</td>
+                        <td>0705</td>
+                        <td>K</td>
+                        <td>1388180778</td>
+                        <td>주식회사케이엠종합서비스</td>
+                        <td>도소매</td>
+                        <td>농수축산물</td>
+                        <td>46</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(1)">
+                                <input type="hidden" id="1_108421" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108420</td>
+                        <td>영업점</td>
+                        <td>0392</td>
+                        <td>S</td>
+                        <td>1148800909</td>
+                        <td>株式會社和人하우스</td>
+                        <td>부동산업</td>
+                        <td>임대</td>
+                        <td>1,331</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(2)">
+                                <input type="hidden" id="2_108420" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108419</td>
+                        <td>본부</td>
+                        <td>0893</td>
+                        <td>S</td>
+                        <td>1048617068</td>
+                        <td>법무법인(유한)지평</td>
+                        <td></td>
+                        <td></td>
+                        <td>275</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(3)">
+                                <input type="hidden" id="3_108419" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108418</td>
+                        <td>영업점</td>
+                        <td>0696</td>
+                        <td>S</td>
+                        <td>1380925707</td>
+                        <td>은성인베스트</td>
+                        <td>부동산업</td>
+                        <td>임대</td>
+                        <td>2,471</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(4)">
+                                <input type="hidden" id="4_108418" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108417</td>
+                        <td>본부</td>
+                        <td>0716</td>
+                        <td>S</td>
+                        <td>2200615133</td>
+                        <td>백종수법무사</td>
+                        <td></td>
+                        <td></td>
+                        <td>16</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(5)">
+                                <input type="hidden" id="5_108417" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108416</td>
+                        <td>본부</td>
+                        <td>0716</td>
+                        <td>S</td>
+                        <td>2200615133</td>
+                        <td>백종수법무사</td>
+                        <td></td>
+                        <td></td>
+                        <td>23</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(6)">
+                                <input type="hidden" id="6_108416" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108415</td>
+                        <td>영업점</td>
+                        <td>0030</td>
+                        <td>S</td>
+                        <td>2018300251</td>
+                        <td>서울특별시중구청</td>
+                        <td></td>
+                        <td></td>
+                        <td>786</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(7)">
+                                <input type="hidden" id="7_108415" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108414</td>
+                        <td>영업점</td>
+                        <td>0182</td>
+                        <td>S</td>
+                        <td>4188510555</td>
+                        <td>(주)제일감정평가법인전북지사</td>
+                        <td></td>
+                        <td></td>
+                        <td>12</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(8)">
+                                <input type="hidden" id="8_108414" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108413</td>
+                        <td>본부</td>
+                        <td>0716</td>
+                        <td>S</td>
+                        <td>6991700865</td>
+                        <td>법무사김혜경사무소</td>
+                        <td></td>
+                        <td></td>
+                        <td>77</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(9)">
+                                <input type="hidden" id="9_108413" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108412</td>
+                        <td>본부</td>
+                        <td>0893</td>
+                        <td>S</td>
+                        <td>1048617068</td>
+                        <td>법무법인(유한)지평</td>
+                        <td></td>
+                        <td></td>
+                        <td>440</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(10)">
+                                <input type="hidden" id="10_108412" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108411</td>
+                        <td>본부</td>
+                        <td>0893</td>
+                        <td>S</td>
+                        <td>1048617068</td>
+                        <td>법무법인(유한)지평</td>
+                        <td></td>
+                        <td></td>
+                        <td>110</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(11)">
+                                <input type="hidden" id="11_108411" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108410</td>
+                        <td>본부</td>
+                        <td>0716</td>
+                        <td>S</td>
+                        <td>2200615133</td>
+                        <td>백종수법무사</td>
+                        <td></td>
+                        <td></td>
+                        <td>18</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(12)">
+                                <input type="hidden" id="12_108410" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108409</td>
+                        <td>영업점</td>
+                        <td>0172</td>
+                        <td>S</td>
+                        <td>6058525176</td>
+                        <td>(주)대화감정평가법인 부산.경남지사</td>
+                        <td></td>
+                        <td></td>
+                        <td>9</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(13)">
+                                <input type="hidden" id="13_108409" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108408</td>
+                        <td>본부</td>
+                        <td>0716</td>
+                        <td>S</td>
+                        <td>2200615133</td>
+                        <td>백종수법무사</td>
+                        <td></td>
+                        <td></td>
+                        <td>33</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(14)">
+                                <input type="hidden" id="14_108408" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108407</td>
+                        <td>영업점</td>
+                        <td>1096</td>
+                        <td>S</td>
+                        <td>1048648203</td>
+                        <td>SK매직(주)</td>
+                        <td>제조업</td>
+                        <td>가스기기, 가전제품</td>
+                        <td>1</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(15)">
+                                <input type="hidden" id="15_108407" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108406</td>
+                        <td>본부</td>
+                        <td>0751</td>
+                        <td>S</td>
+                        <td>6028523238</td>
+                        <td>법무사법인 충청 법조분사무소</td>
+                        <td></td>
+                        <td></td>
+                        <td>71</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(16)">
+                                <input type="hidden" id="16_108406" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108405</td>
+                        <td>본부</td>
+                        <td>0893</td>
+                        <td>S</td>
+                        <td>1048617068</td>
+                        <td>법무법인(유한)지평</td>
+                        <td></td>
+                        <td></td>
+                        <td>330</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(17)">
+                                <input type="hidden" id="17_108405" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108404</td>
+                        <td>본부</td>
+                        <td>8014</td>
+                        <td>K</td>
+                        <td>1388300477</td>
+                        <td>환경부</td>
+                        <td></td>
+                        <td></td>
+                        <td>3,360</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(18)">
+                                <input type="hidden" id="18_108404" value="">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>108403</td>
+                        <td>본부</td>
+                        <td>0893</td>
+                        <td>S</td>
+                        <td>1048617068</td>
+                        <td>법무법인(유한)지평</td>
+                        <td></td>
+                        <td></td>
+                        <td>990</td>
+                        <td></td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099<br>2순위 220010<br>3순위 203004</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 0818-15768-9<br>2순위 0893-16863-1<br>3순위 0824-537-35</td>
+                        <td class="wsp" style="background-color:#f9f9ff">1순위 220099-002<br>2순위 220010-<br>3순위 203004-007</td>
+                        <td>2025.02.18</td>
+                        <td>
+                            <button type="button" class="badge" onclick="fn_detail(19)">
+                                <input type="hidden" id="19_108403" value="final">
+                                <i class="ico_plus"></i>
+                                <span>상세보기</span>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <div class="pagination">
-                <button type="button" class="page_nav prev disabled">
-                    <span class="blind">이전</span>
-                </button>
-                <button type="button">
+                <button type="button" class="active">
                     1
                 </button>
-                <span>...</span>
-                <button type="button" class="active">
+                <button type="button">
+                    2
+                </button>
+                <button type="button">
                     3
                 </button>
                 <button type="button">
@@ -498,6 +895,21 @@
                 </button>
                 <button type="button">
                     5
+                </button>
+                <button type="button">
+                    6
+                </button>
+                <button type="button">
+                    7
+                </button>
+                <button type="button">
+                    8
+                </button>
+                <button type="button">
+                    9
+                </button>
+                <button type="button">
+                    10
                 </button>
                 <span>...</span>
                 <button type="button">
@@ -523,51 +935,141 @@
         </div>
         <div class="pop_cont">
             <table class="tbl_write">
-                <caption>지급결의 AI적용 결과 : 부점, 공급자사업번호, 공급자상호명, 공급가액, 구매자사업자번호, 세금계산서일련번호, 예산(세부)사업ID, 예산집행사유코드, 예산집행사유내용으로 구성</caption>
+                <caption>지급결의 AI적용 결과 : 부점, 예산관리비목관리번호, 예산(세부)사업ID, 예산집행사유코드, 예산집행사유내용으로 구성</caption>
                 <colgroup>
-                    <col style="width:160px">
+                    <col style="width:90px">
                     <col style="width:auto">
                 </colgroup>
-                <tbody>
+                <thead id="popHead">
                 <tr>
-                    <th scope="row">부점</th>
-                    <td>본부</td>
+                    <th>추론 모델</th>
+                    <td>-</td>
                 </tr>
+                </thead>
+                <tbody id="inpputBody">
                 <tr>
-                    <th scope="row">공급자사업번호</th>
-                    <td>8901234567</td>
+                    <th scope="row">input</th>
+                    <td>
+                        <table class="in_table">
+                            <colgroup>
+                                <col style="width:140px">
+                                <col style="width:auto">
+                            </colgroup>
+                            <tbody><tr>                         <th scope="row">부점코드</th>                         <td>0893</td>                     </tr><tr>                         <th scope="row">세금계산서구분코드</th>                         <td>S</td>                     </tr><tr>                         <th scope="row">공급자사업자번호</th>                         <td>1048617068</td>                     </tr><tr>                         <th scope="row">공급자상호명</th>                         <td>법무법인(유한)지평</td>                     </tr><tr>                         <th scope="row">공급자업태명</th>                         <td></td>                     </tr><tr>                         <th scope="row">공급자종목명</th>                         <td></td>                     </tr><tr>                         <th scope="row">발행금액</th>                         <td>275</td>                     </tr><tr>                         <th scope="row">세금계산서품목명</th>                         <td></td>                     </tr></tbody>
+                        </table>
+                    </td>
                 </tr>
+                </tbody>
+
+                <tbody id="outputBody" style=""> <!--TODO: 채린님 요청-->
                 <tr>
-                    <th scope="row">공급자상호명</th>
-                    <td>나O</td>
-                </tr>
-                <tr>
-                    <th scope="row">공급가액</th>
-                    <td>4,210,000</td>
-                </tr>
-                <tr>
-                    <th scope="row">구매자사업자번호</th>
-                    <td>0000000000</td>
-                </tr>
-                <tr>
-                    <th scope="row">구매자사업자번호</th>
-                    <td>본점(IBK)</td>
-                </tr>
-                <tr>
-                    <th scope="row">세금계산서일련번호</th>
-                    <td>201002</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산(세부)사업ID</th>
-                    <td>2053-1</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산집행사유코드</th>
-                    <td>201002-002</td>
-                </tr>
-                <tr>
-                    <th scope="row">예산집행사유내용</th>
-                    <td>고속스캐너 소모품 구입 (벨트, 카트리지 외)</td>
+                    <th scope="row">output</th>
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong class="tit">예산관리비목관리번호</strong>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">비목 번호</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1순위</td>
+                                                <td id="bdgtItexFrcsCon0">220099</td>
+                                                <td id="bdgtItexFrcsPrbCon0">56.96</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2순위</td>
+                                                <td id="bdgtItexFrcsCon1">220010</td>
+                                                <td id="bdgtItexFrcsPrbCon1">18.53</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3순위</td>
+                                                <td id="bdgtItexFrcsCon2">203004</td>
+                                                <td id="bdgtItexFrcsPrbCon2">16.34</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div>
+                                        <strong class="tit">사업세부사업</strong>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">부점코드-사업-세부사업</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1순위</td>
+                                                <td id="bdgtBsnsFrcsCon0">0818-15768-9</td>
+                                                <td id="bdgtBsnsFrcsPrbCon0">3.71</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2순위</td>
+                                                <td id="bdgtBsnsFrcsCon1">0893-16863-1</td>
+                                                <td id="bdgtBsnsFrcsPrbCon1">1.36</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3순위</td>
+                                                <td id="bdgtBsnsFrcsCon2">0824-537-35</td>
+                                                <td id="bdgtBsnsFrcsPrbCon2">1.18</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div>
+                                        <strong class="tit">예산집행사유코드</strong>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">비목-집행사유코드</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1순위</td>
+                                                <td id="bdgtPrfrRsnFrcsCon0">220099-002</td>
+                                                <td id="bdgtPrfrRsnFrcsPrbCon0">54.36</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2순위</td>
+                                                <td id="bdgtPrfrRsnFrcsCon1">220010-</td>
+                                                <td id="bdgtPrfrRsnFrcsPrbCon1">20.99</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3순위</td>
+                                                <td id="bdgtPrfrRsnFrcsCon2">203004-007</td>
+                                                <td id="bdgtPrfrRsnFrcsPrbCon2">6.84</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
                 </tr>
                 </tbody>
             </table>
