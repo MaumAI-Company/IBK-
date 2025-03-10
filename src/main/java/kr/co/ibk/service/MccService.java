@@ -7,6 +7,8 @@ import kr.co.ibk.repository.LearningModelRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,7 @@ public class MccService {
     private String billMccDomain;
 
     private final LearningModelRepository learningModelRepository;
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     /* 0 : 등록 완료, 1 : 학습 데이터 생성 오류, 2 : 학습 중, 3 : 학습 완료, 4 : 학습 오류, 5 : 배포 중, 6 : 배포 완료, 7 : 배포 중지, 8 : 배포 실패, 9 : 학습 데이터 생성 중, 10 : 학습 중지*/
 
@@ -157,6 +160,8 @@ public class MccService {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Accept", "application/json");
 
+            log.info("Calling API: {} with params: {}", url.toString(), params.toString());
+
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = params.toString().getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
@@ -178,7 +183,7 @@ public class MccService {
                 e.printStackTrace();
                 return false;
             }
-
+            log.info("API response code: {}", codeValue);
             return codeValue == HttpURLConnection.HTTP_OK;
         } catch (IOException e) {
             return null;
