@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
@@ -20,13 +21,22 @@ import javax.sql.DataSource;
 @Configuration
 @MapperScan(value="kr.co.ibk_monitoring.repository", sqlSessionFactoryRef="sqlSessionFactory")
 public class WebDataSourceConfig {
+
+
+
+    @Autowired
+    private Environment env;
+
     @Primary
     @Bean(name="dataSource")
     @ConfigurationProperties(prefix="spring.datasource.web")
     public DataSource dataSource() {
+
         HikariDataSource dataSource = DataSourceBuilder.create().type(HikariDataSource.class).build();
-        // maximum-pool 사이즈 설정
-//        dataSource.setMaximumPoolSize(30); // 예시: 최대 50개의 연결로 제한
+
+        // maximum-pool, maximum-lifetime 설정 (프로퍼티 설정 값)
+        dataSource.setMaximumPoolSize(env.getProperty("spring.datasource.hikari.maximum-pool-size", Integer.class));
+        dataSource.setMaxLifetime(env.getProperty("spring.datasource.hikari.max-lifetime", Integer.class));
         return dataSource;
 //        return DataSourceBuilder.create().build();
     }

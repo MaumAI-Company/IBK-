@@ -30,7 +30,7 @@ public class ServerCheckSchedule {
     /**
      * 3분 단위로 MCC서버, 웹서버 체크
      */
-    @Scheduled(fixedDelay = 1000 * 60 * 3, initialDelay = 0)
+    @Scheduled(fixedDelay = 1000 * 60 * 4, initialDelay = 0)
     public void serverCheck() {
         log.debug("### MCC, Web 서버 모니터링 시작");
         apiService.serverCheck();
