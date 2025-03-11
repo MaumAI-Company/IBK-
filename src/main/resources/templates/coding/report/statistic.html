@@ -19,13 +19,19 @@
     <script type="text/javascript" src="../../../static/ClientUI/plugins/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/plugins/datetimepicker/jquery.datetimepicker.full.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/plugins/jquery.nice-select.min.js"></script>
-    <script type="text/javascript" src="../../../static/ClientUI/plugins/amcharts5/index.js"></script>
-    <script type="text/javascript" src="../../../static/ClientUI/plugins/amcharts5/xy.js"></script>
-    <script type="text/javascript" src="../../../static/ClientUI/plugins/amcharts5/Animated.js"></script>
 
     <script type="text/javascript" src="../../../static/ClientUI/js/file.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/js/style.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/js/common.js"></script>
+    <style>
+        .nodata {
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.06) !important;
+        }
+    </style>
     <script type="text/javascript">
         $(function(){
             fn_setDatePicker('#stDt', {
@@ -42,191 +48,6 @@
                     })
                 }
             });
-        });
-
-        am5.ready(function() {
-            var root = am5.Root.new("chartdiv");
-
-            root.setThemes([
-                am5themes_Animated.new(root)
-            ]);
-
-            var chart = root.container.children.push(am5xy.XYChart.new(root, {
-                panX: false,
-                panY: false,
-                paddingLeft: 0,
-                wheelX: "panX",
-                wheelY: "zoomX",
-                layout: root.verticalLayout
-            }));
-
-
-            var legend = chart.children.push(
-                    am5.Legend.new(root, {
-                        centerX: am5.p50,
-                        x: am5.p50
-                    })
-            );
-
-            var data = [{
-                "year": "2021년 1월",
-                "branch": 243,
-                "head": 13,
-                "all": 256
-            }, {
-                "year": "2021년 2월",
-                "branch": 288,
-                "head": 15,
-                "all": 303
-            }, {
-                "year": "2021년 3월",
-                "branch": 298,
-                "head": 12,
-                "all": 310
-            }, {
-                "year": "2021년 4월",
-                "branch": 316,
-                "head": 23,
-                "all": 339
-            }, {
-                "year": "2021년 5월",
-                "branch": 376,
-                "head": 29,
-                "all": 405
-            }, {
-                "year": "2021년 6월",
-                "branch": 407,
-                "head": 16,
-                "all": 423
-            }, {
-                "year": "2021년 7월",
-                "branch": 374,
-                "head": 11,
-                "all": 385
-            }, {
-                "year": "2021년 8월",
-                "branch": 325,
-                "head": 12,
-                "all": 337
-            }, {
-                "year": "2021년 9월",
-                "branch": 289,
-                "head": 21,
-                "all": 310
-            }, {
-                "year": "2021년 10월",
-                "branch": 312,
-                "head": 9,
-                "all": 321
-            }, {
-                "year": "2021년 11월",
-                "branch": 298,
-                "head": 284,
-                "all": 298
-            }]
-
-            var xRenderer = am5xy.AxisRendererX.new(root, {
-                cellStartLocation: 0.1,
-                cellEndLocation: 0.9,
-                minorGridEnabled: true
-            })
-
-            var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
-                categoryField: "year",
-                renderer: xRenderer,
-                tooltip: am5.Tooltip.new(root, {})
-            }));
-
-            xRenderer.grid.template.setAll({
-                location: 1
-            })
-
-            xAxis.data.setAll(data);
-
-            var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-                renderer: am5xy.AxisRendererY.new(root, {
-                    strokeOpacity: 0.1
-                })
-            }));
-
-            function makeSeries(name, fieldName) {
-                if(fieldName != 'all'){
-                    var series = chart.series.push(am5xy.ColumnSeries.new(root, {
-                        name: name,
-                        xAxis: xAxis,
-                        yAxis: yAxis,
-                        valueYField: fieldName,
-                        categoryXField: "year"
-                    }));
-                }
-
-                series.columns.template.setAll({
-                    tooltipText: "{valueY}",
-                    width: am5.percent(90),
-                    tooltipY: 0,
-                    strokeOpacity: 0
-                });
-
-                series.data.setAll(data);
-
-                series.appear();
-
-                series.bullets.push(function () {
-                    return am5.Bullet.new(root, {
-                        locationY: 0,
-                        sprite: am5.Label.new(root, {
-                            text: "{valueY}",
-                            fill: root.interfaceColors.get("alternativeText"),
-                            centerY: 0,
-                            centerX: am5.p50,
-                            populateText: true
-                        })
-                    });
-                });
-
-                legend.data.push(series);
-            }
-
-
-            var series2 = chart.series.push(
-                    am5xy.LineSeries.new(root, {
-                        xAxis: xAxis,
-                        yAxis: yAxis,
-                        valueYField: "all",
-                        categoryXField: "year",
-                        tooltip: am5.Tooltip.new(root, {
-                            pointerOrientation: "horizontal",
-                            labelText: "{valueY}"
-                        })
-                    })
-            );
-
-            series2.strokes.template.setAll({
-                strokeWidth: 3,
-                templateField: "strokeSettings"
-            });
-
-
-            series2.data.setAll(data);
-
-            series2.bullets.push(function () {
-                return am5.Bullet.new(root, {
-                    sprite: am5.Circle.new(root, {
-                        strokeWidth: 3,
-                        stroke: series2.get("stroke"),
-                        radius: 5,
-                        fill: root.interfaceColors.get("background")
-                    })
-                });
-            });
-
-            chart.set("cursor", am5xy.XYCursor.new(root, {}));
-
-            makeSeries("영업점", "branch");
-            makeSeries("본부, 지역본부", "head");
-            makeSeries("전체", "all");
-
-            chart.appear(1000, 100);
         });
     </script>
 </head>
@@ -273,7 +94,16 @@
                         <a href="javascript:void(0);">학습 관리</a>
                         <ul class="depth">
                             <li>
-                                <a href="../learn/dataManage.html">데이터 관리</a>
+                                <a href="../learn/cardManage.html">BC카드 학습 데이터 등록</a>
+                            </li>
+                            <li>
+                                <a href="../learn/billManage.html">세금계산서 학습 데이터 등록</a>
+                            </li>
+                            <li>
+                                <a href="../learn/templateManage.html">학습 템플릿 관리</a>
+                            </li>
+                            <li>
+                                <a href="../learn/learningDataManage.html">학습 데이터 관리</a>
                             </li>
                             <li>
                                 <a href="../learn/modelManage.html">모델 관리</a>
@@ -306,21 +136,13 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="../admin/auth.html">권한 관리</a>
-                            </li>
-                            <li>
                                 <a href="../admin/menu.html">메뉴 관리</a>
                             </li>
                             <li>
-                                <a href="javascript:void(0);">검증 설정</a>
-                                <ul>
-                                    <li>
-                                        <a href="../admin/fakeCheck.html">검증 수준(Threshold) 설정</a>
-                                    </li>
-                                </ul>
+                                <a href="../admin/auth.html">권한 관리</a>
                             </li>
                             <li>
-                                <a href="../admin/commonCode.html">공통코드 관리</a>
+                                <a href="../admin/scheduler.html">학습 스케줄러 관리</a>
                             </li>
                         </ul>
                     </li>
@@ -368,25 +190,36 @@
                                 </dl>
                                 <dl>
                                     <dt>
-                                        <label for="cycle">주기</label>
+                                        <label for="searchLearningType">구분</label>
                                     </dt>
                                     <dd>
-                                        <select name="cycle" id="cycle">
-                                            <option value="" selected>월별</option>
-                                            <option value="">일별</option>
+                                        <select name="searchLearningType" id="searchLearningType">
+                                            <option class="CARD" value="CARD">BC카드</option>
+                                            <option class="BILL" value="BILL">세금계산서</option>
                                         </select>
                                     </dd>
                                 </dl>
                                 <dl>
                                     <dt>
-                                        <label for="condition">실행조건</label>
+                                        <label for="searchTarget">대상</label>
                                     </dt>
                                     <dd>
-                                        <select name="condition" id="condition">
+                                        <select name="searchTarget" id="searchTarget">
                                             <option value="" selected>전체</option>
-                                            <option value="">기간</option>
-                                            <option value="">부점</option>
-                                            <option value="">비목명</option>
+                                            <option value="1">본부</option>
+                                            <option value="2">영업점</option>
+                                        </select>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        <label for="cycle">주기</label>
+                                    </dt>
+                                    <dd>
+                                        <select name="cycle" id="cycle">
+                                            <option value="" selected>일별</option>
+                                            <option value="">월별</option>
+                                            <option value="">연도별</option>
                                         </select>
                                     </dd>
                                 </dl>
@@ -408,98 +241,21 @@
 
             <div class="graph_area">
                 <div class="graph">
-                    <div id="chartdiv" style="height:366px"></div> <!--TODO : 임의 높이값-->
+                    <div>추론 결과 수 : INPUT 데이터 기반 OUTPUT 데이터 생성 개수</div>
+                    <div id="chartdiv">
+                        <img src="../../../static/ClientUI/images/contents/graph01.png" alt="" style="max-width: 100%">
+                    </div> <!--TODO : 임의 높이값-->
                 </div>
             </div>
 
-            <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
-            <!--<div class="nodata">
-				<p>검색 결과가 없습니다.</p>
-			</div>-->
-            <!--데이터가 없을 때 : e-->
-
-            <table class="tbl_list">
-                <caption>기간별 통계 : 전체, 본부, 지역본부, 영업점으로 구성</caption>
-                <colgroup>
-                    <col style="width:8%;min-width:125px">
-                    <col style="width:7.66%">
-                    <col style="width:7.66%">
-                    <col style="width:7.66%">
-                    <col style="width:7.66%">
-                    <col style="width:7.66%">
-                    <col style="width:7.66%">
-                    <col style="width:7.66%">
-                    <col style="width:7.66%">
-                    <col style="width:7.66%">
-                    <col style="width:7.66%">
-                    <col style="width:7.66%">
-                    <col style="width:7.66%">
-                </colgroup>
-                <thead>
-                <tr class="th_fc_cool_grey_50">
-                    <th scope="col"></th>
-                    <th scope="col">2024년 <span class="dib">01월</span></th>
-                    <th scope="col">2024년 <span class="dib">02월</span></th>
-                    <th scope="col">2024년 <span class="dib">03월</span></th>
-                    <th scope="col">2024년 <span class="dib">04월</span></th>
-                    <th scope="col">2024년 <span class="dib">05월</span></th>
-                    <th scope="col">2024년 <span class="dib">06월</span></th>
-                    <th scope="col">2024년 <span class="dib">07월</span></th>
-                    <th scope="col">2024년 <span class="dib">08월</span></th>
-                    <th scope="col">2024년 <span class="dib">09월</span></th>
-                    <th scope="col">2024년 <span class="dib">10월</span></th>
-                    <th scope="col">2024년 <span class="dib">11월</span></th>
-                    <th scope="col">2024년 <span class="dib">12월</span></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <th scope="row">전체</th>
-                    <td>256</td>
-                    <td>303</td>
-                    <td>310</td>
-                    <td>339</td>
-                    <td>405</td>
-                    <td>423</td>
-                    <td>385</td>
-                    <td>337</td>
-                    <td>310</td>
-                    <td>321</td>
-                    <td>298</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <th scope="row">본부, 지역본부</th>
-                    <td>243</td>
-                    <td>288</td>
-                    <td>298</td>
-                    <td>316</td>
-                    <td>376</td>
-                    <td>407</td>
-                    <td>376</td>
-                    <td>407</td>
-                    <td>289</td>
-                    <td>312</td>
-                    <td>284</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <th scope="row" class="fc_primary">영업점</th>
-                    <td>13</td>
-                    <td>15</td>
-                    <td>12</td>
-                    <td>23</td>
-                    <td>29</td>
-                    <td>16</td>
-                    <td>11</td>
-                    <td>12</td>
-                    <td>21</td>
-                    <td>9</td>
-                    <td>14</td>
-                    <td>-</td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="graph_area">
+                <div class="graph">
+                    <div>사용자 활용 현황 : 추론된 OUTPUT 데이터의 실제 사용 개수</div>
+                    <div id="chartdiv2" style="height:366px"> <!--TODO : 임의 높이값-->
+                        <div class="nodata"><p>검색 결과가 없습니다.</p></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

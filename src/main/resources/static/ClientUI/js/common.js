@@ -625,6 +625,24 @@ function fn_jsonToMap(json) {
 }
 
 /**
+ * XSS 방지를 위한 HTML escaping 함수
+ * @param {string} input - 사용자 입력 값
+ * @returns {string} - 안전한 HTML 문자열
+ */
+function fn_escapeHTML(input) {
+    if (!input) return input;
+    return input
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;")
+        .replace(/\(/g, "&#40;")
+        .replace(/\)/g, "&#41;")
+        .replace(/\//g, "&#x2F;");
+}
+
+/**
  * Chip UI 생성 함수
  *
  * 역할: 검색 조건을 기반으로 Chip UI를 생성하여 `.selected_filter` 영역에 추가
@@ -659,11 +677,7 @@ function fn_settingChip(searchJson, isRadio) {
         if (searchMap.get("searchType")) {
             searchMap.get("searchType").forEach((value, key) => {
                 let keyNm = $('.' + key).first().text();
-
-                // XSS(스크립트 삽입 공격) 방지를 위한 검증 (XSS가 감지되면 태그 추가하지 않음)
-                if (fn_containsXSS(value)) {
-                    return;
-                }
+                value = fn_escapeHTML(value); // XSS 방어 적용
 
                 searchTypeTags += `
                     <div class="chip">
@@ -920,16 +934,4 @@ function fn_selectBoxReset(id) {
     if (id) {
         $('#' + id).val('').niceSelect('update');
     }
-}
-
-function fn_containsXSS(value) {
-    let lowerValue = value.toLowerCase();
-    return (
-        lowerValue.includes('<script') ||
-        lowerValue.includes('onerror') ||
-        lowerValue.includes('javascript:') ||
-        lowerValue.includes('<iframe') ||
-        lowerValue.includes('eval(') ||
-        lowerValue.includes('expression(')
-    );
 }

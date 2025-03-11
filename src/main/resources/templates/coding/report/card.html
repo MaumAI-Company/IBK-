@@ -23,6 +23,68 @@
     <script type="text/javascript" src="../../../static/ClientUI/js/file.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/js/style.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/js/common.js"></script>
+    <style>
+        .tbl_wrap .tbl_list > tbody > tr > td.wsp {
+            white-space: pre
+        }
+
+        #popDetail .tbl_write table th,
+        #popDetail .tbl_write table td {
+            padding-top: 2px;
+            padding-bottom: 2px;
+            vertical-align: middle;
+        }
+
+        #popDetail .tbl_write .in_table {
+            border-radius: 8px;
+            border: 1px solid #ebeff2;
+            margin-top: 4px
+        }
+
+        #popDetail .tbl_write .in_table th {
+            color: #6d7175;
+            font-weight: 600;
+            font-size: 13px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popDetail .tbl_write .in_table th + th {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popDetail .tbl_write .in_table td {
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popDetail .tbl_write .in_table td + td {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popDetail .tbl_write div + div {
+            margin-top: 12px
+        }
+
+        #popDetail .tbl_write > thead > tr > th {
+            height: 52px;
+            padding: 14px 16px;
+            font-weight: 400;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            background-color: #f9f9f9
+        }
+
+        #popDetail .tbl_write > thead > tr > td {
+            padding: 2px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+        }
+
+    </style>
     <script type="text/javascript">
         $(function(){
             fn_setDatePicker('#stDt', {
@@ -40,6 +102,10 @@
                 }
             });
         });
+
+        function fn_detail(num) {
+            layerShow('popDetail');
+        }
     </script>
 </head>
 <body>
@@ -85,7 +151,16 @@
                             <a href="javascript:void(0);">학습 관리</a>
                             <ul class="depth">
                                 <li>
-                                    <a href="../learn/dataManage.html">데이터 관리</a>
+                                    <a href="../learn/cardManage.html">BC카드 학습 데이터 등록</a>
+                                </li>
+                                <li>
+                                    <a href="../learn/billManage.html">세금계산서 학습 데이터 등록</a>
+                                </li>
+                                <li>
+                                    <a href="../learn/templateManage.html">학습 템플릿 관리</a>
+                                </li>
+                                <li>
+                                    <a href="../learn/learningDataManage.html">학습 데이터 관리</a>
                                 </li>
                                 <li>
                                     <a href="../learn/modelManage.html">모델 관리</a>
@@ -118,21 +193,13 @@
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="../admin/auth.html">권한 관리</a>
-                                </li>
-                                <li>
                                     <a href="../admin/menu.html">메뉴 관리</a>
                                 </li>
                                 <li>
-                                    <a href="javascript:void(0);">검증 설정</a>
-                                    <ul>
-                                        <li>
-                                            <a href="../admin/fakeCheck.html">검증 수준(Threshold) 설정</a>
-                                        </li>
-                                    </ul>
+                                    <a href="../admin/auth.html">권한 관리</a>
                                 </li>
                                 <li>
-                                    <a href="../admin/commonCode.html">공통코드 관리</a>
+                                    <a href="../admin/scheduler.html">학습 스케줄러 관리</a>
                                 </li>
                             </ul>
                         </li>
@@ -158,26 +225,26 @@
 
                 <div class="board_top">
                     <div>
-                        <div class="total_num"><b>346</b> 개의 글이 있습니다.</div>
+                        <div class="total_num"><b>54,852</b> 건의 AI 결과가 있습니다.</div>
                     </div>
                     <div class="mla">
                         <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
                         <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility">
-                            <option value="10" selected>10개</option>
-                            <option value="20">20개</option>
+                            <option value="10">10개</option>
+                            <option value="20" selected>20개</option>
                             <option value="30">30개</option>
                             <option value="40">40개</option>
                             <option value="50">50개</option>
                         </select>
                         <label for="sorting" class="blind">정렬조건</label>
                         <select name="sorting" id="sorting" class="sel_board sel_sorting">
-                            <option value="asc">오름차순</option>
-                            <option value="desc" selected>내림차순</option>
+                            <option value="asc">과거순</option>
+                            <option value="desc" selected>최신순</option>
                         </select>
                         <div class="filter_area">
                             <button type="button" class="btn btn_text btn_filter active"> <!--TODO : 선택된 조건이 있을 때는 클래스 active 추가, 필터 삭제되면 클래스 active 삭제-->
                                 <i class="ico_filter"></i>
-                                <span>필터</span>
+                                <span>검색</span>
                             </button>
 
                             <div class="filter">
@@ -187,10 +254,10 @@
                                         <dd>
                                             <div class="term_form">
                                                 <label for="stDt" class="blind">조회 시작 날짜</label>
-                                                <input type="text" id="stDt" class="datepicker" value="2024.08.01" readonly>
+                                                <input type="text" id="stDt" class="datepicker" value="2025.02.07" readonly>
                                                 <div class="swung"></div>
                                                 <label for="edDt" class="blind">조회 종료 날짜</label>
-                                                <input type="text" id="edDt" class="datepicker" value="2024.08.31" readonly>
+                                                <input type="text" id="edDt" class="datepicker" value="2025.03.07" readonly>
                                             </div>
                                         </dd>
                                     </dl>
@@ -202,22 +269,32 @@
                                             <select name="target" id="target">
                                                 <option value="" selected>전체</option>
                                                 <option value="">본부</option>
-                                                <option value="">지역본부</option>
                                                 <option value="">영업점</option>
                                             </select>
                                         </dd>
                                     </dl>
                                     <dl>
                                         <dt>
-                                            <label for="condition">선택조건</label>
+                                            <label for="searchType">검색구분</label>
                                         </dt>
                                         <dd>
-                                            <select name="condition" id="condition">
-                                                <option value="" selected>전체</option>
-                                                <option value="">비목관리번호</option>
-                                                <option value="">집행사유코드</option>
-                                                <option value="">예산(세부)사업ID</option>
-                                                <option value="">부점</option>
+                                            <select name="searchType" id="searchType">
+                                                <option value="" selected="">선택</option>
+                                                <option class="BRCD">부점코드</option>
+                                                <option class="CDN">카드번호</option>
+                                                <option class="BDGT_TSTM_USE_HMS">승인시간</option>
+                                                <option class="AMSL_AMT">매출금액</option>
+                                                <option class="AFST_NM">가맹점명</option>
+                                                <option class="TPBS_NM">업종명</option>
+                                                <option class="BZDY_YN">영업일여부</option>
+                                                <option class="AFST_DTL_ADR">가맹점상세주소</option>
+                                                <option class="BRNC_ADR">부점주소</option>
+                                                <option class="AFST_BZN">가맹점사업자등록번호</option>
+                                                <option class="AMSL_AFST_NO">매출가맹점번호</option>
+                                                <option class="AFST_TPBCD">가맹점업종코드</option>
+                                                <option class="BDMN_ITEX_MNGM_NO">예산관리비목관리번호</option>
+                                                <option class="BDGT_PRFR_RSN_FRCS_CON">예산집행사유코드</option>
+                                                <option class="BDGT_BSNS_FRCS_CON">사업세부사업</option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -227,13 +304,6 @@
                                         </dt>
                                         <dd>
                                             <div class="search_form">
-                                                <label for="searchType" class="blind">검색어 타입</label>
-                                                <select name="searchType" id="searchType">
-                                                    <option value="" selected>대상</option>
-                                                    <option value="">부점</option>
-                                                    <option value="">직원</option>
-                                                    <option value="">집행사유내용</option>
-                                                </select>
                                                 <div class="search">
                                                     <input type="search" id="searchKeyword" placeholder="검색어를 입력하세요.">
                                                     <button type="button" class="btn_del" tabindex="-1">
@@ -243,12 +313,18 @@
                                             </div>
                                         </dd>
                                     </dl>
+                                    <p class="tip">
+                                        OR (||): 여러 조건 중 하나라도 만족 <br>
+                                        AND (&amp;&amp;): 모든 조건 만족 <br>
+                                        NOT (!): 조건의 참/거짓을 반대로 해석 <br>
+                                        (사용 예시: 00 &amp;&amp; 11 || !22)
+                                    </p>
                                     <div class="btn_area">
                                         <button type="button" class="btn line_cool_grey30">
                                             <span>초기화</span>
                                         </button>
                                         <button type="button" class="btn fill">
-                                            <span>검색</span>
+                                            <span>검색 조건 추가</span>
                                         </button>
                                     </div>
                                 </div>
@@ -259,13 +335,7 @@
 
                 <div class="selected_filter">
                     <div class="chip">
-                        <div>2024.01.01~2024.12.30</div>
-                        <button type="button" class="btn_del">
-                            <span class="blind">삭제</span>
-                        </button>
-                    </div>
-                    <div class="chip">
-                        <div>본부</div>
+                        <div>결과등록년월일 : 2025.02.07 ~ 2025.03.07</div>
                         <button type="button" class="btn_del">
                             <span class="blind">삭제</span>
                         </button>
@@ -278,219 +348,635 @@
                 </div>-->
                 <!--데이터가 없을 때 : e-->
 
-                <table class="tbl_list">
-                    <caption>BC카드 지급결의 내역 조회 : No, 대상, 적용일시, 부점, 직원, 예산집행사유내용, 예산집행사유코드, 예산관리비목관리번호, 예산(세부)사업ID, 상세보기로 구성</caption>
-                    <colgroup>
-                        <col style="width: 3.5%;min-width: 44px;">
-                        <col style="width: 8%;">
-                        <col style="width: 9%;min-width: 90px;">
-                        <col style="width: 7%;">
-                        <col style="width: 7%;">
-                        <col style="width: auto;">
-                        <col style="width: 10%;">
-                        <col style="width: 11%;">
-                        <col style="width: 10%;">
-                        <col style="width: 7.5%;min-width: 104px;">
-                    </colgroup>
-                    <thead>
-                    <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">대상</th>
-                        <th scope="col">적용일시</th>
-                        <th scope="col">부점</th>
-                        <th scope="col">직원</th>
-                        <th scope="col">예산집행사유내용</th>
-                        <th scope="col">예산집행<span class="dib">사유코드</span></th>
-                        <th scope="col">예산관리비목<span class="dib">관리번호</span></th>
-                        <th scope="col">예산(세부)<span class="dib">사업ID</span></th>
-                        <th scope="col">상세보기</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>10</td>
-                        <td>지역본부</td>
-                        <td>2024.07.22</td>
-                        <td>0727</td>
-                        <td>홍길녀</td>
-                        <td class="view"> <!--TODO : 상세보기를 했을 경우 클래스 view 추가-->
-                            국외점포장 전략 회의를 위한 간식 구입비
-                        </td>
-                        <td>008</td>
-                        <td>222001</td>
-                        <td>20009-2</td>
-                        <td>
-                            <button type="button" class="badge" onclick="layerShow('popDetail')">
-                                <i class="ico_plus"></i>
-                                <span>상세보기</span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>9</td>
-                        <td>본부</td>
-                        <td>2024.07.22</td>
-                        <td>0751</td>
-                        <td>강길동</td>
-                        <td>회의 준비 등을 위한 시간외근무</td>
-                        <td>002</td>
-                        <td>224010</td>
-                        <td>2061-8</td>
-                        <td>
-                            <button type="button" class="badge" onclick="layerShow('popDetail')">
-                                <i class="ico_plus"></i>
-                                <span>상세보기</span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>지역본부</td>
-                        <td>2024.07.22</td>
-                        <td>0727</td>
-                        <td>홍길녀</td>
-                        <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                        <td>008</td>
-                        <td>222001</td>
-                        <td>20009-2</td>
-                        <td>
-                            <button type="button" class="badge" onclick="layerShow('popDetail')">
-                                <i class="ico_plus"></i>
-                                <span>상세보기</span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>지역본부</td>
-                        <td>2024.07.22</td>
-                        <td>0727</td>
-                        <td>홍길녀</td>
-                        <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                        <td>008</td>
-                        <td>222001</td>
-                        <td>20009-2</td>
-                        <td>
-                            <button type="button" class="badge" onclick="layerShow('popDetail')">
-                                <i class="ico_plus"></i>
-                                <span>상세보기</span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>지역본부</td>
-                        <td>2024.07.22</td>
-                        <td>0727</td>
-                        <td>홍길녀</td>
-                        <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                        <td>008</td>
-                        <td>222001</td>
-                        <td>20009-2</td>
-                        <td>
-                            <button type="button" class="badge" onclick="layerShow('popDetail')">
-                                <i class="ico_plus"></i>
-                                <span>상세보기</span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>지역본부</td>
-                        <td>2024.07.22</td>
-                        <td>0727</td>
-                        <td>홍길녀</td>
-                        <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                        <td>008</td>
-                        <td>222001</td>
-                        <td>20009-2</td>
-                        <td>
-                            <button type="button" class="badge" onclick="layerShow('popDetail')">
-                                <i class="ico_plus"></i>
-                                <span>상세보기</span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>지역본부</td>
-                        <td>2024.07.22</td>
-                        <td>0727</td>
-                        <td>홍길녀</td>
-                        <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                        <td>008</td>
-                        <td>222001</td>
-                        <td>20009-2</td>
-                        <td>
-                            <button type="button" class="badge" onclick="layerShow('popDetail')">
-                                <i class="ico_plus"></i>
-                                <span>상세보기</span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>지역본부</td>
-                        <td>2024.07.22</td>
-                        <td>0727</td>
-                        <td>홍길녀</td>
-                        <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                        <td>008</td>
-                        <td>222001</td>
-                        <td>20009-2</td>
-                        <td>
-                            <button type="button" class="badge" onclick="layerShow('popDetail')">
-                                <i class="ico_plus"></i>
-                                <span>상세보기</span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>지역본부</td>
-                        <td>2024.07.22</td>
-                        <td>0727</td>
-                        <td>홍길녀</td>
-                        <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                        <td>008</td>
-                        <td>222001</td>
-                        <td>20009-2</td>
-                        <td>
-                            <button type="button" class="badge" onclick="layerShow('popDetail')">
-                                <i class="ico_plus"></i>
-                                <span>상세보기</span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>지역본부</td>
-                        <td>2024.07.22</td>
-                        <td>0727</td>
-                        <td>홍길녀</td>
-                        <td>국외점포장 전략 회의를 위한 간식 구입비</td>
-                        <td>008</td>
-                        <td>222001</td>
-                        <td>20009-2</td>
-                        <td>
-                            <button type="button" class="badge" onclick="layerShow('popDetail')">
-                                <i class="ico_plus"></i>
-                                <span>상세보기</span>
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div class="tbl_wrap contentsArea" style="">
+                    <table class="tbl_list">
+                        <caption>BC카드 지급결의 내역 조회 : No, 대상, 적용일시, 부점, 직원, 예산집행사유내용, 예산집행사유코드, 예산관리비목관리번호, 예산(세부)사업ID, 상세보기로
+                            구성
+                        </caption>
+                        <colgroup>
+                            <col style="width: 2%;min-width: 44px;">
+                            <col style="width: 3%;">
+                            <col style="width: 3%;min-width: 65px;">
+                            <col style="width: 6%;">
+                            <col style="width: 3%;">
+                            <col style="width: 3%;">
+                            <col style="width: 3%;">
+                            <col style="width: 5%;">
+                            <col style="width: 4%;">
+                            <col style="width: 4%;">
+                            <col style="width: 4%;">
+                            <col style="width: 3%;">
+                            <col style="width: 4%;">
+                            <col style="width: 4%;">
+                            <col style="width: 9%;">
+                            <col style="width: 8%;">
+                            <col style="width: 8%;">
+                            <col style="width: 4%;">
+                            <col style="width: 3%;min-width: 90px;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th scope="col" colspan="14" style="text-align:center;">input</th>
+                            <th scope="col" colspan="5" style="background-color:#f9f9ff;text-align:center;">output</th>
+                        </tr>
+                        <tr>
+                            <!-- Input -->
+                            <th scope="col">No</th>
+                            <th scope="col">대상</th>
+                            <th scope="col">부점코드</th>
+                            <th scope="col">카드번호</th>
+                            <th scope="col">승인시간</th>
+                            <th scope="col">영업일여부</th>
+                            <th scope="col">매출금액</th>
+                            <th scope="col">가맹점명</th>
+                            <th scope="col">업종명</th>
+                            <th scope="col">가맹점 사업자 등록번호</th>
+                            <th scope="col">매출 가맹점 번호</th>
+                            <th scope="col">가맹점 업종코드</th>
+                            <th scope="col">가맹점 상세주소</th>
+                            <th scope="col" class="pr">부점주소</th>
+
+                            <!-- Output -->
+                            <th scope="col" style="background-color:#f9f9ff">예산관리비목관리번호</th>
+                            <!--<span class="dib">(1순위)</span>-->
+                            <th scope="col" class="pr" style="background-color:#f9f9ff">사업세부사업</th>
+                            <th scope="col" style="background-color:#f9f9ff">예산집행사유코드</th>
+                            <th scope="col">결과등록년월일</th>
+                            <th scope="col">상세보기</th>
+                        </tr>
+                        </thead>
+                        <tbody id="mainTbody">
+                        <tr>
+                            <td>54852</td>
+                            <td>본부</td>
+                            <td>8455</td>
+                            <td>4140031423357951</td>
+                            <td>13</td>
+                            <td>Y</td>
+                            <td>18</td>
+                            <td>광화문 도시락 카페</td>
+                            <td>일반한식</td>
+                            <td>2464300369</td>
+                            <td>706471994</td>
+                            <td>8001</td>
+                            <td>서울특별시 중구 소공동 ,123호 (을지로1가)</td>
+                            <td class="pr">서울 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 211099<br>2순위 232001<br>3순위 224010</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 8455-20124-3<br>2순위 8455-20124-2<br>3순위 8455-20124-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 211099-022<br>2순위 232001-006<br>3순위 224010-004</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(0)">
+                                    <input type="hidden" id="0_2023980" value="first">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54851</td>
+                            <td>본부</td>
+                            <td>8455</td>
+                            <td>4140031423357951</td>
+                            <td>14</td>
+                            <td>Y</td>
+                            <td>25</td>
+                            <td>달콤유부</td>
+                            <td>일반한식</td>
+                            <td>6630403126</td>
+                            <td>736247944</td>
+                            <td>8001</td>
+                            <td>서울특별시 용산구 청파동2가 1층 (청파동2가)</td>
+                            <td class="pr">서울 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 232001<br>2순위 222001<br>3순위 211099</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 8455-20124-2<br>2순위 8455-20124-3<br>3순위 8455-20124-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 232001-006<br>2순위 222001-008<br>3순위 211099-022</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(1)">
+                                    <input type="hidden" id="1_2023976" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54850</td>
+                            <td>본부</td>
+                            <td>8455</td>
+                            <td>4140031423357951</td>
+                            <td>11</td>
+                            <td>Y</td>
+                            <td>24</td>
+                            <td>네이버파이낸셜(주)-네이버</td>
+                            <td>인터넷종합Mall</td>
+                            <td>5248601528</td>
+                            <td>702924390</td>
+                            <td>4077</td>
+                            <td>경기도 성남시 분당구 정자동 네이버1784 (정자동)</td>
+                            <td class="pr">서울 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 211099<br>2순위 203099<br>3순위 224010</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 8455-20124-32순위 8455-2638-2<br>3순위 8455-20124-2</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 211099-0222순위 203099-003<br>3순위 211099-</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(2)">
+                                    <input type="hidden" id="2_2023975" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54849</td>
+                            <td>본부</td>
+                            <td>1106</td>
+                            <td>4140032300360993</td>
+                            <td>12</td>
+                            <td>Y</td>
+                            <td>8</td>
+                            <td>동원참치브이아이피(주)</td>
+                            <td>일식회집</td>
+                            <td>1048643310</td>
+                            <td>781830556</td>
+                            <td>8004</td>
+                            <td>서울특별시 중구 을지로2가 28 (수하동,우석빌딩2층)</td>
+                            <td class="pr">서울특별시 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 232001<br>2순위 222001<br>3순위 232002</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 0706-2036-9<br>2순위 0706-2036-10<br>3순위 1056-18028-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 232001-<br>2순위 222001-008<br>3순위 232001-006</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(3)">
+                                    <input type="hidden" id="3_2023974" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54848</td>
+                            <td>본부</td>
+                            <td>1106</td>
+                            <td>4140032300360993</td>
+                            <td>20</td>
+                            <td>Y</td>
+                            <td>14</td>
+                            <td>대나무 숙성회관 종각점</td>
+                            <td>일반한식</td>
+                            <td>2194101284</td>
+                            <td>738661329</td>
+                            <td>8001</td>
+                            <td>서울특별시 종로구 종로2가 1층 (관철동, 삼보빌딩)</td>
+                            <td class="pr">서울특별시 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 222001-008</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(4)">
+                                    <input type="hidden" id="4_2023973" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54847</td>
+                            <td>본부</td>
+                            <td>1106</td>
+                            <td>4140032334918972</td>
+                            <td>09</td>
+                            <td>Y</td>
+                            <td>5</td>
+                            <td>쿠팡(주)-쿠팡(주)</td>
+                            <td>인터넷P/G</td>
+                            <td>1168119948</td>
+                            <td>796099205</td>
+                            <td>4076</td>
+                            <td>서울특별시 중구 서소문동 (남대문로4가,대한상공회의소)</td>
+                            <td class="pr">서울특별시 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 211099<br>2순위 223099<br>3순위 224010</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1056-18028-2<br>2순위 0706-9193-7<br>3순위 1056-20060-3</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 211099-022<br>2순위 211099-<br>3순위 223099-030</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(5)">
+                                    <input type="hidden" id="5_2023972" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54846</td>
+                            <td>본부</td>
+                            <td>1106</td>
+                            <td>4140032334918972</td>
+                            <td>15</td>
+                            <td>Y</td>
+                            <td>3</td>
+                            <td>쿠팡-쿠팡(주)</td>
+                            <td>인터넷P/G</td>
+                            <td>1138521083</td>
+                            <td>782010021</td>
+                            <td>4076</td>
+                            <td>서울특별시 구로구 구로동 NHNKCP (구로동)</td>
+                            <td class="pr">서울특별시 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 211099<br>2순위 223099<br>3순위 224010</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1056-18028-2<br>2순위 0706-9193-7<br>3순위 1056-20060-2</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 211099-<br>2순위 211099-022<br>3순위 223099-030</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(6)">
+                                    <input type="hidden" id="6_2023971" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54845</td>
+                            <td>본부</td>
+                            <td>1106</td>
+                            <td>4140032300311921</td>
+                            <td>19</td>
+                            <td>Y</td>
+                            <td>2</td>
+                            <td>고푸다(GOPUDA)</td>
+                            <td>스넥</td>
+                            <td>4233400023</td>
+                            <td>794337465</td>
+                            <td>8021</td>
+                            <td>서울특별시 중구 남대문로1가 (남대문로1가)</td>
+                            <td class="pr">서울특별시 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(7)">
+                                    <input type="hidden" id="7_2023970" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54844</td>
+                            <td>본부</td>
+                            <td>1104</td>
+                            <td>4140032121081992</td>
+                            <td>19</td>
+                            <td>Y</td>
+                            <td>1</td>
+                            <td>퀵서비스_A</td>
+                            <td>인터넷P/G</td>
+                            <td>8158100527</td>
+                            <td>712140251</td>
+                            <td>4076</td>
+                            <td>서울특별시 영등포구 문래동3가 세미콜론문래 9층 N동 (문래동3가)</td>
+                            <td class="pr">서울특별시 중구 을지로 82(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(8)">
+                                    <input type="hidden" id="8_2023968" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54843</td>
+                            <td>본부</td>
+                            <td>1104</td>
+                            <td>4140032013773979</td>
+                            <td>21</td>
+                            <td>Y</td>
+                            <td>7</td>
+                            <td>장군보쌈</td>
+                            <td>일반한식</td>
+                            <td>1040758254</td>
+                            <td>773312927</td>
+                            <td>8001</td>
+                            <td>서울특별시 중구 다동 1층(무교동)</td>
+                            <td class="pr">서울특별시 중구 을지로 82(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(9)">
+                                    <input type="hidden" id="9_2023966" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54842</td>
+                            <td>본부</td>
+                            <td>1104</td>
+                            <td>4140032121081992</td>
+                            <td>17</td>
+                            <td>Y</td>
+                            <td>1</td>
+                            <td>퀵서비스_A</td>
+                            <td>인터넷P/G</td>
+                            <td>8158100527</td>
+                            <td>712140251</td>
+                            <td>4076</td>
+                            <td>서울특별시 영등포구 문래동3가 세미콜론문래 9층 N동 (문래동3가)</td>
+                            <td class="pr">서울특별시 중구 을지로 82(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(10)">
+                                    <input type="hidden" id="10_2023965" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54841</td>
+                            <td>본부</td>
+                            <td>1104</td>
+                            <td>4140032121081992</td>
+                            <td>19</td>
+                            <td>Y</td>
+                            <td>1</td>
+                            <td>퀵서비스_A</td>
+                            <td>인터넷P/G</td>
+                            <td>8158100527</td>
+                            <td>712140251</td>
+                            <td>4076</td>
+                            <td>서울특별시 영등포구 문래동3가 세미콜론문래 9층 N동 (문래동3가)</td>
+                            <td class="pr">서울특별시 중구 을지로 82(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(11)">
+                                    <input type="hidden" id="11_2023962" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54840</td>
+                            <td>본부</td>
+                            <td>8455</td>
+                            <td>4140031423357951</td>
+                            <td>12</td>
+                            <td>Y</td>
+                            <td>13</td>
+                            <td>버거킹 수지GS점</td>
+                            <td>서양음식</td>
+                            <td>1018676277</td>
+                            <td>787999133</td>
+                            <td>8006</td>
+                            <td>경기도 용인시 수지구 풍덕천동 (동천동)</td>
+                            <td class="pr">서울 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(12)">
+                                    <input type="hidden" id="12_2023960" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54839</td>
+                            <td>본부</td>
+                            <td>8455</td>
+                            <td>4140031423357951</td>
+                            <td>18</td>
+                            <td>Y</td>
+                            <td>11</td>
+                            <td>우아한형제들</td>
+                            <td>인터넷종합Mall</td>
+                            <td>1208765763</td>
+                            <td>731835686</td>
+                            <td>4077</td>
+                            <td>서울특별시 송파구 방이동 (방이동, 장은빌딩)</td>
+                            <td class="pr">서울 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(13)">
+                                    <input type="hidden" id="13_2023959" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54838</td>
+                            <td>본부</td>
+                            <td>8455</td>
+                            <td>4140031423357951</td>
+                            <td>19</td>
+                            <td>Y</td>
+                            <td>1</td>
+                            <td>오르새피자 수지죽전점</td>
+                            <td>서양음식</td>
+                            <td>4134300125</td>
+                            <td>796193805</td>
+                            <td>8006</td>
+                            <td>경기도 용인시 수지구 죽전동 1동 104호 (죽전동,유니프라자)</td>
+                            <td class="pr">서울 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(14)">
+                                    <input type="hidden" id="14_2023958" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54837</td>
+                            <td>본부</td>
+                            <td>8455</td>
+                            <td>4140031423357951</td>
+                            <td>19</td>
+                            <td>Y</td>
+                            <td>7</td>
+                            <td>카페엣176 (CAFE AT 176)</td>
+                            <td>서양음식</td>
+                            <td>2104360878</td>
+                            <td>715959039</td>
+                            <td>8006</td>
+                            <td>경기도 용인시 수지구 동천동 상가동 102,104,105호 (동천동,용인수지2차풍림아파트)</td>
+                            <td class="pr">서울 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(15)">
+                                    <input type="hidden" id="15_2023957" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54836</td>
+                            <td>본부</td>
+                            <td>1106</td>
+                            <td>4140032300360993</td>
+                            <td>12</td>
+                            <td>Y</td>
+                            <td>7</td>
+                            <td>주식회사 거북이 홍반점</td>
+                            <td>중국음식</td>
+                            <td>8778703432</td>
+                            <td>738525806</td>
+                            <td>8005</td>
+                            <td>서울특별시 종로구 종로2가 1층 (관철동)</td>
+                            <td class="pr">서울특별시 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(16)">
+                                    <input type="hidden" id="16_2023956" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54835</td>
+                            <td>본부</td>
+                            <td>1106</td>
+                            <td>4140032300237993</td>
+                            <td>13</td>
+                            <td>Y</td>
+                            <td>5</td>
+                            <td>금계찜닭명동점</td>
+                            <td>일반한식</td>
+                            <td>2222222931</td>
+                            <td>706156603</td>
+                            <td>8001</td>
+                            <td>서울특별시 중구 남대문로2가 2층 3층 4층 (을지로2가)</td>
+                            <td class="pr">서울특별시 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(17)">
+                                    <input type="hidden" id="17_2023955" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54834</td>
+                            <td>본부</td>
+                            <td>1106</td>
+                            <td>4140032300321995</td>
+                            <td>08</td>
+                            <td>Y</td>
+                            <td>31</td>
+                            <td>에그드랍 동대문점/(주)한양디엔에이</td>
+                            <td>서양음식</td>
+                            <td>2828100372</td>
+                            <td>716550572</td>
+                            <td>8006</td>
+                            <td>서울특별시 중구 을지로6가 ,1층 별관 (을지로6가)</td>
+                            <td class="pr">서울특별시 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(18)">
+                                    <input type="hidden" id="18_2023954" value="">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>54833</td>
+                            <td>본부</td>
+                            <td>1106</td>
+                            <td>4140032334918972</td>
+                            <td>15</td>
+                            <td>Y</td>
+                            <td>25</td>
+                            <td>한길기업</td>
+                            <td>문구용 품</td>
+                            <td>1040790026</td>
+                            <td>778513048</td>
+                            <td>5030</td>
+                            <td>서울특별시 중구 을지로4가 303-2호 신도빌딩 (인현동1가)</td>
+                            <td class="pr">서울특별시 중구 을지로 79(을지로2가)</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002<br>2순위 232001<br>3순위 222001</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 1104-20120-1<br>2순위 1056-18028-1<br>3순위 0706-2036-4</td>
+                            <td class="wsp" style="background-color:#f9f9ff">1순위 201002-<br>2순위 232001-<br>3순위 201002-002</td>
+                            <td>2025.03.04</td>
+                            <td>
+                                <button type="button" class="badge" onclick="fn_detail(19)">
+                                    <input type="hidden" id="19_2023953" value="final">
+                                    <i class="ico_plus"></i>
+                                    <span>상세보기</span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <div class="pagination">
-                    <button type="button" class="page_nav prev disabled">
-                        <span class="blind">이전</span>
-                    </button>
-                    <button type="button">
+                    <button type="button" class="active">
                         1
                     </button>
-                    <span>...</span>
-                    <button type="button" class="active">
+                    <button type="button">
+                        2
+                    </button>
+                    <button type="button">
                         3
                     </button>
                     <button type="button">
@@ -498,6 +984,21 @@
                     </button>
                     <button type="button">
                         5
+                    </button>
+                    <button type="button">
+                        6
+                    </button>
+                    <button type="button">
+                        7
+                    </button>
+                    <button type="button">
+                        8
+                    </button>
+                    <button type="button">
+                        9
+                    </button>
+                    <button type="button">
+                        10
                     </button>
                     <span>...</span>
                     <button type="button">
@@ -525,29 +1026,139 @@
                 <table class="tbl_write">
                     <caption>지급결의 AI적용 결과 : 부점, 예산관리비목관리번호, 예산(세부)사업ID, 예산집행사유코드, 예산집행사유내용으로 구성</caption>
                     <colgroup>
-                        <col style="width:160px">
+                        <col style="width:90px">
                         <col style="width:auto">
                     </colgroup>
-                    <tbody>
+                    <thead id="popHead">
                     <tr>
-                        <th scope="row">부점</th>
-                        <td>본부</td>
+                        <th>추론 모델</th>
+                        <td>-</td>
                     </tr>
+                    </thead>
+                    <tbody id="inpputBody">
                     <tr>
-                        <th scope="row">예산관리비목관리번호</th>
-                        <td>201002</td>
+                        <th scope="row">input</th>
+                        <td>
+                            <table class="in_table">
+                                <colgroup>
+                                    <col style="width:140px">
+                                    <col style="width:auto">
+                                </colgroup>
+                                <tbody><tr>                         <th scope="row">부점코드</th>                         <td>8455</td>                     </tr><tr>                         <th scope="row">카드번호</th>                         <td>4140031423357951</td>                     </tr><tr>                         <th scope="row">승인시간</th>                         <td>13</td>                     </tr><tr>                         <th scope="row">매출금액</th>                         <td>18</td>                     </tr><tr>                         <th scope="row">가맹점명</th>                         <td>광화문 도시락 카페</td>                     </tr><tr>                         <th scope="row">업종명</th>                         <td>일반한식</td>                     </tr><tr>                         <th scope="row">영업일여부</th>                         <td>Y</td>                     </tr><tr>                         <th scope="row">가맹점상세주소</th>                         <td>서울특별시 중구 소공동 ,123호 (을지로1가)</td>                     </tr><tr>                         <th scope="row">부점주소</th>                         <td>서울 중구 을지로 79(을지로2가)</td>                     </tr><tr>                         <th scope="row">가맹점사업자등록번호</th>                         <td>2464300369</td>                     </tr><tr>                         <th scope="row">매출가맹점번호</th>                         <td>706471994</td>                     </tr><tr>                         <th scope="row">가맹점업종코드</th>                         <td>8001</td>                     </tr></tbody>
+                            </table>
+                        </td>
                     </tr>
+                    </tbody>
+
+                    <tbody id="outputBody" style=""> <!--TODO: 채린님 요청-->
                     <tr>
-                        <th scope="row">예산(세부)사업ID</th>
-                        <td>2053-1</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">예산집행사유코드</th>
-                        <td>201002-002</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">예산집행사유내용</th>
-                        <td>기업성장 목표배정 야식대</td>
+                        <th scope="row">output</th>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <strong class="tit">예산관리비목관리번호</strong>
+                                            <table class="in_table">
+                                                <colgroup>
+                                                    <col style="width:25%">
+                                                    <col style="width:auto">
+                                                    <col style="width:auto">
+                                                </colgroup>
+                                                <tbody>
+                                                <tr>
+                                                    <th scope="col">순위</th>
+                                                    <th scope="col">비목 번호</th>
+                                                    <th scope="col">확률 (%)</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>1순위</td>
+                                                    <td id="bdgtItexFrcsCon0">211099</td>
+                                                    <td id="bdgtItexFrcsPrbCon0">53.53</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2순위</td>
+                                                    <td id="bdgtItexFrcsCon1">232001</td>
+                                                    <td id="bdgtItexFrcsPrbCon1">20.26</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3순위</td>
+                                                    <td id="bdgtItexFrcsCon2">224010</td>
+                                                    <td id="bdgtItexFrcsPrbCon2">15.25</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div>
+                                            <strong class="tit">사업세부사업</strong>
+                                            <table class="in_table">
+                                                <colgroup>
+                                                    <col style="width:25%">
+                                                    <col style="width:auto">
+                                                    <col style="width:auto">
+                                                </colgroup>
+                                                <tbody>
+                                                <tr>
+                                                    <th scope="col">순위</th>
+                                                    <th scope="col">부점코드-사업-세부사업</th>
+                                                    <th scope="col">확률 (%)</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>1순위</td>
+                                                    <td id="bdgtBsnsFrcsCon0">8455-20124-3</td>
+                                                    <td id="bdgtBsnsFrcsPrbCon0">67.14</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2순위</td>
+                                                    <td id="bdgtBsnsFrcsCon1">8455-20124-2</td>
+                                                    <td id="bdgtBsnsFrcsPrbCon1">23.74</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3순위</td>
+                                                    <td id="bdgtBsnsFrcsCon2">8455-20124-4</td>
+                                                    <td id="bdgtBsnsFrcsPrbCon2">1.81</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div>
+                                            <strong class="tit">예산집행사유코드</strong>
+                                            <table class="in_table">
+                                                <colgroup>
+                                                    <col style="width:25%">
+                                                    <col style="width:auto">
+                                                    <col style="width:auto">
+                                                </colgroup>
+                                                <tbody>
+                                                <tr>
+                                                    <th scope="col">순위</th>
+                                                    <th scope="col">비목-집행사유코드</th>
+                                                    <th scope="col">확률 (%)</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>1순위</td>
+                                                    <td id="bdgtPrfrRsnFrcsCon0">211099-022</td>
+                                                    <td id="bdgtPrfrRsnFrcsPrbCon0">49.98</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2순위</td>
+                                                    <td id="bdgtPrfrRsnFrcsCon1">232001-006</td>
+                                                    <td id="bdgtPrfrRsnFrcsPrbCon1">30.72</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3순위</td>
+                                                    <td id="bdgtPrfrRsnFrcsCon2">224010-004</td>
+                                                    <td id="bdgtPrfrRsnFrcsPrbCon2">7.42</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

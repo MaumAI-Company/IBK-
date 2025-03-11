@@ -19,55 +19,16 @@
     <script type="text/javascript" src="../../../static/ClientUI/plugins/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/plugins/datetimepicker/jquery.datetimepicker.full.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/plugins/jquery.nice-select.min.js"></script>
-    <script type="text/javascript" src="../../../static/ClientUI/plugins/amcharts5/index.js"></script>
-    <script type="text/javascript" src="../../../static/ClientUI/plugins/amcharts5/percent.js"></script>
-    <script type="text/javascript" src="../../../static/ClientUI/plugins/amcharts5/Animated.js"></script>
 
     <script type="text/javascript" src="../../../static/ClientUI/js/file.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/js/style.js"></script>
     <script type="text/javascript" src="../../../static/ClientUI/js/common.js"></script>
-    <script type="text/javascript">
-        am5.ready(function() {
-            var root = am5.Root.new("chartdiv");
 
-            root.setThemes([
-                am5themes_Animated.new(root)
-            ]);
-
-            var chart = root.container.children.push(am5percent.PieChart.new(root, {
-                layout: root.verticalLayout,
-                innerRadius: am5.percent(50)
-            }));
-
-            var series = chart.series.push(am5percent.PieSeries.new(root, {
-                valueField: "value",
-                alignLabels: false
-            }));
-
-            series.labels.template.setAll({
-                textType: "circular",
-                centerX: 0,
-                centerY: 0
-            });
-
-            series.data.setAll([
-                { value: 9 },
-                { value: 1 },
-            ]);
-
-            var legend = chart.children.push(am5.Legend.new(root, {
-                centerX: am5.percent(50),
-                x: am5.percent(50),
-                marginTop: 15,
-                marginBottom: 15,
-            }));
-
-            legend.data.setAll(series.dataItems);
-
-            series.appear(1000, 100);
-
-        }); // end am5.ready()
-    </script>
+    <style>
+        .graph .chart {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 <div id="wrap">
@@ -112,7 +73,16 @@
                         <a href="javascript:void(0);">학습 관리</a>
                         <ul class="depth">
                             <li>
-                                <a href="../learn/dataManage.html">데이터 관리</a>
+                                <a href="../learn/cardManage.html">BC카드 학습 데이터 등록</a>
+                            </li>
+                            <li>
+                                <a href="../learn/billManage.html">세금계산서 학습 데이터 등록</a>
+                            </li>
+                            <li>
+                                <a href="../learn/templateManage.html">학습 템플릿 관리</a>
+                            </li>
+                            <li>
+                                <a href="../learn/learningDataManage.html">학습 데이터 관리</a>
                             </li>
                             <li>
                                 <a href="../learn/modelManage.html">모델 관리</a>
@@ -124,7 +94,7 @@
                     </li>
                     <li class="ico_dns active">
                         <a href="javascript:void(0);">시스템 상태</a>
-                        <ul class="depth" style="display:block">
+                        <ul class="depth" style="display: block">
                             <li class="active">
                                 <a href="../system/monitoring.html">모니터링</a>
                             </li>
@@ -145,21 +115,13 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="../admin/auth.html">권한 관리</a>
-                            </li>
-                            <li>
                                 <a href="../admin/menu.html">메뉴 관리</a>
                             </li>
                             <li>
-                                <a href="javascript:void(0);">검증 설정</a>
-                                <ul>
-                                    <li>
-                                        <a href="../admin/fakeCheck.html">검증 수준(Threshold) 설정</a>
-                                    </li>
-                                </ul>
+                                <a href="../admin/auth.html">권한 관리</a>
                             </li>
                             <li>
-                                <a href="../admin/commonCode.html">공통코드 관리</a>
+                                <a href="../admin/scheduler.html">학습 스케줄러 관리</a>
                             </li>
                         </ul>
                     </li>
@@ -186,11 +148,67 @@
 
             <div class="graph_area">
                 <div class="graph">
-                    <div id="chartdiv" style="height:366px"></div>
+                    <h4 class="sub_tit" id="diskUse">디스크 사용량</h4>
+                    <div class="chart" id="chartdiv">
+                        <img src="../../../static/ClientUI/images/contents/graph02.png" alt="" style="max-width: 100%">
+                    </div>
                 </div>
-                <div class="graph" style="height:430px;"></div>
-                <div class="graph" style="height:430px;"></div>
-                <div class="graph" style="height:430px;"></div>
+                <div class="graph">
+                    <h4 class="sub_tit">웹 어플리케이션 CPU 사용량</h4>
+                    <div class="chart">
+                        <img src="../../../static/ClientUI/images/contents/graph03.png" alt="" style="max-width: 100%">
+                    </div>
+                </div>
+                <div class="graph">
+                    <h4 class="sub_tit">JVM MEMORY</h4>
+                    <div class="chart">
+                        <img src="../../../static/ClientUI/images/contents/graph04.png" alt="" style="max-width: 100%">
+                    </div>
+                </div>
+                <div class="graph">
+                    <h4 class="sub_tit">업타임</h4>
+                    <div id="processUptime">프로세스 구동중인 시간 : 00시간 01분 01초</div>
+                    <table class="tbl_list mt15">
+                        <caption>서비스 명, 서비스 상태로 구성</caption>
+                        <colgroup>
+                            <col style="width: 50%;">
+                            <col style="width: 50%;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th scope="col" class="tal">서비스 명</th>
+                            <th scope="col">서비스 상태</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="tal">API서버 / AI엔진 :: BC카드</td>
+                            <td>
+                                <b id="systemStatusMcc1_1" class="fc_primary">확인중</b>
+                                <!--<b class="fc_error">비정상</b>-->
+                                /
+                                <b id="systemStatusMcc1_2" class="fc_primary">확인중</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tal">API서버 / AI엔진 :: 세금계산서</td>
+                            <td>
+                                <b id="systemStatusMcc2_1" class="fc_primary">확인중</b>
+                                <!--<b class="fc_error">비정상</b>-->
+                                /
+                                <b id="systemStatusMcc2_2" class="fc_primary">확인중</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tal">WEB 서버</td>
+                            <td>
+                                <b id="systemStatusWeb" class="fc_primary">확인중</b>
+                                <!--<b class="fc_error">비정상</b>-->
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
