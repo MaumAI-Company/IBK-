@@ -43,17 +43,16 @@
                 SELECT
                     <include refid="usageDateGrouping"/> AS dd,
                     COUNT(*) AS total,
-                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
-                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_BSNS_FRCS_CON, concat(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
-                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_PRFR_RSN_FRCS_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt3,
-                    SUM(CASE WHEN co.TSTM_YMD IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO) AND INSTR(ci.BDGT_BSNS_FRCS_CON, concat(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt4
+                    SUM(CASE WHEN cd.TSTM_YMD IS NOT NULL AND INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
+                    SUM(CASE WHEN cd.TSTM_YMD IS NOT NULL AND INSTR(co.BDGT_BSNS_FRCS_CON, concat(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
+                    SUM(CASE WHEN cd.TSTM_YMD IS NOT NULL AND INSTR(co.BDGT_PRFR_RSN_FRCS_CON, TRIM(cd.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt3,
+                    SUM(CASE WHEN cd.TSTM_YMD IS NOT NULL AND INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) AND INSTR(co.BDGT_BSNS_FRCS_CON, concat(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt4
                 FROM
-                    CARD_OUTPUT ci
-                        INNER JOIN CARD_LEARNING_DATA co
-                                   ON
-                                       ci.TSTM_YMD = co.TSTM_YMD
-                                           AND ci.TSTM_NO = co.TSTM_NO
-                                           AND ci.BRCD = co.BRCD
+                    CARD_OUTPUT co
+                        INNER JOIN CARD_LEARNING_DATA cd
+                                   ON co.TSTM_YMD = cd.TSTM_YMD
+                                           AND co.TSTM_NO = cd.TSTM_NO
+                                           AND co.BRCD = cd.BRCD
                 WHERE <include refid="usageWhere"></include>
                 GROUP BY dd
             ) sub
@@ -62,7 +61,7 @@
             SELECT
                 <include refid="usageDateGrouping"/> AS dd,
                 COUNT(*) AS totalOutCnt
-            FROM CARD_OUTPUT ci
+            FROM CARD_OUTPUT co
                 WHERE <include refid="usageWhere"></include>
             GROUP BY dd
             ) totalOutput ON sub.dd = totalOutput.dd
@@ -110,16 +109,16 @@
             SELECT
                 <include refid="usageDateGrouping"/> AS dd,
                 COUNT(*) AS total,
-                SUM(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
-                SUM(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_BSNS_FRCS_CON, concat(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
-                SUM(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_PRFR_RSN_FRCS_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt3,
-                SUM(CASE WHEN co.BASE_YM IS NOT NULL AND INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO) AND INSTR(ci.BDGT_BSNS_FRCS_CON, concat(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt4
+                SUM(CASE WHEN cd.BASE_YM IS NOT NULL AND INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
+                SUM(CASE WHEN cd.BASE_YM IS NOT NULL AND INSTR(co.BDGT_BSNS_FRCS_CON, concat(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
+                SUM(CASE WHEN cd.BASE_YM IS NOT NULL AND INSTR(co.BDGT_PRFR_RSN_FRCS_CON, TRIM(cd.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt3,
+                SUM(CASE WHEN cd.BASE_YM IS NOT NULL AND INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) AND INSTR(co.BDGT_BSNS_FRCS_CON, concat(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt4
             FROM
-                BILL_OUTPUT ci
-                    INNER JOIN BILL_LEARNING_DATA co ON
-                    ci.BASE_YM = co.BASE_YM
-                        AND ci.TXBL_SRN = co.TXBL_SRN
-                        AND ci.BRCD = co.BRCD
+                BILL_OUTPUT co
+                    INNER JOIN BILL_LEARNING_DATA cd
+                        ON co.BASE_YM = cd.BASE_YM
+                        AND co.TXBL_SRN = cd.TXBL_SRN
+                        AND co.BRCD = cd.BRCD
             WHERE <include refid="usageWhere"></include>
             GROUP BY dd
         ) sub
@@ -128,7 +127,7 @@
         SELECT
             <include refid="usageDateGrouping"/> AS dd,
             COUNT(*) AS totalOutCnt
-        FROM BILL_OUTPUT ci
+        FROM BILL_OUTPUT co
         WHERE <include refid="usageWhere"></include>
         GROUP BY dd
         ) totalOutput ON sub.dd = totalOutput.dd
@@ -153,28 +152,28 @@
 
         /*대상 검색*/
         <if test="searchTarget != null and searchTarget != ''">
-            AND ci.HDQR_BOB_DCD = #{searchTarget}
+            AND co.HDQR_BOB_DCD = #{searchTarget}
         </if>
 
         /*일자 검색*/
         <if test="searchStartDate != null and searchEndDate != null">
-            AND ci.RSRE_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+            AND co.RSRE_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
         </if>
     </sql>
 
     <sql id="inferDateGrouping">
         <choose>
             <when test="searchCycle == null or searchCycle == '' or searchCycle == 1">
-                SUBSTRING(ci.RCV_YMD, 1, 8) <!-- 일별 -->
+                co.RSRE_D <!-- 일별 -->
             </when>
             <when test="searchCycle == 2">
-                SUBSTRING(ci.RCV_YMD, 1, 6) <!-- 월별 -->
+                co.RSRE_M <!-- 월별 -->
             </when>
             <when test="searchCycle == 3">
-                SUBSTRING(ci.RCV_YMD, 1, 4) <!-- 연도별 -->
+                co.RSRE_Y <!-- 연도별 -->
             </when>
             <otherwise>
-                SUBSTRING(ci.RCV_YMD, 1, 8) <!-- 기본값: 일별 -->
+                co.RSRE_D <!-- 기본값: 일별 -->
             </otherwise>
         </choose>
     </sql>
@@ -182,16 +181,16 @@
     <sql id="usageDateGrouping">
         <choose>
             <when test="searchCycle == null or searchCycle == '' or searchCycle == 1">
-                SUBSTRING(ci.RSRE_YMD, 1, 8) <!-- 일별 -->
+                co.RSRE_D <!-- 일별 -->
             </when>
             <when test="searchCycle == 2">
-                SUBSTRING(ci.RSRE_YMD, 1, 6) <!-- 월별 -->
+                co.RSRE_M <!-- 월별 -->
             </when>
             <when test="searchCycle == 3">
-                SUBSTRING(ci.RSRE_YMD, 1, 4) <!-- 연도별 -->
+                co.RSRE_Y <!-- 연도별 -->
             </when>
             <otherwise>
-                SUBSTRING(ci.RSRE_YMD, 1, 8) <!-- 기본값: 일별 -->
+                co.RSRE_D <!-- 기본값: 일별 -->
             </otherwise>
         </choose>
     </sql>
