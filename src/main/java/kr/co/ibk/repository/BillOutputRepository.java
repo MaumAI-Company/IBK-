@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BillOutputRepository {
     BillOutputInfo getDetail(BillInputForm form);
+
+    int updateHitYn();
 }

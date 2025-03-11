@@ -43,10 +43,10 @@
                 SELECT
                     <include refid="usageDateGrouping"/> AS dd,
                     COUNT(*) AS total,
-                    SUM(CASE WHEN cd.TSTM_YMD IS NOT NULL AND INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
-                    SUM(CASE WHEN cd.TSTM_YMD IS NOT NULL AND INSTR(co.BDGT_BSNS_FRCS_CON, concat(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
-                    SUM(CASE WHEN cd.TSTM_YMD IS NOT NULL AND INSTR(co.BDGT_PRFR_RSN_FRCS_CON, TRIM(cd.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt3,
-                    SUM(CASE WHEN cd.TSTM_YMD IS NOT NULL AND INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) AND INSTR(co.BDGT_BSNS_FRCS_CON, concat(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt4
+                    SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
+                    SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
+                    SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
+                    SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4
                 FROM
                     CARD_OUTPUT co
                         INNER JOIN CARD_LEARNING_DATA cd
@@ -109,10 +109,10 @@
             SELECT
                 <include refid="usageDateGrouping"/> AS dd,
                 COUNT(*) AS total,
-                SUM(CASE WHEN cd.BASE_YM IS NOT NULL AND INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) THEN 1 ELSE 0 END) AS hitCnt1,
-                SUM(CASE WHEN cd.BASE_YM IS NOT NULL AND INSTR(co.BDGT_BSNS_FRCS_CON, concat(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt2,
-                SUM(CASE WHEN cd.BASE_YM IS NOT NULL AND INSTR(co.BDGT_PRFR_RSN_FRCS_CON, TRIM(cd.BDGT_PRFR_RSN_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt3,
-                SUM(CASE WHEN cd.BASE_YM IS NOT NULL AND INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) AND INSTR(co.BDGT_BSNS_FRCS_CON, concat(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) THEN 1 ELSE 0 END) AS hitCnt4
+                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
+                SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
+                SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
+                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4
             FROM
                 BILL_OUTPUT co
                     INNER JOIN BILL_LEARNING_DATA cd
@@ -194,4 +194,5 @@
             </otherwise>
         </choose>
     </sql>
+
 </mapper>

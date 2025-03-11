@@ -7,9 +7,7 @@ import kr.co.ibk.model.LearningDataForm;
 import kr.co.ibk.model.LearningModelForm;
 import kr.co.ibk.model.TemplateForm;
 import kr.co.ibk.repository.*;
-import kr.co.ibk.service.LearningModelService;
-import kr.co.ibk.service.LearningSchedulerService;
-import kr.co.ibk.service.TemplateService;
+import kr.co.ibk.service.*;
 import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +23,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class MinSchedule extends BaseCont {
+public class BatchSchedule extends BaseCont {
 
     private final LearningModelInputRepository learningModelInputRepository;
     private final LearningModelRepository learningModelRepository;
@@ -36,13 +34,23 @@ public class MinSchedule extends BaseCont {
     private final LearningSchedulerService learningSchedulerService;
     private final LearningModelService learningModelService;
 
+    private final CardOutputService cardOutputService;
+    private final BillOutputService billOutputService;
+
     // 등록자 설정
     private final String REG_ID = "admin";
 
     @Value("${Globals.check.scheduler}")
     private Boolean schedulerCheck;
 
-    @Scheduled(cron = "0 * * * * *") // 매 분 0초마다 실행
+    @Value("${Globals.check.hit}")
+    private Boolean hitCheck;
+
+    /**
+     * 학습 스케줄러 실행
+     * 매 분 0초마다 실행
+     */
+    @Scheduled(cron = "0 * * * * *")
     public void schedulerBatch() {
         if (schedulerCheck) {
             List<LearningSchedulerInfo> batchList = learningSchedulerService.getBatchList();
@@ -95,6 +103,20 @@ public class MinSchedule extends BaseCont {
                 form.setId(modelForm.getId());
                 learningModelService.learning(form);
             }
+        }
+    }
+
+    /**
+     * - 설정한 스케줄 마다 적중수 업데이트
+     * - 속성
+     * *　　　　　　*　　　　　　  *　　　　　　*　　　　　　*
+     * 0      분(0-59)　　시간(0-23)　　일(1-31)　　월(1-12)　　요일(0-7)
+     */
+    @Scheduled(cron = "0 ${Globals.batch.hit.cron.min} ${Globals.batch.hit.cron.hour} ${Globals.batch.hit.cron.day} ${Globals.batch.hit.cron.mon} ${Globals.batch.hit.cron.week}")
+    public void hitBatch() {
+        if (hitCheck) {
+            cardOutputService.updateHitYn();
+            billOutputService.updateHitYn();
         }
     }
 }
