@@ -264,6 +264,7 @@
 
                         $('#id').val(id);
                         $('#hdqrBobDcd').val(item.hdqrBobDcd).niceSelect('update');
+                        $('#modelId').text(id);
                         $('#learnName').text(item.learnName);
                         $('#epoch').val(item.epoch);
                         $('#learningRate').val(item.learningRate);
@@ -533,13 +534,13 @@
             <!--데이터가 없을 때 : e-->
 
             <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
-                <caption>모델 관리 : No, 학습 모델 명, 구분, 대상, 등록자, 상태, Precision, recall, F-1 Score, epoch, Learning Rate, Batch
-                    Size,
-                    생성일시로 구성
+                <caption>모델 관리 : No, 학습 모델 ID, 학습 모델 명, 구분, 대상, 등록자, 상태, Precision, recall, F-1 Score, epoch, Learning
+                    Rate, BatchSize, 생성일시로 구성
                 </caption>
                 <colgroup>
                     <col style="width: 3.5%;min-width: 44px;">
                     <col style="width: 3.5%;min-width: 44px;">
+                    <col style="width: 10%;min-width: 60px;">
                     <col style="width: 19%;">
                     <col style="width: 7%;">
                     <col style="width: 7%;">
@@ -562,6 +563,7 @@
                         </div>
                     </th>
                     <th scope="col">No</th>
+                    <th scope="col">학습 모델 ID</th>
                     <th scope="col">학습 모델 명</th>
                     <th scope="col">구분</th>
                     <th scope="col">대상</th>
@@ -588,6 +590,7 @@
                         </div>
                     </td>
                     <td th:text="${(params.paginationInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                    <td th:text="${item.id}"></td>
                     <td>
                         <a href="javascript:void(0)" th:class="${'link templateName' + item.id}"
                            th:text="${item.learnName}"
@@ -746,7 +749,7 @@
                 </table>
                 <strong class="tbl_tit">모델</strong>
                 <table class="tbl_write">
-                    <caption>모델 : 모델명, 파라미터</caption>
+                    <caption>모델 : 모델 ID, 모델명, 파라미터</caption>
                     <colgroup>
                         <col style="width:160px">
                         <col style="width:auto">
@@ -754,7 +757,14 @@
                     <tbody>
                     <tr>
                         <th scope="row">
-                            <span class="aster"></span>
+                            <label for="modelId">모델 ID</label>
+                        </th>
+                        <td>
+                            <span id="modelId"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
                             <label for="learnName">모델명</label>
                         </th>
                         <td>
@@ -763,7 +773,6 @@
                     </tr>
                     <tr>
                         <th scope="row">
-                            <span class="aster"></span>
                             <label>파라미터</label>
                         </th>
                         <td>
