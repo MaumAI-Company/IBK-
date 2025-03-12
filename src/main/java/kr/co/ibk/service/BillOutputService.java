@@ -74,4 +74,9 @@ public class BillOutputService extends _BaseService {
         return info;
     }
 
+    @Transactional
+    public void updateHitYn() {
+        billOutputRepository.updateHitYn();
+    }
+
 }

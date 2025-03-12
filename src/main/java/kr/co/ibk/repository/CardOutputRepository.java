@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CardOutputRepository {
     CardOutputInfo getDetail(CardInputForm form);
+
+    int updateHitYn();
 }

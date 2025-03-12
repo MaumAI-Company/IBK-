@@ -101,4 +101,9 @@ public class CardOutputService extends _BaseService {
         return info;
     }
 
+    @Transactional
+    public void updateHitYn() {
+        cardOutputRepository.updateHitYn();
+    }
+
 }
