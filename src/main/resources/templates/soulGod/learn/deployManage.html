@@ -217,10 +217,11 @@
             </div>
             <!--데이터가 없을 때 : e-->
             <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
-                <caption>배포 관리 : No, 학습 모델 명, 등록자, 상태, 배포 여부, 배포일시, 등록일시로 구성</caption>
+                <caption>배포 관리 : No, 학습 모델 ID, 학습 모델 명, 등록자, 상태, 배포 여부, 배포일시, 등록일시로 구성</caption>
                 <colgroup>
                     <col style="width: 3.5%;min-width: 44px;">
                     <col style="width: 3.5%;min-width: 44px;">
+                    <col style="width: 10%;min-width: 60px;">
                     <col style="width: 19%;">
                     <col style="width: 7%;">
                     <col style="width: 7%;">
@@ -233,6 +234,7 @@
                 <tr>
                     <th scope="col">선택</th>
                     <th scope="col">No</th>
+                    <th scope="col">학습 모델 ID</th>
                     <th scope="col">학습 모델 명</th>
                     <th scope="col">구분</th>
                     <th scope="col">대상</th>
@@ -254,6 +256,7 @@
                         </div>
                     </td>
                     <td th:text="${(params.paginationInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                    <td th:text="${item.id}"></td>
                     <td th:text="${item.learnName}" th:onclick="|fn_learningDataOpen(${item.id})|">카드지급결의 통합모델_A</td>
                     <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}">BC카드</td>
                     <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
