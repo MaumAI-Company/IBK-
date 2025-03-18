@@ -31,7 +31,13 @@
 					, hc_dt.DEPT_CODE
 					, hc_dt.DEPT_NAME
 					, hc_dt.DEPT_ENG_NAME
-					, fnGetDeptFullPath(hc_dt.DEPT_ID) AS DEPT_FULL_PATH
+					, CONCAT(
+						COALESCE(hc_dt3.DEPT_NAME, ''),
+						CASE WHEN hc_dt3.DEPT_NAME IS NOT NULL THEN ' > ' ELSE '' END,
+						COALESCE(hc_dt2.DEPT_NAME, ''),
+						CASE WHEN hc_dt2.DEPT_NAME IS NOT NULL THEN ' > ' ELSE '' END,
+						hc_dt.DEPT_NAME
+					  ) AS DEPT_FULL_PATH
 					, hc_dt.DEPT_DEPTH
 					, hc_dt.DEPT_ORDER
 					, hc_dt.DEPT_STAT
@@ -50,6 +56,8 @@
 						WHERE @dept_id IS NOT NULL
 				) fnc
 				LEFT JOIN HC_DEPT hc_dt ON fnc.DEPT_ID = hc_dt.DEPT_ID
+				LEFT JOIN HC_DEPT hc_dt2 ON hc_dt.PAR_ID = hc_dt2.DEPT_ID
+				LEFT JOIN HC_DEPT hc_dt3 ON hc_dt2.PAR_ID = hc_dt3.DEPT_ID
 		) al
 		WHERE 
 			1=1
