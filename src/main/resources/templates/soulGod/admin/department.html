@@ -372,10 +372,10 @@
             let $addDeptStat = $("input[name='addDeptStat']:checked").val(); // 상태
 
             // 필수조건
-            if ($addParDeptId.length < 1) {
+            /*if ($addParDeptId.length < 1) {
                 showAlert('warning', "상위 부서를 선택해주세요.");
                 return;
-            }
+            }*/
             if ($addDeptCode.length < 1) {
                 showAlert('warning', "부서 코드를 입력해주세요.", () => {
                     $('#addDeptCode').focus();
@@ -814,7 +814,6 @@
                     <th scope="row">
                         상위 <br>
                         <label for="addParDeptName">부서명</label>/<label for="addParDeptCode">부서코드</label>
-                        <span class="aster"></span>
                     </th>
                     <td>
                         <div class="input">
