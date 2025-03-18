@@ -11,7 +11,7 @@
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
         FROM (
              SELECT
-                <include refid="dateGrouping"/> AS dd,
+                <include refid="inferDateGrouping"/> AS dd,
                 COUNT(*) AS total,
                 SUM(CASE WHEN co.TSTM_YMD IS NOT NULL THEN 1 ELSE 0 END) AS outCnt
              FROM
@@ -41,7 +41,7 @@
             (
             /* 지급결의된 개수 */
                 SELECT
-                    <include refid="dateGrouping"/> AS dd,
+                    <include refid="usageDateGrouping"/> AS dd,
                     COUNT(*) AS total,
                     SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
                     SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
@@ -59,7 +59,7 @@
             LEFT JOIN (
             /* 전체 output 개수 */
             SELECT
-                <include refid="dateGrouping"/> AS dd,
+                <include refid="usageDateGrouping"/> AS dd,
                 COUNT(*) AS totalOutCnt
             FROM CARD_OUTPUT co
                 WHERE <include refid="usageWhere"></include>
@@ -76,7 +76,7 @@
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
         FROM(
             SELECT
-                <include refid="dateGrouping"></include> AS dd,
+                <include refid="inferDateGrouping"></include> AS dd,
                 count(*) AS total,
                 sum(CASE WHEN co.BASE_YM IS NOT NULL THEN 1 ELSE 0 END) AS outCnt
             FROM
@@ -107,7 +107,7 @@
             (
             /* 지급결의된 개수 */
             SELECT
-                <include refid="dateGrouping"/> AS dd,
+                <include refid="usageDateGrouping"/> AS dd,
                 COUNT(*) AS total,
                 SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
                 SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
@@ -125,7 +125,7 @@
         LEFT JOIN (
         /* 전체 output 개수 */
         SELECT
-            <include refid="dateGrouping"/> AS dd,
+            <include refid="usageDateGrouping"/> AS dd,
             COUNT(*) AS totalOutCnt
         FROM BILL_OUTPUT co
         WHERE <include refid="usageWhere"></include>
@@ -161,7 +161,24 @@
         </if>
     </sql>
 
-    <sql id="dateGrouping">
+    <sql id="inferDateGrouping">
+        <choose>
+            <when test="searchCycle == null or searchCycle == '' or searchCycle == 1">
+                SUBSTRING(ci.RCV_YMD, 1, 8) <!-- 일별 -->
+            </when>
+            <when test="searchCycle == 2">
+                SUBSTRING(ci.RCV_YMD, 1, 6) <!-- 월별 -->
+            </when>
+            <when test="searchCycle == 3">
+                SUBSTRING(ci.RCV_YMD, 1, 4) <!-- 연도별 -->
+            </when>
+            <otherwise>
+                SUBSTRING(ci.RCV_YMD, 1, 8) <!-- 기본값: 일별 -->
+            </otherwise>
+        </choose>
+    </sql>
+
+    <sql id="usageDateGrouping">
         <choose>
             <when test="searchCycle == null or searchCycle == '' or searchCycle == 1">
                 co.RSRE_YMD <!-- 일별 -->
