@@ -7,6 +7,7 @@ import kr.co.ibk.repository.AdminDeptRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,6 +77,10 @@ public class AdminDeptService extends _BaseService {
             status = "EXIST";
             msg = "이미 사용중인 부서코드 입니다.";
         } else {
+            // 부모 ID 가 없는 경우 최상위(system)로 등록
+            if (ObjectUtils.isEmpty(params.getParId())) {
+                params.setParId("system");
+            }
             int modCnt = adminDeptRepository.addDept(params);
             if (modCnt > 0) {
                 status = "SUCCESS";
