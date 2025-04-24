@@ -66,7 +66,7 @@ public class BatchSchedule extends BaseCont {
                 LearningDataForm dataForm = new LearningDataForm();
                 dataForm.setMemId(REG_ID);
                 dataForm.setSchedId(info.getSchedId());
-                dataForm.setDataName("[배치]" + info.getSchedNm());
+                dataForm.setDataName("[배치] " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "_" + info.getSchedNm()); 
                 dataForm.setLearningType(templateInfo.getLearningType());
                 dataForm.setSelectCon(templateInfo.getSelectCon());
                 dataForm.setHdqrBobDcd(templateInfo.getHdqrBobDcd());
@@ -88,7 +88,7 @@ public class BatchSchedule extends BaseCont {
                 modelForm.setModId(REG_ID);
                 modelForm.setRegId(REG_ID);
                 modelForm.setDataId(dataForm.getId());
-                modelForm.setLearnName("[배치]" + info.getSchedNm());
+                modelForm.setLearnName("[배치] " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))+ "_" + info.getSchedNm());
                 modelForm.setBatchSize(info.getBatchSize());
                 modelForm.setEpoch(info.getEpoch());
                 modelForm.setLearningRate(info.getLearningRate());
