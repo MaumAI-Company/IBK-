@@ -39,9 +39,11 @@ public class LearningSchedulerInfo {
     private String learningRate;
     private String batchSize;
     private LocalDateTime deployDt;  //'배포일',
+    // Todo : 최근 동작일시를 learning_data, learning_model의 동작 시간에 의존하지 않고 자체적으로 업데이트 할 수 있도록 컬럼 추가 필요... (배치 동작일시를 의미하기 때문)
     private LocalDateTime latestRegDt; // 최근 동작 일시
     private LearningType learningType;
     private String searchMm;
+    private Integer runCnt; // 실행횟수
 
 }
 

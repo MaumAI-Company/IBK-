@@ -105,6 +105,7 @@ public class LearningSchedulerService extends _BaseService {
         return learningSchedulerRepository.setDelete(params);
     }
 
+    @Transactional
     public List<LearningSchedulerInfo> getBatchList() {
         List<LearningSchedulerInfo> rtnList = new ArrayList<>();
         List<LearningSchedulerInfo> list = learningSchedulerRepository.getBatchList();
@@ -116,6 +117,7 @@ public class LearningSchedulerService extends _BaseService {
                     while (dd.equals(now) || dd.isBefore(now)) {
                         if (dd.equals(now)) {
                             rtnList.add(info);
+                            learningSchedulerRepository.updateRunCnt(info.getSchedId());
                             break;
                         }
                         dd = dd.plusWeeks(info.getTermTy().getWeek());
