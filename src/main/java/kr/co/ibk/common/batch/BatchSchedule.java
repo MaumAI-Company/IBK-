@@ -48,10 +48,11 @@ public class BatchSchedule extends BaseCont {
 
     /**
      * 학습 스케줄러 실행
-     * 매 분 0초마다 실행
+     * 매 10분 마다 실행
      */
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     public void schedulerBatch() {
+        log.info("스케줄러 배치 start");
         if (schedulerCheck) {
             List<LearningSchedulerInfo> batchList = learningSchedulerService.getBatchList();
             for (LearningSchedulerInfo info : batchList) {
