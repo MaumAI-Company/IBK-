@@ -52,7 +52,6 @@ public class BatchSchedule extends BaseCont {
      */
     @Scheduled(cron = "0 */10 * * * *")
     public void schedulerBatch() {
-        log.info("스케줄러 배치 start");
         if (schedulerCheck) {
             List<LearningSchedulerInfo> batchList = learningSchedulerService.getBatchList();
             for (LearningSchedulerInfo info : batchList) {
