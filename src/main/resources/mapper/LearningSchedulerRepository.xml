@@ -20,25 +20,12 @@
         <include refid="columns"></include>
         , t.TEMPLATE_NAME
         , hm.MEM_NAME as regNm
-        , lm.DEPLOY_DT
         , t.HDQR_BOB_DCD
         , t.LEARNING_TYPE
-        , latestData.latestRegDt
         from
         LEARNING_SCHEDULER ls
         INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
         INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
-        LEFT JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
-        LEFT JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
-        LEFT JOIN (
-            SELECT
-                ld.SCHED_ID,
-                    MAX(ld.REG_DT) AS latestRegDt
-                FROM
-                    LEARNING_DATA ld
-                GROUP BY
-            ld.SCHED_ID
-        ) latestData ON ls.SCHED_ID = latestData.SCHED_ID
         <include refid="where"></include>
         ORDER BY
         ls.REG_DT
@@ -66,8 +53,6 @@
         LEARNING_SCHEDULER ls
         INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
         INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
-        LEFT JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
-        LEFT JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
         where ls.DEL_AT = 'N'
         and ls.SCHED_ID = #{id}
     </select>
@@ -130,6 +115,8 @@
         , ls.LEARNING_RATE
         , ls.BATCH_SIZE
         , ls.SEARCH_MM
+        , ls.RUN_CNT
+        , ls.LATEST_RUN_DT
     </sql>
 
     <sql id="where">
@@ -178,7 +165,7 @@
         </foreach>
     </update>
 
-    <!-- TODO : 배치 실행할 모델 목록 -->
+    <!-- 배치 실행할 모델 목록 -->
     <select id="getBatchList" resultType="LearningSchedulerInfo">
         SELECT
         <include refid="columns"></include>
@@ -188,5 +175,19 @@
         and DAYOFWEEK(now()) = DAYOFWEEK(ls.ST_YMD)
         and date_format(now(), '%H:%i') = time_format(ls.ST_TIME , '%H:%i')
     </select>
+
+    <update id="updateRunCnt" parameterType="int">
+        UPDATE LEARNING_SCHEDULER
+        SET RUN_CNT = RUN_CNT + 1
+        WHERE SCHED_ID = #{id}
+    </update>
+
+    <update id="updateLatestRunDt" parameterType="int">
+        UPDATE LEARNING_SCHEDULER
+        SET LATEST_RUN_DT = current_timestamp()
+        WHERE SCHED_ID = #{id}
+    </update>
+
+
 
 </mapper>

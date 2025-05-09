@@ -48,9 +48,9 @@ public class BatchSchedule extends BaseCont {
 
     /**
      * 학습 스케줄러 실행
-     * 매 분 0초마다 실행
+     * 매 10분 마다 실행
      */
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     public void schedulerBatch() {
         if (schedulerCheck) {
             List<LearningSchedulerInfo> batchList = learningSchedulerService.getBatchList();
@@ -66,7 +66,8 @@ public class BatchSchedule extends BaseCont {
                 LearningDataForm dataForm = new LearningDataForm();
                 dataForm.setMemId(REG_ID);
                 dataForm.setSchedId(info.getSchedId());
-                dataForm.setDataName("[배치]" + info.getSchedNm());
+                int runCnt = info.getRunCnt() + 1;
+                dataForm.setDataName("[배치] " + info.getSchedNm()+ "_" + String.format("%03d", runCnt));
                 dataForm.setLearningType(templateInfo.getLearningType());
                 dataForm.setSelectCon(templateInfo.getSelectCon());
                 dataForm.setHdqrBobDcd(templateInfo.getHdqrBobDcd());
@@ -88,7 +89,7 @@ public class BatchSchedule extends BaseCont {
                 modelForm.setModId(REG_ID);
                 modelForm.setRegId(REG_ID);
                 modelForm.setDataId(dataForm.getId());
-                modelForm.setLearnName("[배치]" + info.getSchedNm());
+                modelForm.setLearnName("[배치] " + info.getSchedNm()+ "_" + String.format("%03d", runCnt));
                 modelForm.setBatchSize(info.getBatchSize());
                 modelForm.setEpoch(info.getEpoch());
                 modelForm.setLearningRate(info.getLearningRate());
