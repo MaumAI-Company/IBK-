@@ -28,4 +28,6 @@ public interface LearningSchedulerRepository {
     List<LearningSchedulerInfo> getBatchList();
 
     int updateRunCnt(@Param("id") Integer id);
+
+    int updateLatestRunDt(@Param("id") Integer id);
 }

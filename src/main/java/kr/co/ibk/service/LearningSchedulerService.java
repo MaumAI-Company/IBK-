@@ -118,6 +118,7 @@ public class LearningSchedulerService extends _BaseService {
                         if (dd.equals(now)) {
                             rtnList.add(info);
                             learningSchedulerRepository.updateRunCnt(info.getSchedId());
+                            learningSchedulerRepository.updateLatestRunDt(info.getSchedId());
                             break;
                         }
                         dd = dd.plusWeeks(info.getTermTy().getWeek());

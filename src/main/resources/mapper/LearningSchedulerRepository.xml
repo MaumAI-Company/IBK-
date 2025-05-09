@@ -53,8 +53,6 @@
         LEARNING_SCHEDULER ls
         INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
         INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
---         LEFT JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
---         LEFT JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
         where ls.DEL_AT = 'N'
         and ls.SCHED_ID = #{id}
     </select>
@@ -183,6 +181,13 @@
         SET RUN_CNT = RUN_CNT + 1
         WHERE SCHED_ID = #{id}
     </update>
+
+    <update id="updateLatestRunDt" parameterType="int">
+        UPDATE LEARNING_SCHEDULER
+        SET LATEST_RUN_DT = current_timestamp()
+        WHERE SCHED_ID = #{id}
+    </update>
+
 
 
 </mapper>
