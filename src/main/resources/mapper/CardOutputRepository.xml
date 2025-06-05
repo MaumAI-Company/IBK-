@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.CardOutputRepository">
+    <sql id="columns">
+        co.BDGT_ITEX_FRCS_CON ,
+        co.BDGT_BSNS_FRCS_CON ,
+        co.BDGT_PRFR_RSN_FRCS_CON ,
+        co.LEARNING_MODEL_ID ,
+        co.BDGT_ITEX_FRCS_PRB_CON ,
+        co.BDGT_BSNS_FRCS_PRB_CON ,
+        co.BDGT_PRFR_RSN_FRCS_PRB_CON ,
+        co.no as outputNo ,
+        ci.*
+    </sql>
+
+    <sql id="where">
+    </sql>
+
+    <select id="getDetail" resultType="CardOutputInfo" parameterType="CardInputForm">
+        select
+            <include refid="columns"></include>
+            , lm.ID as learningModelId
+            , lm.LEARN_NAME
+        from
+            CARD_INPUT ci
+        left join CARD_OUTPUT co ON ci.TSTM_YMD = co.TSTM_YMD
+            AND ci.TSTM_NO = co.TSTM_NO
+            AND ci.BRCD = co.BRCD
+        left join LEARNING_MODEL lm on co.LEARNING_MODEL_ID = lm.ID
+        where ci.BRCD is not null
+        <choose>
+            <when test="loadType != null">
+                AND ci.TSTM_YMD = #{tstmYmd}
+                AND ci.TSTM_NO = #{tstmNo}
+                AND ci.BRCD = #{brcd}
+            </when>
+            <otherwise>
+                AND ci.NO = #{no}
+            </otherwise>
+        </choose>
+    </select>
+
+    <update id="updateHitYn">
+        UPDATE CARD_OUTPUT ci
+            INNER JOIN CARD_LEARNING_DATA co
+            ON ci.TSTM_YMD = co.TSTM_YMD
+                AND ci.TSTM_NO = co.TSTM_NO
+                AND ci.BRCD = co.BRCD
+        SET
+            ci.BDGT_ITEX_FRCS_CON_HIT_YN =
+                CASE WHEN INSTR(ci.BDGT_ITEX_FRCS_CON, co.BDMN_ITEX_MNGM_NO) > 0 THEN 'Y'
+                ELSE ci.BDGT_ITEX_FRCS_CON_HIT_YN END,
+            ci.BDGT_BSNS_FRCS_CON_HIT_YN =
+                CASE WHEN INSTR(ci.BDGT_BSNS_FRCS_CON, CONCAT(co.BRCD, '-', co.BDGT_BSNS_FRCS_CON)) > 0 THEN 'Y'
+                ELSE ci.BDGT_BSNS_FRCS_CON_HIT_YN END,
+            ci.BDGT_PRFR_RSN_FRCS_CON_HIT_YN =
+                CASE  WHEN INSTR(ci.BDGT_PRFR_RSN_FRCS_CON, TRIM(co.BDGT_PRFR_RSN_FRCS_CON)) > 0 THEN 'Y'
+                 ELSE ci.BDGT_PRFR_RSN_FRCS_CON_HIT_YN END
+    </update>
+</mapper>

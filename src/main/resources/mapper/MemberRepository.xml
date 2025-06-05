@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.MemberRepository">
+   <select id="getAuthInfo" parameterType="String" resultType="MemberInfo">
+        SELECT  
+            <include refid="hc_member_columns"><property name="alias" value="hm."/></include>
+            ,<include refid="hc_role_columns"><property name="alias" value="hr."/></include>
+        FROM 
+        	HC_MEMBER hm 
+        	INNER JOIN HC_MEMBER_ROLE hmr 
+        	on hm.MEM_ID = hmr.MEM_ID
+        	INNER JOIN HC_ROLE hr 
+        	on hmr.ROLE_ID = hr.ROLE_ID
+        WHERE 
+        	1=1
+        	AND (hm.MEM_STAT != 'delete' AND hm.MEM_STAT != 'unused')
+        	AND hr.ROLE_TYPE = 'login'
+        	AND hm.MEM_ID = #{userId}
+    </select>
+
+    <select id="getUserInfo" parameterType="String" resultType="MemberInfo">
+        SELECT  
+            <include refid="hc_member_columns"><property name="alias" value="hm."/></include>
+        FROM
+        	HC_MEMBER hm 
+        WHERE 
+        	1=1
+	        AND hm.MEM_STAT != 'delete'
+	        AND hm.MEM_ID = #{userId} 
+    </select>
+    
+    <update id="setUserPassword" parameterType="MemberInfo">
+    	UPDATE 
+    		HC_MEMBER
+    	SET	
+    		MEM_BEFO_PWD = #{memBefoPwd}
+    		, MEM_PWD = #{memPwd}
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_ID = #{memId}
+    </update>
+    
+    <select id="getPasswordFailCnt" parameterType="MemberInfo" resultType="long">
+    	SELECT 
+    		MEM_FAIL_CNT
+    	FROM
+			HC_MEMBER
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_ID = #{memId}
+    </select>
+    
+    <update id="resetPasswordFailCnt" parameterType="MemberInfo">
+    	UPDATE 
+    		HC_MEMBER
+    	SET	
+			MEM_FAIL_CNT = 0
+			, MEM_FAIL_DT = SYSDATE() 
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_ID = #{memId}
+    </update>
+    
+    <update id="addPasswordFailCnt" parameterType="MemberInfo">
+    	UPDATE 
+    		HC_MEMBER
+    	SET	
+			MEM_FAIL_CNT = IFNULL(MEM_FAIL_CNT, 0) + 1
+			, MEM_FAIL_DT = SYSDATE() 
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_ID = #{memId}
+    </update>
+
+	<update id="setSuperAdmin" parameterType="Map">
+    	UPDATE 
+    		HC_MEMBER
+    	SET	
+			MEM_COLUMN3 = #{auth}
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_ID = #{memId}	
+	</update>
+	
+	<select id="countSuperAdmin" resultType="long">
+		SELECT 
+		    COUNT(1)
+    	FROM 
+    	    HC_MEMBER
+    	WHERE 
+    		1=1
+	        AND MEM_STAT != 'delete'
+	    	AND MEM_COLUMN3 = 'SUPER'	
+	</select>
+	
+    <sql id="hc_member_columns">
+		${alias}MEM_SEQ
+		, ${alias}DEPT_ID
+		, ${alias}MEM_ID
+		, ${alias}MEM_NAME
+		, ${alias}MEM_TYPE
+		, ${alias}MEM_STAT
+		, ${alias}MEM_BEFO_PWD
+		, ${alias}MEM_PWD
+		, ${alias}MEM_GENDER
+		, ${alias}MEM_BIRTHDAY
+		, ${alias}MEM_PHONE
+		, ${alias}MEM_RANK
+		, ${alias}MEM_ZIPCODE
+		, ${alias}MEM_ADDR
+		, ${alias}MEM_ADDR_DETAIL
+		, ${alias}MEM_EMAIL
+		, ${alias}MEM_REG_ID
+		, ${alias}MEM_REG_DT
+		, ${alias}MEM_MOD_ID
+		, ${alias}MEM_MOD_DT
+		, ${alias}MEM_LST_DT
+		, ${alias}MEM_FAIL_CNT
+		, ${alias}MEM_FAIL_DT
+		, ${alias}MEM_COLUMN1
+		, ${alias}MEM_COLUMN2
+		, ${alias}MEM_COLUMN3
+		, ${alias}MEM_COLUMN4
+		, ${alias}MEM_COLUMN5
+    </sql>
+    <sql id="hc_role_columns">
+		${alias}ROLE_SEQ
+		, ${alias}ROLE_ID
+		, ${alias}ROLE_TYPE
+		, ${alias}ROLE_NAME
+		, ${alias}ROLE_USE_YN
+		, ${alias}ROLE_REG_ID
+		, ${alias}ROLE_REG_DT
+		, ${alias}ROLE_MOD_ID
+		, ${alias}ROLE_MOD_DT
+		, ${alias}ROLE_COLUMN1
+		, ${alias}ROLE_COLUMN2
+		, ${alias}ROLE_COLUMN3
+		, ${alias}ROLE_COLUMN4
+		, ${alias}ROLE_COLUMN5
+    </sql>
+
+	<select id="confirmMemSno" parameterType="MemberForm" resultType="int">
+		SELECT COUNT(*)
+		FROM HC_MEMBER hm
+		WHERE hm.MEM_SNO = #{memSno}
+		<if test="memSeq != null">
+			AND hm.MEM_SEQ != #{memSeq}
+		</if>
+	</select>
+</mapper>

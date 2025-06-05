@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/index.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
+    <style>
+        .nodata {
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.06) !important;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            fn_setDatePicker('#searchStartDate', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        maxDate: $('#searchEndDate').val() ? $('#searchEndDate').val() : false
+                    })
+                }
+            });
+            fn_setDatePicker('#searchEndDate', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        minDate: $('#searchStartDate').val() ? $('#searchStartDate').val() : false
+                    })
+                }
+            });
+
+        });
+
+        let inputData = [];
+        let outputData = [];
+
+        async function fn_search() {
+            layerShow('loading');
+
+            await new Promise(resolve => setTimeout(resolve, 100)); // 로딩 UI 업데이트 대기
+
+            try {
+                await Promise.all([fn_getStatisticInput(), fn_getStatisticOutput(), fn_createTable()]);
+            } catch (error) {
+                showAlert('warning', '실패하였습니다.');
+            } finally {
+                layerHide('loading');
+            }
+        }
+
+        function fn_reset() {
+            location.reload();
+        }
+
+        /**
+         * 추론 결과 수 차트 데이터 get/set
+         */
+        async function fn_getStatisticInput() {
+            let jsonData = {
+                "searchLearningType": $('#searchLearningType').val(),
+                "searchTarget": $('#searchTarget').val(),
+                "searchStartDate": $('#searchStartDate').val(),
+                "searchEndDate": $('#searchEndDate').val(),
+                "searchCycle": $('#searchCycle').val(),
+            }
+
+            $.ajax({
+                url: "/soulGod/report/statistic/input",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    // 검색조건 주기(일별,월별,연도별)에 따라 X축 날짜 포맷 적용
+                    data.forEach(item => {
+                        let strDate = item.dd.toString();
+                        item.dd = fn_dateFormat(strDate);
+                    });
+
+                    inputData = data;
+
+                    /*data =
+                        [
+                            {
+                                "dd": "2024년 1월",
+                                "outCnt": 243,
+                                "total": 256,
+                                "per": 94.92
+                            }, {
+                            "dd": "2024년 2월",
+                            "outCnt": 288,
+                            "total": 303,
+                            "per": 95.04
+                        }, {
+                            "dd": "2024년 3월",
+                            "outCnt": 298,
+                            "total": 310,
+                            "per": 96.12
+                        }, {
+                            "dd": "2024년 4월",
+                            "outCnt": 316,
+                            "total": 339,
+                            "per": 93.21
+                        }, {
+                            "dd": "2024년 5월",
+                            "outCnt": 376,
+                            "total": 405,
+                            "per": 92.83
+                        }, {
+                            "dd": "2024년 6월",
+                            "outCnt": 407,
+                            "total": 423,
+                            "per": 96.21
+                        }, {
+                            "dd": "2024년 7월",
+                            "outCnt": 374,
+                            "total": 385,
+                            "per": 97.14
+                        }, {
+                            "dd": "2024년 8월",
+                            "outCnt": 325,
+                            "total": 337,
+                            "per": 94.92
+                        }, {
+                            "dd": "2024년 9월",
+                            "outCnt": 289,
+                            "total": 310,
+                            "per": 94.92
+                        }, {
+                            "dd": "2024년 10월",
+                            "outCnt": 312,
+                            "total": 321,
+                            "per": 94.92
+                        }, {
+                            "dd": "2024년 11월",
+                            "outCnt": 298,
+                            "total": 298,
+                            "per": 94.92
+                        }, {
+                            "dd": "2024년 12월",
+                            "outCnt": 298,
+                            "total": 298,
+                            "per": 94.92
+                        }];*/
+
+                    fn_drawChart1(data); // 추론 결과 수 차트 그리기
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    });
+                }
+            });
+        }
+
+        /**
+         * 사용자 활용 현황 차트 데이터 get/set
+         */
+        function fn_getStatisticOutput() {
+            let jsonData = {
+                "searchLearningType": $('#searchLearningType').val(),
+                "searchTarget": $('#searchTarget').val(),
+                "searchStartDate": $('#searchStartDate').val(),
+                "searchEndDate": $('#searchEndDate').val(),
+                "searchCycle": $('#searchCycle').val(),
+            }
+
+            $.ajax({
+                url: "/soulGod/report/statistic/output",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    // 검색조건 주기(일별,월별,연도별)에 따라 X축 날짜 포맷 적용
+                    data.forEach(item => {
+                        let strDate = item.dd.toString();
+                        item.dd = fn_dateFormat(strDate);
+                    });
+
+                    outputData = data;
+                    /*data =
+                        [
+                            {
+                                "dd": "9/1",
+                                "hitCnt1": 40,
+                                "hitCnt1Per": 20,
+                                "hitCnt2": 20,
+                                "hitCnt2Per": 10,
+                                "hitCnt3": 100,
+                                "hitCnt3Per": 50,
+                                "total": 200,
+                                "hitCnt4": 100,
+                                "totalOutCnt": 100
+                            }, {
+                            "dd": "9/2",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 150,
+                            "hitCnt2Per": 30,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 20,
+                            "total": 500,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/3",
+                            "hitCnt1": 30,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 60,
+                            "hitCnt2Per": 20,
+                            "hitCnt3": 200,
+                            "hitCnt3Per": 66.66,
+                            "total": 300,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/4",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 250,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 250,
+                            "hitCnt3Per": 100,
+                            "total": 250,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/5",
+                            "hitCnt1": 200,
+                            "hitCnt1Per": 50,
+                            "hitCnt2": 400,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 360,
+                            "hitCnt3Per": 90,
+                            "total": 400,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/6",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/7",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/8",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/9",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 150,
+                            "hitCnt2Per": 30,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 20,
+                            "total": 500,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/10",
+                            "hitCnt1": 30,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 60,
+                            "hitCnt2Per": 20,
+                            "hitCnt3": 200,
+                            "hitCnt3Per": 66.66,
+                            "total": 300,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/11",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 250,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 250,
+                            "hitCnt3Per": 100,
+                            "total": 250,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/12",
+                            "hitCnt1": 200,
+                            "hitCnt1Per": 50,
+                            "hitCnt2": 400,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 360,
+                            "hitCnt3Per": 90,
+                            "total": 400,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/13",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/14",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/15",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/16",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 150,
+                            "hitCnt2Per": 30,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 20,
+                            "total": 500,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/17",
+                            "hitCnt1": 30,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 60,
+                            "hitCnt2Per": 20,
+                            "hitCnt3": 200,
+                            "hitCnt3Per": 66.66,
+                            "total": 300,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/18",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 250,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 250,
+                            "hitCnt3Per": 100,
+                            "total": 250,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/19",
+                            "hitCnt1": 200,
+                            "hitCnt1Per": 50,
+                            "hitCnt2": 400,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 360,
+                            "hitCnt3Per": 90,
+                            "total": 400,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/20",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/21",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/22",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/23",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 150,
+                            "hitCnt2Per": 30,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 20,
+                            "total": 500,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/24",
+                            "hitCnt1": 30,
+                            "hitCnt1Per": 10,
+                            "hitCnt2": 60,
+                            "hitCnt2Per": 20,
+                            "hitCnt3": 200,
+                            "hitCnt3Per": 66.66,
+                            "total": 300,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/25",
+                            "hitCnt1": 50,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 250,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 250,
+                            "hitCnt3Per": 100,
+                            "total": 250,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/26",
+                            "hitCnt1": 200,
+                            "hitCnt1Per": 50,
+                            "hitCnt2": 400,
+                            "hitCnt2Per": 100,
+                            "hitCnt3": 360,
+                            "hitCnt3Per": 90,
+                            "total": 400,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/27",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }, {
+                            "dd": "9/28",
+                            "hitCnt1": 40,
+                            "hitCnt1Per": 20,
+                            "hitCnt2": 20,
+                            "hitCnt2Per": 10,
+                            "hitCnt3": 100,
+                            "hitCnt3Per": 50,
+                            "total": 200,
+                            "hitCnt4": 100,
+                            "totalOutCnt": 100
+                        }];*/
+                    fn_drawChart2(data); // 사용자 활용 현황 차트 그리기
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    });
+                }
+            });
+        }
+
+        am5.ready(function () {
+            fn_search();
+        });
+
+        function fn_drawChart1(data) {
+            $("#chartdiv1").html("");
+            if (!data || data.length === 0) {
+                $("#chartdiv1").html('<div class="nodata"><p>검색 결과가 없습니다.</p></div>');
+                return;
+            }
+            am5.array.each(am5.registry.rootElements, function (root) {
+                if (root !== null && root != undefined) {
+                    if (root.dom.id === 'chartdiv1')
+                        root.dispose();
+                }
+                ;
+            });
+
+            let root = am5.Root.new("chartdiv1");
+
+            root.setThemes([
+                am5themes_Animated.new(root)
+            ]);
+
+            let chart = root.container.children.push(am5xy.XYChart.new(root, {
+                panX: false,
+                panY: false,
+                paddingLeft: 0,
+                wheelX: "panX",
+                wheelY: "zoomX",
+                layout: root.verticalLayout
+            }));
+
+            let legend = chart.children.push(
+                am5.Legend.new(root, {
+                    centerX: am5.p50,
+                    x: am5.p50
+                })
+            );
+
+            let xRenderer = am5xy.AxisRendererX.new(root, {
+                cellStartLocation: 0.1,
+                cellEndLocation: 0.9,
+                minorGridEnabled: true
+            })
+
+            let xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+                categoryField: "dd",
+                renderer: xRenderer,
+                tooltip: am5.Tooltip.new(root, {})
+            }));
+
+            xRenderer.grid.template.setAll({
+                location: 1
+            })
+
+            xAxis.data.setAll(data);
+
+            let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                renderer: am5xy.AxisRendererY.new(root, {
+                    strokeOpacity: 0.1
+                })
+            }));
+
+            function makeSeries1(name, fieldName, color) {
+                let series;
+                if (fieldName != 'total') {
+                    series = chart.series.push(am5xy.ColumnSeries.new(root, {
+                        name: name,
+                        xAxis: xAxis,
+                        yAxis: yAxis,
+                        valueYField: fieldName,
+                        categoryXField: "dd"
+                    }));
+                }
+
+                if (series) {
+                    series.columns.template.setAll({
+                        tooltipText: "{valueY}개 / {per}%",
+                        width: am5.percent(90),
+                        tooltipY: 0,
+                        strokeOpacity: 0,
+                        fill: am5.color(color)
+                    });
+
+                    series.columns.template.adapters.add("fill", function (fill, target) {
+                        return target.dataItem && target.dataItem.dataContext.per < 100 ? am5.color(0xF69192) : fill;
+                    });
+
+                    series.columns.template.adapters.add("stroke", function (stroke, target) {
+                        return target.dataItem && target.dataItem.dataContext.per < 100 ? am5.color(0xF69192) : stroke;
+                    });
+
+                    series.data.setAll(data);
+
+                    series.appear();
+
+                    series.bullets.push(function () {
+                        return am5.Bullet.new(root, {
+                            locationY: 0,
+                            sprite: am5.Label.new(root, {
+                                text: "{valueY}",
+                                fill: root.interfaceColors.get("alternativeText"),
+                                centerY: 0,
+                                centerX: am5.p50,
+                                populateText: true
+                            })
+                        });
+                    });
+
+                    legend.data.push(series);
+                }
+            }
+
+            let series2 = chart.series.push(
+                am5xy.LineSeries.new(root, {
+                    name: "INPUT 데이터 수",
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "total",
+                    categoryXField: "dd",
+                    tooltip: am5.Tooltip.new(root, {
+                        pointerOrientation: "horizontal",
+                        labelText: "{valueY}개"
+                    }),
+                    stroke: am5.color(0x004C9D)
+                })
+            );
+
+            series2.strokes.template.setAll({
+                strokeWidth: 3,
+                templateField: "strokeSettings"
+            });
+
+            series2.data.setAll(data);
+
+            series2.bullets.push(function () {
+                return am5.Bullet.new(root, {
+                    sprite: am5.Circle.new(root, {
+                        strokeWidth: 3,
+                        stroke: am5.color(0x004C9D),
+                        radius: 5,
+                        fill: root.interfaceColors.get("background")
+                    })
+                });
+            });
+            legend.data.push(series2);
+
+            chart.set("cursor", am5xy.XYCursor.new(root, {}));
+
+            makeSeries1("추론데이터 수", "outCnt", 0x7AE674);
+            makeSeries1("전체", "total");
+
+            chart.appear(1000, 100);
+        }
+
+        function fn_drawChart2(data) {
+            $("#chartdiv2").html("");
+            if (!data || data.length === 0) {
+                $("#chartdiv2").html('<div class="nodata"><p>검색 결과가 없습니다.</p></div>');
+                return;
+            }
+            am5.array.each(am5.registry.rootElements, function (root) {
+                if (root !== null && root != undefined) {
+                    if (root.dom.id === 'chartdiv2')
+                        root.dispose();
+                }
+                ;
+            });
+            let root = am5.Root.new("chartdiv2");
+
+            root.setThemes([
+                am5themes_Animated.new(root)
+            ]);
+
+            let chart = root.container.children.push(am5xy.XYChart.new(root, {
+                panX: false,
+                panY: false,
+                paddingLeft: 0,
+                wheelX: "panX",
+                wheelY: "zoomX",
+                layout: root.verticalLayout
+            }));
+
+            let legend = chart.children.push(
+                am5.Legend.new(root, {
+                    centerX: am5.p50,
+                    x: am5.p50
+                })
+            );
+
+            let xRenderer = am5xy.AxisRendererX.new(root, {
+                cellStartLocation: 0.1,
+                cellEndLocation: 0.9,
+                minorGridEnabled: true
+            })
+
+            let xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+                categoryField: "dd",
+                renderer: xRenderer,
+                tooltip: am5.Tooltip.new(root, {})
+            }));
+
+            xRenderer.grid.template.setAll({
+                location: 1
+            })
+
+            xAxis.data.setAll(data);
+
+            let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                renderer: am5xy.AxisRendererY.new(root, {
+                    strokeOpacity: 0.1
+                })
+            }));
+
+            function makeSeries2(name, fieldName, per, color) {
+                let series;
+                if (fieldName != 'total' && fieldName != 'totalOutCnt') {
+                    series = chart.series.push(am5xy.ColumnSeries.new(root, {
+                        name: name,
+                        xAxis: xAxis,
+                        yAxis: yAxis,
+                        valueYField: fieldName,
+                        categoryXField: "dd"
+                    }));
+                }
+
+                let tooltipText = "{valueY}개 / {" + per + "}%";
+
+                if (series) {
+                    series.columns.template.setAll({
+                        tooltipText: tooltipText,
+                        width: am5.percent(90),
+                        tooltipY: 0,
+                        strokeOpacity: 0,
+                        fill: am5.color(color)
+                    });
+
+                    series.columns.template.adapters.add("fill", function (fill, target) {
+                        return color ? am5.color(color) : fill;
+                    });
+
+                    series.columns.template.adapters.add("stroke", function (stroke, target) {
+                        return color ? am5.color(color) : stroke;
+                    });
+
+                    series.data.setAll(data);
+
+                    series.appear();
+
+                    series.bullets.push(function () {
+                        return am5.Bullet.new(root, {
+                            locationY: 0,
+                            sprite: am5.Label.new(root, {
+                                text: "{valueY}",
+                                fill: root.interfaceColors.get("alternativeText"),
+                                centerY: 0,
+                                centerX: am5.p50,
+                                populateText: true
+                            }),
+                        });
+                    });
+
+                    legend.data.push(series);
+                }
+            }
+
+            let series2 = chart.series.push(
+                am5xy.LineSeries.new(root, {
+                    name: "추론데이터 수",
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "totalOutCnt",
+                    categoryXField: "dd",
+                    tooltip: am5.Tooltip.new(root, {
+                        pointerOrientation: "horizontal",
+                        labelText: "{valueY}개"
+                    }),
+                    stroke: am5.color(0x004C9D)
+                })
+            );
+
+            series2.strokes.template.setAll({
+                strokeWidth: 3,
+                templateField: "strokeSettings"
+            });
+
+
+            series2.data.setAll(data);
+
+            series2.bullets.push(function () {
+                return am5.Bullet.new(root, {
+                    sprite: am5.Circle.new(root, {
+                        strokeWidth: 3,
+                        stroke: am5.color(0x004C9D),
+                        radius: 5,
+                        fill: root.interfaceColors.get("background")
+                    })
+                });
+            });
+
+            legend.data.push(series2);
+
+            let series3 = chart.series.push(
+                am5xy.LineSeries.new(root, {
+                    name: "지급결의된 추론데이터 수",
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "total",
+                    categoryXField: "dd",
+                    tooltip: am5.Tooltip.new(root, {
+                        pointerOrientation: "horizontal",
+                        labelText: "{valueY}개"
+                    }),
+                    stroke: am5.color(0x6D7175)
+                })
+            );
+
+            series3.strokes.template.setAll({
+                strokeWidth: 3,
+                templateField: "strokeSettings"
+            });
+
+
+            series3.data.setAll(data);
+
+            series3.bullets.push(function () {
+                return am5.Bullet.new(root, {
+                    sprite: am5.Circle.new(root, {
+                        strokeWidth: 3,
+                        stroke: am5.color(0x6D7175),
+                        radius: 5,
+                        fill: root.interfaceColors.get("background")
+                    })
+                });
+            });
+            legend.data.push(series3);
+
+            chart.set("cursor", am5xy.XYCursor.new(root, {}));
+
+            // 004C9D / 6D7175 / F69192 / 74C8E6 /7AE674 /9854C6
+            makeSeries2("예산비목정보_적중수", "hitCnt1", "hitCnt1Per", 0xF69192);
+            makeSeries2("예산사업ID_적중수", "hitCnt2", "hitCnt2Per", 0x74C8E6);
+            makeSeries2("비목집행사유_적중수", "hitCnt3", "hitCnt3Per", 0x9854C6);
+            makeSeries2("예산비목정보_예산사업ID_적중수", "hitCnt4", "hitCnt4Per", 0x7AE674);
+            makeSeries2("전체", "total");
+            makeSeries2("추론데이터 수", "totalOutCnt");
+
+            chart.appear(1000, 100);
+        }
+
+        /**
+         * 통계 정보를 엑셀 파일로 다운로드하기 위해 HTML 테이블을 동적으로 생성 (table2excel 라이브러리 사용)
+         *
+         * - 생성된 테이블은 화면에 표시되지 않음 (`display: none` 상태)
+         * - 사용자가 엑셀 다운로드를 요청하면 해당 테이블을 기반으로 데이터 변환 후 다운로드 진행
+         */
+        function fn_createTable() {
+            let tableBody = $("#tbody");
+            tableBody.empty();
+
+            // 추론 결과 수 통계 : s
+            let inputTitleRow = $('<tr><th colspan="' + (inputData.length + 1) + '" class="section-title">추론 결과 수 : INPUT 데이터 기반 OUTPUT 데이터 생성 개수</th></tr>');
+            tableBody.append(inputTitleRow);
+
+            let dateRow = $('<tr><th scope="row">날짜</th></tr>');
+            let totalRow = $('<tr><th scope="row">INPUT 데이터 수</th></tr>');
+            let outCntRow = $('<tr><th scope="row">추론데이터 수</th></tr>');
+            let perRow = $('<tr><th scope="row" class="fc_primary">학습 비율</th></tr>');
+
+            $.each(inputData, function (index, item) {
+                dateRow.append(`<td>${item.dd}</td>`);
+                totalRow.append(`<td>${fn_setCommas(item.total)}</td>`);
+                outCntRow.append(`<td>${fn_setCommas(item.outCnt)}</td>`);
+                perRow.append(`<td>${item.per}%</td>`);
+            });
+            tableBody.append(dateRow, totalRow, outCntRow, perRow);
+            // 추론 결과 수 : e
+
+            // 빈 행 추가
+            let emptyRow = $('<tr><td colspan="' + (inputData.length + 1) + '"></td></tr>');
+            tableBody.append(emptyRow);
+
+            // 사용자 활용 현황 통계 : s
+            let outputTitleRow = $('<tr><th colspan="' + (outputData.length + 1) + '" class="section-title">사용자 활용 현황 : 추론된 OUTPUT 데이터의 실제 사용 개수</th></tr>');
+            tableBody.append(outputTitleRow);
+
+            let dateOutputRow = $('<tr><th scope="row">날짜</th></tr>');
+            let totalOutputRow = $('<tr><th scope="row">추론데이터 수</th></tr>');
+            let outputRow = $('<tr><th scope="row">지급결의된 추론데이터 수</th></tr>');
+            let hitCnt1Row = $('<tr><th scope="row">예산비목정보_적중수</th></tr>');
+            let hitCnt1PerRow = $('<tr><th scope="row">예산비목정보_적중비율</th></tr>');
+            let hitCnt2Row = $('<tr><th scope="row">예산사업ID_적중수</th></tr>');
+            let hitCnt2PerRow = $('<tr><th scope="row">예산사업ID_적중비율</th></tr>');
+            let hitCnt3Row = $('<tr><th scope="row">비목집행사유_적중수</th></tr>');
+            let hitCnt3PerRow = $('<tr><th scope="row">비목집행사유_적중비율</th></tr>');
+            let hitCnt4Row = $('<tr><th scope="row">예산비목정보_예산사업ID_적중수</th></tr>');
+            let hitCnt4PerRow = $('<tr><th scope="row">예산비목정보_예산사업ID_적중비율</th></tr>');
+
+            $.each(outputData, function (index, item) {
+                dateOutputRow.append(`<td>${item.dd}</td>`);
+                totalOutputRow.append(`<td>${fn_setCommas(item.totalOutCnt)}</td>`);
+                outputRow.append(`<td>${fn_setCommas(item.total)}</td>`);
+                hitCnt1Row.append(`<td>${fn_setCommas(item.hitCnt1) || 0}</td>`);
+                hitCnt1PerRow.append(`<td>${item.hitCnt1Per || 0}%</td>`);
+                hitCnt2Row.append(`<td>${fn_setCommas(item.hitCnt2) || 0}</td>`);
+                hitCnt2PerRow.append(`<td>${item.hitCnt2Per || 0}%</td>`);
+                hitCnt3Row.append(`<td>${fn_setCommas(item.hitCnt3) || 0}</td>`);
+                hitCnt3PerRow.append(`<td>${item.hitCnt3Per || 0}%</td>`);
+                hitCnt4Row.append(`<td>${fn_setCommas(item.hitCnt4) || 0}</td>`);
+                hitCnt4PerRow.append(`<td>${fn_setCommas(item.hitCnt4Per) || 0}</td>`);
+            });
+            tableBody.append(dateOutputRow, totalOutputRow, outputRow, hitCnt1Row, hitCnt1PerRow, hitCnt2Row, hitCnt2PerRow, hitCnt3Row, hitCnt3PerRow, hitCnt4Row, hitCnt4PerRow);
+            // 사용자 활용 현황 통계 : e
+        }
+
+        /**
+         * 통계정보 다운로드 (table2excel 라이브러리 사용)
+         */
+        function fn_excelDownload() {
+            let fileNm = '통계정보_' + new Date().toISOString().replace(/\D/g, '').slice(2, 15);
+            fnTableToExcel('table', fileNm);
+        }
+
+        /**
+         * 주어진 날짜 문자열을 YYYY.MM.DD 혹은 YYYY.MM 형식으로 변환
+         * @param date 날짜 문자열(YYYY.MM.DD or YYYY.MM)
+         * @returns {*|string} 변환된 날짜 문자열 혹은 null
+         */
+        function fn_dateFormat(date) {
+            if (date != null) {
+                if (date.length === 8) {
+                    return `${date.substring(0, 4)}.${date.substring(4, 6)}.${date.substring(6, 8)}`;
+                } else if (date.length === 6) {
+                    return `${date.substring(0, 4)}.${date.substring(4, 6)}`;
+                } else {
+                    return date;
+                }
+            } else {
+                return date;
+            }
+        }
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <th:block th:insert="~{soulGod/fragments/header}"></th:block>
+
+    <div id="container">
+        <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">지급결의 AI 적용 결과 조회</h2>
+                    <h3 class="page_tit">기간별 통계</h3>
+                </div>
+                <div class="btn_area">
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_excelDownload()">
+                        <span>통계정보 다운로드</span>
+                    </button>
+                </div>
+            </div>
+
+            <form id="form1">
+                <div class="board_top">
+                    <div class="mla">
+                        <div class="filter_area">
+                            <button type="button" class="btn btn_text btn_filter">
+                                <i class="ico_filter"></i>
+                                <span>필터</span>
+                            </button>
+
+                            <div class="filter">
+                                <div class="inner">
+                                    <dl>
+                                        <dt>조회기간</dt>
+                                        <dd>
+                                            <div class="term_form">
+                                                <label for="searchStartDate" class="blind">조회 시작 날짜</label>
+                                                <input type="text" id="searchStartDate" class="datepicker"
+                                                       th:value="${params.searchStartDate}" readonly>
+                                                <div class="swung"></div>
+                                                <label for="searchEndDate" class="blind">조회 종료 날짜</label>
+                                                <input type="text" id="searchEndDate" class="datepicker"
+                                                       th:value="${params.searchEndDate}" readonly>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="searchLearningType">구분</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchLearningType" id="searchLearningType">
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.LearningType).values()}"
+                                                        th:class="${item}" th:text="${item.name}" th:value="${item}"
+                                                        th:selected="${item.name() eq params.searchLearningType}"></option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="searchTarget">대상</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchTarget" id="searchTarget">
+                                                <option value="" selected>전체</option>
+                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부
+                                                </option>
+                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="searchCycle">주기</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchCycle" id="searchCycle">
+                                                <option value="1" th:selected="${params.searchCycle eq '1'}">일별</option>
+                                                <option value="2" th:selected="${params.searchCycle eq '2'}">월별</option>
+                                                <option value="3" th:selected="${params.searchCycle eq '3'}">연도별
+                                                </option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <div class="btn_area">
+                                        <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
+                                            <span>초기화</span>
+                                        </button>
+                                        <button type="button" class="btn fill" onclick="fn_search()">
+                                            <span>검색</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="selected_filter"></div>
+
+            <div class="graph_area">
+                <div class="graph">
+                    <div>추론 결과 수 : INPUT 데이터 기반 OUTPUT 데이터 생성 개수</div>
+                    <div id="chartdiv1" style="height:366px"></div> <!--TODO : 임의 높이값-->
+                </div>
+            </div>
+
+            <div class="graph_area">
+                <div class="graph">
+                    <div>사용자 활용 현황 : 추론된 OUTPUT 데이터의 실제 사용 개수</div>
+                    <div id="chartdiv2" style="height:366px"></div> <!--TODO : 임의 높이값-->
+                </div>
+            </div>
+
+            <div style="display: none;">
+                <table class="tbl_list" id="table">
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--로딩중 : s-->
+<div id="loading" class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
+    <div class="loading">
+        <p>기간별 통계를 불러오고 있습니다.</p>
+        <p>잠시만 기다려 주세요.</p>
+        <div class="loading_circle_rotate">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+    </div>
+</div>
+<!--로딩중 : e-->
+</body>
+</html>

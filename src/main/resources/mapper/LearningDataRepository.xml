@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.LearningDataRepository">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="LearningDataForm">
+        insert into LEARNING_DATA
+        (DATA_NAME, SELECT_CON, HDQR_BOB_DCD, REG_ID, REG_DT, MOD_ID, MOD_DT, START_DT, END_DT, TEMPLATE_ID,
+         LEARNING_TYPE, SCHED_ID)
+        values (#{dataName}, #{selectCon}, #{hdqrBobDcd}, #{memId}, current_timestamp(), #{memId}, current_timestamp(),
+                #{startDt}, #{endDt}, #{templateId}, #{learningType}, #{schedId});
+    </insert>
+
+    <update id="update" parameterType="LearningDataForm">
+        update LEARNING_DATA
+        set
+            DATA_NAME = #{dataName},
+            SELECT_CON = #{selectCon},
+            HDQR_BOB_DCD = #{hdqrBobDcd},
+            MOD_ID = #{memId},
+            MOD_DT = current_timestamp(),
+            START_DT = #{startDt},
+            END_DT = #{endDt},
+            TEMPLATE_ID = #{templateId}
+        where ID = #{id};
+    </update>
+
+    <update id="updateNullAllByTemplateId">
+        update LEARNING_DATA ld
+        set
+            TEMPLATE_ID = null
+        where
+            ld.TEMPLATE_ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="updateNullAllBySchedId">
+        update LEARNING_DATA ld
+        set
+            SCHED_ID = null
+        where
+            ld.SCHED_ID = #{schedId}
+    </update>
+
+    <select id="getTotalCount" resultType="int" parameterType="LearningDataForm">
+        select
+        count(*)
+        from
+        LEARNING_DATA ld
+        inner join HC_MEMBER hm on ld.REG_ID = hm.MEM_ID
+        left join TEMPLATE t on ld.TEMPLATE_ID = t.ID
+        <include refid="where"></include>
+    </select>
+
+    <select id="getList" resultType="LearningDataInfo" parameterType="LearningDataForm">
+        select
+        <include refid="column"></include>
+        , t.TEMPLATE_NAME
+        , hm.MEM_NAME as regName
+        , model.modelCnt
+        from
+        LEARNING_DATA ld
+        inner join HC_MEMBER hm on ld.REG_ID = hm.MEM_ID
+        left join TEMPLATE t on ld.TEMPLATE_ID = t.ID
+        LEFT JOIN (
+            SELECT
+                count(*) AS modelCnt,
+                lm.LEARNING_ID
+            FROM
+                LEARNING_MODEL lm
+            WHERE lm.DELETE_YN = 'N'
+            GROUP BY
+            lm.LEARNING_ID
+        ) model ON ld.ID = model.LEARNING_ID
+        <include refid="where"></include>
+        order by
+        REG_DT
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
+        <if test="pagingAt != null and 'Y'.toString() == pagingAt">
+            <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
+        </if>
+    </select>
+
+    <select id="getLoad" resultType="LearningDataInfo" parameterType="Integer">
+        select
+        <include refid="column"></include>
+        from
+        LEARNING_DATA ld
+        where
+        ld.ID = #{id}
+    </select>
+
+    <sql id="where">
+        where ld.DATA_NAME is not null
+        <if test="searchTarget != null and searchTarget != ''">
+            AND ld.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+        <if test="searchLearningType != null and searchLearningType != ''">
+            AND ld.LEARNING_TYPE = #{searchLearningType}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND (ld.DATA_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    or t.TEMPLATE_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    or hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
+        </if>
+    </sql>
+    <sql id="column">
+        ld.*
+    </sql>
+
+    <select id="learnDataNmCount" resultType="int">
+        select
+            count(*)
+        from
+            LEARNING_DATA ld
+        where ld.DATA_NAME = #{dataName}
+    </select>
+
+    <delete id="deleteAllById">
+        DELETE FROM LEARNING_DATA WHERE ID IN
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

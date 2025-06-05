@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <script type="text/javascript">
+        $(function () {
+            fn_setDatePicker('#stDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        maxDate: $('#edDt').val() ? $('#edDt').val() : false
+                    })
+                }
+            });
+            fn_setDatePicker('#edDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        minDate: $('#stDt').val() ? $('#stDt').val() : false
+                    })
+                }
+            });
+        });
+
+        function fn_reset() {
+            $('#searchTarget').val('').niceSelect('update');
+            $('#statusType').val('').niceSelect('update');
+            $('#searchLearningType').val('').niceSelect('update');
+            $('#searchKeyword').val('');
+            $('#searchJson').val('');
+            $('#searchTypeJson').val('');
+
+            fn_search();
+        }
+
+        function fn_search() {
+            let frm = $('#aform');
+            frm.prop('action', '?');
+            frm.submit();
+        }
+
+        function movePage(url, pageNo) {
+            $('#currentPageNo').val(pageNo);
+            $('#aform').attr({action: '/soulGod/learn/deployManage', method: 'post'}).unbind('submit').submit();
+        }
+
+        function fn_deploy() {
+            let checked = $("input[name='chk']:checked").val();
+            if (!checked) {
+                showAlert('warning', '모델을 선택해주세요.');
+                return false;
+            }
+
+            showConfirm('message', '모델을 배포(Deploy) 하시겠습니까? <br/> 현재 배포 중인 모델은 중지 됩니다.', () => {
+                let jsonData = {
+                    "id": checked,
+                }
+                layerShow('deployAlert');
+
+                $.ajax({
+                    url: "/soulGod/model/replaceModel",
+                    type: "post",
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        layerHide('deployAlert');
+                        if (data) {
+                            showAlert('complete', '모델 배포(Deploy)가 완료 되었습니다.', () => {
+                                location.reload();
+                            });
+                        } else {
+                            showAlert('warning', '모델 배포(Deploy)에 실패하였습니다.', () => {
+                                location.reload();
+                            });
+                        }
+                    },
+                    error: function () {
+                        layerHide('deployAlert');
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        });
+                    }
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <th:block th:insert="~{soulGod/fragments/header}"></th:block>
+
+    <div id="container">
+        <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">학습 관리</h2>
+                    <h3 class="page_tit">배포 관리</h3>
+                </div>
+                <div class="btn_area">
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_deploy()">
+                        <span>배포</span>
+                    </button>
+                </div>
+            </div>
+
+            <form role="form" id="aform" method="post" enctype="multipart/form-data" class="form-horizontal">
+                <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
+                <div class="board_top">
+                    <div>
+                        <div class="total_num"><b th:text="${params.paginationInfo.totalRecordCount}">0</b> 개의 글이 있습니다.
+                        </div>
+                    </div>
+                    <div class="mla">
+                        <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
+                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
+                                onchange="fn_search()">
+                            <option value="10" th:selected="${pagingInfo.criteria.recordsPerPage == 10}" selected>10개
+                            </option>
+                            <option value="20" th:selected="${pagingInfo.criteria.recordsPerPage == 20}">20개</option>
+                            <option value="30" th:selected="${pagingInfo.criteria.recordsPerPage == 30}">30개</option>
+                            <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
+                            <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
+                        </select>
+                        <label for="sorting" class="blind">정렬조건</label>
+                        <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">과거순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">최신순</option>
+                            \
+                        </select>
+                        <div class="filter_area">
+                            <button type="button" class="btn btn_text btn_filter">
+                                <i class="ico_filter"></i>
+                                <span>검색</span>
+                            </button>
+
+                            <div class="filter">
+                                <div class="inner">
+                                    <dl>
+                                        <dt>
+                                            <label for="searchLearningType">구분</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchLearningType" id="searchLearningType">
+                                                <option value="" selected>전체</option>
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.LearningType).values()}"
+                                                        th:class="${item}" th:text="${item.name}" th:value="${item}"
+                                                        th:selected="${item.name() eq params.searchLearningType}"></option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="searchTarget">대상</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchTarget" id="searchTarget">
+                                                <option value="" selected>전체</option>
+                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부
+                                                </option>
+                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="statusType">상태</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="statusType" id="statusType">
+                                                <option value="" selected>전체</option>
+                                                <option th:each="item : ${T(kr.co.ibk.domain.enums.DeployStatusType).getDeployStatusList()}"
+                                                        th:class="${item}"
+                                                        th:text="${item.statusNm}"
+                                                        th:value="${item.code}"
+                                                        th:selected="${item.code eq params.statusType}">
+                                                </option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label>검색어</label>
+                                        </dt>
+                                        <dd>
+                                            <div class="search_form">
+                                                <div class="search">
+                                                    <input type="search" th:field="${params.searchKeyword}"
+                                                           placeholder="모델명 혹은 등록자 명을 입력하세요.">
+                                                    <button type="button" class="btn_del" tabindex="-1">
+                                                        <span class="blind">삭제</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <div class="btn_area">
+                                        <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
+                                            <span>초기화</span>
+                                        </button>
+                                        <button type="button" class="btn fill" onclick="fn_search()">
+                                            <span>검색</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="selected_filter"></div>
+
+            <!--데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
+            <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
+                <p>검색 결과가 없습니다.</p>
+            </div>
+            <!--데이터가 없을 때 : e-->
+            <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
+                <caption>배포 관리 : No, 학습 모델 ID, 학습 모델 명, 등록자, 상태, 배포 여부, 배포일시, 등록일시로 구성</caption>
+                <colgroup>
+                    <col style="width: 3.5%;min-width: 44px;">
+                    <col style="width: 3.5%;min-width: 44px;">
+                    <col style="width: 10%;min-width: 60px;">
+                    <col style="width: 19%;">
+                    <col style="width: 7%;">
+                    <col style="width: 7%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;min-width: 106px;">
+                    <col style="width:auto">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">선택</th>
+                    <th scope="col">No</th>
+                    <th scope="col">학습 모델 ID</th>
+                    <th scope="col">학습 모델 명</th>
+                    <th scope="col">구분</th>
+                    <th scope="col">대상</th>
+                    <th scope="col">등록자</th>
+                    <th scope="col">상태</th>
+                    <th scope="col">배포일시</th>
+                    <th scope="col">중단일시</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item,idx: ${list}">
+                    <td>
+                        <div class="radio">
+                            <input type="radio" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
+                                   th:disabled="${item.deployStatus eq T(kr.co.ibk.domain.enums.DeployStatusType).DEPLOY_ING.getCode().toString()}">
+                            <label th:for="${'chk_' + item.id}">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td th:text="${(params.paginationInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                    <td th:text="${item.id}"></td>
+                    <td th:text="${item.learnName}" th:onclick="|fn_learningDataOpen(${item.id})|">카드지급결의 통합모델_A</td>
+                    <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}">BC카드</td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td th:text="${item.regName}">홍길녀</td>
+                    <td>
+                        <!--3:학습 완료,  5: 배포 중, 6: 배포 완료, 7: 배포 중지, 8: 배포 실패 -->
+                        <div th:if="${item.deployStatus eq '3'}" class="badge fill_blue_green">학습 완료</div>
+                        <div th:if="${item.deployStatus eq '5'}" class="badge fill_purple">배포 중</div>
+                        <div th:if="${item.deployStatus eq '6'}" class="badge fill_purple">배포 완료</div>
+                        <div th:if="${item.deployStatus eq '7'}" class="badge fill_error10">배포 중지</div>
+                        <div th:if="${item.deployStatus eq '8'}" class="badge fill_error10">배포 실패</div>
+                    </td>
+                    <td th:text="${item.deployDt != null ? #temporals.format(item.deployDt, 'yyyy-MM-dd HH:mm:ss') : '-'}">
+                        2022.07.30
+                    </td>
+                    <td th:text="${item.deployStopDt != null ? #temporals.format(item.deployStopDt, 'yyyy-MM-dd HH:mm:ss') : '-'}">
+                        2022.07.30
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
+        </div>
+    </div>
+</div>
+<!--얼럿 : s-->
+<div id="deployAlert" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_message"></i>
+            <strong class="pop_tit">배포 요청 중</strong>
+            <p class="pop_txt">
+                배포 요청 중입니다. 잠시만 기다려 주세요.
+            </p>
+        </div>
+    </div>
+</div>
+<!--얼럿 : e-->
+</body>
+</html>

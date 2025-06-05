@@ -32,7 +32,7 @@ $(function() {
 				for (var i = 0, len = files.length; i < len; i++) {
 					var ext = files[i].name.split('.').pop().toLowerCase(),
 						size = Math.ceil(files[i].size / 1024) + 'kb';
-					dropZoneArea.innerHTML += "<div class='file file_" + ext + " file_add'><p class='file_img'><img src='" + URL.createObjectURL(files[i]) + "' /></p><p class='file_name'>" + files[i].name + "</p><p class='file_size'>" + size + "</p><button type='button' class='btn_del' data-id='"+i+"'><span class='blind'>파일 삭제</span></button></div>";
+					dropZoneArea.innerHTML += "<div class='file file_" + ext + " file_add'><p class='file_name'>" + files[i].name + "</p><p class='file_size'>" + size + "</p><button type='button' class='btn_del' data-id='"+i+"'><span class='blind'>파일 삭제</span></button></div>";
 					dropZone.parentNode.classList.add('upload');
 				}
 			}
@@ -88,12 +88,12 @@ $(function() {
 
 					if (files != null) {
 						if (files.length < 1) {
-							alert("폴더 업로드 불가");
+							showAlert("warning", "폴더 업로드 불가");
 							return
 						}
 						selectFile(files);
 					} else {
-						alert("ERROR");
+						showAlert("warning", "ERROR");
 					}
 
 				});
@@ -150,12 +150,12 @@ function validMultiFile(files, addExt) {
 		let fileSize = fileObj.size;
 
 		if (!allowedExtensions.exec(filename) || !allowedMimeTypes.includes(fileType)) {
-			showAlert('alert', `허용되지 않는 확장자입니다.<br>${allowedExtMessage} 파일만 첨부 가능합니다.`);
+			showAlert('warning', `허용되지 않는 확장자입니다.<br>${allowedExtMessage} 파일만 첨부 가능합니다.`);
 			retVal = false;
 		}
 
 		if (fileSize > maxSize) {
-			showAlert('alert', '파일사이즈가 10MB가 넘습니다.');
+			showAlert('warning', '파일사이즈가 10MB가 넘습니다.');
 			retVal = false;
 		}
 	}

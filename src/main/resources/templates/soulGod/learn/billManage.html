@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <link rel="stylesheet" href="/ClientUI/plugins/jquery-ui/jquery-ui.min.css">
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/index.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/monthpicker/jquery.mtz.monthpicker.js"></script>
+    <style>
+        .tbl_list {
+            overflow: hidden
+        }
+
+        .tbl_list > thead > tr > th {
+            padding: 0 8px
+        }
+
+        .tbl_list > tbody > tr > td {
+            padding: 0 8px
+        }
+
+        #popLearnData .check_wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        #popLearnData .check_wrap .checkbox {
+            width: calc((100% - 16px) / 3)
+        }
+
+        .txt_guide {
+            margin-top: 8px;
+        }
+
+        .mtz-monthpicker-year {
+            background: #fff url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"%3E%3Cpath fill="%236d7175" d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71L8.46 9.17a1 1 0 0 0-1.41 0a1 1 0 0 0 0 1.42l4.24 4.24a1 1 0 0 0 1.42 0L17 10.59a1 1 0 0 0 0-1.42Z"%2F%3E%3C%2Fsvg%3E') no-repeat calc(100% - 11px) 50% / 20px auto
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+
+            //학습 팝업 도움말
+            $('.btn_help').each(function () {
+                $(this).on('click', function () {
+                    $(this).parent('.th_help_area').toggleClass('active').parents('.tr').siblings('.tr').find('.th_help_area').removeClass('active');
+                });
+            });
+            $(document).on('click', function (e) {
+                if (!$(e.target).parents('div').hasClass('th_help_area')) {
+                    $('.th_help_area').removeClass('active');
+                }
+            });
+
+            $('[name=templateAt]').on('change', function (e) {
+                if ($(this).val() === 'N') {
+                    $('#templateName').prop('disabled', true);
+                } else {
+                    $('#templateName').prop('disabled', false);
+                }
+            });
+
+            //검색일자 경고 문구
+            $('.fc_error').hide();
+            //목록 영역
+            $('.contentsArea').hide();
+
+            fn_setMonthPicker();
+        });
+
+        /**
+         * 학습데이터 popup 초기화
+         */
+        function fn_learningDataOpen() {
+            $('#dataName').val('');
+            $('#templateAtY').prop('checked', true);
+            $('#templateName').prop('disabled', false);
+            $('.checkedY').prop('checked', true);
+            $('.checkedN').prop('checked', false);
+            $('#templateName').val('');
+
+            $('.chipArea').html($('.selected_filter').html());
+
+            $('.chipArea .chip button').remove();
+
+            layerShow('popLearnData');
+        }
+
+        const inPrefix = 'input_';
+        const outPrefix = 'output_';
+
+        /**
+         * 학습데이터 유효성 검사
+         */
+        let learnDataNmCount = 0;
+        let templateNmCount = 0;
+
+        function fn_learnDataSaveChk() {
+            let dataName = $('#dataName').val();
+            let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+            let templateAt = $('[name=templateAt]:checked');
+            let templateName = $('#templateName').val();
+
+            if (!$('#searchJson').val()) {
+                showAlert('warning', '검색 조건 추가 후 진행해주세요.');
+                return false;
+            }
+
+            if (!$.trim(dataName)) {
+                showAlert('warning', '학습데이터 명 입력은 필수입니다.');
+                return false;
+            }
+            fn_learnDataNmCount();
+            if (learnDataNmCount > 0) {
+                showAlert('warning', '이미 존재하는 학습데이터 명 입니다.');
+                return false;
+            }
+
+            if (inputColumns.length < 1) {
+                showAlert('warning', '학습데이터는 최소 1개 이상 선택해야합니다.');
+                return false;
+            }
+
+            if (templateAt.val() === 'Y') {
+                if (!$.trim(templateName)) {
+                    showAlert('warning', '템플릿 생성 시 템플릿 명 입력은 필수입니다.');
+                    return false;
+                }
+
+                fn_templateNmCount();
+                if (templateNmCount > 0) {
+                    showAlert('warning', '이미 존재하는 템플릿 명 입니다.');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /**
+         * 학습데이터 저장
+         */
+        function fn_learnDataSave() {
+            if (!fn_learnDataSaveChk()) {
+                return false;
+            }
+
+            let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+            let outputColumns = $(':checkbox[id^="' + outPrefix + '"]');
+
+            let inputArr = [];
+            $.each(inputColumns, function (idx, item) {
+                let name = $(item).data('name');
+                let sno = $(item).data('sno');
+                inputArr.push({name: name, sno: sno});
+            })
+
+            let outputArr = [];
+            $.each(outputColumns, function (idx, item) {
+                let name = $(item).data('name');
+                let sno = $(item).data('sno');
+                outputArr.push({name: name, sno: sno});
+            })
+
+            let searchTypeMap;
+            if (!$('#searchJson').val()) {
+                fn_searchConditionSet();
+            }
+            searchTypeMap = fn_jsonToMap($('#searchJson').val());
+
+            searchTypeMap.delete('searchStartDate');
+            searchTypeMap.delete('searchEndDate');
+
+            let jsonData = {
+                "hdqrBobDcd": $('[name=searchTarget]:checked').val(),
+                "dataName": $.trim($('#dataName').val()),
+                "inputArr": inputArr,
+                "outputArr": outputArr,
+                "templateAt": $('[name=templateAt]:checked').val(),
+                "templateName": $.trim($('#templateName').val()),
+                "selectCon": $('#searchJson').val(),
+                "searchTypeJson": fn_mapToJson(searchTypeMap),
+                "learningType": $('#learningType').val(),
+                "startDt": $('#searchStartDate').val(),
+                "endDt": $('#searchEndDate').val(),
+            }
+
+            $.ajax({
+                url: "/soulGod/learnData/save",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    if ("SUCCESS" === data.status) {
+                        showAlert('complete', '저장되었습니다.', () => {
+                            location.reload();
+                        })
+                    } else {
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        })
+                    }
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
+
+        /**
+         * 학습데이터명 중복 체크
+         * 중복 기준: `learnDataNmCount` 값이 0보다 크면 중복된 데이터명이 존재
+         */
+        function fn_learnDataNmCount() {
+            let jsonData = {
+                "dataName": $.trim($('#dataName').val())
+            }
+
+            $.ajax({
+                url: "/soulGod/learnData/nmCount",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    learnDataNmCount = data;
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
+
+        /**
+         * 템플릿명 중복 체크
+         * 중복 기준: `templateNmCount` 값이 0보다 크면 중복된 템플릿명이 존재
+         */
+        function fn_templateNmCount() {
+            let jsonData = {
+                "templateName": $.trim($('#templateName').val())
+            }
+
+            $.ajax({
+                url: "/soulGod/template/nmCount",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    templateNmCount = data;
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
+
+        function movePage(url, pageNo) {
+            $('#currentPageNo').val(pageNo);
+            $('#form1').attr({action: '/soulGod/learn/billManage', method: 'post'}).unbind('submit').submit();
+        }
+
+        function fn_search() {
+            let searchStartDate = $('#searchStartDate').val();
+            let searchEndDate = $('#searchEndDate').val();
+
+            $('.fc_error').hide();
+            if ((!$.trim(searchStartDate) || !$.trim(searchEndDate))
+                || (searchStartDate > searchEndDate)) {
+                $('.fc_error').show();
+                $('#searchStartDate').focus();
+                return false;
+            }
+            fn_searchConditionSet();
+            layerShow('loading');
+
+            let jsonData = {
+                'searchJson': $('#searchJson').val(),
+                'searchTypeJson': $('#searchTypeJson').val(),
+                'searchTarget': $('[name=searchTarget]:checked').val(),
+                'searchStartDate': searchStartDate,
+                'searchEndDate': searchEndDate,
+            }
+
+            $.ajax({
+                url: "/soulGod/learn/billManage/list",
+                type: "post",
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    $('.selected_filter').html('');
+                    let contents = [];
+                    if (data.list.length > 0) {
+                        $.each(data.list, function (idx, item) {
+                            contents.push(`
+                                <tr>
+                                    <td>${idx + 1}</td>
+
+                                    <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
+                                    <td>${item.bdgtPrfrYm}</td>
+                                    <td>${item.brcd}</td>
+                                    <td>${item.txblDcd}</td>
+                                    <td>${item.splrBsnnNo}</td>
+
+                                    <td>${item.splrFrm}</td>
+                                    <td>${item.splrBzstNm}</td>
+                                    <td>${item.splrItmsNm}</td>
+                                    <td>${item.issAmt}</td>
+                                    <td>${item.txblLsarNm}</td>
+
+                                    <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon}</td>
+                                </tr>
+                            `);
+                        })
+                        $('.nodata').hide();
+                        $('.contentsArea').show();
+                    } else {
+                        $('.nodata').show().find('p').text('검색 결과가 없습니다.');
+                        $('.contentsArea').hide();
+                    }
+
+                    if (data.params) {
+                        let params = data.params;
+                        $('#searchJson').val(params.searchJson);
+                        $('#searchTypeJson').val(params.searchTypeJson);
+                        $('#searchStartDate').val(params.searchStartDate);
+                        +
+                            $('#searchEndDate').val(params.searchEndDate);
+                        $('#searchTarget').val(params.searchTarget).prop('checked', true);
+                        $('#searchType').val('').niceSelect('update');
+                        $('#searchKeyword').val('');
+                    }
+                    $('#contents').html(contents);
+                    $('.totalCnt').text(fn_setCommas(data.totalCount));
+                    fn_settingChip($('#searchJson').val(), true);
+
+                    // 검색 조건 있는 경우 등록버튼 활성화
+                    $('#saveBtn').attr('disabled', !$('#searchJson').val());
+                    $('#searchKeyword').prop('disabled', true);
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+                complete: function () {
+                    layerHide('loading');
+                }
+            });
+        }
+
+        function fn_reset() {
+            $('#searchType').val('').niceSelect('update');
+            $('#searchKeyword').val('');
+            $('#searchJson').val('');
+            $('#searchTypeJson').val('');
+
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = String(today.getMonth() + 1).padStart(2, '0');
+
+            $('#searchStartDate').val(`${year - 2}-${month}`);
+            $('#searchEndDate').val(`${year}-${month}`);
+            $('[name=searchTarget]').first().prop('checked', true);
+
+            fn_search();
+        }
+
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <th:block th:insert="~{soulGod/fragments/header}"></th:block>
+
+    <div id="container">
+        <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">학습 관리</h2>
+                    <h3 class="page_tit">세금계산서 학습 데이터 등록</h3>
+                </div>
+                <div class="btn_area">
+                    <button type="button" id="saveBtn" class="btn line_cool_grey30" onclick="fn_learningDataOpen()"
+                            disabled>
+                        <span>등록</span>
+                    </button>
+                </div>
+            </div>
+
+            <form id="form1" th:object="${params}">
+                <input type="hidden" th:field="*{searchJson}">
+                <input type="hidden" th:field="*{searchTypeJson}">
+                <input type="hidden" th:field="*{learningType}">
+                <div class="board_top">
+                    <div>
+                        <div class="total_num">
+                            <p>
+                                <b class="totalCnt">0</b>
+                                건의 학습데이터가 있습니다.
+                            </p>
+                            <div>※ 20개의 샘플데이터만 보여집니다</div>
+                        </div>
+                    </div>
+                    <div class="mla">
+                        <div class="filter_area">
+                            <button type="button" class="btn btn_text btn_filter active">
+                                <i class="ico_filter"></i>
+                                <span>검색</span>
+                            </button>
+                            <div class="filter">
+                                <div class="inner">
+                                    <dl>
+                                        <dt>예산집행기간</dt>
+                                        <dd class="fc_error">* 검색 일자가 없거나, 시작 월이 종료 월보다 이후일 수 없습니다.</dd>
+                                        <dd>
+                                            <div class="term_form">
+                                                <label for="searchStartDate" class="blind">조회 시작 날짜</label>
+                                                <input type="text" id="searchStartDate" name="searchStartDate"
+                                                       class="datepicker" readonly>
+                                            </div>
+                                            ~
+                                            <div class="term_form">
+                                                <label for="searchEndDate" class="blind">조회 종료 날짜</label>
+                                                <input type="text" id="searchEndDate" name="searchEndDate"
+                                                       class="datepicker" readonly>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>대상</dt>
+                                        <dd>
+                                            <div class="df">
+                                                <div class="radio txt">
+                                                    <input type="radio" name="searchTarget" id="searchTarget_B"
+                                                           value="1"
+                                                           th:checked="${params.searchTarget == '1'}">
+                                                    <label for="searchTarget_B">본부</label>
+                                                </div>
+                                                <div class="radio txt">
+                                                    <input type="radio" name="searchTarget" id="searchTarget_Y"
+                                                           value="2"
+                                                           th:checked="${params.searchTarget == '2'}">
+                                                    <label for="searchTarget_Y">영업점</label>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt><label for="searchType">검색 대상</label></dt>
+                                        <dd>
+                                            <select name="searchType" id="searchType"
+                                                    onchange="fn_openKeywordArea(this.value)">
+                                                <option value="" selected>선택</option>
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.SearchBillType).values()}"
+                                                        th:class="${item}" th:text="${item.name}"></option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label>검색어</label>
+                                        </dt>
+                                        <dd>
+                                            <div class="search_form">
+                                                <div class="search">
+                                                    <input type="search" id="searchKeyword" name="searchKeyword"
+                                                           placeholder="검색어를 입력하세요." disabled>
+                                                    <button type="button" class="btn_del" tabindex="-1">
+                                                        <span class="blind">삭제</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <p class="tip">
+                                        OR (||): 여러 조건 중 하나라도 만족 <br>
+                                        AND (&amp;&amp;): 모든 조건 만족 <br>
+                                        NOT (!): 조건의 참/거짓을 반대로 해석 <br>
+                                        (사용 예시: 00 &amp;&amp; 11 || !22)
+                                    </p>
+                                    <div class="btn_area">
+                                        <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
+                                            <span>초기화</span>
+                                        </button>
+                                        <button type="button" class="btn fill" onclick="fn_search()">
+                                            <span>검색 조건 추가</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="selected_filter"></div>
+
+            <div>
+                <div class="nodata">
+                    <p>검색 조건 추가 후 학습데이터 등록이 가능합니다.</p>
+                </div>
+
+                <div class="tbl_wrap contentsArea">
+                    <table class="tbl_list">
+                        <caption>데이터 관리 : No, 대상, 예산집행년월, 부점코드, 세금계산서구분코드, 공급자사업자번호, 공급자상호명, 공급자업태명, 공급자종목명, 발행금액, 세금계산서품목명, 예산관리비목관리번호, 사업세부사업, 예산집행사유코드로 구성</caption>
+                        <colgroup>
+                            <col style="width: 2.5%">
+                            <col style="width: 4%;">
+                            <col style="width: 5%;">
+                            <col style="width: 4.5%;">
+                            <col style="width: 5%">
+
+                            <col style="width: 5%;">
+                            <col style="width: 8%;">
+                            <col style="width: 6%;">
+                            <col style="width: 6%;">
+                            <col style="width: 3.5%;">
+                            <col style="width: 6.5%;">
+
+                            <col style="width: 6.5%;">
+                            <col style="width: 7%;">
+                            <col style="width: 5.5%;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">대상</th>
+                            <th scope="col">예산집행년월</th>
+                            <th scope="col">부점코드</th>
+                            <th scope="col">세금계산서구분코드</th>
+                            <th scope="col">공급자사업자번호</th>
+
+                            <th scope="col">공급자상호명</th>
+                            <th scope="col">공급자업태명</th>
+                            <th scope="col">공급자종목명</th>
+                            <th scope="col">발행금액</th>
+                            <th scope="col">세금계산서품목명</th>
+
+                            <th scope="col">예산관리비목관리번호</th>
+                            <th scope="col">사업세부사업</th>
+                            <th scope="col">예산집행사유코드</th>
+                        </tr>
+                        </thead>
+                        <tbody id="contents">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--등록 팝업 : s-->
+<div id="popRegister" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_head">
+            <strong class="pop_tit">등록</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popRegister')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <div class="file_form lg">
+                <input type="file" id="attechedFile01" class="input_file" accept=".xls,.xlsx">
+                <div class="file_tip">
+                    <p>
+                        파일을 선택하거나, Drag &amp; Drop 하세요.
+                    </p>
+                </div>
+                <label for="attechedFile01" class="btn_file">
+                    <span class="blind">파일 선택</span>
+                </label>
+                <div class="drop_zone">
+                    <div class="area"></div>
+                </div>
+            </div>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popRegister')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill">
+                <span>저장</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--등록 팝업 : e-->
+
+<!--학습 팝업 : s-->
+<div id="popLearn" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_head">
+            <strong class="pop_tit">파라미터 설정</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popLearn')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <div class="div_write">
+                <div class="tr">
+                    <div class="th">
+                        <strong>
+                            <label for="epoch">Epoch</label>
+                        </strong>
+                        <div class="th_help_area">
+                            <button type="button" class="btn_help">
+                                <span class="blind">안내</span>
+                            </button>
+                            <div class="th_help">학습 데이터 셋을 학습하는 횟수 (1 ~ 100)</div>
+                        </div>
+                    </div>
+                    <div class="td">
+                        <div class="input">
+                            <input type="text" id="epoch" placeholder="Epoch를 입력하세요." value="20(default)">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        <strong>
+                            <label for="learningRate">Learning Rate</label>
+                        </strong>
+                        <div class="th_help_area">
+                            <button type="button" class="btn_help">
+                                <span class="blind">안내</span>
+                            </button>
+                            <div class="th_help">학습률, 최적 값을 찾기 위한 기울기의 이동 정도 (1 ~ 10)</div>
+                        </div>
+                    </div>
+                    <div class="td">
+                        <div class="input">
+                            <input type="text" id="learningRate" placeholder="Learning Rate를 입력하세요."
+                                   value="0.02(default)">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        <strong>
+                            <label for="batchSize">Batch Size</label>
+                        </strong>
+                        <div class="th_help_area">
+                            <button type="button" class="btn_help">
+                                <span class="blind">안내</span>
+                            </button>
+                            <div class="th_help">학습 데이터셋 중 몇 개의 데이터를 묶어서 가중치 값을 갱신할 지 지정하는 단위 (1 ~ 16)</div>
+                        </div>
+                    </div>
+                    <div class="td">
+                        <div class="input">
+                            <input type="text" id="batchSize" placeholder="Batch Size를 입력하세요." value="128(default)">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        <strong>정답셋</strong>
+                    </div>
+                    <div class="td">
+                        <div class="file_form">
+                            <input type="file" id="attechedFile02" class="input_file" accept=".xls,.xlsx">
+                            <div class="file_tip">
+                                <p>
+                                    파일을 선택하거나, Drag &amp; Drop 하세요.
+                                </p>
+                            </div>
+                            <label for="attechedFile02" class="btn_file">
+                                <span class="blind">파일 선택</span>
+                            </label>
+                            <div class="drop_zone">
+                                <div class="area"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearn')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill">
+                <span>학습실행</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--학습 팝업 : e-->
+
+<!--학습중 팝업 : s-->
+<div id="popLearnDetail" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup lg">
+        <div class="pop_head">
+            <strong class="pop_tit">학습중</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popLearnDetail')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <div id="chartdiv" style="height: 430px;"></div>
+        </div>
+    </div>
+</div>
+<!--학습중 팝업 : e-->
+
+<!--얼럿 : s-->
+<div id="alertWarning" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_warning"></i>
+            <strong class="pop_tit">삭제하시겠습니까?</strong>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('alertWarning')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill" onclick="layerHide('alertWarning')">
+                <span>확인</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--얼럿 : e-->
+
+<!--학습데이터 팝업 : s-->
+<div id="popLearnData" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup lg">
+        <div class="pop_head">
+            <strong class="pop_tit">학습데이터</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popLearnData')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <table class="tbl_write">
+                <caption>학습데이터 : 학습데이터 명, 학습 선택으로 구성</caption>
+                <colgroup>
+                    <col style="width:160px">
+                    <col style="width:auto">
+                    <col style="width:160px">
+                    <col style="width:auto">
+                </colgroup>
+                <tbody>
+                <!--<tr>
+                    <th scope="row">
+                        <label for="hdqrBobDcd">학습 대상</label>
+                    </th>
+                    <td colspan="3">
+                        <select id="hdqrBobDcd">
+                            <option value="1" selected>본부</option>
+                            <option value="2">영업점</option>
+                        </select>
+                    </td>
+                </tr>-->
+                <tr>
+                    <th scope="row">
+                        <label for="dataName">학습데이터 명</label>
+                    </th>
+                    <td colspan="3">
+                        <div class="input">
+                            <input type="text" id="dataName" placeholder="학습데이터 명을 입력하세요.">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <span>학습데이터 체크</span>
+                    </th>
+                    <td colspan="3">
+                        <div class="check_wrap">
+                            <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnBillType).values()}">
+                                <div class="checkbox">
+                                    <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                           th:data-name="${item}"
+                                           th:data-sno="${item.sno}"
+                                           th:disabled="${T(kr.co.ibk.domain.enums.InputColumnBillType).BRCD == item ? true : false}"
+                                           th:checked="${item.isChecked}"
+                                           th:class="${'checked' + (item.isChecked ? 'Y' : 'N')}">
+                                    <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
+                                </div>
+                            </th:block>
+                        </div>
+                        <div class="txt_guide fc_primary">※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <span>학습데이터 (output)</span>
+                    </th>
+                    <td colspan="3">
+                        <div class="check_wrap">
+                            <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnBillType).values()}">
+                                <div class="checkbox">
+                                    <input type="checkbox" th:id="${'output_' + item.camelColumn}" th:value="${item}"
+                                           th:data-name="${item}"
+                                           th:data-sno="${item.sno}"
+                                           checked disabled>
+                                    <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
+                                </div>
+                            </th:block>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <span>선택 조건</span>
+                    </th>
+                    <td colspan="3" class="chipArea"></td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <span>템플릿 생성 유무</span>
+                    </th>
+                    <td>
+                        <div class="df">
+                            <div class="radio txt">
+                                <input type="radio" name="templateAt" id="templateAtY" value="Y">
+                                <label for="templateAtY">사용</label>
+                            </div>
+                            <div class="radio txt">
+                                <input type="radio" name="templateAt" id="templateAtN" value="N">
+                                <label for="templateAtN">미사용</label>
+                            </div>
+                        </div>
+                    </td>
+                    <th scope="row">
+                        <span>템플릿 명</span>
+                    </th>
+                    <td>
+                        <input type="text" id="templateName" name="templateName" placeholder="템플릿 명을 입력하세요.">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="txt_guide fc_primary">※ 템플릿은 예산집행년월 정보를 저장하지 않습니다. 템플릿을 사용해 학습데이터를 생성할 때 설정해주세요.</div>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popLearnData')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill" onclick="fn_learnDataSave()">
+                <span>확인</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--학습데이터 팝업 : e-->
+
+<!--로딩중 : s-->
+<div id="loading" class="loading_layer"> <!--노출 원할 시 클래스 active 추가-->
+    <div class="loading">
+        <p>학습 데이터를 불러오고 있습니다</p>
+        <p>잠시만 기다려 주세요.</p>
+        <div class="loading_circle_rotate">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+    </div>
+</div>
+<!--로딩중 : e-->
+</body>
+</html>

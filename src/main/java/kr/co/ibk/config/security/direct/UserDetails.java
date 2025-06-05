@@ -1,7 +1,7 @@
 package kr.co.ibk.config.security.direct;
 
 
-import kr.co.ibk.domain.web.Account;
+import kr.co.ibk.domain.web.MemberInfo;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,17 +19,17 @@ public class UserDetails extends User
     private static final long serialVersionUID = 1L;
 
     @Getter
-    private Account account;
+    private MemberInfo memberInfo;
 
-    public UserDetails(Account account, List<String> authorities)
+    public UserDetails(MemberInfo memberInfo, List<String> authorities)
     {
         super
                 (
-                        account.getLoginId(),
-                        account.getPwd(),
+                        memberInfo.getMemId(),
+                        memberInfo.getMemPwd(),
                         getGranted(authorities)
                 );
-        this.account = account;
+        this.memberInfo = memberInfo;
     }
 
     private static Collection<? extends GrantedAuthority> getGranted(List<String> authorities) {

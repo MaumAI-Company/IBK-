@@ -1,0 +1,62 @@
+name: IBK Project CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Notify Slack - Build Started
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"[CI/CD] Build has started by ${GITHUB_ACTOR}.\"}" ${{ secrets.WEBHOOK_SLACK_URL }}
+
+      - name: Check active profile
+        run: |
+          if ! grep -q 'spring.profiles.active=maum' src/main/resources/application.properties; then
+            echo "Error: spring.profiles.active is not set to 'maum'."
+            exit 1  # 프로파일이 맞지 않으면 빌드 실패
+          fi
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+
+      - name: Build with Maven
+        run: mvn package
+        
+      - name: Notify Slack - Build Status
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"[CI/CD] Build Status: Success by ${GITHUB_ACTOR}.\"}" ${{ secrets.WEBHOOK_SLACK_URL }}
+
+  deploy:
+    runs-on: self-hosted
+    needs: build  # 'build' 작업이 성공해야 이 작업이 실행됨
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'  # develop 브랜치에 푸시될 때 실행됨
+    steps:
+      - name: Backup existing ROOT.war and copy new WAR file
+        run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          docker exec ibk_mcc_web mv /usr/local/tomcat/webapps/ROOT.war /usr/local/tomcat/webapps/ROOT.war.$TIMESTAMP
+          docker cp target/ibk-0.0.1-SNAPSHOT.war ibk_mcc_web:/usr/local/tomcat/webapps/ROOT.war
+
+      - name: Restart web server container
+        run: |
+          docker restart ibk_mcc_web
+
+      - name: Notify Slack - Deployment Status
+        run: |
+          if [ $? -eq 0 ]; then
+            curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"[CI/CD] Deployment Status: Success by ${GITHUB_ACTOR}.\"}" ${{ secrets.WEBHOOK_SLACK_URL }}
+          else
+            curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"[CI/CD] Deployment Status: Failed by ${GITHUB_ACTOR}.\"}" ${{ secrets.WEBHOOK_SLACK_URL }}
+          fi

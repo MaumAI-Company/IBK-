@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <link rel="stylesheet" href="/ClientUI/plugins/jquery-ui/jquery-ui.min.css">
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/index.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/ClientUI/plugins/monthpicker/jquery.mtz.monthpicker.js"></script>
+    <style>
+        .tbl_list {
+            overflow: hidden
+        }
+
+        .tbl_list > thead > tr > th {
+            padding: 0 8px
+        }
+
+        .tbl_list > tbody > tr > td {
+            padding: 0 8px
+        }
+
+        .tbl_list tbody td .link {
+            text-decoration: underline;
+            color: #004c9d !important;
+        }
+
+        #popLearnData .check_wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        #popLearnData .check_wrap .checkbox {
+            width: calc((100% - 16px) / 3)
+        }
+
+        .txt_guide {
+            margin-top: 8px
+        }
+
+        .mtz-monthpicker-year {
+            background: #fff url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"%3E%3Cpath fill="%236d7175" d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71L8.46 9.17a1 1 0 0 0-1.41 0a1 1 0 0 0 0 1.42l4.24 4.24a1 1 0 0 0 1.42 0L17 10.59a1 1 0 0 0 0-1.42Z"%2F%3E%3C%2Fsvg%3E') no-repeat calc(100% - 11px) 50% / 20px auto
+        }
+
+        #learnDetail .check_wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        #learnDetail .check_wrap .checkbox {
+            width: calc((100% - 8px) / 3);
+        }
+
+        #learnDetail .tbl_tit {
+            display: block;
+            font-weight: 700;
+            font-size: 20px;
+            margin-top: 18px;
+            margin-bottom: 17px;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            //학습 팝업 도움말
+            $('.btn_help').each(function () {
+                $(this).on('click', function () {
+                    $(this).parent('.th_help_area').toggleClass('active').parents('.tr').siblings('.tr').find('.th_help_area').removeClass('active');
+                });
+            });
+            $(document).on('click', function (e) {
+                if (!$(e.target).parents('div').hasClass('th_help_area')) {
+                    $('.th_help_area').removeClass('active');
+                }
+            });
+        });
+
+        let modelNmCount = 0;
+
+        function fn_modelNmCount() {
+            let jsonData = {
+                "learnName": $.trim($('#learnName').val())
+            }
+
+            $.ajax({
+                url: "/soulGod/learningDataManage/nmCount",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    modelNmCount = data;
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
+
+        function movePage(url, pageNo) {
+            $('#currentPageNo').val(pageNo);
+            $('#form1').attr({action: '/soulGod/learn/learningDataManage', method: 'post'}).unbind('submit').submit();
+        }
+
+        function fn_search() {
+            let frm = $('#form1');
+            frm.prop('action', '?');
+            frm.submit();
+        }
+
+        function fn_reset() {
+            $('#searchTarget').val('').niceSelect('update');
+            $('#searchLearningType').val('').niceSelect('update');
+            $('#searchKeyword').val('');
+
+            fn_search();
+        }
+
+        const inPrefix = 'input_';
+        const outPrefix = 'output_';
+
+        function fn_learnDetailOpen(el) {
+            let id = $(el).data('id');
+            let dataName = $(el).data('nm');
+            let learningTy = $(el).data('learning-ty');
+            let learningTyNm = $(el).data('learning-ty-nm');
+            let isCard = $(el).data('is-card');
+            let selectCon = isCard ? '.cardCon' : '.billCon';
+
+            $('#learningType').val(learningTy);
+            $('#learningTyNm').text(learningTyNm);
+            $('#isCard').val(isCard);
+            $('#dataId').val(id);
+            $('#dataName').text(dataName);
+            $('#searchStartDate').val('');
+            $('#searchEndDate').val('');
+
+            $('.cardCon').toggle(isCard);
+            $('.billCon').toggle(!isCard);
+
+            $(':checkbox[id^="' + inPrefix + '"]').prop('checked', false);
+            $(':checkbox[id^="' + outPrefix + '"]').prop('checked', false);
+            $(selectCon + ' :checkbox[id^="' + outPrefix + '"]').prop('checked', true);
+
+
+            let jsonData = {
+                "id": id
+            }
+
+            $.ajax({
+                url: "/soulGod/learningDataManage/detail",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    if (data) {
+                        let item = data.data;
+
+                        if (item.inputList) {
+                            $.each(item.inputList, function (idx, item) {
+                                $(selectCon + ' :checkbox[id^="' + inPrefix + '"]').each(function () {
+                                    if ($(this).val() === item.colName) {
+                                        $(this).prop('checked', true);
+                                    }
+                                })
+                            })
+                        }
+                        $('#hdqrBobDcd').val(item.hdqrBobDcd);
+                        $('#searchJson').val(item.selectCon);
+                        $('#searchTypeJson').val('');
+
+                        fn_settingChip(item.selectCon);
+                        $('.chipArea').html($('.selected_filter').html());
+                        $('.chipArea .chip button').remove();
+
+                        layerShow('learnDetail');
+                    } else {
+                        showAlert('warning', '학습 데이터가 존재하지 않습니다.');
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        }
+
+        /**
+         * 학습 모델 저장
+         */
+        function fn_learnModelSaveChk() {
+            let learnName = $('#learnName').val();
+            let epoch = $('#epoch').val();
+            let learningRate = $('#learningRate').val();
+            let batchSize = $('#batchSize').val();
+            let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+
+            if (!$('#searchJson').val()) {
+                showAlert('warning', '검색 조건 추가 후 진행해주세요.');
+                return false;
+            }
+
+            if (!$.trim(learnName)) {
+                showAlert('warning', '모델 명 입력은 필수입니다.');
+                return false;
+            }
+
+            fn_modelNmCount();
+            if (modelNmCount > 0) {
+                showAlert('warning', '이미 존재하는 모델 명 입니다.');
+                return false;
+            }
+
+            if (inputColumns.length < 1) {
+                showAlert('warning', '학습데이터는 최소 1개 이상 선택해야합니다.');
+                return false;
+            }
+
+            if (!$.trim(epoch)) {
+                showAlert('warning', 'Epoch 입력은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(learningRate)) {
+                showAlert('warning', 'Learning Rate 입력은 필수입니다.');
+                return false;
+            }
+
+            if (!$.trim(batchSize)) {
+                showAlert('warning', 'Batch Size 입력은 필수입니다.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function fn_learnModelSave() {
+            if (!fn_learnModelSaveChk()) {
+                return false;
+            }
+
+            let inputColumns = $(':checkbox[id^="' + inPrefix + '"]:checked');
+            let outputColumns = $(':checkbox[id^="' + outPrefix + '"]:checked');
+
+            let inputArr = [];
+            $.each(inputColumns, function (idx, item) {
+                let name = $(item).data('name');
+                let sno = $(item).data('sno');
+                inputArr.push({name: name, sno: sno});
+            })
+
+            let outputArr = [];
+            $.each(outputColumns, function (idx, item) {
+                let name = $(item).data('name');
+                let sno = $(item).data('sno');
+                outputArr.push({name: name, sno: sno});
+            })
+
+            let jsonData = {
+                "dataId": $('#dataId').val(),
+                "hdqrBobDcd": $('#hdqrBobDcd').val(),
+                "learnName": $.trim($('#learnName').val()),
+                "epoch": $.trim($('#epoch').val()),
+                "learningRate": $.trim($('#learningRate').val()),
+                "batchSize": $.trim($('#batchSize').val()),
+                "inputArr": inputArr,
+                "outputArr": outputArr,
+                "selectCon": $('#searchJson').val(),
+                "learningType": $('#learningType').val()
+            } //todo 학습데이터 선택조건 set 필요
+
+            $.ajax({
+                url: "/soulGod/learningDataManage/save",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    if ("SUCCESS" === data.status) {
+                        showAlert('complete', '저장되었습니다.', () => {
+                            location.reload();
+                        })
+                    } else {
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        })
+                    }
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
+
+        function fn_learningDataDelete() {
+            let checked = $("[id^='chk_']:checked");
+            if (checked.length < 1) {
+                showAlert('warning', '1개 이상의 학습데이터를 선택해주세요.');
+                return false;
+            }
+
+            showConfirm('message', checked.length + '건의 학습데이터가 선택되었습니다. <br> 삭제하시겠습니까?', () => {
+                let idArr = [];
+                $.each(checked, function () {
+                    idArr.push($(this).val());
+                });
+
+                let jsonData = {
+                    "idArr": idArr,
+                }
+
+                $.ajax({
+                    url: "/soulGod/learningDataManage/delete",
+                    type: "post",
+                    async: false,
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        if ("SUCCESS" === data.status) {
+                            showAlert('complete', '삭제되었습니다.', () => {
+                                location.reload();
+                            })
+                        } else {
+                            showAlert('warning', '실패하였습니다.', () => {
+                                location.reload();
+                            })
+                        }
+                    },
+                    error: function () {
+                        showAlert('warning', '실패하였습니다.', () => {
+                            location.reload();
+                        })
+                    }
+                });
+            });
+        }
+
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <th:block th:insert="~{soulGod/fragments/header}"></th:block>
+
+    <div id="container">
+        <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">학습 관리</h2>
+                    <h3 class="page_tit">학습 데이터 관리</h3>
+                </div>
+                <div class="btn_area">
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_learningDataDelete()">
+                        <span>삭제</span>
+                    </button>
+                </div>
+            </div>
+
+            <form id="form1" th:object="${params}">
+                <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
+                <div class="board_top">
+                    <div>
+                        <div class="total_num"><b
+                                th:text="${pagingInfo != null && pagingInfo.totalRecordCount != null ? #numbers.formatInteger(pagingInfo.totalRecordCount , '0', 'COMMA') : 0}"></b>
+                            건의 학습 데이터가 있습니다.
+                        </div>
+                    </div>
+                    <div class="mla">
+                        <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
+                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
+                                onchange="fn_search()">
+                            <option value="10" th:selected="${pagingInfo.criteria.recordsPerPage == 10}" selected>10개
+                            </option>
+                            <option value="20" th:selected="${pagingInfo.criteria.recordsPerPage == 20}">20개</option>
+                            <option value="30" th:selected="${pagingInfo.criteria.recordsPerPage == 30}">30개</option>
+                            <option value="40" th:selected="${pagingInfo.criteria.recordsPerPage == 40}">40개</option>
+                            <option value="50" th:selected="${pagingInfo.criteria.recordsPerPage == 50}">50개</option>
+                        </select>
+                        <label for="sorting" class="blind">정렬조건</label>
+                        <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">과거순</option>
+                            <option value="desc" th:selected="${params.sorting == 'desc'}">최신순</option>
+                            \
+                        </select>
+                        <div class="filter_area">
+                            <button type="button" class="btn btn_text btn_filter active">
+                                <i class="ico_filter"></i>
+                                <span>검색</span>
+                            </button>
+
+                            <div class="filter">
+                                <div class="inner">
+                                    <dl>
+                                        <dt>
+                                            <label for="searchLearningType">구분</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchLearningType" id="searchLearningType">
+                                                <option value="" selected>전체</option>
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.LearningType).values()}"
+                                                        th:class="${item}" th:text="${item.name}" th:value="${item}"
+                                                        th:selected="${item.name() eq params.searchLearningType}"></option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="searchTarget">대상</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchTarget" id="searchTarget">
+                                                <option value="" selected>전체</option>
+                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부
+                                                </option>
+                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label>검색어</label>
+                                        </dt>
+                                        <dd>
+                                            <div class="search_form">
+                                                <div class="search">
+                                                    <input type="search" id="searchKeyword" name="searchKeyword"
+                                                           placeholder="학습데이터, 템플릿 명, 등록자를 입력하세요."
+                                                           th:value="${params.searchKeyword}">
+                                                    <button type="button" class="btn_del" tabindex="-1">
+                                                        <span class="blind">삭제</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <div class="btn_area">
+                                        <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
+                                            <span>초기화</span>
+                                        </button>
+                                        <button type="button" class="btn fill" onclick="fn_search()">
+                                            <span>검색</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="selected_filter" style="display: none"></div>
+            <!--데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
+            <div class="nodata" th:if="${list.isEmpty() and list.size() == 0}">
+                <p>검색 결과가 없습니다.</p>
+            </div>
+            <!--데이터가 없을 때 : e-->
+
+            <table class="tbl_list" th:unless="${list.isEmpty() and list.size() == 0}">
+                <caption>학습 데이터 관리 : No, 구분, 대상, 템플릿 명, 등록자, 등록일시</caption>
+                <colgroup>
+                    <col style="width: 3.5%;min-width: 44px;">
+                    <col style="width: 10%">
+                    <col style="width: 12%">
+                    <col style="width: 10%;">
+                    <col style="width: 30%;">
+                    <col style="width: 22%;">
+                    <col style="width: 22%;">
+                    <col style="width: 22%">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" id="allChk" class="all_chk">
+                            <label for="allChk">
+                                <span class="blind">전체선택</span>
+                            </label>
+                        </div>
+                    </th>
+                    <th scope="col">No</th>
+                    <th scope="col">구분</th>
+                    <th scope="col">대상</th>
+                    <th scope="col">학습데이터 명</th>
+                    <th scope="col">템플릿 명</th>
+                    <th scope="col">등록자</th>
+                    <th scope="col">등록일시</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item, idx:${list}">
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" name="chk" th:id="${'chk_' + item.id}" th:value="${item.id}"
+                                   th:disabled="${item.modelCnt > 0}">
+                            <label th:for="${'chk_' + item.id}">
+                                <span class="blind">선택</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
+                    <td th:text="${item.learningType != null ? item.learningType.getName() : '-'}"></td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td>
+                        <!--<a href="javascript:" class="link"
+                           th:text="${item.dataName}"></a>-->
+                        <a href="javascript:" th:class="${'link templateName' + item.id}"
+                           th:text="${item.dataName}"
+                           th:data-id="${item.id}"
+                           th:data-nm="${item.dataName}"
+                           th:data-learning-ty="${item.learningType}"
+                           th:data-learning-ty-nm="${item.learningType.getName()}"
+                           th:data-is-card="${item.learningType eq T(kr.co.ibk.domain.enums.LearningType).CARD}"
+                           onclick="fn_learnDetailOpen(this)">admin</a>
+                    </td>
+                    <td th:text="${item.templateName != null ? item.templateName : '-'}"></td>
+                    <td th:text="${item.regName}"></td>
+                    <td th:text="${#temporals.format(item.regDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
+        </div>
+    </div>
+</div>
+
+
+<!--학습 팝업 : s-->
+<div id="learnDetail" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup lg">
+        <div class="pop_head">
+            <strong class="pop_tit">학습데이터</strong>
+            <button type="button" class="btn_close" onclick="layerHide('learnDetail')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <form id="templateForm">
+                <input type="hidden" id="dataId">
+                <input type="hidden" id="hdqrBobDcd">
+                <input type="hidden" id="learningType">
+                <input type="hidden" th:field="${params.searchJson}">
+                <input type="hidden" th:field="${params.searchTypeJson}">
+                <table class="tbl_write">
+                    <caption>학습데이터 상세정보 : 구분, 학습데이터 명, 학습데이터, 선택 조건, 학습데이터 명, 예산집행기간으로 구성</caption>
+                    <colgroup>
+                        <col style="width:160px">
+                        <col style="width:auto">
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">구분</th>
+                        <td id="learningTyNm"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">학습데이터 명</th>
+                        <td id="dataName"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <span>학습데이터 체크</span>
+                        </th>
+                        <td>
+                            <div class="check_wrap cardCon">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnCardType).values()}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
+                                               disabled>
+                                        <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
+                                    </div>
+                                </th:block>
+                            </div>
+                            <div class="check_wrap billCon">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.InputColumnBillType).values()}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" th:id="${'input_' + item.camelColumn}" th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
+                                               disabled>
+                                        <label th:for="${'input_' + item.camelColumn}" th:text="${item.name}"></label>
+                                    </div>
+                                </th:block>
+                            </div>
+                            <div class="txt_guide fc_primary">※ 학습 데이터에 포함할 항목을 선택하세요. 체크된 항목만 학습데이터에 포함되어 학습됩니다.</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <span>학습데이터 (output)</span>
+                        </th>
+                        <td>
+                            <div class="check_wrap cardCon">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnCardType).values()}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" th:id="${'output_' + item.camelColumn}"
+                                               th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
+                                               checked disabled>
+                                        <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
+                                    </div>
+                                </th:block>
+                            </div>
+                            <div class="check_wrap billCon">
+                                <th:block th:each="item :${T(kr.co.ibk.domain.enums.OutputColumnBillType).values()}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" th:id="${'output_' + item.camelColumn}"
+                                               th:value="${item}"
+                                               th:data-name="${item}"
+                                               th:data-sno="${item.sno}"
+                                               checked disabled>
+                                        <label th:for="${'output_' + item.camelColumn}" th:text="${item.name}"></label>
+                                    </div>
+                                </th:block>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <span>선택 조건</span>
+                        </th>
+                        <td class="chipArea"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <strong class="tbl_tit">모델 등록</strong>
+                <table class="tbl_write">
+                    <caption>모델 : 모델명, 파라미터</caption>
+                    <colgroup>
+                        <col style="width:160px">
+                        <col style="width:auto">
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">
+                            <span class="aster"></span>
+                            <label for="learnName">모델명</label>
+                        </th>
+                        <td>
+                            <div class="input">
+                                <input type="text" id="learnName" placeholder="모델명을 입력하세요." maxlength="500">
+                                <button type="button" class="btn_del" tabindex="-1">
+                                    <span class="blind">삭제</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <span class="aster"></span>
+                            <label>파라미터</label>
+                        </th>
+                        <td>
+                            <div class="div_write">
+                                <div class="tr">
+                                    <div class="th">
+                                        <strong>
+                                            <label for="epoch">Epoch</label>
+                                        </strong>
+                                        <div class="th_help_area">
+                                            <button type="button" class="btn_help">
+                                                <span class="blind">안내</span>
+                                            </button>
+                                            <div class="th_help">학습 데이터 셋을 학습하는 횟수 (1 ~ 100)</div>
+                                        </div>
+                                    </div>
+                                    <div class="td">
+                                        <div class="input">
+                                            <input type="text" id="epoch" value="10" placeholder="Epoch를 입력하세요."
+                                                   onkeyup="fn_numberOnly(this, 100)"
+                                                   oninput="fn_numberOnly(this, 100)">
+                                            <button type="button" class="btn_del" tabindex="-1">
+                                                <span class="blind">삭제</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tr">
+                                    <div class="th">
+                                        <strong>
+                                            <label for="learningRate">Learning Rate</label>
+                                        </strong>
+                                        <div class="th_help_area">
+                                            <button type="button" class="btn_help">
+                                                <span class="blind">안내</span>
+                                            </button>
+                                            <div class="th_help">학습률, 최적 값을 찾기 위한 기울기의 이동 정도 (1 ~ 10)</div>
+                                        </div>
+                                    </div>
+                                    <div class="td df w200">
+                                        <div class="input">
+                                            <input type="text" id="learningRate" value="3"
+                                                   placeholder="Learning Rate를 입력하세요." onkeyup="fn_numberOnly(this, 10)"
+                                                   oninput="fn_numberOnly(this, 10)">
+                                            <button type="button" class="btn_del" tabindex="-1">
+                                                <span class="blind">삭제</span>
+                                            </button>
+                                        </div>
+                                        <strong>e<sub>-5</sub></strong>
+                                    </div>
+                                </div>
+                                <div class="tr">
+                                    <div class="th">
+                                        <strong>
+                                            <label for="batchSize">Batch Size</label>
+                                        </strong>
+                                        <div class="th_help_area">
+                                            <button type="button" class="btn_help">
+                                                <span class="blind">안내</span>
+                                            </button>
+                                            <div class="th_help">학습 데이터셋 중 몇 개의 데이터를 묶어서 가중치 값을 갱신할 지 지정하는 단위 (1 ~ 16)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="td">
+                                        <div class="input">
+                                            <input type="text" id="batchSize" value="16"
+                                                   placeholder="Batch Size를 입력하세요." onkeyup="fn_numberOnly(this, 16)"
+                                                   oninput="fn_numberOnly(this, 16)">
+                                            <button type="button" class="btn_del" tabindex="-1">
+                                                <span class="blind">삭제</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('learnDetail')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill" onclick="fn_learnModelSave()">
+                <span>모델 등록</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--학습 팝업 : e-->
+
+<div style="display: none">
+    <select>
+        <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
+                th:class="${item}" th:text="${item.name}"></option>
+        <option th:each="item :${T(kr.co.ibk.domain.enums.SearchBillType).values()}"
+                th:class="${item}" th:text="${item.name}"></option>
+    </select>
+</div>
+</body>
+</html>

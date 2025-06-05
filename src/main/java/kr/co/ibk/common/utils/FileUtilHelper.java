@@ -3,6 +3,7 @@ package kr.co.ibk.common.utils;
 import kr.co.ibk.domain.web.FileInfo;
 import kr.co.ibk.model.FileInfoForm;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -258,6 +259,27 @@ public class FileUtilHelper {
             log.debug("서버파일삭제결과:{}, 파일:{}", rtnBool, file.getAbsoluteFile());
         }
 
+        return rtnBool;
+    }
+
+    /**
+     * 서버의 폴더를 삭제처리함.
+     */
+    public static boolean removeDirectory(String stordFilePath, String directoryNm) {
+        boolean rtnBool = false;
+        String path = filepath + File.separator + stordFilePath + File.separator + directoryNm;
+        File folder = new File(path);
+        try {
+            if (folder.exists()) {
+                FileUtils.cleanDirectory(folder);
+                if (folder.isDirectory()) {
+                    folder.delete();
+                }
+            }
+            rtnBool = true;
+        } catch (IOException e) {
+           return false;
+        }
         return rtnBool;
     }
 

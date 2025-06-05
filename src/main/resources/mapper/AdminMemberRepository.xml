@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.AdminMemberRepository">
+    <select id="getUserCount" resultType="int">
+      	SELECT 
+            COUNT(1)
+        FROM 
+        	HC_MEMBER AS hm
+        WHERE
+        	1=1 
+	       	AND hm.MEM_STAT != 'delete'
+			AND hm.MEM_ID = #{userId}
+    </select>
+    
+    <select id="getUserTotalCount" parameterType="MemberInfo" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM
+		( SELECT
+		<include refid="hc_member_columns">
+			<property name="alias" value="hm."/>
+		</include>
+		, (SELECT hd.DEPT_CODE FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_CODE
+		, (SELECT hd.DEPT_NAME FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_NAME
+		, (SELECT hd.DEPT_ENG_NAME FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_ENG_NAME
+		FROM
+		HC_MEMBER AS hm
+		WHERE
+		hm.MEM_STAT != 'delete' ) hm
+		WHERE
+		1=1
+		<include refid="kr.co.ibk.repository.CommonRepository.searchUser"/>
+	</select>
+
+    <select id="getUserList" parameterType="MemberInfo" resultType="MemberInfo">
+    	SELECT *
+	    FROM 
+	       ( SELECT 
+	            <include refid="hc_member_columns"><property name="alias" value="hm."/></include>
+	            , (SELECT hd.DEPT_CODE FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_CODE
+	        	, (SELECT hd.DEPT_NAME FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_NAME
+	        	, (SELECT hd.DEPT_ENG_NAME FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_ENG_NAME
+	        FROM 
+	        	HC_MEMBER AS hm
+	        WHERE 
+	        	hm.MEM_STAT != 'delete' ) hm
+        WHERE 
+        	1=1	
+        	<include refid="kr.co.ibk.repository.CommonRepository.searchUser" />
+        ORDER BY 
+        	MEM_REG_DT ASC
+    	    <include refid="kr.co.ibk.repository.CommonRepository.paging" />
+    </select>
+
+	<select id="getUserInfo" parameterType="String" resultType="MemberInfo">
+		SELECT
+			<include refid="hc_member_columns"><property name="alias" value="hm."/></include>
+            , (SELECT hd.DEPT_CODE FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_CODE
+        	, (SELECT hd.DEPT_NAME FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_NAME
+        	, (SELECT hd.DEPT_ENG_NAME FROM HC_DEPT hd WHERE hd.DEPT_ID = hm.DEPT_ID) AS DEPT_ENG_NAME
+		FROM 
+			HC_MEMBER hm
+		WHERE 
+			1=1
+        	AND hm.MEM_STAT != 'delete'
+			AND hm.MEM_ID = #{userId} 
+    </select>
+    
+    <update id="addUser" parameterType="MemberInfo">
+		INSERT INTO HC_MEMBER 
+		    (DEPT_ID, MEM_ID, MEM_NAME, MEM_TYPE,
+		     MEM_STAT, MEM_BEFO_PWD, MEM_PWD, MEM_GENDER, MEM_BIRTHDAY,
+		     MEM_PHONE, MEM_EMAIL, MEM_REG_ID, MEM_REG_DT, MEM_MOD_ID,
+		     MEM_MOD_DT, MEM_LST_DT, MEM_FAIL_CNT, MEM_FAIL_DT, MEM_COLUMN1, MEM_COLUMN2, MEM_SNO, RECV_YN, SND_YN)
+		VALUES
+			(#{deptId}, #{memId}, #{memName}, NULL,
+			#{memStat}, #{memBefoPwd}, #{memPwd}, #{memGender}, #{memBirthday},
+			#{memPhone}, #{memEmail}, #{memRegId}, sysdate(), #{memModId},
+			sysdate(), sysdate(), 0, SYSDATE(), #{memColumn1}, #{memColumn2}, #{memSno}, #{recvYn}, #{sndYn})
+    </update>
+    
+    <update id="deleteUser" parameterType="MemberInfo">
+	    UPDATE 
+		    HC_MEMBER
+		SET 
+		    MEM_STAT = #{memStat}
+		    , MEM_MOD_ID = #{memModId}
+		    , MEM_MOD_DT = sysdate()
+		WHERE 
+			1=1
+        	AND MEM_STAT != 'delete'
+			AND MEM_ID = #{memId} 
+    </update>
+    
+	<update id="addUserRole" parameterType="MemberInfo">
+		INSERT INTO 
+			HC_MEMBER_ROLE (MEM_SEQ, MEM_ID, ROLE_ID) 
+		VALUES
+			 (#{memSeq}, #{memId}, #{roleId})
+    </update>
+
+	<select id="getUserRole" parameterType="String" resultType="RoleInfo">
+		SELECT 
+			<include refid="hc_role_columns"><property name="alias" value="hr."/></include>
+	    FROM 
+        	HC_MEMBER hm 
+        	INNER JOIN HC_MEMBER_ROLE hmr 
+        	on hm.MEM_SEQ = hmr.MEM_SEQ
+        	INNER JOIN HC_ROLE hr 
+        	on hmr.ROLE_ID = hr.ROLE_ID
+        WHERE 
+        	1=1
+        	AND hm.MEM_STAT != 'delete'
+        	AND hr.ROLE_TYPE = 'login'
+        	AND hm.MEM_ID = #{userId}
+    </select>
+
+
+	<update id="modUserRole" parameterType="MemberInfo">
+		UPDATE 
+        	HC_MEMBER hm 
+        	INNER JOIN HC_MEMBER_ROLE hmr 
+        	on hm.MEM_SEQ = hmr.MEM_SEQ
+        	INNER JOIN HC_ROLE hr 
+        	on hmr.ROLE_ID = hr.ROLE_ID
+		SET
+			hmr.ROLE_ID = #{roleId}
+		WHERE 
+			1=1
+        	AND hm.MEM_STAT != 'delete'
+			AND hr.ROLE_TYPE = 'login'
+			AND hmr.MEM_ID = #{memId}
+    </update>
+
+	<update id="deleteUserRole" parameterType="MemberInfo">
+		DELETE 
+			hmr
+		FROM
+        	HC_MEMBER hm 
+        	INNER JOIN HC_MEMBER_ROLE hmr 
+        	on hm.MEM_SEQ = hmr.MEM_SEQ
+        	INNER JOIN HC_ROLE hr 
+        	on hmr.ROLE_ID = hr.ROLE_ID
+		WHERE 
+			1=1
+        	AND hm.MEM_STAT != 'delete'
+			AND hr.ROLE_TYPE = 'login'
+			AND hmr.MEM_ID = #{memId}
+    </update>
+    
+    <update id="setUserPassword" parameterType="MemberInfo">
+    	UPDATE 
+    		HC_MEMBER
+    	SET	
+    		MEM_BEFO_PWD = #{memBefoPwd}
+    		, MEM_PWD = #{memPwd}
+    	WHERE 
+    		1=1
+        	AND MEM_STAT != 'delete'
+    		AND MEM_ID = #{memId}
+    </update>
+    
+	<update id="modUser" parameterType="MemberInfo">
+	    UPDATE 
+		    HC_MEMBER
+		SET 
+		    DEPT_ID = #{deptId}
+		    , MEM_STAT = #{memStat}
+		    , MEM_GENDER = #{memGender}
+		    , MEM_BIRTHDAY = #{memBirthday}
+		    , MEM_PHONE = #{memPhone}
+		    , MEM_EMAIL = #{memEmail}
+		    , MEM_MOD_ID = #{memModId}
+		    , MEM_MOD_DT = sysdate()
+		    , MEM_COLUMN1 = #{memColumn1}
+		    , MEM_COLUMN2 = #{memColumn2}
+		    , MEM_SNO = #{memSno}
+		    , RECV_YN = #{recvYn}
+		    , SND_YN = #{sndYn}
+		WHERE
+    		1=1
+        	AND MEM_STAT != 'delete'
+	    	AND MEM_ID = #{memId}
+    </update>
+    
+    <sql id="hc_member_columns">
+		${alias}MEM_SEQ
+		, ${alias}DEPT_ID
+		, ${alias}MEM_ID
+		, ${alias}MEM_NAME
+		, ${alias}MEM_TYPE
+		, ${alias}MEM_STAT
+		, ${alias}MEM_BEFO_PWD
+		, ${alias}MEM_PWD
+		, ${alias}MEM_GENDER
+		, ${alias}MEM_BIRTHDAY
+		, ${alias}MEM_PHONE
+		, ${alias}MEM_RANK
+		, ${alias}MEM_ZIPCODE
+		, ${alias}MEM_ADDR
+		, ${alias}MEM_ADDR_DETAIL
+		, ${alias}MEM_EMAIL
+		, ${alias}MEM_REG_ID
+		, ${alias}MEM_REG_DT
+		, ${alias}MEM_MOD_ID
+		, ${alias}MEM_MOD_DT
+		, ${alias}MEM_LST_DT
+		, ${alias}MEM_FAIL_CNT
+		, ${alias}MEM_FAIL_DT
+		, ${alias}MEM_COLUMN1
+		, ${alias}MEM_COLUMN2
+		, ${alias}MEM_COLUMN3
+		, ${alias}MEM_COLUMN4
+		, ${alias}MEM_COLUMN5
+		, ${alias}MEM_SNO
+		, ${alias}RECV_YN
+		, ${alias}SND_YN
+    </sql>
+    <sql id="hc_role_columns">
+		${alias}ROLE_SEQ
+		, ${alias}ROLE_ID
+		, ${alias}ROLE_TYPE
+		, ${alias}ROLE_NAME
+		, ${alias}ROLE_USE_YN
+		, ${alias}ROLE_REG_ID
+		, ${alias}ROLE_REG_DT
+		, ${alias}ROLE_MOD_ID
+		, ${alias}ROLE_MOD_DT
+		, ${alias}ROLE_COLUMN1
+		, ${alias}ROLE_COLUMN2
+		, ${alias}ROLE_COLUMN3
+		, ${alias}ROLE_COLUMN4
+		, ${alias}ROLE_COLUMN5
+    </sql>
+
+	<update id="updateSndN">
+		UPDATE
+			HC_MEMBER
+		SET
+			SND_YN = 'N'
+		WHERE
+			1=1
+	    	AND MEM_SEQ != #{memSeq}
+	</update>
+</mapper>

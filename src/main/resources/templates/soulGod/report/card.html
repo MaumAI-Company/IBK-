@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <style>
+        .tbl_wrap .tbl_list > tbody > tr > td.wsp {
+            white-space: pre
+        }
+
+        #popDetail .tbl_write table th,
+        #popDetail .tbl_write table td {
+            padding-top: 2px;
+            padding-bottom: 2px;
+            vertical-align: middle;
+        }
+
+        #popDetail .tbl_write .in_table {
+            border-radius: 8px;
+            border: 1px solid #ebeff2;
+            margin-top: 4px
+        }
+
+        #popDetail .tbl_write .in_table th {
+            color: #6d7175;
+            font-weight: 600;
+            font-size: 13px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popDetail .tbl_write .in_table th + th {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popDetail .tbl_write .in_table td {
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            padding: 6px
+        }
+
+        #popDetail .tbl_write .in_table td + td {
+            border-left: 1px solid #ebeff2
+        }
+
+        #popDetail .tbl_write div + div {
+            margin-top: 12px
+        }
+
+        #popDetail .tbl_write > thead > tr > th {
+            height: 52px;
+            padding: 14px 16px;
+            font-weight: 400;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+            background-color: #f9f9f9
+        }
+
+        #popDetail .tbl_write > thead > tr > td {
+            padding: 2px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ebeff2;
+        }
+
+    </style>
+    <script type="text/javascript">
+        $(window).on('load', function () {
+            fn_search();
+        });
+
+        $(function () {
+            fn_setDatePicker('#searchStartDate', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        maxDate: $('#searchEndDate').val() ? $('#searchEndDate').val() : false
+                    })
+                }
+            });
+            fn_setDatePicker('#searchEndDate', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        minDate: $('#searchStartDate').val() ? $('#searchStartDate').val() : false
+                    })
+                }
+            });
+
+            fn_settingChip($('#searchJson').val());
+        });
+
+        function fn_removeChipCallBack() {
+            $('#searchAllDateAt').val('Y');
+        }
+
+        function fn_search(pageNo) {
+
+            let searchStartDate = $('#searchStartDate').val();
+            let searchEndDate = $('#searchEndDate').val();
+            pageNo && $('#currentPageNo').val(pageNo);
+            let recordsPerPage = $('#recordsPerPage').val();
+            fn_searchConditionSet();
+
+            $('#loading').addClass('active');
+
+            let jsonData = {
+                'searchJson': $('#searchJson').val(),
+                'searchTypeJson': $('#searchTypeJson').val(),
+                'searchTarget': $('#searchTarget').val(),
+                'searchType': $('#searchType').val(),
+                'searchKeyword': $('#searchKeyword').val(),
+                'searchStartDate': searchStartDate,
+                'searchEndDate': searchEndDate,
+                'currentPageNo': $('#currentPageNo').val(),
+                'recordsPerPage': recordsPerPage,
+                'sorting': $('#sorting').val(),
+            }
+
+            $.ajax({
+                url: "/soulGod/report/card/list",
+                type: "post",
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    $('.selected_filter').html('');
+                    let contents = [];
+                    let pageInfo = data.pageInfo;
+                    let startNo = pageInfo.totalRecordCount - ((pageInfo.currentPage - 1) * pageInfo.recordsPerPage); // 시작 번호
+
+                    if (data.list.length > 0) {
+                        $.each(data.list, function (idx, item) {
+                            let no = startNo - idx;
+                            contents.push(`
+                                <tr>
+                                    <td>${no}</td>
+                                    <td>${item.hdqrBobDcd == null ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}</td>
+                                    <td>${item.brcd}</td>
+                                    <td>${item.cdn}</td>
+                                    <td>${item.bdgtTstmUseHms}</td>
+                                    <td>${item.bzdyYn}</td>
+                                    <td>${item.amslAmt}</td>
+                                    <td>${item.afstNm}</td>
+                                    <td>${item.tpbsNm}</td>
+                                    <td>${item.afstBzn}</td>
+                                    <td>${item.amslAfstNo}</td>
+                                    <td>${item.afstTpbcd}</td>
+                                    <td>${item.afstDtlAdr}</td>
+                                    <td class="pr">${item.brncAdr}</td>
+                                    <td class="wsp" style="background-color:#f9f9ff">${item.bdgtItexFrcsCon != null ? item.bdgtItexFrcsCon : '-'}</td>
+                                    <td class="wsp" style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon != null ? item.bdgtBsnsFrcsCon : '-'}</td>
+                                    <td class="wsp" style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon != null ? item.bdgtPrfrRsnFrcsCon : '-'}</td>
+                                    <td>${item.rsreYmd != null && item.rsreYmd != '' ? (item.rsreYmd.length == 8 ? item.rsreYmd.substring(0, 4) + '.' + item.rsreYmd.substring(4, 6) + '.' + item.rsreYmd.substring(6, 8) : '') : ''}</td>
+                                    <td>
+                                        <button type="button" class="badge"
+                                                onclick="fn_detail(${idx})">
+                                            <input type="hidden" id="${idx + '_' + item.no}" value="${(idx == 0 || idx == data.list.length - 1) ? (idx == 0 ? 'first' : 'final') : ''}">
+                                            <i class="ico_plus"></i>
+                                            <span>상세보기</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `);
+                        })
+                        $('.nodata').hide();
+                        $('.contentsArea').show();
+                    } else {
+                        $('.nodata').show();
+                        $('.contentsArea').hide();
+                    }
+
+                    fn_settingChip($('#searchJson').val(), false);
+
+                    $('#mainTbody').html(contents);
+                    $('.totalCnt').text(data.list.length);
+
+                    // pagination
+                    let paginationHtml = '';
+                    $('#recordsPerPage').val(pageInfo.recordsPerPage).niceSelect('update');
+                    $('#totalNum').text(fn_setCommas(pageInfo.totalRecordCount));
+
+                    if (pageInfo.hasPreviousPage) {
+                        paginationHtml += `
+                            <button type="button" class="page_nav prev" onclick="fn_search(${pageInfo.firstPage - 1})">
+                                <span class="blind">이전</span>
+                            </button>
+                            <button type="button" onclick="fn_search(1)">1</button>
+                            <span>...</span>
+                        `;
+                    }
+
+                    for (let i = pageInfo.firstPage; i <= pageInfo.lastPage; i++) {
+                        if (i === pageInfo.currentPage) {
+                            paginationHtml += `
+                                <button type="button" class="active" onclick="fn_search(${i})">${i}</button>
+                            `;
+                        } else {
+                            paginationHtml += `
+                                <button type="button" onclick="fn_search(${i})">${i}</button>
+                            `;
+                        }
+                    }
+
+                    if (pageInfo.hasNextPage) {
+                        paginationHtml += `
+                            <span>...</span>
+                            <button type="button" onclick="fn_search(${pageInfo.totalPageCount})">${pageInfo.totalPageCount}</button>
+                            <button type="button" class="page_nav next" onclick="fn_search(${pageInfo.lastPage + 1})">
+                                <span class="blind">다음</span>
+                            </button>
+                        `;
+                    }
+
+                    $('#searchType').val('').niceSelect('update');
+                    $('#searchKeyword').prop('disabled', true);
+                    $('.pagination').html(paginationHtml);
+                    $('#loading').removeClass('active');
+                },
+                error: function (error) {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    });
+                }
+            });
+        }
+
+        function movePage(url, pageNo) {
+            $('#currentPageNo').val(pageNo);
+            $('#form1').attr({action: '/soulGod/report/card', method: 'post'}).unbind('submit').submit();
+        }
+
+        function fn_reset() {
+            $('#searchStartDate').val('');
+            $('#searchEndDate').val('');
+            $('#searchTarget').val('').niceSelect('update');
+            $('#searchType').val('').niceSelect('update');
+            $('#searchKeyword').val('');
+            $('#searchJson').val('');
+            $('#searchTypeJson').val('');
+
+            fn_search();
+        }
+
+        function fn_detail(idx) { //(카드 증빙 일자 , 카드 증빙번호, 부점코드 )=> pk
+
+            let input = $('input[id^=' + idx + '_]');
+            let no = input.attr('id').split('_')[1];
+            let type = $(input).val();
+
+            if (!$.trim(no)) {
+                showAlert('warning', '잘못된 접근입니다.');
+                return false;
+            }
+            $('#outputBody').hide();
+
+            let jsonData = {
+                "no": no,
+                "sorting": $('#sorting').val(),
+                "searchStartDate": $('#searchStartDate').val(),
+                "searchEndDate": $('#searchEndDate').val(),
+                "searchTarget": $('#searchTarget').val(),
+                "searchType": $('#searchType').val(),
+                "searchKeyword": $('#searchKeyword').val(),
+                "searchTypeJson": $('#searchTypeJson').val()
+            }
+
+            $.ajax({
+                url: "/soulGod/report/card/detail",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    let contents;
+
+                    $('#popHead').html(`
+                            <tr>
+                                <th>추론 모델</th>
+                                <td>${data.learnName ?? '-'}</td>
+                            </tr>
+                        `);
+
+                    //input
+                    if (data.inputList) {
+                        let inputContents = `
+                                <tr>
+                                    <th scope="row">input</th>
+                                    <td>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:140px">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>`;
+                        $.each(data.inputList, function (idx, item) {
+                            inputContents += '<tr> ' +
+                                '                        <th scope="row">' + item.inputColumnNm + '</th> ' +
+                                '                        <td>' + item.inputColumnVal + '</td> ' +
+                                '                    </tr>';
+                        })
+                        inputContents += `</tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            `;
+
+                        contents = inputContents;
+                    }
+
+                    //output text set
+                    makeOutputText('bdgtItexFrcsCon', data.bdgtItexFrcsCon);
+                    makeOutputText('bdgtItexFrcsPrbCon', data.bdgtItexFrcsPrbCon);
+                    makeOutputText('bdgtBsnsFrcsCon', data.bdgtBsnsFrcsCon);
+                    makeOutputText('bdgtBsnsFrcsPrbCon', data.bdgtBsnsFrcsPrbCon);
+                    makeOutputText('bdgtPrfrRsnFrcsCon', data.bdgtPrfrRsnFrcsCon);
+                    makeOutputText('bdgtPrfrRsnFrcsPrbCon', data.bdgtPrfrRsnFrcsPrbCon);
+                    $('#outputBody').show();
+
+                    /*$('#popHead').html('');
+                    contents = '<tr><td colspan="2">해당 데이터에 대한 AI 추론 결과가 없습니다.</td></tr>';*/
+
+                    $('#inpputBody').html(contents);
+
+                    //btn onclick function set
+                    if (type === 'first') {
+                        $('.prevBtn').prop('disabled', true);
+                    } else {
+                        $('.prevBtn').off('click').on('click', function () {
+                            fn_detail(idx - 1);
+                        }).prop('disabled', false);
+                    }
+
+                    if (type === 'final') {
+                        $('.nextBtn').prop('disabled', true);
+                    } else {
+                        $('.nextBtn').off('click').on('click', function () {
+                            fn_detail(idx + 1);
+                        }).prop('disabled', false);
+                    }
+
+                    layerShow('popDetail');
+                },
+                error: function () {
+                    showAlert('warning', '실패하였습니다.', () => {
+                        location.reload();
+                    })
+                }
+            });
+        }
+
+        function makeOutputText(columnNm, columnValue) {
+            let valueArray = '-';
+
+            if (columnValue) {
+                valueArray = columnValue.split('|');
+
+                for (let i = 0; i < valueArray.length; i++) {
+                    $('#' + columnNm + i).text(valueArray[i]);
+                }
+            } else {
+                for (let i = 0; i < 3; i++) {
+                    $('#' + columnNm + i).text(valueArray);
+                }
+            }
+        }
+
+        function fn_excelDownload() {
+            fn_searchConditionSet();
+
+            layerShow('alertWarning');
+
+            let form = document.getElementById('form1');
+            let formData = new FormData(form);
+
+            let queryString = Object.entries(Object.fromEntries(formData.entries()))
+                .filter(([_, value]) => value) // 빈 값 제외
+                .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+                .join('&');
+
+            let downloadUrl = '/soulGod/report/card/xlsDown' + (queryString ? '?' + queryString : '');
+            let downloadWindow = window.open(downloadUrl, '_blank');
+
+            // 주기적으로 (1초마다) 새 창이 닫혔는지 확인하여 경고 레이어 닫기
+            let timer = setInterval(function () {
+                if (downloadWindow.closed) {
+                    clearInterval(timer);
+                    layerHide('alertWarning');
+                }
+            }, 1000);
+        }
+
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <th:block th:insert="~{soulGod/fragments/header}"></th:block>
+
+    <div id="container">
+        <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">지급결의 AI 적용 결과 조회</h2>
+                    <h3 class="page_tit">BC카드 지급결의 내역 조회</h3>
+                </div>
+                <div class="btn_area">
+                    <button type="button" class="btn line_cool_grey30"
+                            onclick="fn_excelDownload()">
+                        <span>엑셀 다운로드</span>
+                    </button>
+                </div>
+            </div>
+
+            <form id="form1">
+                <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
+                <input type="hidden" th:field="${params.searchJson}">
+                <input type="hidden" th:field="${params.searchTypeJson}">
+                <input type="hidden" th:field="${params.searchAllDateAt}">
+                <div class="board_top">
+                    <div>
+                        <div class="total_num"><b id="totalNum"></b>
+                            건의 AI 결과가 있습니다.
+                        </div>
+                    </div>
+                    <div class="mla">
+                        <label for="recordsPerPage" class="blind">게시글 페이지 수</label>
+                        <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility"
+                                onchange="fn_search()">
+                            <option value="10">10개</option>
+                            <option value="20" selected>20개</option>
+                            <option value="30">30개</option>
+                            <option value="40">40개</option>
+                            <option value="50">50개</option>
+                        </select>
+                        <label for="sorting" class="blind">정렬조건</label>
+                        <select name="sorting" id="sorting" class="sel_board sel_sorting" onchange="fn_search()">
+                            <option value="asc" th:selected="${params.sorting == 'asc'}">과거순</option>
+                            <option value="desc" th:selected="${params.sorting == null || params.sorting == 'desc'}">
+                                최신순
+                            </option>
+                            \
+                        </select>
+                        <div class="filter_area">
+                            <button type="button" class="btn btn_text btn_filter active">
+                                <!--TODO : 선택된 조건이 있을 때는 클래스 active 추가, 필터 삭제되면 클래스 active 삭제-->
+                                <i class="ico_filter"></i>
+                                <span>검색</span>
+                            </button>
+
+                            <div class="filter">
+                                <div class="inner">
+                                    <dl>
+                                        <dt>조회기간</dt>
+                                        <dd>
+                                            <div class="term_form">
+                                                <label for="searchStartDate" class="blind">조회 시작 날짜</label>
+                                                <input type="text" id="searchStartDate" name="searchStartDate"
+                                                       class="datepicker" th:value="${params.searchStartDate}"
+                                                       readonly>
+                                                <div class="swung"></div>
+                                                <label for="searchEndDate" class="blind">조회 종료 날짜</label>
+                                                <input type="text" id="searchEndDate" name="searchEndDate"
+                                                       class="datepicker" th:value="${params.searchEndDate}"
+                                                       readonly>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="searchTarget">대상</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchTarget" id="searchTarget">
+                                                <option value="" selected>전체</option>
+                                                <option value="1" th:selected="${params.searchTarget == '1'}">본부
+                                                </option>
+                                                <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label for="searchType">검색구분</label>
+                                        </dt>
+                                        <dd>
+                                            <select name="searchType" id="searchType"
+                                                    onchange="fn_openKeywordArea(this.value)">
+                                                <option value="" selected>선택</option>
+                                                <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
+                                                        th:class="${item}" th:text="${item.name}"></option>
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label>검색어</label>
+                                        </dt>
+                                        <dd>
+                                            <div class="search_form">
+                                                <div class="search">
+                                                    <input type="search" th:field="${params.searchKeyword}"
+                                                           placeholder="검색어를 입력하세요." disabled>
+                                                    <button type="button" class="btn_del" tabindex="-1">
+                                                        <span class="blind">삭제</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <p class="tip">
+                                        OR (||): 여러 조건 중 하나라도 만족 <br>
+                                        AND (&amp;&amp;): 모든 조건 만족 <br>
+                                        NOT (!): 조건의 참/거짓을 반대로 해석 <br>
+                                        (사용 예시: 00 &amp;&amp; 11 || !22)
+                                    </p>
+                                    <div class="btn_area">
+                                        <button type="button" class="btn line_cool_grey30" onclick="fn_reset()">
+                                            <span>초기화</span>
+                                        </button>
+                                        <button type="button" class="btn fill" onclick="fn_search()">
+                                            <span>검색 조건 추가</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="selected_filter">
+                <div class="chip">
+                    <div>2024.01.01~2024.12.30</div>
+                    <button type="button" class="btn_del">
+                        <span class="blind">삭제</span>
+                    </button>
+                </div>
+                <div class="chip">
+                    <div>본부</div>
+                    <button type="button" class="btn_del">
+                        <span class="blind">삭제</span>
+                    </button>
+                </div>
+            </div>
+            <div class="nodata" style="display:none">
+                <p>검색 결과가 없습니다.</p>
+            </div>
+            <!--데이터가 없을 때 : e-->
+            <div class="tbl_wrap contentsArea" style="display:none">
+                <table class="tbl_list">
+                    <caption>BC카드 지급결의 내역 조회 : No, 대상, 적용일시, 부점, 직원, 예산집행사유내용, 예산집행사유코드, 예산관리비목관리번호, 예산(세부)사업ID, 상세보기로
+                        구성
+                    </caption>
+                    <colgroup>
+                        <col style="width: 2%;min-width: 44px;">
+                        <col style="width: 3%;">
+                        <col style="width: 3%;min-width: 65px;">
+                        <col style="width: 6%;">
+                        <col style="width: 3%;">
+                        <col style="width: 3%;">
+                        <col style="width: 3%;">
+                        <col style="width: 5%;">
+                        <col style="width: 4%;">
+                        <col style="width: 4%;">
+                        <col style="width: 4%;">
+                        <col style="width: 3%;">
+                        <col style="width: 4%;">
+                        <col style="width: 4%;">
+                        <col style="width: 9%;">
+                        <col style="width: 8%;">
+                        <col style="width: 8%;">
+                        <col style="width: 4%;">
+                        <col style="width: 3%;min-width: 90px;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col" colspan="14" style="text-align:center;">input</th>
+                        <th scope="col" colspan="5" style="background-color:#f9f9ff;text-align:center;">output</th>
+                    </tr>
+                    <tr>
+                        <!-- Input -->
+                        <th scope="col">No</th>
+                        <th scope="col">대상</th>
+                        <th scope="col">부점코드</th>
+                        <th scope="col">카드번호</th>
+                        <th scope="col">승인시간</th>
+                        <th scope="col">영업일여부</th>
+                        <th scope="col">매출금액</th>
+                        <th scope="col">가맹점명</th>
+                        <th scope="col">업종명</th>
+                        <th scope="col">가맹점 사업자 등록번호</th>
+                        <th scope="col">매출 가맹점 번호</th>
+                        <th scope="col">가맹점 업종코드</th>
+                        <th scope="col">가맹점 상세주소</th>
+                        <th scope="col" class="pr">부점주소</th>
+
+                        <!-- Output -->
+                        <th scope="col" style="background-color:#f9f9ff">예산관리비목관리번호</th>
+                        <!--<span class="dib">(1순위)</span>-->
+                        <th scope="col" class="pr" style="background-color:#f9f9ff">사업세부사업</th>
+                        <th scope="col" style="background-color:#f9f9ff">예산집행사유코드</th>
+                        <th scope="col">결과등록년월일</th>
+                        <th scope="col">상세보기</th>
+                    </tr>
+                    </thead>
+                    <tbody id="mainTbody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<!--상세 팝업 : s-->
+<div id="popDetail" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_head">
+            <strong class="pop_tit">지급결의 AI적용 결과</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popDetail')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <table class="tbl_write">
+                <caption>지급결의 AI적용 결과 : 부점, 예산관리비목관리번호, 예산(세부)사업ID, 예산집행사유코드, 예산집행사유내용으로 구성</caption>
+                <colgroup>
+                    <col style="width:90px">
+                    <col style="width:auto">
+                </colgroup>
+                <thead id="popHead">
+                </thead>
+                <tbody id="inpputBody">
+                </tbody>
+
+                <tbody id="outputBody"> <!--TODO: 채린님 요청-->
+                <tr>
+                    <th scope="row">output</th>
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong class="tit">예산관리비목관리번호</strong>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">비목 번호</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1순위</td>
+                                                <td id="bdgtItexFrcsCon0"></td>
+                                                <td id="bdgtItexFrcsPrbCon0"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2순위</td>
+                                                <td id="bdgtItexFrcsCon1"></td>
+                                                <td id="bdgtItexFrcsPrbCon1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>3순위</td>
+                                                <td id="bdgtItexFrcsCon2"></td>
+                                                <td id="bdgtItexFrcsPrbCon2"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div>
+                                        <strong class="tit">사업세부사업</strong>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">부점코드-사업-세부사업</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1순위</td>
+                                                <td id="bdgtBsnsFrcsCon0"></td>
+                                                <td id="bdgtBsnsFrcsPrbCon0"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2순위</td>
+                                                <td id="bdgtBsnsFrcsCon1"></td>
+                                                <td id="bdgtBsnsFrcsPrbCon1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>3순위</td>
+                                                <td id="bdgtBsnsFrcsCon2"></td>
+                                                <td id="bdgtBsnsFrcsPrbCon2"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div>
+                                        <strong class="tit">예산집행사유코드</strong>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">비목-집행사유코드</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1순위</td>
+                                                <td id="bdgtPrfrRsnFrcsCon0"></td>
+                                                <td id="bdgtPrfrRsnFrcsPrbCon0"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2순위</td>
+                                                <td id="bdgtPrfrRsnFrcsCon1"></td>
+                                                <td id="bdgtPrfrRsnFrcsPrbCon1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>3순위</td>
+                                                <td id="bdgtPrfrRsnFrcsCon2"></td>
+                                                <td id="bdgtPrfrRsnFrcsPrbCon2"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn btn_icon line_cool_grey30 prevBtn">
+                <i class="ico_prev"></i>
+                <span class="blind">이전글</span>
+            </button>
+            <button type="button" class="btn btn_icon line_cool_grey30 nextBtn">
+                <i class="ico_next"></i>
+                <span class="blind">다음글</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--상세 팝업 : e-->
+<!--얼럿 : s-->
+<div id="alertWarning" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_warning"></i>
+            <strong class="pop_tit">지급 결의 내역을 엑셀 다운로드 중입니다.</strong>
+            <p class="pop_txt">
+                다운로드가 완료될 때까지 새 창을 닫지 마세요. <br>
+                완료되면 창이 자동으로 닫힙니다.
+            </p>
+        </div>
+    </div>
+</div>
+<!--얼럿 : e-->
+<!--로딩중 : s-->
+<div id="loading" class="loading_layer active"> <!--노출 원할 시 클래스 active 추가-->
+    <div class="loading">
+        <p>BC카드 지급결의 내역을 불러오고 있습니다.</p>
+        <p>잠시만 기다려 주세요.</p>
+        <div class="loading_circle_rotate">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+    </div>
+</div>
+<!--로딩중 : e-->
+</body>
+</html>

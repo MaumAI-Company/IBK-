@@ -2,7 +2,7 @@ package kr.co.ibk.web.controller;
 
 
 import kr.co.ibk.common.annotation.CurrentUser;
-import kr.co.ibk.domain.web.Account;
+import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -23,18 +23,19 @@ public class LoginController extends BaseCont {
 
     @GetMapping("/login")
     public String Login(Model model) {
+        model.addAttribute("pageTitle", "로그인");
         return "/login";
     }
 
 
     @PostMapping("/loginSuccess")
-    public String LoginSuccess(@CurrentUser Account account,
+    public String LoginSuccess(@CurrentUser MemberInfo memberInfo,
                                HttpServletRequest request,
                                HttpServletResponse response) {
-        boolean saveMe = request.getParameter("save-me") != null;
+        boolean saveMe = request.getParameter("remember-me") != null;
         Cookie[] cookies = request.getCookies();
         if (saveMe) {
-            Cookie cookie = new Cookie("loginId", account.getLoginId());
+            Cookie cookie = new Cookie("loginId", memberInfo.getMemId());
             cookie.setMaxAge(60 * 60 * 24 * 30);
             cookie.setPath("/");
             response.addCookie(cookie);
@@ -52,7 +53,8 @@ public class LoginController extends BaseCont {
             }
         }
 
-        return "redirect:/soulGod/main";
+        //return "redirect:/soulGod/main";
+        return "redirect:/soulGod/report/card";
     }
 
     @PostMapping("/loginFailure")

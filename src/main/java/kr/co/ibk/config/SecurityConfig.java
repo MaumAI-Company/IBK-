@@ -65,10 +65,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .mvcMatchers("/ClientUI/**","/node_modules/**","/loginFailure","/message","/error","/ssoLoginAction"
                         ,"/fragments/**","/api/v1/common/download","/","/index","/login","/healthcheck","/coding/**").permitAll()
-                .mvcMatchers("/api/member/**","/api/openData/**").permitAll()
+                .mvcMatchers("/api/v1/o/**").permitAll()
 //                .mvcMatchers("/api/v1/**").hasAnyRole("USER, ADMIN")
 //                .mvcMatchers("/pages/**").hasAnyRole("USER, ADMIN")
-//                .mvcMatchers("/soulGod/**").hasAnyRole("ADMIN")
+                .mvcMatchers("/soulGod/**").authenticated()
                 .mvcMatchers("/**").permitAll() //개발 중 임시 오픈
                 .anyRequest().authenticated()
         ;
@@ -84,6 +84,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ;
         http.rememberMe()
                 .userDetailsService(userDetailsService)
+                .rememberMeParameter("remember-me")
                 .key("remember-me-key");
 
         http.logout()

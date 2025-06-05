@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.LearningSchedulerRepository">
+    <select id="getTotalCount" resultType="int" parameterType="LearningSchedulerForm">
+        select
+        count(*)
+        from
+        LEARNING_SCHEDULER ls
+        INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
+        INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
+        LEFT JOIN LEARNING_DATA ld ON ld.SCHED_ID = ls.SCHED_ID
+        LEFT JOIN LEARNING_MODEL lm ON lm.LEARNING_ID = ld.ID
+        <include refid="where"></include>
+    </select>
+
+    <select id="getList" resultType="LearningSchedulerInfo" parameterType="LearningSchedulerForm">
+        select
+        <include refid="columns"></include>
+        , t.TEMPLATE_NAME
+        , hm.MEM_NAME as regNm
+        , t.HDQR_BOB_DCD
+        , t.LEARNING_TYPE
+        from
+        LEARNING_SCHEDULER ls
+        INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
+        INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
+        <include refid="where"></include>
+        ORDER BY
+        ls.REG_DT
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
+        <if test="pagingAt != null and pagingAt == 'Y'.toString()">
+            <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
+        </if>
+    </select>
+
+    <select id="getDetail" resultType="LearningSchedulerInfo" parameterType="int">
+        select
+        <include refid="columns"></include>
+        , t.TEMPLATE_NAME
+        , ls.EPOCH
+        , ls.LEARNING_RATE
+        , ls.BATCH_SIZE
+        from
+        LEARNING_SCHEDULER ls
+        INNER JOIN TEMPLATE t ON t.ID = ls.TEMPLATE_ID
+        INNER JOIN HC_MEMBER hm ON ls.REG_ID = hm.MEM_ID
+        where ls.DEL_AT = 'N'
+        and ls.SCHED_ID = #{id}
+    </select>
+
+    <insert id="setInsert" useGeneratedKeys="true" keyProperty="schedId" keyColumn="sched_id" parameterType="LearningSchedulerForm">
+        insert into maummcc.LEARNING_SCHEDULER
+        (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, TEMPLATE_ID,
+         DES, EPOCH, LEARNING_RATE, BATCH_SIZE, SEARCH_MM)
+        values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(),
+                #{modId}, current_timestamp(), 'N', #{templateId}, #{des}, #{epoch}, #{learningRate}, #{batchSize},
+                #{searchMm});
+    </insert>
+
+    <update id="setUpdate" parameterType="LearningSchedulerForm">
+        update maummcc.LEARNING_SCHEDULER
+        set SCHED_NM     = #{schedNm},
+            HDQR_BOB_DCD = #{hdqrBobDcd},
+            TERM_TY      = #{termTy},
+            ST_YMD       = #{stYmd},
+            ST_TIME      = #{stTime},
+            USE_AT       = #{useAt},
+            MOD_ID       = #{modId},
+            MOD_DT       = current_timestamp(),
+            TEMPLATE_ID  = #{templateId},
+            DES  = #{des},
+            EPOCH  = #{epoch},
+            LEARNING_RATE  = #{learningRate},
+            BATCH_SIZE  = #{batchSize},
+            SEARCH_MM  = #{searchMm}
+        where SCHED_ID = #{schedId};
+    </update>
+
+    <update id="setDelete" parameterType="LearningSchedulerForm">
+        update maummcc.LEARNING_SCHEDULER
+        set DEL_AT = 'Y',
+            MOD_ID = #{modId},
+            MOD_DT = current_timestamp(),
+            where SCHED_ID = #{schedId};
+    </update>
+
+    <sql id="columns">
+        ls.SCHED_ID
+        , ls.SCHED_NM
+        /*, ls.HDQR_BOB_DCD*/
+        , ls.USE_AT
+        , ls.MOD_DT
+        , ls.REG_ID
+        , ls.REG_DT
+        , ls.TEMPLATE_ID
+        , ls.TERM_TY
+        , ls.ST_YMD
+        , ls.ST_TIME
+        , ls.USE_AT
+        , ls.TERM_TY
+        , ls.ST_YMD
+        , ls.ST_TIME
+        , ls.USE_AT
+        , ls.DES
+        , ls.EPOCH
+        , ls.LEARNING_RATE
+        , ls.BATCH_SIZE
+        , ls.SEARCH_MM
+        , ls.RUN_CNT
+        , ls.LATEST_RUN_DT
+    </sql>
+
+    <sql id="where">
+        where ls.DEL_AT = 'N'
+
+        /*대상 검색*/
+        <if test="searchTarget != null and searchTarget != ''">
+            AND t.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+
+        /*구분 검색*/
+        <if test="searchLearningType != null and ''.toString != searchLearningType">
+            AND t.LEARNING_TYPE = #{searchLearningType}
+        </if>
+
+        <if test="searchKeyword != null  and searchKeyword != ''">
+            AND (ls.SCHED_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR t.TEMPLATE_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
+        </if>
+    </sql>
+
+    <select id="countByInTemplateId" resultType="int">
+        select
+        count(*)
+        from
+        LEARNING_SCHEDULER ls
+        where
+        ls.DEL_AT = 'N' and
+        ls.TEMPLATE_ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <update id="deleteAllById">
+        update LEARNING_SCHEDULER ls
+        set
+        ls.DEL_AT = 'Y',
+        ls.MOD_ID = #{memId},
+        ls.MOD_DT = current_timestamp()
+        where
+        ls.SCHED_ID in
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <!-- 배치 실행할 모델 목록 -->
+    <select id="getBatchList" resultType="LearningSchedulerInfo">
+        SELECT
+        <include refid="columns"></include>
+        from LEARNING_SCHEDULER ls
+        where ls.USE_AT = 'Y'
+        and ls.DEL_AT = 'N'
+        and DAYOFWEEK(now()) = DAYOFWEEK(ls.ST_YMD)
+        and date_format(now(), '%H:%i') = time_format(ls.ST_TIME , '%H:%i')
+    </select>
+
+    <update id="updateRunCnt" parameterType="int">
+        UPDATE LEARNING_SCHEDULER
+        SET RUN_CNT = RUN_CNT + 1
+        WHERE SCHED_ID = #{id}
+    </update>
+
+    <update id="updateLatestRunDt" parameterType="int">
+        UPDATE LEARNING_SCHEDULER
+        SET LATEST_RUN_DT = current_timestamp()
+        WHERE SCHED_ID = #{id}
+    </update>
+
+
+
+</mapper>
