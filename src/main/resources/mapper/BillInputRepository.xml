@@ -43,10 +43,7 @@
     </select>
 
     <sql id="columns">
-        bi
-        .
-        ISS_SRN
-        ,
+        bi.ISS_SRN,
         bi.BRCD,
         bi.HDQR_BOB_DCD,
         bi.TXBL_DCD,
@@ -72,7 +69,9 @@
         bo.BDGT_PRFR_RSN_FRCS_PRB_CON ,
         bo.RSRE_YMD,
         bo.BDGT_EXNS_PAMT_MCD,
-        bo.ACIM_CON
+        bo.ACIM_CON,
+        bo.BDGT_EXNS_PAMT_MCD_PRB_CON,
+        bo.ACIM_PRB_CON
     </sql>
 
     <sql id="where">
@@ -98,14 +97,30 @@
         /*검색어 검색*/
         <if test="searchJsonMap != null and searchRegex == null">
             <foreach collection="searchJsonMap" item="value" index="key">
+                <!-- bo: 단독 조건 처리 -->
                 <if test="key == 'BDMN_ITEX_MNGM_NO'">
                     AND bo.BDGT_BSNS_FRCS_CON LIKE CONCAT('%', #{value}, '%')
                 </if>
-                <if test="key != 'BDMN_ITEX_MNGM_NO' and key != 'BDGT_PRFR_RSN_FRCS_CON' and key != 'BDGT_BSNS_FRCS_CON'">
-                    AND bi.${key} LIKE CONCAT('%', #{value}, '%')
-                </if>
-                <if test="key != 'BDMN_ITEX_MNGM_NO' and (key == 'BDGT_PRFR_RSN_FRCS_CON' or key == 'BDGT_BSNS_FRCS_CON')">
+
+                <!-- bo: 복수 항목 포함 -->
+                <if test="key == 'BDGT_PRFR_RSN_FRCS_CON'
+                       or key == 'BDGT_BSNS_FRCS_CON'
+                       or key == 'BDGT_EXNS_PAMT_MCD'
+                       or key == 'BDGT_EXNS_PAMT_MCD_PRB_CON'
+                       or key == 'ACIM_PRB_CON'
+                       or key == 'ACIM_CON'">
                     AND bo.${key} LIKE CONCAT('%', #{value}, '%')
+                </if>
+
+                <!-- 나머지는 bi -->
+                <if test="key != 'BDMN_ITEX_MNGM_NO'
+                           and key != 'BDGT_PRFR_RSN_FRCS_CON'
+                           and key != 'BDGT_BSNS_FRCS_CON'
+                           and key != 'BDGT_EXNS_PAMT_MCD'
+                           and key != 'BDGT_EXNS_PAMT_MCD_PRB_CON'
+                           and key != 'ACIM_PRB_CON'
+                           and key != 'ACIM_CON'">
+                    AND bi.${key} LIKE CONCAT('%', #{value}, '%')
                 </if>
             </foreach>
         </if>

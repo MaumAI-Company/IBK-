@@ -11,7 +11,9 @@ public enum SearchBillType {
     TXBL_LSAR_NM("세금계산서품목명"),
     BDMN_ITEX_MNGM_NO("예산관리비목관리번호"),
     BDGT_BSNS_FRCS_CON("사업세부사업"),
-    BDGT_PRFR_RSN_FRCS_CON("예산집행사유코드");
+    BDGT_PRFR_RSN_FRCS_CON("예산집행사유코드"),
+    BDGT_EXNS_PAMT_MCD("예산경비지급방법코드"),
+    ACIM_CON("계좌정보내용");
 
     final private String name;
 

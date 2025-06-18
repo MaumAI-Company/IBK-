@@ -98,11 +98,11 @@
                                     <td>${item.issAmt}</td>
                                     <td>${item.txblLsarNm}</td>
 
-                                    <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo}</td>
-                                    <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon}</td>
-                                    <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon}</td>
-                                    <td style="background-color:#f9f9ff">${item.bdgtExnsPamtMcd}</td>
-                                    <td style="background-color:#f9f9ff">${item.acimCon}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo != null ? item.bdmnItexMngmNo : '-'}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon != null ? item.bdgtBsnsFrcsCon : '-'}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon != null ? item.bdgtPrfrRsnFrcsCon : '-'}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtExnsPamtMcd != null ? item.bdgtExnsPamtMcd : '-'}</td>
+                                    <td style="background-color:#f9f9ff">${item.acimCon != null ? item.acimCon : '-'}</td>
                                 </tr>
                             `);
                         })

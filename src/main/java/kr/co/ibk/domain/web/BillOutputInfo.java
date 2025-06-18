@@ -24,6 +24,8 @@ public class BillOutputInfo {
     private String bdgtPrfrRsnFrcsPrbCon;
     private String bdgtExnsPamtMcd;
     private String acimCon;
+    private String bdgtExnsPamtMcdPrbCon;
+    private String acimPrbCon;
 
     private List<LearningModelInputInfo> inputList;
     private List<LearningModelInputInfo> outputList;
