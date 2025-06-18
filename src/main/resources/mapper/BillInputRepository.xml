@@ -5,7 +5,7 @@
 <mapper namespace="kr.co.ibk.repository.BillInputRepository">
     <select id="getTotalCount" resultType="int">
         SELECT
-            COUNT(*)
+        COUNT(*)
         FROM
         BILL_INPUT bi
         LEFT JOIN BILL_OUTPUT bo
@@ -30,7 +30,7 @@
         WHERE bi.BRCD is not null
         <include refid="where"></include>
         ORDER BY
-            bi.NO
+        bi.NO
         <choose>
             <when test="sorting != null and sorting == 'asc'">
                 ASC
@@ -39,11 +39,14 @@
                 DESC
             </otherwise>
         </choose>
-        <include refid="kr.co.ibk.repository.CommonRepository.paging" />
+        <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
     </select>
 
     <sql id="columns">
-        bi.ISS_SRN,
+        bi
+        .
+        ISS_SRN
+        ,
         bi.BRCD,
         bi.HDQR_BOB_DCD,
         bi.TXBL_DCD,
@@ -67,7 +70,9 @@
         bo.BDGT_ITEX_FRCS_PRB_CON ,
         bo.BDGT_BSNS_FRCS_PRB_CON ,
         bo.BDGT_PRFR_RSN_FRCS_PRB_CON ,
-        bo.RSRE_YMD
+        bo.RSRE_YMD,
+        bo.BDGT_EXNS_PAMT_MCD,
+        bo.ACIM_CON
     </sql>
 
     <sql id="where">
@@ -111,7 +116,7 @@
 
     <select id="getDetail" resultType="BillInputInfo" parameterType="BillInputForm">
         SELECT
-            <include refid="columns"></include>
+        <include refid="columns"></include>
         BILL_INPUT bi
         LEFT JOIN BILL_OUTPUT bo
         ON
@@ -119,7 +124,7 @@
         AND bi.BASE_YM = bo.BASE_YM
         AND bi.BRCD = bo.BRCD
         WHERE bi.ISS_SRN = #{issSrn}
-            AND bi.BRCD = #{brcd}
+        AND bi.BRCD = #{brcd}
     </select>
 
     <select id="getAllList" resultType="BillInputInfo" parameterType="BillInputForm">
@@ -148,8 +153,8 @@
 
     <select id="getInputKey" resultType="BillInputInfo" parameterType="BillInputForm">
         SELECT
-            bi.ISS_SRN ,
-            bi.BRCD
+        bi.ISS_SRN ,
+        bi.BRCD
         BILL_INPUT bi
         LEFT JOIN BILL_OUTPUT bo
         ON
@@ -157,7 +162,7 @@
         AND bi.BASE_YM = bo.BASE_YM
         AND bi.BRCD = bo.BRCD
         WHERE
-            bi.BRCD is not null
+        bi.BRCD is not null
         <include refid="where"></include>
         <choose>
             <when test="(sorting == 'asc' and loadType == 'prev') or (sorting == 'desc' and loadType == 'next')">

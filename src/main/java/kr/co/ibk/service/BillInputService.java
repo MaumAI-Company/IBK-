@@ -76,6 +76,22 @@ public class BillInputService extends _BaseService {
                     }
                     item.setBdgtPrfrRsnFrcsCon(str);
                 }
+                if (!ObjectUtils.isEmpty(item.getBdgtExnsPamtMcd())) {
+                    strArr = item.getBdgtExnsPamtMcd().split("\\|");
+                    StringBuilder strBuilder = new StringBuilder();
+                    for (int i = 0; i < strArr.length; i++) {
+                        strBuilder.append(i + 1).append("순위 ").append(strArr[i]).append("\r\n");
+                    }
+                    item.setBdgtExnsPamtMcd(strBuilder.toString());
+                }
+                if (!ObjectUtils.isEmpty(item.getAcimCon())) {
+                    strArr = item.getAcimCon().split("\\|");
+                    StringBuilder strBuilder = new StringBuilder();
+                    for (int i = 0; i < strArr.length; i++) {
+                        strBuilder.append(i + 1).append("순위 ").append(strArr[i]).append("\r\n");
+                    }
+                    item.setAcimCon(strBuilder.toString());
+                }
             });
         }
 

@@ -3,7 +3,9 @@ package kr.co.ibk.domain.enums;
 public enum OutputColumnBillType {
     BDGT_ITEX_FRCS_CON("예산관리비목번호", "bdgtItexFrcsCon", 1),
     BDGT_PRFR_RSN_FRCS_CON("예산집행사유코드", "bdgtPrfrRsnFrcsCon", 2), //예산관리비목관리번호_예산집행사유코드
-    BDGT_BSNS_FRCS_CON("사업세부사업", "bdgtBsnsFrcsCon", 3);
+    BDGT_BSNS_FRCS_CON("사업세부사업", "bdgtBsnsFrcsCon", 3),
+    BDGT_EXNS_PAMT_MCD("예산경비지급방법코드", "bdgtExnsPamtMcd", 4),
+    ACIM_CON("계좌정보내용", "acimCon", 5);
 
     final private String name;
     final private String camelColumn;

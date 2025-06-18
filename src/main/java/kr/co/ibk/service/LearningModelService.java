@@ -408,6 +408,10 @@ public class LearningModelService extends BaseCont {
                         value = data.getBdgtPrfrRsnFrcsCon();
                     } else if (OutputColumnBillType.BDGT_BSNS_FRCS_CON.equals(outputColumnType)) {
                         value = data.getBrcd() + "-" + data.getBdgtBsnsFrcsCon();
+                    } else if (OutputColumnBillType.BDGT_EXNS_PAMT_MCD.equals(outputColumnType)) {
+                        value = data.getBrcd() + "-" + data.getBdgtExnsPamtMcd();
+                    } else if (OutputColumnBillType.ACIM_CON.equals(outputColumnType)) {
+                        value = data.getBrcd() + "-" + data.getAcimCon();
                     }
                     body.append(value.replaceAll("\r", "").replaceAll("\n", "").trim());
                 }
