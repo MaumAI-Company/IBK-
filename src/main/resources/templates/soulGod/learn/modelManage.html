@@ -372,6 +372,16 @@
          * 결과보기 팝업 open
          */
         function fn_result(el) {
+
+            // 카드인 경우 예산경비지급코드, 계좌정보내용 미노출
+            let isBill = $(el).data('is-bill');
+            if (isBill) {
+                $('.billCon').show();
+            } else {
+                $('.billCon').hide();
+            }
+
+            // 평가지표, 정밀도, 재현율 세팅
             let itexPrecision = $(el).data('itex-precision');
             let itexRecall = $(el).data('itex-recall');
             let itexF1Score = $(el).data('itex-f1-score');
@@ -636,6 +646,7 @@
                     <td th:text="${#temporals.format(item.createDtm, 'yyyy-MM-dd HH:mm:ss')}">2022.07.30</td>
                     <td>
                         <button type="button" class="badge" onclick="fn_result(this)"
+                                th:data-is-bill="${item.learningType eq T(kr.co.ibk.domain.enums.LearningType).BILL}"
                                 th:data-itex-precision="${item.bdgtItexFrcsConPrecision}"
                                 th:data-itex-recall="${item.bdgtItexFrcsConRecall}"
                                 th:data-itex-f1-score="${item.bdgtItexFrcsConF1Score}"
@@ -995,7 +1006,7 @@
                         </table>
                     </td>
                 </tr>
-                <tr>
+                <tr class="billCon">
                     <th scope="row">예산경비지급방법코드</th>
                     <td>
                         <table>
@@ -1030,7 +1041,7 @@
                         </table>
                     </td>
                 </tr>
-                <tr>
+                <tr class="billCon">
                     <th scope="row">계좌정보내용</th>
                     <td>
                         <table>
