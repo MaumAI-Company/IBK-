@@ -46,6 +46,13 @@ public class LearningModelInfo {
     private String bdgtPrfrRsnFrcsConPrecision;
     private String bdgtPrfrRsnFrcsConRecall;
     private String bdgtPrfrRsnFrcsConF1Score;
+    private String bdgtExnsPamtMcdPrecision;
+    private String bdgtExnsPamtMcdRecall;
+    private String bdgtExnsPamtMcdF1Score;
+    private String acimConPrecision;
+    private String acimConRecall;
+    private String acimConF1Score;
+
 
     private List<LearningModelInputInfo> inputList;
     private List<LearningModelInputInfo> outputList;
