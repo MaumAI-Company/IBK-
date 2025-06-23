@@ -144,6 +144,8 @@
                                     <td class="wsp" style="background-color:#f9f9ff">${item.bdgtItexFrcsCon != null ? item.bdgtItexFrcsCon : '-'}</td>
                                     <td class="wsp" style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon != null ? item.bdgtBsnsFrcsCon : '-'}</td>
                                     <td class="wsp" style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon != null ? item.bdgtPrfrRsnFrcsCon : '-'}</td>
+                                    <td class="wsp" style="background-color:#f9f9ff">${item.bdgtExnsPamtMcd != null ? item.bdgtExnsPamtMcd : '-'}</td>
+                                    <td class="wsp" style="background-color:#f9f9ff">${item.acimCon != null ? item.acimCon : '-'}</td>
                                     <td>${item.rsreYmd != null && item.rsreYmd != '' ? (item.rsreYmd.length == 8 ? item.rsreYmd.substring(0, 4) + '.' + item.rsreYmd.substring(4, 6) + '.' + item.rsreYmd.substring(6, 8) : '') : ''}</td>
                                     <td>
                                         <button type="button" class="badge"
@@ -308,6 +310,10 @@
                     makeOutputText('bdgtBsnsFrcsPrbCon', data.bdgtBsnsFrcsPrbCon);
                     makeOutputText('bdgtPrfrRsnFrcsCon', data.bdgtPrfrRsnFrcsCon);
                     makeOutputText('bdgtPrfrRsnFrcsPrbCon', data.bdgtPrfrRsnFrcsPrbCon);
+                    makeOutputText('bdgtExnsPamtMcd', data.bdgtExnsPamtMcd);
+                    makeOutputText('bdgtExnsPamtMcdPrbCon', data.bdgtExnsPamtMcdPrbCon);
+                    makeOutputText('acimCon', data.acimCon);
+                    makeOutputText('acimPrbCon', data.acimPrbCon);
                     $('#outputBody').show();
 
                     /*$('#popHead').html('');
@@ -544,7 +550,7 @@
             <div class="tbl_wrap contentsArea" style="display:none">
                 <table class="tbl_list">
                     <caption>세금계산서 지급결의 내역 조회 : No, 대상, 부점코드, 세금계산서구분코드, 공급자사업자번호, 공급자상호명, 공급자종목명, 발행금액, 세금계산서품목명,
-                        예산관리비목번호, 사업세부사업, 예산집행사유코드, 결과등록년월일, 상세보기로 구성
+                        예산관리비목번호, 사업세부사업, 예산집행사유코드, 결과등록년월일, 예산경비지급방법코드, 계좌정보내용, 상세보기로 구성
                     </caption>
                     <colgroup>
                         <col style="width: 5%;min-width: 44px;">
@@ -560,13 +566,14 @@
                         <col style="width: 9%;">
                         <col style="width: 8%;">
                         <col style="width: 8%;">
+                        <col style="width: 5%;">
                         <col style="width: 4%;">
-                        <col style="width: 5%;min-width: 90px;">
+                        <col style="width: 8%;min-width: 90px;">
                     </colgroup>
                     <thead>
                     <tr>
                         <th scope="col" colspan="10" style="text-align:center;">input</th>
-                        <th scope="col" colspan="5" style="background-color:#f9f9ff;text-align:center;">output</th>
+                        <th scope="col" colspan="7" style="background-color:#f9f9ff;text-align:center;">output</th>
                     </tr>
                     <tr>
                         <!-- Input -->
@@ -585,6 +592,8 @@
                         <th scope="col" style="background-color:#f9f9ff">예산관리비목번호</th>
                         <th scope="col" style="background-color:#f9f9ff">사업세부사업</th>
                         <th scope="col" class="pr" style="background-color:#f9f9ff">예산집행사유코드</th>
+                        <th scope="col" style="background-color:#f9f9ff">예산경비지급방법코드</th>
+                        <th scope="col" style="background-color:#f9f9ff">계좌정보내용</th>
                         <th scope="col">결과등록년월일</th>
                         <th scope="col">상세보기</th>
                     </tr>
@@ -725,6 +734,71 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                    <div>
+                                        <strong class="tit">예산경비지급방법코드</strong>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">예산경비지급방법코드</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1순위</td>
+                                                <td id="bdgtExnsPamtMcd0"></td>
+                                                <td id="bdgtExnsPamtMcdPrbCon0"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2순위</td>
+                                                <td id="bdgtExnsPamtMcd1"></td>
+                                                <td id="bdgtExnsPamtMcdPrbCon1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>3순위</td>
+                                                <td id="bdgtExnsPamtMcd2"></td>
+                                                <td id="bdgtExnsPamtMcdPrbCon2"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div>
+                                        <strong class="tit">계좌정보내용</strong>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="col">순위</th>
+                                                <th scope="col">계좌정보내용</th>
+                                                <th scope="col">확률 (%)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1순위</td>
+                                                <td id="acimCon0"></td>
+                                                <td id="acimPrbCon0"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2순위</td>
+                                                <td id="acimCon1"></td>
+                                                <td id="acimPrbCon1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>3순위</td>
+                                                <td id="acimCon2"></td>
+                                                <td id="acimPrbCon2"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
                                 </td>
                             </tr>
                             </tbody>

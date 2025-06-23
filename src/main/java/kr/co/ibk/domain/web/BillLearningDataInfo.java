@@ -37,6 +37,8 @@ public class BillLearningDataInfo {
     private String frrgEmn; //최초등록번호
     private LocalDateTime lsmdTs; //최종변경일시
     private String lsmdEmn; //최종변경직원번호
+    private String bdgtExnsPamtMcd; // 예산경비지급방법코드
+    private String acimCon; // 계좌정보내용
 }
 
 

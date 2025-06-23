@@ -39,5 +39,7 @@ public class BillInputInfo {
     private String bdgtBsnsFrcsPrbCon;
     private String bdgtPrfrRsnFrcsPrbCon;
     private String rsreYmd;
+    private String bdgtExnsPamtMcd;
+    private String acimCon;
 
 }

@@ -14,6 +14,10 @@
         bo.BDGT_ITEX_FRCS_PRB_CON ,
         bo.BDGT_BSNS_FRCS_PRB_CON ,
         bo.BDGT_PRFR_RSN_FRCS_PRB_CON ,
+        bo.BDGT_EXNS_PAMT_MCD,
+        bo.ACIM_CON,
+        bo.BDGT_EXNS_PAMT_MCD_PRB_CON,
+        bo.ACIM_PRB_CON,
         bo.no AS outputNo ,
         bi.*
     </sql>

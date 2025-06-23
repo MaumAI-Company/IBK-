@@ -98,9 +98,11 @@
                                     <td>${item.issAmt}</td>
                                     <td>${item.txblLsarNm}</td>
 
-                                    <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo}</td>
-                                    <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon}</td>
-                                    <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdmnItexMngmNo != null ? item.bdmnItexMngmNo : '-'}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtBsnsFrcsCon != null ? item.bdgtBsnsFrcsCon : '-'}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtPrfrRsnFrcsCon != null ? item.bdgtPrfrRsnFrcsCon : '-'}</td>
+                                    <td style="background-color:#f9f9ff">${item.bdgtExnsPamtMcd != null ? item.bdgtExnsPamtMcd : '-'}</td>
+                                    <td style="background-color:#f9f9ff">${item.acimCon != null ? item.acimCon : '-'}</td>
                                 </tr>
                             `);
                         })
@@ -228,9 +230,7 @@
             </div>
             <div class="tbl_wrap contentsArea">
                 <table class="tbl_list">
-                    <caption>데이터 관리 : No, 대상, 예산집행년월, 부점코드, 세금계산서구분코드, 공급자사업자번호, 공급자상호명, 공급자업태명, 공급자종목명, 발행금액, 세금계산서품목명,
-                        예산관리비목관리번호, 사업세부사업, 예산집행사유코드로 구성
-                    </caption>
+                    <caption>데이터 관리 : No, 대상, 예산집행년월, 부점코드, 세금계산서구분코드, 공급자사업자번호, 공급자상호명, 공급자업태명, 공급자종목명, 발행금액, 세금계산서품목명, 예산관리비목관리번호, 사업세부사업, 예산집행사유코드, 예산경비지급방법코드, 계좌정보내용로구성</caption>
                     <colgroup>
                         <col style="width: 2.5%">
                         <col style="width: 4%;">
@@ -248,6 +248,8 @@
                         <col style="width: 6.5%;">
                         <col style="width: 7%;">
                         <col style="width: 5.5%;">
+                        <col style="width: 3.5%;">
+                        <col style="width: 7%;">
                     </colgroup>
                     <thead>
                     <tr>
@@ -267,6 +269,8 @@
                         <th scope="col">예산관리비목관리번호</th>
                         <th scope="col">사업세부사업</th>
                         <th scope="col">예산집행사유코드</th>
+                        <th scope="col">예산경비지급방법코드</th>
+                        <th scope="col">계좌정보내용</th>
                     </tr>
                     </thead>
                     <tbody id="contents">
