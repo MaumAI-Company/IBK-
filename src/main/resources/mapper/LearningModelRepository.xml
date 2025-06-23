@@ -111,6 +111,12 @@
         lm.BDGT_PRFR_RSN_FRCS_CON_PRECISION,
         lm.BDGT_PRFR_RSN_FRCS_CON_RECALL,
         lm.BDGT_PRFR_RSN_FRCS_CON_F1_SCORE,
+        lm.BDGT_EXNS_PAMT_MCD_PRECISION,
+        lm.BDGT_EXNS_PAMT_MCD_RECALL,
+        lm.BDGT_EXNS_PAMT_MCD_F1_SCORE,
+        lm.ACIM_CON_PRECISION,
+        lm.ACIM_CON_RECALL,
+        lm.ACIM_CON_F1_SCORE,
         hm.MEM_NAME as REG_NAME
         from LEARNING_MODEL lm
         inner join HC_MEMBER hm on lm.REG_ID = hm.MEM_ID

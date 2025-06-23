@@ -381,6 +381,12 @@
             let prfrPrecision = $(el).data('prfr-precision');
             let prfrRecall = $(el).data('prfr-recall');
             let prfrF1Score = $(el).data('prfr-f1-score');
+            let exnsPrecision = $(el).data('exns-precision');
+            let exnsRecall = $(el).data('exns-recall');
+            let exnsF1Score = $(el).data('exns-f1-score');
+            let acimPrecision = $(el).data('acim-precision');
+            let acimRecall = $(el).data('acim-recall');
+            let acimF1Score = $(el).data('acim-f1-score');
 
             $('#itexPrecision').text(itexPrecision != null ? itexPrecision : '-');
             $('#itexRecall').text(itexRecall != null ? itexRecall : '-');
@@ -391,6 +397,12 @@
             $('#prfrPrecision').text(prfrPrecision != null ? prfrPrecision : '-');
             $('#prfrRecall').text(prfrRecall != null ? prfrRecall : '-');
             $('#prfrF1Score').text(prfrF1Score != null ? prfrF1Score : '-');
+            $('#exnsPrecision').text(exnsPrecision != null ? exnsPrecision : '-');
+            $('#exnsRecall').text(exnsRecall != null ? exnsRecall : '-');
+            $('#exnsF1Score').text(exnsF1Score != null ? exnsF1Score : '-');
+            $('#acimPrecision').text(acimPrecision != null ? acimPrecision : '-');
+            $('#acimRecall').text(acimRecall != null ? acimRecall : '-');
+            $('#acimF1Score').text(acimF1Score != null ? acimF1Score : '-');
 
             layerShow('popResult');
         }
@@ -632,7 +644,13 @@
                                 th:data-bsns-f1-score="${item.bdgtBsnsFrcsConF1Score}"
                                 th:data-prfr-precision="${item.bdgtPrfrRsnFrcsConPrecision}"
                                 th:data-prfr-recall="${item.bdgtPrfrRsnFrcsConRecall}"
-                                th:data-prfr-f1-score="${item.bdgtPrfrRsnFrcsConF1Score}">
+                                th:data-prfr-f1-score="${item.bdgtPrfrRsnFrcsConF1Score}"
+                                th:data-exns-precision="${item.bdgtExnsPamtMcdPrecision}"
+                                th:data-exns-recall="${item.bdgtExnsPamtMcdRecall}"
+                                th:data-exns-f1-score="${item.bdgtExnsPamtMcdF1Score}"
+                                th:data-acim-precision="${item.acimConPrecision}"
+                                th:data-acim-recall="${item.acimConRecall}"
+                                th:data-acim-f1-score="${item.acimConF1Score}">
                             <input type="hidden" id="0_1" value="first">
                             <i class="ico_plus"></i>
                             <span>결과보기</span>
@@ -901,7 +919,6 @@
                                             </tbody>
                                         </table>
                                     </div>
-
                                 </td>
                             </tr>
                             </tbody>
@@ -937,7 +954,6 @@
                                             </tbody>
                                         </table>
                                     </div>
-
                                 </td>
                             </tr>
                             </tbody>
@@ -973,7 +989,76 @@
                                             </tbody>
                                         </table>
                                     </div>
-
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">예산경비지급방법코드</th>
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>Precision</td>
+                                                <td id="exnsPrecision"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>recall</td>
+                                                <td id="exnsRecall"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>F1Score</td>
+                                                <td id="exnsF1Score"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">계좌정보내용</th>
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>Precision</td>
+                                                <td id="acimPrecision"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>recall</td>
+                                                <td id="acimRecall"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>F1Score</td>
+                                                <td id="acimF1Score"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </td>
                             </tr>
                             </tbody>
