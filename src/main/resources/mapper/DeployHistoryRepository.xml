@@ -28,9 +28,6 @@
         <if test="pagingAt != null and pagingAt == 'Y'.toString()">
             <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
         </if>
-        <if test="limitCnt != null and limitCnt != ''">
-            limit #{limitCnt}
-        </if>
     </select>
 
     <sql id="columns">
@@ -55,17 +52,9 @@
             AND lm.HDQR_BOB_DCD = #{searchTarget}
         </if>
 
-        <if test="searchJsonMap != null and searchRegex == null">
-            <foreach collection="searchJsonMap" item="value" index="key">
-                <choose>
-                    <when test="value != null and value != ''">
-                        AND cld.${key} LIKE CONCAT('%', #{value}, '%')
-                    </when>
-                </choose>
-            </foreach>
-        </if>
-        <if test="searchRegex != null">
-            AND ${searchRegex}
+        /*구분 검색*/
+        <if test="searchLearningType != null and searchLearningType != ''">
+            AND lm.LEARNING_TYPE = #{searchLearningType}
         </if>
 
         /*상태 검색*/

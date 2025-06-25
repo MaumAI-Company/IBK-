@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class DeployHistoryInfo {
     private Integer id;
     private Integer modelId; // 모델 ID
-    private String learnNm; // 모델명
+    private String learnName; // 모델명
     private String execId; // 실행자 ID
     private LocalDateTime execDt; // 실행일시
     private String execName; // 실행자명
