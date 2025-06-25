@@ -24,7 +24,15 @@
         where
         <include refid="where"></include>
         order by
-        dh.EXEC_DT desc
+        dh.EXEC_DT
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
         <if test="pagingAt != null and pagingAt == 'Y'.toString()">
             <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
         </if>
