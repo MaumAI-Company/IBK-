@@ -9,7 +9,6 @@ import kr.co.ibk.model.paging.PageDto;
 import kr.co.ibk.service.*;
 import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -352,7 +350,7 @@ public class LearnController extends BaseCont {
     /**
      * 학습 중단
      *
-     * @return  모델 중지 성공 여부를 나타내는 Boolean 값
+     * @return 모델 중지 성공 여부를 나타내는 Boolean 값
      */
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/stopModel"})
@@ -391,8 +389,8 @@ public class LearnController extends BaseCont {
      */
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/replaceModel"})
-    public Boolean replaceModel(@RequestBody LearningModelForm form) {
-        return mccService.replaceModel(form.getId());
+    public Boolean replaceModel(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
+        return mccService.replaceModel(form.getId(), memberInfo);
     }
     // 배포관리 : e
 

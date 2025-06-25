@@ -3,6 +3,7 @@ package kr.co.ibk.service;
 import kr.co.ibk.common.utils.HttpUtil;
 import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.LearningModelInfo;
+import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.repository.LearningModelRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -111,7 +113,7 @@ public class MccService {
      * @return {Boolean} 모델 배포 성공 여부를 나타내는 Boolean 값.
      *          - API 응답 responseBody의 "code" 값이 200이면 true, 그 외에는 false 반환
      */
-    public Boolean replaceModel(Integer modelId) {
+    public Boolean replaceModel(Integer modelId, MemberInfo memberInfo) {
         LearningModelInfo info = learningModelRepository.getLoad(modelId);
         if (info == null) {
             return false;
@@ -120,6 +122,7 @@ public class MccService {
         try {
             JSONObject params = new JSONObject();
             params.put("model_id", info.getId());
+            params.put("mem_id", !ObjectUtils.isEmpty(memberInfo) ? memberInfo.getMemId() : null);
             params.put("model_name", info.getLearnName());
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
