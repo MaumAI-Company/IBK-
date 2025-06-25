@@ -9,6 +9,7 @@ import kr.co.ibk.model.paging.PageDto;
 import kr.co.ibk.service.*;
 import kr.co.ibk.web.BaseCont;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class LearnController extends BaseCont {
     private final TemplateService templateService;
     private final LearningDataService learningDataService;
     private final MccService mccService;
+    private final DeployHistoryService deployHistoryService;
 
     // 학습 데이터 등록 : s
 
@@ -392,4 +395,21 @@ public class LearnController extends BaseCont {
         return mccService.replaceModel(form.getId());
     }
     // 배포관리 : e
+
+    // 배포이력 : s
+    @RequestMapping("/soulGod/learn/deployHis")
+    public String getDeployHis(Model model,
+                               @ModelAttribute DeployHistoryForm params) {
+        List<DeployHistoryInfo> list = deployHistoryService.getPage(params);
+
+
+        model.addAttribute("list", list);
+        model.addAttribute("pagingInfo", params.getPaginationInfo());
+        model.addAttribute("params", params);
+        model.addAttribute("mc", "ico_manage");
+        model.addAttribute("pageTitle", "배포 이력 관리");
+
+        return "/soulGod/learn/deployHis";
+    }
+    // 배포이력 : e
 }

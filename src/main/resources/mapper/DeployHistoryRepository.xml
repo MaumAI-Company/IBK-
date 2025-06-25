@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.DeployHistoryRepository">
+    <select id="getTotalCount" resultType="int">
+        select
+        count(*)
+        from
+        DEPLOY_HISTORY dh
+        inner join LEARNING_MODEL lm on dh.MODEL_ID = lm.ID
+        inner join HC_MEMBER hm on dh.EXEC_ID = hm.MEM_ID
+        where
+        <include refid="where"></include>
+    </select>
+
+    <select id="getList" resultType="DeployHistoryInfo" parameterType="DeployHistoryForm">
+        select
+        <include refid="columns"></include>
+        from
+        DEPLOY_HISTORY dh
+        inner join LEARNING_MODEL lm on dh.MODEL_ID = lm.ID
+        inner join HC_MEMBER hm on dh.EXEC_ID = hm.MEM_ID
+        where
+        <include refid="where"></include>
+        order by
+        dh.EXEC_DT desc
+        <if test="pagingAt != null and pagingAt == 'Y'.toString()">
+            <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
+        </if>
+        <if test="limitCnt != null and limitCnt != ''">
+            limit #{limitCnt}
+        </if>
+    </select>
+
+    <sql id="columns">
+        dh
+        .
+        ID
+        ,
+        dh.MODEL_ID,
+        dh.EXEC_ID,
+        dh.EXEC_DT,
+        dh.RESULT,
+        lm.LEARN_NAME,
+        lm.HDQR_BOB_DCD,
+        lm.LEARNING_TYPE,
+        hm.MEM_NAME as execName
+    </sql>
+
+    <sql id="where">
+        1=1
+        /*대상 검색*/
+        <if test="searchTarget != null and searchTarget != ''">
+            AND lm.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+
+        <if test="searchJsonMap != null and searchRegex == null">
+            <foreach collection="searchJsonMap" item="value" index="key">
+                <choose>
+                    <when test="value != null and value != ''">
+                        AND cld.${key} LIKE CONCAT('%', #{value}, '%')
+                    </when>
+                </choose>
+            </foreach>
+        </if>
+        <if test="searchRegex != null">
+            AND ${searchRegex}
+        </if>
+
+        /*상태 검색*/
+        <if test="searchStatusType != null and searchStatusType.toString != ''">
+            AND dh.RESULT = #{searchStatusType}
+        </if>
+
+        /*검색어 검색*/
+        <if test="searchKeyword != null  and searchKeyword != ''">
+            <choose>
+                <when test="searchType != null and searchType != ''">
+                    <choose>
+                        <when test="searchType == '1'.toString()">
+                            AND lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                        </when>
+                        <when test="searchType == '2'.toString()">
+                            AND hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                        </when>
+                    </choose>
+                </when>
+                <otherwise>
+                    AND (lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    OR hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
+                </otherwise>
+            </choose>
+        </if>
+
+        /*일자 검색*/
+        <if test="searchStartDate != null and searchEndDate != null">
+            AND dh.EXEC_DT BETWEEN REPLACE(#{searchStartDate}, '-', '') AND REPLACE(#{searchEndDate}, '-', '')
+        </if>
+    </sql>
+</mapper>
