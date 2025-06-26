@@ -4,9 +4,25 @@
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
     <script type="text/javascript">
         $(function () {
+            fn_setDatePicker('#searchStartDate', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        maxDate: $('#searchEndDate').val() ? $('#searchEndDate').val() : false
+                    })
+                }
+            });
+            fn_setDatePicker('#searchEndDate', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        minDate: $('#searchStartDate').val() ? $('#searchStartDate').val() : false
+                    })
+                }
+            });
         });
 
         function fn_reset() {
+            $('#searchStartDate').val('');
+            $('#searchEndDate').val('');
             $('#searchTarget').val('').niceSelect('update');
             $('#searchResultStatusType').val('').niceSelect('update');
             $('#searchLearningType').val('').niceSelect('update');
@@ -76,6 +92,22 @@
 
                             <div class="filter">
                                 <div class="inner">
+                                    <dl>
+                                        <dt>조회기간</dt>
+                                        <dd>
+                                            <div class="term_form">
+                                                <label for="searchStartDate" class="blind">조회 시작 날짜</label>
+                                                <input type="text" id="searchStartDate" name="searchStartDate"
+                                                       class="datepicker" th:value="${params.searchStartDate}"
+                                                       readonly>
+                                                <div class="swung"></div>
+                                                <label for="searchEndDate" class="blind">조회 종료 날짜</label>
+                                                <input type="text" id="searchEndDate" name="searchEndDate"
+                                                       class="datepicker" th:value="${params.searchEndDate}"
+                                                       readonly>
+                                            </div>
+                                        </dd>
+                                    </dl>
                                     <dl>
                                         <dt>
                                             <label for="searchLearningType">구분</label>

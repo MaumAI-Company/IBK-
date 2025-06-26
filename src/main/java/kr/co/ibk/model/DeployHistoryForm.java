@@ -9,6 +9,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class DeployHistoryForm extends PageForm {
+    /*조회기간*/
+    private String searchStartDate;
+    private String searchEndDate;
+
     /*검색조건*/
     private String pagingAt;
     private String sorting;
