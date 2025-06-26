@@ -398,8 +398,8 @@ public class LearnController extends BaseCont {
     @RequestMapping("/soulGod/learn/deployHis")
     public String getDeployHis(Model model,
                                @ModelAttribute DeployHistoryForm params) {
-        List<DeployHistoryInfo> list = deployHistoryService.getPage(params);
 
+        List<DeployHistoryInfo> list = deployHistoryService.getPage(params);
 
         model.addAttribute("list", list);
         model.addAttribute("pagingInfo", params.getPaginationInfo());

@@ -16,7 +16,7 @@ public class DeployHistoryForm extends PageForm {
     private String searchTarget;
     private String searchKeyword;
     private String searchResult;
-    private Integer searchStatusType;
+    private String searchResultStatusType;
 }
 
 

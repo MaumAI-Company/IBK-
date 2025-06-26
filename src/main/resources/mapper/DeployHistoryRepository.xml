@@ -66,28 +66,14 @@
         </if>
 
         /*상태 검색*/
-        <if test="searchStatusType != null and searchStatusType.toString != ''">
-            AND dh.RESULT = #{searchStatusType}
+        <if test="searchResultStatusType != null and searchResultStatusType.toString != ''">
+            AND dh.RESULT = #{searchResultStatusType}
         </if>
 
         /*검색어 검색*/
         <if test="searchKeyword != null  and searchKeyword != ''">
-            <choose>
-                <when test="searchType != null and searchType != ''">
-                    <choose>
-                        <when test="searchType == '1'.toString()">
-                            AND lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
-                        </when>
-                        <when test="searchType == '2'.toString()">
-                            AND hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
-                        </when>
-                    </choose>
-                </when>
-                <otherwise>
-                    AND (lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
-                    OR hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
-                </otherwise>
-            </choose>
+            AND (lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
         </if>
 
         /*일자 검색*/
