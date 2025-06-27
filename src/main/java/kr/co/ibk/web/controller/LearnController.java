@@ -30,6 +30,7 @@ public class LearnController extends BaseCont {
     private final TemplateService templateService;
     private final LearningDataService learningDataService;
     private final MccService mccService;
+    private final DeployHistoryService deployHistoryService;
 
     // 학습 데이터 등록 : s
 
@@ -349,7 +350,7 @@ public class LearnController extends BaseCont {
     /**
      * 학습 중단
      *
-     * @return  모델 중지 성공 여부를 나타내는 Boolean 값
+     * @return 모델 중지 성공 여부를 나타내는 Boolean 값
      */
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/stopModel"})
@@ -388,8 +389,25 @@ public class LearnController extends BaseCont {
      */
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/replaceModel"})
-    public Boolean replaceModel(@RequestBody LearningModelForm form) {
-        return mccService.replaceModel(form.getId());
+    public Boolean replaceModel(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
+        return mccService.replaceModel(form.getId(), memberInfo);
     }
     // 배포관리 : e
+
+    // 배포이력 : s
+    @RequestMapping("/soulGod/learn/deployHis")
+    public String getDeployHis(Model model,
+                               @ModelAttribute DeployHistoryForm params) {
+
+        List<DeployHistoryInfo> list = deployHistoryService.getPage(params);
+
+        model.addAttribute("list", list);
+        model.addAttribute("pagingInfo", params.getPaginationInfo());
+        model.addAttribute("params", params);
+        model.addAttribute("mc", "ico_manage");
+        model.addAttribute("pageTitle", "배포 이력 관리");
+
+        return "/soulGod/learn/deployHis";
+    }
+    // 배포이력 : e
 }
