@@ -404,7 +404,7 @@ public class LearnController extends BaseCont {
         model.addAttribute("list", list);
         model.addAttribute("pagingInfo", params.getPaginationInfo());
         model.addAttribute("params", params);
-        model.addAttribute("mc", "ico_manage");
+        model.addAttribute("mc", "ico_database");
         model.addAttribute("pageTitle", "배포 이력 관리");
 
         return "/soulGod/learn/deployHis";
