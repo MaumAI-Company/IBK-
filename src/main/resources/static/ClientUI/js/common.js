@@ -648,7 +648,9 @@ function fn_escapeHTML(input) {
  * 역할: 검색 조건을 기반으로 Chip UI를 생성하여 `.selected_filter` 영역에 추가
  *
  * @param {Object} searchJson - 검색 조건을 포함한 JSON 데이터
- * @param {boolean} isRadio - 대상 선택이 라디오 버튼 방식인지 여부 (true: 라디오 버튼, false: 셀렉트 박스)
+ * @param {Object} options - 추가 옵션
+ * @param {boolean} options.isRadio - 대상 선택이 라디오 버튼 방식인지 여부 (true: 라디오 버튼, false: 셀렉트 박스)
+ * @param {boolean} options.isBillSearch - 세금계산서 검색인지 여부 (true: 대상 chip 생성을 스킵)
  */
 function fn_settingChip(searchJson, options = {}) {
     let tags = '';
@@ -705,8 +707,7 @@ function fn_settingChip(searchJson, options = {}) {
     }
 
     // 대상 칩 생성
-    let isBillManage = window.location.pathname.includes("billManage");
-    if (target !== '' && !isBillManage) {
+    if (target !== '' && !isBillSearch) {
         if (isRadio) { // 대상 검색필터 > 라디오 사용하는 경우
             tags += `
                 <div class="chip">

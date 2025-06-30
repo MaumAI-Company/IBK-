@@ -86,7 +86,7 @@
                                 <tr>
                                     <td>${idx + 1}</td>
 
-                                    <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
+                                    <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : (item.hdqrBobDcd === '2' ? '영업점' : '통합'))}</td>
                                     <td>${item.bdgtPrfrYm}</td>
                                     <td>${item.brcd}</td>
                                     <td>${item.txblDcd}</td>
