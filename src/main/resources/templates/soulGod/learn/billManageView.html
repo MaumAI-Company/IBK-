@@ -113,7 +113,7 @@
                         $('.contentsArea').hide();
                     }
 
-                    fn_settingChip($('#searchJson').val(), true);
+                    fn_settingChip($('#searchJson').val(), {isRadio: true, isBillSearch: true});
                     $('.selected_filter .btn_del').remove(); // 조회 페이지 > 칩 제거 불가능
 
                     $('tbody').html(contents);
@@ -215,6 +215,9 @@
                                 <input type="radio" name="searchTarget" id="searchTarget_Y"
                                        value="2"
                                        th:checked="${params.searchTarget == '2'}">
+                                <input type="radio" name="searchTarget" id="searchTarget_A"
+                                       value="3"
+                                       th:checked="${params.searchTarget == '3'}">
                                 <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
                                         th:class="${item}" th:text="${item.name}"></option>
                                 <option th:each="item :${T(kr.co.ibk.domain.enums.SearchBillType).values()}"
@@ -230,7 +233,9 @@
             </div>
             <div class="tbl_wrap contentsArea">
                 <table class="tbl_list">
-                    <caption>데이터 관리 : No, 대상, 예산집행년월, 부점코드, 세금계산서구분코드, 공급자사업자번호, 공급자상호명, 공급자업태명, 공급자종목명, 발행금액, 세금계산서품목명, 예산관리비목관리번호, 사업세부사업, 예산집행사유코드, 예산경비지급방법코드, 계좌정보내용로구성</caption>
+                    <caption>데이터 관리 : No, 대상, 예산집행년월, 부점코드, 세금계산서구분코드, 공급자사업자번호, 공급자상호명, 공급자업태명, 공급자종목명, 발행금액, 세금계산서품목명,
+                        예산관리비목관리번호, 사업세부사업, 예산집행사유코드, 예산경비지급방법코드, 계좌정보내용로구성
+                    </caption>
                     <colgroup>
                         <col style="width: 2.5%">
                         <col style="width: 4%;">

@@ -129,9 +129,9 @@ public class LearnController extends BaseCont {
             params.setSearchEndDate(String.valueOf(LocalDate.now()).substring(0, 7));
         }
 
-        if (ObjectUtils.isEmpty(params.getSearchTarget())) {
+        /*if (ObjectUtils.isEmpty(params.getSearchTarget())) {
             params.setSearchTarget("1");
-        }
+        }*/
 
         model.addAttribute("params", params);
         model.addAttribute("mc", "ico_database");

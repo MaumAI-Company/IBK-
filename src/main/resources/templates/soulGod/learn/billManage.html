@@ -82,6 +82,11 @@
             $('#templateName').val('');
 
             $('.chipArea').html($('.selected_filter').html());
+            $('.chipArea').append(`
+                <div class="chip">
+                    <div>대상 : 통합</div>
+                </div>
+            `);
 
             $('.chipArea .chip button').remove();
 
@@ -305,7 +310,7 @@
                                 <tr>
                                     <td>${idx + 1}</td>
 
-                                    <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : '영업점')}</td>
+                                    <td>${!item.hdqrBobDcd ? '-' : (item.hdqrBobDcd === '1' ? '본부' : (item.hdqrBobDcd === '2' ? '영업점' : '통합'))}</td>
                                     <td>${item.bdgtPrfrYm}</td>
                                     <td>${item.brcd}</td>
                                     <td>${item.txblDcd}</td>
@@ -337,15 +342,14 @@
                         $('#searchJson').val(params.searchJson);
                         $('#searchTypeJson').val(params.searchTypeJson);
                         $('#searchStartDate').val(params.searchStartDate);
-                        +
-                            $('#searchEndDate').val(params.searchEndDate);
+                        $('#searchEndDate').val(params.searchEndDate);
                         $('#searchTarget').val(params.searchTarget).prop('checked', true);
                         $('#searchType').val('').niceSelect('update');
                         $('#searchKeyword').val('');
                     }
                     $('#contents').html(contents);
                     $('.totalCnt').text(fn_setCommas(data.totalCount));
-                    fn_settingChip($('#searchJson').val(), true);
+                    fn_settingChip($('#searchJson').val(), {isRadio: true, isBillSearch: true});
 
                     // 검색 조건 있는 경우 등록버튼 활성화
                     $('#saveBtn').attr('disabled', !$('#searchJson').val());
@@ -438,21 +442,14 @@
                                             </div>
                                         </dd>
                                     </dl>
-                                    <dl>
+                                    <dl style="display: none;">
                                         <dt>대상</dt>
                                         <dd>
                                             <div class="df">
                                                 <div class="radio txt">
-                                                    <input type="radio" name="searchTarget" id="searchTarget_B"
-                                                           value="1"
-                                                           th:checked="${params.searchTarget == '1'}">
-                                                    <label for="searchTarget_B">본부</label>
-                                                </div>
-                                                <div class="radio txt">
-                                                    <input type="radio" name="searchTarget" id="searchTarget_Y"
-                                                           value="2"
-                                                           th:checked="${params.searchTarget == '2'}">
-                                                    <label for="searchTarget_Y">영업점</label>
+                                                    <input type="radio" name="searchTarget" id="searchTarget_A"
+                                                           value="3" checked>
+                                                    <label for="searchTarget_A">통합</label>
                                                 </div>
                                             </div>
                                         </dd>
@@ -513,7 +510,9 @@
 
                 <div class="tbl_wrap contentsArea">
                     <table class="tbl_list">
-                        <caption>데이터 관리 : No, 대상, 예산집행년월, 부점코드, 세금계산서구분코드, 공급자사업자번호, 공급자상호명, 공급자업태명, 공급자종목명, 발행금액, 세금계산서품목명, 예산관리비목관리번호, 사업세부사업, 예산집행사유코드, 예산경비지급방법코드, 계좌정보내용로구성</caption>
+                        <caption>데이터 관리 : No, 대상, 예산집행년월, 부점코드, 세금계산서구분코드, 공급자사업자번호, 공급자상호명, 공급자업태명, 공급자종목명, 발행금액,
+                            세금계산서품목명, 예산관리비목관리번호, 사업세부사업, 예산집행사유코드, 예산경비지급방법코드, 계좌정보내용로구성
+                        </caption>
                         <colgroup>
                             <col style="width: 2.5%">
                             <col style="width: 4%;">

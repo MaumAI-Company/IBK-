@@ -132,6 +132,8 @@
                                                 </option>
                                                 <option value="2" th:selected="${params.searchTarget == '2'}">영업점
                                                 </option>
+                                                <option value="3" th:selected="${params.searchTarget == '3'}">통합
+                                                </option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -219,7 +221,7 @@
                     <td th:text="${item.modelId}"></td>
                     <td th:text="${item.learnName}"></td>
                     <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}"></td>
-                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : (item.hdqrBobDcd == '2' ? '영업점' : '통합'))}"></td>
                     <td th:text="${item.execName}"></td>
                     <td>
                         <!-- SUCCESS: 성공, FAIL: 실패 -->

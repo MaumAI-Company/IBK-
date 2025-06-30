@@ -497,6 +497,8 @@
                                                 </option>
                                                 <option value="2" th:selected="${params.searchTarget == '2'}">영업점
                                                 </option>
+                                                <option value="3" th:selected="${params.searchTarget == '3'}">통합
+                                                </option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -624,7 +626,7 @@
                            onclick="fn_learningDataOpen(this)">admin</a>
                     </td>
                     <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}">BC카드</td>
-                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : (item.hdqrBobDcd == '2' ? '영업점' : '통합'))}"></td>
                     <td th:text="${item.regName}">홍길녀</td>
                     <td>
                         <!--0: 등록 완료, 1: 학습 데이터 생성 오류, 2: 학습 중, 3: 학습 완료 4: 학습 오류 -->
