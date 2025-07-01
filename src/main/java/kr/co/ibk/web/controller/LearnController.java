@@ -31,6 +31,7 @@ public class LearnController extends BaseCont {
     private final LearningDataService learningDataService;
     private final MccService mccService;
     private final DeployHistoryService deployHistoryService;
+    private final BatchInferenceModelService batchInferenceModelService;
 
     // 학습 데이터 등록 : s
 
@@ -371,8 +372,10 @@ public class LearnController extends BaseCont {
         params.setDeployStatusArr(deployStatusArr);
 
         List<LearningModelInfo> list = learningModelService.getList(params);
-
         model.addAttribute("pagingInfo", params.getPaginationInfo());
+        model.addAttribute("cardHqList", learningModelService.getTargetList(LearningType.CARD, 1));
+        model.addAttribute("cardBrList", learningModelService.getTargetList(LearningType.CARD, 2));
+        model.addAttribute("billList", learningModelService.getTargetList(LearningType.BILL, 3));
         model.addAttribute("list", list);
         model.addAttribute("params", params);
         model.addAttribute("mc", "ico_database");
@@ -392,6 +395,25 @@ public class LearnController extends BaseCont {
     public Boolean replaceModel(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
         return mccService.replaceModel(form.getId(), memberInfo);
     }
+
+    /**
+     * 배치 추론 모델 지정 > 저장
+     */
+    @ResponseBody
+    @PostMapping(value = {"/soulGod/batchInfer/save"})
+    public HashMap<String, Object> saveBatchInferenceModel(@RequestBody BatchInferenceModelForm.RegisterForm form, @CurrentUser MemberInfo memberInfo) {
+        return batchInferenceModelService.save(form, memberInfo);
+    }
+
+    /**
+     * 배치 추론 모델 지정 > 조회
+     */
+    @ResponseBody
+    @GetMapping(value = {"/soulGod/batchInfer/detail"})
+    public HashMap<String, Object> getBatchInferenceModel() {
+        return batchInferenceModelService.getBatchInference();
+    }
+
     // 배포관리 : e
 
     // 배포이력 : s

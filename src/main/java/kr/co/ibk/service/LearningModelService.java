@@ -507,4 +507,8 @@ public class LearningModelService extends BaseCont {
         }
         return map;
     }
+
+    public List<LearningModelInfo> getTargetList(LearningType learningType, Integer hdqrBobDcd) {
+        return learningModelRepository.getTargetList(learningType, hdqrBobDcd);
+    }
 }
