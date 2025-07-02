@@ -167,7 +167,7 @@
                         $('.contentsArea').hide();
                     }
 
-                    fn_settingChip($('#searchJson').val(), false);
+                    fn_settingChip($('#searchJson').val(), {isRadio: false});
 
                     $('#mainTbody').html(contents);
                     $('.totalCnt').text(data.list.length);

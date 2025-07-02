@@ -116,7 +116,7 @@
                         $('.contentsArea').hide();
                     }
 
-                    fn_settingChip($('#searchJson').val(), true);
+                    fn_settingChip($('#searchJson').val(), {isRadio: true});
                     $('.selected_filter .btn_del').remove(); // 조회 페이지 > 칩 제거 불가능
 
                     $('tbody').html(contents);

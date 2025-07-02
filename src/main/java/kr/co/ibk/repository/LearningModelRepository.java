@@ -1,5 +1,6 @@
 package kr.co.ibk.repository;
 
+import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.LearningModelInfo;
 import kr.co.ibk.model.LearningModelForm;
 import org.springframework.data.repository.query.Param;
@@ -33,4 +34,6 @@ public interface LearningModelRepository {
     void updateNullAllByLearningId(Integer[] idArr);
 
     int countByInIDAndDeployArr(Integer[] idArr, Integer[] deployArr);
+
+    List<LearningModelInfo> getTargetList(@Param("learningType") LearningType learningType, @Param("hdqrBobDcd") Integer hdqrBobDcd);
 }
