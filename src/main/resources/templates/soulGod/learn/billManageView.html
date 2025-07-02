@@ -215,9 +215,9 @@
                                 <input type="radio" name="searchTarget" id="searchTarget_Y"
                                        value="2"
                                        th:checked="${params.searchTarget == '2'}">
-                                <input type="radio" name="searchTarget" id="searchTarget_A"
-                                       value="3"
-                                       th:checked="${params.searchTarget == '3'}">
+                                <!-- <input type="radio" name="searchTarget" id="searchTarget_A"
+                                        value="3"
+                                        th:checked="${params.searchTarget == '3'}">-->
                                 <option th:each="item :${T(kr.co.ibk.domain.enums.SearchType).values()}"
                                         th:class="${item}" th:text="${item.name}"></option>
                                 <option th:each="item :${T(kr.co.ibk.domain.enums.SearchBillType).values()}"
