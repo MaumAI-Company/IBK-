@@ -35,6 +35,9 @@ public class BatchInferenceModelService extends _BaseService {
     @Value("${Globals.batchInfer.ext}")
     private String batchInferFileExt;
 
+    @Value("${Globals.batchInfer.backupFileStorePath}")
+    private String backupFileStorePath;
+
     /**
      * 배치 추론 모델 정보 저장
      * - 기존 target에 해당하는 데이터를 삭제
@@ -51,6 +54,8 @@ public class BatchInferenceModelService extends _BaseService {
 
         Integer cardHqModelId = null;
         Integer cardBrModelId = null;
+        Integer billModelId = null;
+
         for (BatchInferenceModelForm.BatchTargetItem item : form.getTargets()) {
             BatchTargetType target = item.getTarget();
             Integer modelId = item.getModelId();
@@ -62,13 +67,19 @@ public class BatchInferenceModelService extends _BaseService {
             if (modelId != null) {
                 saveCnt += batchInferenceModelRepository.insert(target.name(), modelId, modId);
 
-                // 스크립트 생성을 위한 본부/영업점 ID 저장
+                // 스크립트 생성을 위한 본부/영업점/세금계산서 모델 ID 저장
                 if (target == BatchTargetType.CARD_HQ) {
                     cardHqModelId = modelId;
                 } else if (target == BatchTargetType.CARD_BR) {
                     cardBrModelId = modelId;
+                } else if (target == BatchTargetType.BILL_INTEGRATED) {
+                    billModelId = modelId;
                 }
             }
+        }
+
+        if (cardHqModelId == null || cardBrModelId == null || billModelId == null) {
+            throw new CustomApiException("배치 추론 모델을 지정해주세요.");
         }
 
         // BC CARD 스크립트 생성
@@ -151,8 +162,14 @@ public class BatchInferenceModelService extends _BaseService {
                 String timestamp = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
                         .format(LocalDateTime.now());
 
-                String backupbatchInferFileName = batchInferFileName + "_backup_" + timestamp + batchInferFileExt;
-                Path backupPath = Paths.get(filepath, backupbatchInferFileName);
+                String backupBatchInferFileName = batchInferFileName + "_backup_" + timestamp + batchInferFileExt;
+                Path backupPath = Paths.get(backupFileStorePath, backupBatchInferFileName);
+
+                // 백업 폴더 없으면 생성
+                if (!Files.exists(Paths.get(backupFileStorePath))) {
+                    Files.createDirectories(Paths.get(backupFileStorePath));
+                }
+
                 Files.copy(targetPath, backupPath, StandardCopyOption.REPLACE_EXISTING);
             }
 

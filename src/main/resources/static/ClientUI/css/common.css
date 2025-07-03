@@ -586,7 +586,7 @@ ul.jqtree-tree li.jqtree_common:hover > .jqtree-element{background-color:#f9f9f9
 .pop_layer .popup .pop_head{display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;padding:25px 28px 17px}
 .pop_layer .popup .pop_head .pop_tit{margin-bottom:auto;font-size:20px;font-weight:700}
 .pop_layer .popup .pop_head .btn_close{flex-shrink:0;width:24px;height:24px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%236D7175' d='M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z'/%3E%3C/svg%3E") no-repeat 50% 50%}
-.pop_layer .popup .pop_cont{overflow-y:auto;max-height:calc(100vh - 307px);padding:0 28px}
+.pop_layer .popup .pop_cont{overflow-y:auto;max-height:calc(100vh - 307px);min-height:333px;padding:0 28px}
 .pop_layer .popup .pop_cont:last-child{max-height:calc(100vh - 387px);padding-bottom:24px}
 .pop_layer .popup .pop_cont .pagination{padding-top:16px}
 .pop_layer .popup .pop_foot{padding:16px 28px 24px}

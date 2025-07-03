@@ -29,9 +29,6 @@ public class BillLearningDataService extends _BaseService {
         /*
         default search condition
          */
-        if (ObjectUtils.isEmpty(params.getSearchTarget())) {
-            params.setSearchTarget("1");
-        }
 
         if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
             params.setSearchStartDate(String.valueOf(LocalDate.now().minusYears(2)).substring(0, 10));
@@ -66,6 +63,12 @@ public class BillLearningDataService extends _BaseService {
      * @return
      */
     public List<BillLearningDataInfo> getList(BillLearningDataForm form) {
+
+        // 통합인 경우 target 검색조건 제거
+        if (!ObjectUtils.isEmpty(form.getSearchTarget()) && form.getSearchTarget().equals("3")) {
+            form.setSearchTarget(null);
+        }
+
         return billLearningDataRepository.getList(form);
     }
 
