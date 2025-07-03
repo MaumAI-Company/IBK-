@@ -35,5 +35,5 @@ public interface LearningModelRepository {
 
     int countByInIDAndDeployArr(Integer[] idArr, Integer[] deployArr);
 
-    List<LearningModelInfo> getTargetList(@Param("learningType") LearningType learningType, @Param("hdqrBobDcd") Integer hdqrBobDcd);
+    List<LearningModelInfo> getTargetList(@Param("learningType") LearningType learningType, @Param("hdqrBobDcd") Integer hdqrBobDcd, Integer[] deployArr);
 }

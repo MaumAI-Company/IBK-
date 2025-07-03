@@ -2,6 +2,15 @@
 <html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <style>
+        #popRegister .popup.lg {
+            width: 500px;
+        }
+
+        #popRegister .tbl_write > tbody > tr > td {
+            height: 100px;
+        }
+    </style>
     <script type="text/javascript">
         $(function () {
             fn_setDatePicker('#stDt', {
