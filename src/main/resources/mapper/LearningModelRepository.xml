@@ -214,8 +214,12 @@
         SELECT ID, LEARN_NAME
         FROM LEARNING_MODEL
         WHERE DELETE_YN = 'N'
-          AND LEARNING_TYPE = #{learningType}
-          AND HDQR_BOB_DCD = #{hdqrBobDcd}
+        AND LEARNING_TYPE = #{learningType}
+        AND HDQR_BOB_DCD = #{hdqrBobDcd}
+        AND DEPLOY_STATUS in
+        <foreach collection="deployArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY ID DESC
     </select>
 </mapper>

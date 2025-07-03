@@ -509,6 +509,11 @@ public class LearningModelService extends BaseCont {
     }
 
     public List<LearningModelInfo> getTargetList(LearningType learningType, Integer hdqrBobDcd) {
-        return learningModelRepository.getTargetList(learningType, hdqrBobDcd);
+        Integer[] deployArr = DeployStatusType.getDeployStatusList()
+                .stream()
+                .map(DeployStatusType::getCode)
+                .toArray(Integer[]::new);
+
+        return learningModelRepository.getTargetList(learningType, hdqrBobDcd, deployArr);
     }
 }
