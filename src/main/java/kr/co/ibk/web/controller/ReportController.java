@@ -191,9 +191,9 @@ public class ReportController extends BaseCont {
             params.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
         }
 
-        if (ObjectUtils.isEmpty(params.getSearchLearningType())) {
-            params.setSearchLearningType(LearningType.CARD);
-        }
+        /*if (ObjectUtils.isEmpty(params.getSearchLearningType())) {
+            params.setSearchLearningType("CARD");
+        }*/
 
         model.addAttribute("mc", "ico_chart");
         model.addAttribute("params", params);

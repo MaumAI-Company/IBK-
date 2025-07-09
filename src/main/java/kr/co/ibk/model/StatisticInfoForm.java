@@ -14,7 +14,7 @@ public class StatisticInfoForm {
     private String searchEndDate;
     private Integer searchTarget;
     private String searchCycle;
-    private LearningType searchLearningType;
+    private String searchLearningType;
 }
 
 

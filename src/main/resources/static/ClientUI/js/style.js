@@ -242,7 +242,7 @@ function maxLengthCheck(object){
 function layerShow(ele,obj){
 	var winH = $(window).height();
 
-	$('html, body').css({'overflow':'hidden'});
+	$('html').css({'overflow':'hidden'});
 	$('#'+ele).addClass('active');
 
 	//Focus
@@ -257,7 +257,7 @@ function layerShow(ele,obj){
 function layerHide(ele){
 	$('#'+ele).removeClass('active');
 	if(!$('.pop_layer, .system_alert').hasClass('active')){
-		$('html, body').removeAttr('style');
+		$('html').removeAttr('style');
 	}
 
 	//Focus

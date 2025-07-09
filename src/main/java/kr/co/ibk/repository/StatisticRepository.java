@@ -10,10 +10,14 @@ import java.util.List;
 public interface StatisticRepository {
     List<StatisticInfo> cardInferResultStatistic(StatisticInfoForm form);
 
-    List<StatisticInfo> cardUsageStatistic(StatisticInfoForm form);
-
     List<StatisticInfo> billInferResultStatistic(StatisticInfoForm form);
 
+    List<StatisticInfo> totalInferResultStatistic(StatisticInfoForm form);
+
+    List<StatisticInfo> cardUsageStatistic(StatisticInfoForm form);
+
     List<StatisticInfo> billUsageStatistic(StatisticInfoForm form);
+
+    List<StatisticInfo> totalUsageStatistic(StatisticInfoForm form);
 
 }

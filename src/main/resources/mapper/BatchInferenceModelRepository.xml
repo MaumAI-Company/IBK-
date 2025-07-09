@@ -35,4 +35,10 @@
         WHERE TARGET = #{target}
     </select>
 
+    <delete id="deleteByModelId">
+        DELETE
+        FROM BATCH_INFERENCE_MODEL
+        WHERE MODEL_ID = #{modelId}
+    </delete>
+
 </mapper>

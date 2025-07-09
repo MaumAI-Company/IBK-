@@ -16,5 +16,7 @@ public interface BatchInferenceModelRepository {
 
     void deleteByTarget(BatchTargetType target);
 
+    void deleteByModelId(@Param("modelId") Integer modelId);
+
     Optional<BatchInferenceModelInfo> findByTarget(BatchTargetType target);
 }
