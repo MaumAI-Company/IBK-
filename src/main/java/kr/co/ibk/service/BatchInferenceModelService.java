@@ -2,6 +2,7 @@ package kr.co.ibk.service;
 
 import kr.co.ibk.common.exceptions.CustomApiException;
 import kr.co.ibk.domain.enums.BatchTargetType;
+import kr.co.ibk.domain.web.BatchInferenceModelInfo;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.model.BatchInferenceModelForm;
 import kr.co.ibk.repository.BatchInferenceModelRepository;
@@ -18,6 +19,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -52,28 +54,45 @@ public class BatchInferenceModelService extends _BaseService {
         Long saveCnt = 0L;
         String modId = memberInfo.getMemId();
 
+        // 이전 저장된 모델 ID 조회
+        Integer existingHq = batchInferenceModelRepository.findByTarget(BatchTargetType.CARD_HQ).map(BatchInferenceModelInfo::getModelId).orElse(null);
+        Integer existingBr = batchInferenceModelRepository.findByTarget(BatchTargetType.CARD_BR).map(BatchInferenceModelInfo::getModelId).orElse(null);
+        Integer existingBill = batchInferenceModelRepository.findByTarget(BatchTargetType.BILL_INTEGRATED).map(BatchInferenceModelInfo::getModelId).orElse(null);
+
+        // 스크립트에 저장할 모델 ID
         Integer cardHqModelId = null;
         Integer cardBrModelId = null;
         Integer billModelId = null;
 
+        // 카드 및 세금계산서 변경체크
+        boolean cardChanged = false;
+        boolean billChanged = false;
+
+        // 저장
         for (BatchInferenceModelForm.BatchTargetItem item : form.getTargets()) {
             BatchTargetType target = item.getTarget();
             Integer modelId = item.getModelId();
 
-            // 기존 target 데이터 삭제
-            batchInferenceModelRepository.deleteByTarget(target);
-
-            // insert
-            if (modelId != null) {
-                saveCnt += batchInferenceModelRepository.insert(target.name(), modelId, modId);
-
-                // 스크립트 생성을 위한 본부/영업점/세금계산서 모델 ID 저장
-                if (target == BatchTargetType.CARD_HQ) {
-                    cardHqModelId = modelId;
-                } else if (target == BatchTargetType.CARD_BR) {
-                    cardBrModelId = modelId;
-                } else if (target == BatchTargetType.BILL_INTEGRATED) {
-                    billModelId = modelId;
+            if (target == BatchTargetType.CARD_HQ) {
+                cardHqModelId = modelId;
+                if (!Objects.equals(existingHq, modelId)) {
+                    cardChanged = true;
+                    batchInferenceModelRepository.deleteByModelId(existingHq);
+                    saveCnt += batchInferenceModelRepository.insert(target.name(), modelId, modId);
+                }
+            } else if (target == BatchTargetType.CARD_BR) {
+                cardBrModelId = modelId;
+                if (!Objects.equals(existingBr, modelId)) {
+                    cardChanged = true;
+                    batchInferenceModelRepository.deleteByModelId(existingBr);
+                    saveCnt += batchInferenceModelRepository.insert(target.name(), modelId, modId);
+                }
+            } else if (target == BatchTargetType.BILL_INTEGRATED) {
+                billModelId = modelId;
+                if (!Objects.equals(existingBill, modelId)) {
+                    billChanged = true;
+                    batchInferenceModelRepository.deleteByModelId(existingBill);
+                    saveCnt += batchInferenceModelRepository.insert(target.name(), modelId, modId);
                 }
             }
         }
@@ -83,8 +102,14 @@ public class BatchInferenceModelService extends _BaseService {
         }
 
         // BC CARD 스크립트 생성
-        createBatchScript(cardHqModelId, cardBrModelId);
+        if (cardChanged) {
+            createBatchScript(cardHqModelId, cardBrModelId);
+        }
+
         // TODO: 세금계산서 스크립트 작업
+        if (billChanged) {
+
+        }
 
         if (saveCnt > 0) {
             map.put("status", "SUCCESS");
