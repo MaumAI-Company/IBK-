@@ -1,5 +1,6 @@
 package kr.co.ibk.service;
 
+import kr.co.ibk.common.utils.NullHelper;
 import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.StatisticInfo;
 import kr.co.ibk.model.StatisticInfoForm;
@@ -27,9 +28,11 @@ public class StatisticService extends _BaseService {
         }
 
         List<StatisticInfo> infos;
-        LearningType learningType = form.getSearchLearningType() != null ? form.getSearchLearningType() : LearningType.CARD;
+        LearningType learningType = !ObjectUtils.isEmpty(form.getSearchLearningType()) ? LearningType.valueOf(form.getSearchLearningType()) : null;
 
-        if (learningType.equals(LearningType.CARD)) {
+        if (NullHelper.isNull(learningType)) { // 전체
+            infos = statisticRepository.totalInferResultStatistic(form);
+        } else if (learningType.equals(LearningType.CARD)) {
             infos = statisticRepository.cardInferResultStatistic(form);
         } else {
             infos = statisticRepository.billInferResultStatistic(form);
@@ -43,9 +46,11 @@ public class StatisticService extends _BaseService {
             form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
             form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
         }
-        LearningType learningType = form.getSearchLearningType() != null ? form.getSearchLearningType() : LearningType.CARD;
+        LearningType learningType = !ObjectUtils.isEmpty(form.getSearchLearningType()) ? LearningType.valueOf(form.getSearchLearningType()) : null;
 
-        if (learningType.equals(LearningType.CARD)) {
+        if (NullHelper.isNull(learningType)) { // 전체
+            infos = statisticRepository.totalUsageStatistic(form);
+        } else if (learningType.equals(LearningType.CARD)) {
             infos = statisticRepository.cardUsageStatistic(form);
         } else {
             infos = statisticRepository.billUsageStatistic(form);

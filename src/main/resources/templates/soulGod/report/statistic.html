@@ -878,7 +878,7 @@
                 dateRow.append(`<td>${item.dd}</td>`);
                 totalRow.append(`<td>${fn_setCommas(item.total)}</td>`);
                 outCntRow.append(`<td>${fn_setCommas(item.outCnt)}</td>`);
-                perRow.append(`<td>${item.per}%</td>`);
+                perRow.append(`<td>${item.per || 0}%</td>`);
             });
             tableBody.append(dateRow, totalRow, outCntRow, perRow);
             // 추론 결과 수 : e
@@ -999,6 +999,7 @@
                                         </dt>
                                         <dd>
                                             <select name="searchLearningType" id="searchLearningType">
+                                                <option value="" th:selected="${params.searchLearningType eq null}">전체</option>
                                                 <option th:each="item :${T(kr.co.ibk.domain.enums.LearningType).values()}"
                                                         th:class="${item}" th:text="${item.name}" th:value="${item}"
                                                         th:selected="${item.name() eq params.searchLearningType}"></option>

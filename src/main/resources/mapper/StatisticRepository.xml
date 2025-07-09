@@ -133,6 +133,92 @@
         ) totalOutput ON sub.dd = totalOutput.dd
     </select>
 
+    <select id="totalInferResultStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
+        SELECT
+            dd,
+            SUM(total) AS total,
+            SUM(outCnt) AS outCnt,
+            TRUNCATE(CASE WHEN SUM(total) > 0 THEN (SUM(outCnt) * 100.0) / SUM(total) ELSE 0 END, 2) AS per
+        FROM (
+                 -- 카드
+                 SELECT
+                     SUBSTRING(ci.RCV_YMD, 1, 8) AS dd,
+                     COUNT(*) AS total,
+                     SUM(CASE WHEN co.TSTM_YMD IS NOT NULL THEN 1 ELSE 0 END) AS outCnt
+                 FROM CARD_INPUT ci
+                          LEFT JOIN CARD_OUTPUT co
+                                    ON ci.TSTM_YMD = co.TSTM_YMD
+                                        AND ci.TSTM_NO = co.TSTM_NO
+                                        AND ci.BRCD = co.BRCD
+                 WHERE ci.RCV_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+                 GROUP BY dd
+                 UNION ALL
+                 -- 세금계산서
+                 SELECT
+                     SUBSTRING(ci.RCV_YMD, 1, 8) AS dd,
+                     COUNT(*) AS total,
+                     SUM(CASE WHEN co.BASE_YM IS NOT NULL THEN 1 ELSE 0 END) AS outCnt
+                 FROM BILL_INPUT ci
+                          LEFT JOIN BILL_OUTPUT co
+                                    ON ci.TXBL_SRN = co.TXBL_SRN
+                                        AND ci.BASE_YM = co.BASE_YM
+                                        AND ci.BRCD = co.BRCD
+                 WHERE ci.RCV_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+                 GROUP BY dd
+             ) AS com
+        GROUP BY dd
+        ORDER BY dd
+    </select>
+
+    <select id="totalUsageStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
+        SELECT
+            dd,
+            SUM(total) AS total,
+            SUM(hitCnt1) AS hitCnt1,
+            SUM(hitCnt2) AS hitCnt2,
+            SUM(hitCnt3) AS hitCnt3,
+            SUM(hitCnt4) AS hitCnt4,
+            TRUNCATE(SUM(hitCnt1) * 100.0 / NULLIF(SUM(total), 0), 2) AS hitCnt1Per,
+            TRUNCATE(SUM(hitCnt2) * 100.0 / NULLIF(SUM(total), 0), 2) AS hitCnt2Per,
+            TRUNCATE(SUM(hitCnt3) * 100.0 / NULLIF(SUM(total), 0), 2) AS hitCnt3Per,
+            TRUNCATE(SUM(hitCnt4) * 100.0 / NULLIF(SUM(total), 0), 2) AS hitCnt4Per
+        FROM (
+                 -- 카드
+                 SELECT
+                     co.RSRE_YMD AS dd,
+                     COUNT(*) AS total,
+                     SUM(co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y') AS hitCnt1,
+                     SUM(co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y') AS hitCnt2,
+                     SUM(co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y') AS hitCnt3,
+                     SUM(co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y') AS hitCnt4
+                 FROM CARD_OUTPUT co
+                          JOIN CARD_LEARNING_DATA cd
+                               ON co.TSTM_YMD = cd.TSTM_YMD
+                                   AND co.TSTM_NO = cd.TSTM_NO
+                                   AND co.BRCD = cd.BRCD
+                 WHERE co.RSRE_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+                 GROUP BY dd
+                 UNION ALL
+                 -- 세금계산서
+                 SELECT
+                     co.RSRE_YMD AS dd,
+                     COUNT(*) AS total,
+                     SUM(co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y') AS hitCnt1,
+                     SUM(co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y') AS hitCnt2,
+                     SUM(co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y') AS hitCnt3,
+                     SUM(co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y') AS hitCnt4
+                 FROM BILL_OUTPUT co
+                          JOIN BILL_LEARNING_DATA cd
+                               ON co.BASE_YM = cd.BASE_YM
+                                   AND co.TXBL_SRN = cd.TXBL_SRN
+                                   AND co.BRCD = cd.BRCD
+                 WHERE co.RSRE_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+                 GROUP BY dd
+             ) AS com
+        GROUP BY dd
+        ORDER BY dd
+    </select>
+
     <sql id="inferWhere">
         1=1
 
