@@ -58,7 +58,7 @@
     </select>
 
     <insert id="setInsert" useGeneratedKeys="true" keyProperty="schedId" keyColumn="sched_id" parameterType="LearningSchedulerForm">
-        insert into maummcc.LEARNING_SCHEDULER
+        insert into LEARNING_SCHEDULER
         (SCHED_NM, HDQR_BOB_DCD, TERM_TY, ST_YMD, ST_TIME, USE_AT, REG_ID, REG_DT, MOD_ID, MOD_DT, DEL_AT, TEMPLATE_ID,
          DES, EPOCH, LEARNING_RATE, BATCH_SIZE, SEARCH_MM)
         values (#{schedNm}, #{hdqrBobDcd}, #{termTy}, #{stYmd}, #{stTime}, #{useAt}, #{regId}, current_timestamp(),
@@ -67,7 +67,7 @@
     </insert>
 
     <update id="setUpdate" parameterType="LearningSchedulerForm">
-        update maummcc.LEARNING_SCHEDULER
+        update LEARNING_SCHEDULER
         set SCHED_NM     = #{schedNm},
             HDQR_BOB_DCD = #{hdqrBobDcd},
             TERM_TY      = #{termTy},
@@ -86,7 +86,7 @@
     </update>
 
     <update id="setDelete" parameterType="LearningSchedulerForm">
-        update maummcc.LEARNING_SCHEDULER
+        update LEARNING_SCHEDULER
         set DEL_AT = 'Y',
             MOD_ID = #{modId},
             MOD_DT = current_timestamp(),
