@@ -133,8 +133,8 @@ public class LearningModelService extends BaseCont {
                         HashMap<String, String> searchJsonMap = jsonToHashMap(load.getSelectCon());
                         learningDataForm.setSearchStartDate(searchJsonMap.remove("searchStartDate"));
                         learningDataForm.setSearchEndDate(searchJsonMap.remove("searchEndDate"));
-                        // TODO: 통합구분 없어지면 다시 주석 해제 필요
-                        // learningDataForm.setSearchTarget(searchJsonMap.remove("searchTarget"));
+                        //learningDataForm.setSearchTarget(searchJsonMap.remove("searchTarget"));
+                        searchJsonMap.remove("searchTarget");
                         learningDataForm.setSearchJsonMap(searchJsonMap);
 
                         learningDataForm.setSearchRegex(makeSearchQuery(learningDataForm.getSearchJsonMap(), 0));
