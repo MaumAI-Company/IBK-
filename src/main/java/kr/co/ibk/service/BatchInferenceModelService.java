@@ -31,8 +31,11 @@ public class BatchInferenceModelService extends _BaseService {
     @Value("${Globals.fileStorePath}")
     private String filepath;
 
-    @Value("${Globals.batchInfer.fileName}")
-    private String batchInferFileName;
+    @Value("${Globals.batchInfer.card.fileName}")
+    private String batchInferCardFileName;
+
+    @Value("${Globals.batchInfer.bill.fileName}")
+    private String batchInferBillFileName;
 
     @Value("${Globals.batchInfer.ext}")
     private String batchInferFileExt;
@@ -103,12 +106,12 @@ public class BatchInferenceModelService extends _BaseService {
 
         // BC CARD 스크립트 생성
         if (cardChanged) {
-            createBatchScript(cardHqModelId, cardBrModelId);
+            createCardBatchScript(cardHqModelId, cardBrModelId);
         }
 
-        // TODO: 세금계산서 스크립트 작업
+        // 세금계산서 스크립트 생성
         if (billChanged) {
-
+            createBillBatchScript(billModelId);
         }
 
         if (saveCnt > 0) {
@@ -118,11 +121,11 @@ public class BatchInferenceModelService extends _BaseService {
     }
 
     /**
-     * 배치 스크립트 생성
+     * BC카드 > 배치 스크립트 생성
      * - 기존 파일은 백업
      * - 새로 생성 후 POSIX 권한(755) 부여 (POSIX 지원 환경만)
      */
-    public void createBatchScript(Integer hqModelId, Integer brModelId) {
+    public void createCardBatchScript(Integer hqModelId, Integer brModelId) {
 
         try {
             String batchInferTemplate = "#!/bin/bash\n" +
@@ -180,14 +183,99 @@ public class BatchInferenceModelService extends _BaseService {
                     .replace("##brModelId##", !ObjectUtils.isEmpty(brModelId) ? brModelId.toString() : "");
 
             // 파일 경로
-            Path targetPath = Paths.get(filepath, batchInferFileName + batchInferFileExt);
+            Path targetPath = Paths.get(filepath, batchInferCardFileName + batchInferFileExt);
 
             // 기존 파일 백업 (batch_infer_backup_20250627000000000.sh)
             if (Files.exists(targetPath)) {
                 String timestamp = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
                         .format(LocalDateTime.now());
 
-                String backupBatchInferFileName = batchInferFileName + "_backup_" + timestamp + batchInferFileExt;
+                String backupBatchInferFileName = batchInferCardFileName + "_backup_" + timestamp + batchInferFileExt;
+                Path backupPath = Paths.get(backupFileStorePath, backupBatchInferFileName);
+
+                // 백업 폴더 없으면 생성
+                if (!Files.exists(Paths.get(backupFileStorePath))) {
+                    Files.createDirectories(Paths.get(backupFileStorePath));
+                }
+
+                Files.copy(targetPath, backupPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            // 파일 저장
+            Files.writeString(targetPath, resultScript, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+            // 권한 설정 (755)
+            if (Files.getFileStore(targetPath).supportsFileAttributeView("posix")) {
+                Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-xr-x");
+                Files.setPosixFilePermissions(targetPath, perms);
+            }
+
+        } catch (IOException e) {
+            throw new CustomApiException("스크립트 생성에 실패하였습니다.");
+        }
+    }
+
+    /**
+     * 세금계산서 > 배치 스크립트 생성
+     * - 기존 파일은 백업
+     * - 새로 생성 후 POSIX 권한(755) 부여 (POSIX 지원 환경만)
+     */
+    public void createBillBatchScript(Integer billModelId) {
+
+        try {
+            String batchInferTemplate = "#!/bin/bash\n" +
+                    "\n" +
+                    "# API URL\n" +
+                    "API_URL=\"http://127.0.0.1:9002/mcc-classify-batch/\"\n" +
+                    "\n" +
+                    "# 요청\n" +
+                    "model_payload='{\n" +
+                    "  \"model_id\": \"##billModelId##\",\n" +
+                    "  \"hdqr_bob_dcd\": \"1\"\n" +
+                    "}'\n" +
+                    "\n" +
+                    "send_request() {\n" +
+                    "        local payload=\"$1\"\n" +
+                    "        local target=\"$2\"\n" +
+                    "\n" +
+                    "        echo \"target check $target\"\n" +
+                    "        echo \"payload check $payload\"\n" +
+                    "        echo \"Sending request for $target...\"\n" +
+                    "\n" +
+                    "        response=$(curl -s -o response.json -w \"%{http_code}\" -X POST $API_URL \\\n" +
+                    "                   -H \"Content-Type: application/json\" \\\n" +
+                    "                   -d \"$payload\")\n" +
+                    "\n" +
+                    "        if [[ \"$response\" -eq 200 ]]; then\n" +
+                    "                echo \"$target request succeeded.\"\n" +
+                    "        elif [[ \"$response\" -eq 500 ]]; then\n" +
+                    "                echo \"[ERROR] $target request failed with HTTP 500 Internal Server Error;\" >&2\n" +
+                    "                cat response.json\n" +
+                    "                exit 1\n" +
+                    "        else\n" +
+                    "                echo \"[WARNING] $target request returned HTTP status code $response\"\n" +
+                    "                exit 1\n" +
+                    "        fi\n" +
+                    "}\n" +
+                    "\n" +
+                    "# 통합모델 batch 요청\n" +
+                    "send_request \"$model_payload\" \"total_model\"\n" +
+                    "\n" +
+                    "echo \"Batch requests completed.\"";
+
+            // 값 치환
+            String resultScript = batchInferTemplate
+                    .replace("##billModelId##", !ObjectUtils.isEmpty(billModelId) ? billModelId.toString() : "");
+
+            // 파일 경로
+            Path targetPath = Paths.get(filepath, batchInferBillFileName + batchInferFileExt);
+
+            // 기존 파일 백업 (batch_infer_backup_20250627000000000.sh)
+            if (Files.exists(targetPath)) {
+                String timestamp = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
+                        .format(LocalDateTime.now());
+
+                String backupBatchInferFileName = batchInferBillFileName + "_backup_" + timestamp + batchInferFileExt;
                 Path backupPath = Paths.get(backupFileStorePath, backupBatchInferFileName);
 
                 // 백업 폴더 없으면 생성
