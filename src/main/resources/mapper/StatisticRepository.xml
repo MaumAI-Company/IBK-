@@ -32,10 +32,12 @@
             sub.hitCnt2,
             sub.hitCnt3,
             sub.hitCnt4,
+            sub.arinUseCnt,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt4 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt4Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.arinUseCnt * 100.0) / sub.total ELSE 0 END, 2) AS arinUsePer,
             totalOutput.totalOutCnt
         FROM
             (
@@ -46,7 +48,8 @@
                     SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
                     SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
                     SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
-                    SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4
+                    SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
+                    SUM(CASE WHEN cd.ARIN_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
                 FROM
                     CARD_OUTPUT co
                         INNER JOIN CARD_LEARNING_DATA cd
@@ -98,10 +101,12 @@
             sub.hitCnt2,
             sub.hitCnt3,
             sub.hitCnt4,
+            sub.arinUseCnt,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per,
             TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt4 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt4Per,
+            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.arinUseCnt * 100.0) / sub.total ELSE 0 END, 2) AS arinUsePer,
             totalOutput.totalOutCnt
         FROM
             (
@@ -112,7 +117,8 @@
                 SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
                 SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
                 SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
-                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4
+                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
+                SUM(CASE WHEN cd.ARIN_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
             FROM
                 BILL_OUTPUT co
                     INNER JOIN BILL_LEARNING_DATA cd
@@ -180,10 +186,14 @@
             SUM(hitCnt2) AS hitCnt2,
             SUM(hitCnt3) AS hitCnt3,
             SUM(hitCnt4) AS hitCnt4,
+            SUM(hitCnt4) AS hitCnt4,
+            SUM(arinUseCnt) AS arinUseCnt,
             TRUNCATE(SUM(hitCnt1) * 100.0 / NULLIF(SUM(total), 0), 2) AS hitCnt1Per,
             TRUNCATE(SUM(hitCnt2) * 100.0 / NULLIF(SUM(total), 0), 2) AS hitCnt2Per,
             TRUNCATE(SUM(hitCnt3) * 100.0 / NULLIF(SUM(total), 0), 2) AS hitCnt3Per,
-            TRUNCATE(SUM(hitCnt4) * 100.0 / NULLIF(SUM(total), 0), 2) AS hitCnt4Per
+            TRUNCATE(SUM(hitCnt4) * 100.0 / NULLIF(SUM(total), 0), 2) AS hitCnt4Per,
+            TRUNCATE(SUM(hitCnt4) * 100.0 / NULLIF(SUM(total), 0), 2) AS hitCnt4Per,
+            TRUNCATE(SUM(arinUseCnt) * 100.0 / NULLIF(SUM(total), 0), 2) AS arinUsePer
         FROM (
             -- 카드
             SELECT
@@ -193,7 +203,8 @@
                 SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
                 SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
                 SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
-                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4
+                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
+                SUM(CASE WHEN cd.ARIN_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
             FROM CARD_OUTPUT co
             INNER JOIN CARD_LEARNING_DATA cd
                 ON co.TSTM_YMD = cd.TSTM_YMD
@@ -211,7 +222,8 @@
                 SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
                 SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
                 SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
-                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4
+                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
+                SUM(CASE WHEN cd.ARIN_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
             FROM BILL_OUTPUT co
             INNER JOIN BILL_LEARNING_DATA cd
                 ON co.BASE_YM = cd.BASE_YM

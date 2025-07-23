@@ -23,10 +23,12 @@ public class StatisticInfo {
     private Integer hitCnt2;
     private Integer hitCnt3;
     private Integer hitCnt4;
+    private Integer arinUseCnt;
     private Double hitCnt1Per;
     private Double hitCnt2Per;
     private Double hitCnt3Per;
     private Double hitCnt4Per;
+    private Double arinUsePer;
     private Integer totalOutCnt;
 
 }
