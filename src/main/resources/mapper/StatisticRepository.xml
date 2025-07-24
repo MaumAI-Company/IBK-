@@ -182,25 +182,22 @@
         SELECT
             com.dd,
             SUM(com.total) AS total,
-            SUM(com.outCnt) AS outCnt,
-            TRUNCATE(SUM(com.outCnt) * 100.0 / NULLIF(SUM(com.total), 0), 2) AS per,
             SUM(com.hitCnt1) AS hitCnt1,
             SUM(com.hitCnt2) AS hitCnt2,
             SUM(com.hitCnt3) AS hitCnt3,
             SUM(com.hitCnt4) AS hitCnt4,
             SUM(com.arinUseCnt) AS arinUseCnt,
-            TRUNCATE(SUM(com.hitCnt1) * 100.0 / NULLIF(SUM(com.total), 0), 2) AS hitCnt1Per,
-            TRUNCATE(SUM(com.hitCnt2) * 100.0 / NULLIF(SUM(com.total), 0), 2) AS hitCnt2Per,
-            TRUNCATE(SUM(com.hitCnt3) * 100.0 / NULLIF(SUM(com.total), 0), 2) AS hitCnt3Per,
-            TRUNCATE(SUM(com.hitCnt4) * 100.0 / NULLIF(SUM(com.total), 0), 2) AS hitCnt4Per,
-            TRUNCATE(SUM(com.arinUseCnt) * 100.0 / NULLIF(SUM(com.total), 0), 2) AS arinUsePer,
+            TRUNCATE(CASE WHEN SUM(com.total) > 0 THEN SUM(com.hitCnt1) * 100.0 / SUM(com.total) ELSE 0 END, 2) AS hitCnt1Per,
+            TRUNCATE(CASE WHEN SUM(com.total) > 0 THEN SUM(com.hitCnt2) * 100.0 / SUM(com.total) ELSE 0 END, 2) AS hitCnt2Per,
+            TRUNCATE(CASE WHEN SUM(com.total) > 0 THEN SUM(com.hitCnt3) * 100.0 / SUM(com.total) ELSE 0 END, 2) AS hitCnt3Per,
+            TRUNCATE(CASE WHEN SUM(com.total) > 0 THEN SUM(com.hitCnt4) * 100.0 / SUM(com.total) ELSE 0 END, 2) AS hitCnt4Per,
+            TRUNCATE(CASE WHEN SUM(com.total) > 0 THEN SUM(com.arinUseCnt) * 100.0 / SUM(com.total) ELSE 0 END, 2) AS arinUsePer,
             IFNULL(SUM(totalOutput.totalOutCnt), 0) AS totalOutCnt
         FROM (
         -- 카드
             SELECT
                 <include refid="usageDateGrouping"/> AS dd,
                 COUNT(*) AS total,
-                SUM(CASE WHEN co.TSTM_YMD IS NOT NULL THEN 1 ELSE 0 END) AS outCnt,
                 SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
                 SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
                 SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
@@ -220,7 +217,6 @@
             SELECT
                 <include refid="usageDateGrouping"/> AS dd,
                 COUNT(*) AS total,
-                SUM(CASE WHEN co.BASE_YM IS NOT NULL THEN 1 ELSE 0 END) AS outCnt,
                 SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
                 SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
                 SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
@@ -239,9 +235,9 @@
                 <include refid="usageDateGrouping"/> AS dd,
                 COUNT(*) AS totalOutCnt
             FROM (
-                SELECT co.RSRE_YMD, co.RSRE_YM, co.RSRE_Y FROM CARD_OUTPUT co
+                SELECT co.RSRE_YMD, co.RSRE_YM, co.RSRE_Y, co.HDQR_BOB_DCD FROM CARD_OUTPUT co
                 UNION ALL
-                SELECT co.RSRE_YMD, co.RSRE_YM, co.RSRE_Y FROM BILL_OUTPUT co
+                SELECT co.RSRE_YMD, co.RSRE_YM, co.RSRE_Y, co.HDQR_BOB_DCD FROM BILL_OUTPUT co
             ) co
             WHERE <include refid="usageWhere"/>
             GROUP BY dd
