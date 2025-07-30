@@ -226,12 +226,18 @@ public class BatchInferenceModelService extends _BaseService {
             String batchInferTemplate = "#!/bin/bash\n" +
                     "\n" +
                     "# API URL\n" +
-                    "API_URL=\"http://127.0.0.1:9002/mcc-classify-batch/\"\n" +
+                    "API_URL=\"http://127.0.0.1:9002/tax-classify-batch/\"\n" +
                     "\n" +
-                    "# 요청\n" +
-                    "model_payload='{\n" +
+                    "# 본부 요청\n" +
+                    "headquarters_payload='{\n" +
                     "  \"model_id\": \"##billModelId##\",\n" +
                     "  \"hdqr_bob_dcd\": \"1\"\n" +
+                    "}'\n" +
+                    "\n" +
+                    "# 영업점 요청\n" +
+                    "branch_payload='{\n" +
+                    "  \"model_id\": \"##billModelId##\",\n" +
+                    "  \"hdqr_bob_dcd\": \"2\"\n" +
                     "}'\n" +
                     "\n" +
                     "send_request() {\n" +
@@ -258,8 +264,11 @@ public class BatchInferenceModelService extends _BaseService {
                     "        fi\n" +
                     "}\n" +
                     "\n" +
-                    "# 통합모델 batch 요청\n" +
-                    "send_request \"$model_payload\" \"total_model\"\n" +
+                    "# Headquarter 요청\n" +
+                    "send_request \"$headquarters_payload\" \"Headquarters\"\n" +
+                    "\n" +
+                    "# Branch 요청\n" +
+                    "send_request \"$branch_payload\" \"Branch\"\n" +
                     "\n" +
                     "echo \"Batch requests completed.\"";
 
