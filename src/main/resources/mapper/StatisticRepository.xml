@@ -49,7 +49,7 @@
                     SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
                     SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
                     SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
-                    SUM(CASE WHEN cd.ARIN_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
+                    SUM(CASE WHEN cd.ARIF_MDL_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
                 FROM
                     CARD_OUTPUT co
                         INNER JOIN CARD_LEARNING_DATA cd
@@ -118,7 +118,7 @@
                 SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
                 SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
                 SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
-                SUM(CASE WHEN cd.ARIN_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
+                SUM(CASE WHEN cd.ARIF_MDL_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
             FROM
                 BILL_OUTPUT co
                     INNER JOIN BILL_LEARNING_DATA cd
@@ -202,7 +202,7 @@
                 SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
                 SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
                 SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
-                SUM(CASE WHEN cd.ARIN_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
+                SUM(CASE WHEN cd.ARIF_MDL_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
             FROM CARD_OUTPUT co
                 INNER JOIN CARD_LEARNING_DATA cd
                 ON co.TSTM_YMD = cd.TSTM_YMD
@@ -221,7 +221,7 @@
                 SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
                 SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
                 SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
-                SUM(CASE WHEN cd.ARIN_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
+                SUM(CASE WHEN cd.ARIF_MDL_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
             FROM BILL_OUTPUT co
                 INNER JOIN BILL_LEARNING_DATA cd
                 ON co.BASE_YM = cd.BASE_YM
