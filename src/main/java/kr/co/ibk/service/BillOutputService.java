@@ -76,7 +76,8 @@ public class BillOutputService extends _BaseService {
 
     @Transactional
     public void updateHitYn() {
-        billOutputRepository.updateHitYn();
+        int updatedRows = billOutputRepository.updateHitYn();
+        log.info("[BillOutputService] 세금계산서 updateHitYn 실행 - 업데이트된 ROW 수: {}", updatedRows);
     }
 
 }

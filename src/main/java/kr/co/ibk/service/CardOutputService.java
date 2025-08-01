@@ -103,7 +103,8 @@ public class CardOutputService extends _BaseService {
 
     @Transactional
     public void updateHitYn() {
-        cardOutputRepository.updateHitYn();
+        int updatedRows = cardOutputRepository.updateHitYn();
+        log.info("[CardOutputService] 카드 updateHitYn 실행 - 업데이트된 ROW 수: {}", updatedRows);
     }
 
 }
