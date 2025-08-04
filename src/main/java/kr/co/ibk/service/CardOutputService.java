@@ -3,8 +3,10 @@ package kr.co.ibk.service;
 import kr.co.ibk.domain.enums.InOutGbnType;
 import kr.co.ibk.domain.enums.InputColumnCardType;
 import kr.co.ibk.domain.enums.LearningType;
+import kr.co.ibk.domain.enums.StatisticTargetType;
 import kr.co.ibk.domain.web.CardOutputInfo;
 import kr.co.ibk.domain.web.LearningModelInputInfo;
+import kr.co.ibk.domain.web.UserStatusStatInfo;
 import kr.co.ibk.model.CardInputForm;
 import kr.co.ibk.repository.CardInputRepository;
 import kr.co.ibk.repository.CardOutputRepository;
@@ -102,9 +104,29 @@ public class CardOutputService extends _BaseService {
     }
 
     @Transactional
+    public void updateStatistic() {
+        // 통계 insert / update : 적중수 Y/N null인 데이터 update
+        List<UserStatusStatInfo> userStatusStatInfos = cardOutputRepository.getUserUsageStat();
+        for (UserStatusStatInfo stat : userStatusStatInfos) {
+            stat.setType(StatisticTargetType.CARD);
+            int exists = cardOutputRepository.existsUserUsageStat(stat);
+            if (exists > 0) { // 수정
+                cardOutputRepository.updateUserUsageStat(stat);
+            } else { // 등록
+                cardOutputRepository.insertUserUsageStat(stat);
+            }
+        }
+
+        // 적중수 Y/N 업데이트
+        int updatedHitYnRows = cardOutputRepository.updateHitYn();
+        log.info("[CardOutputService] 카드 updateHitYn 실행 - 업데이트된 ROW 수: {}", updatedHitYnRows);
+    }
+
+    @Transactional
     public void updateHitYn() {
-        int updatedRows = cardOutputRepository.updateHitYn();
-        log.info("[CardOutputService] 카드 updateHitYn 실행 - 업데이트된 ROW 수: {}", updatedRows);
+        // 적중수 Y/N 업데이트
+        int updatedHitYnRows = cardOutputRepository.updateHitYn();
+        log.info("[CardOutputService] 카드 updateHitYn 실행 - 업데이트된 ROW 수: {}", updatedHitYnRows);
     }
 
 }

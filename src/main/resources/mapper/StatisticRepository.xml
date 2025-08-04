@@ -45,10 +45,10 @@
                 SELECT
                     <include refid="usageDateGrouping"/> AS dd,
                     COUNT(*) AS total,
-                    SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
-                    SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
-                    SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
-                    SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
+                    SUM(CASE WHEN INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) > 0 THEN 1 ELSE 0 END) AS hitCnt1,
+                    SUM(CASE WHEN INSTR(co.BDGT_BSNS_FRCS_CON, CONCAT(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) > 0 THEN 1 ELSE 0 END) AS hitCnt2,
+                    SUM(CASE WHEN INSTR(co.BDGT_PRFR_RSN_FRCS_CON, TRIM(cd.BDGT_PRFR_RSN_FRCS_CON)) > 0 THEN 1 ELSE 0 END) AS hitCnt3,
+                    SUM(CASE WHEN INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) > 0 AND INSTR(co.BDGT_BSNS_FRCS_CON, CONCAT(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) > 0 THEN 1 ELSE 0 END) AS hitCnt4,
                     SUM(CASE WHEN cd.ARIF_MDL_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
                 FROM
                     CARD_OUTPUT co
