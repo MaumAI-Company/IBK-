@@ -14,10 +14,8 @@ public interface StatisticRepository {
 
     List<StatisticInfo> totalInferResultStatistic(StatisticInfoForm form);
 
-    List<StatisticInfo> cardUsageStatistic(StatisticInfoForm form);
+    List<StatisticInfo> usageStatistic(StatisticInfoForm form);
 
-    List<StatisticInfo> billUsageStatistic(StatisticInfoForm form);
-
-    List<StatisticInfo> totalUsageStatistic(StatisticInfoForm form);
+    List<StatisticInfo> aiPrfrStatistic(StatisticInfoForm form);
 
 }

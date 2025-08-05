@@ -1,6 +1,5 @@
 package kr.co.ibk.web.controller;
 
-import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.BillInputForm;
 import kr.co.ibk.model.CardInputForm;
@@ -227,6 +226,15 @@ public class ReportController extends BaseCont {
             form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
         }
         return statisticService.usageStatistic(form);
+    }
+
+    /**
+     * 기간별 통계 > 사용자 활용 현황(INPUT 데이터 기반 OUTPUT 데이터 생성 개수)
+     */
+    @ResponseBody
+    @PostMapping("/soulGod/report/statistic/aiPrfr")
+    public List<StatisticInfo> aiPrfrStatistic(@RequestBody StatisticInfoForm form) {
+        return statisticService.aiPrfrStatistic(form);
     }
     // 기간별 통계 : e
 }

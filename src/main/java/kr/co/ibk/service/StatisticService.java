@@ -43,18 +43,28 @@ public class StatisticService extends _BaseService {
     public List<StatisticInfo> usageStatistic(StatisticInfoForm form) {
         List<StatisticInfo> infos;
         if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
-            form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-            form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-        }
-        LearningType learningType = !ObjectUtils.isEmpty(form.getSearchLearningType()) ? LearningType.valueOf(form.getSearchLearningType()) : null;
-
-        if (NullHelper.isNull(learningType)) { // 전체
-            infos = statisticRepository.totalUsageStatistic(form);
-        } else if (learningType.equals(LearningType.CARD)) {
-            infos = statisticRepository.cardUsageStatistic(form);
+            form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         } else {
-            infos = statisticRepository.billUsageStatistic(form);
+            form.setSearchStartDate(form.getSearchStartDate().replace(".", ""));
+            form.setSearchEndDate(form.getSearchEndDate().replace(".", ""));
         }
+
+        infos = statisticRepository.usageStatistic(form);
+        return infos;
+    }
+
+    public List<StatisticInfo> aiPrfrStatistic(StatisticInfoForm form) {
+        List<StatisticInfo> infos;
+        if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
+            form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        } else {
+            form.setSearchStartDate(form.getSearchStartDate().replace(".", ""));
+            form.setSearchEndDate(form.getSearchEndDate().replace(".", ""));
+        }
+
+        infos = statisticRepository.aiPrfrStatistic(form);
         return infos;
     }
 }
