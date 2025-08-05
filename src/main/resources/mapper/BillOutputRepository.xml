@@ -55,18 +55,21 @@
     <update id="updateHitYn">
         UPDATE BILL_OUTPUT bo
             INNER JOIN BILL_LEARNING_DATA bld
-            ON bo.TXBL_SRN = bld.TXBL_SRN
-                AND bo.BASE_YM = bld.BASE_YM
-                AND bo.BRCD = bld.BRCD
-        SET
-            bo.BDGT_ITEX_FRCS_CON_HIT_YN =
-                CASE WHEN INSTR(bo.BDGT_ITEX_FRCS_CON, bld.BDMN_ITEX_MNGM_NO) > 0 THEN 'Y'
-                ELSE bo.BDGT_ITEX_FRCS_CON_HIT_YN END,
-            bo.BDGT_BSNS_FRCS_CON_HIT_YN =
-                CASE WHEN INSTR(bo.BDGT_BSNS_FRCS_CON, CONCAT(bld.BRCD, '-', bld.BDGT_BSNS_FRCS_CON)) > 0 THEN 'Y'
-                ELSE bo.BDGT_BSNS_FRCS_CON_HIT_YN END,
-            bo.BDGT_PRFR_RSN_FRCS_CON_HIT_YN =
-                CASE WHEN INSTR(bo.BDGT_PRFR_RSN_FRCS_CON, TRIM(bld.BDGT_PRFR_RSN_FRCS_CON)) > 0 THEN 'Y'
-                ELSE bo.BDGT_PRFR_RSN_FRCS_CON_HIT_YN END
+        ON bo.TXBL_SRN = bld.TXBL_SRN
+            AND bo.BASE_YM = bld.BASE_YM
+            AND bo.BRCD = bld.BRCD
+            SET
+                bo.BDGT_ITEX_FRCS_CON_HIT_YN =
+                CASE WHEN INSTR(bo.BDGT_ITEX_FRCS_CON, bld.BDMN_ITEX_MNGM_NO) > 0 THEN 'Y' ELSE 'N'
+        END,
+        bo.BDGT_BSNS_FRCS_CON_HIT_YN =
+            CASE WHEN INSTR(bo.BDGT_BSNS_FRCS_CON, CONCAT(bld.BRCD, '-', bld.BDGT_BSNS_FRCS_CON)) > 0 THEN 'Y' ELSE 'N'
+        END,
+        bo.BDGT_PRFR_RSN_FRCS_CON_HIT_YN =
+            CASE WHEN INSTR(bo.BDGT_PRFR_RSN_FRCS_CON, TRIM(bld.BDGT_PRFR_RSN_FRCS_CON)) > 0 THEN 'Y' ELSE 'N'
+        END
+        WHERE bo.BDGT_ITEX_FRCS_CON_HIT_YN IS NULL
+           OR bo.BDGT_BSNS_FRCS_CON_HIT_YN IS NULL
+           OR bo.BDGT_PRFR_RSN_FRCS_CON_HIT_YN IS NULL
     </update>
 </mapper>

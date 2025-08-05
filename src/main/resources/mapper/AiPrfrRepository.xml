@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.AiPrfrStatRepository">
+
+    <sql id="columns">
+        cd.BDGT_PRFR_YMD
+        , cd.HDQR_BOB_DCD
+        , COUNT(*) AS total
+        , SUM(CASE WHEN INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) > 0 THEN 1 ELSE 0 END) AS hitCnt1
+        , SUM(CASE WHEN INSTR(co.BDGT_BSNS_FRCS_CON, CONCAT(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) > 0 THEN 1 ELSE 0 END) AS hitCnt2
+        , SUM(CASE WHEN INSTR(co.BDGT_PRFR_RSN_FRCS_CON, TRIM(cd.BDGT_PRFR_RSN_FRCS_CON)) > 0 THEN 1 ELSE 0 END) AS hitCnt3
+        , SUM(CASE WHEN INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) > 0 AND INSTR(co.BDGT_BSNS_FRCS_CON, CONCAT(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) > 0 THEN 1 ELSE 0 END) AS hitCnt4
+        , SUM(CASE WHEN cd.ARIF_MDL_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
+    </sql>
+
+    <select id="getCardStatistic" resultType="AiPrfrStatInfo">
+        SELECT
+        <include refid="columns"></include>
+        FROM
+        CARD_OUTPUT co
+        INNER JOIN CARD_LEARNING_DATA cd
+        ON co.TSTM_YMD = cd.TSTM_YMD
+        AND co.TSTM_NO = cd.TSTM_NO
+        AND co.BRCD = cd.BRCD
+        GROUP BY cd.BDGT_PRFR_YMD
+    </select>
+
+    <select id="getBillStatistic" resultType="AiPrfrStatInfo">
+        SELECT
+            <include refid="columns"></include>
+        FROM BILL_OUTPUT co
+            INNER JOIN BILL_LEARNING_DATA cd
+            ON co.BASE_YM = cd.BASE_YM
+            AND co.TXBL_SRN = cd.TXBL_SRN
+            AND co.BRCD = cd.BRCD
+        GROUP BY cd.BDGT_PRFR_YMD
+    </select>
+
+    <select id="existsAiPrfrStat" parameterType="AiPrfrStatInfo" resultType="int">
+        SELECT COUNT(*) FROM AI_PRFR_STAT
+        WHERE TYPE = #{type}
+          AND BDGT_PRFR_YMD = #{bdgtPrfrYmd}
+          AND HDQR_BOB_DCD = #{hdqrBobDcd}
+    </select>
+
+    <update id="updateAiPrfrStat" parameterType="AiPrfrStatInfo">
+        UPDATE AI_PRFR_STAT
+        SET TOTAL = #{total},
+            HIT_CNT1 = #{hitCnt1},
+            HIT_CNT2 = #{hitCnt2},
+            HIT_CNT3 = #{hitCnt3},
+            HIT_CNT4 = #{hitCnt4},
+            ARIN_USE_CNT = #{arinUseCnt}
+        WHERE TYPE = #{type}
+          AND BDGT_PRFR_YMD = #{bdgtPrfrYmd}
+          AND HDQR_BOB_DCD = #{hdqrBobDcd}
+    </update>
+
+    <insert id="insertAiPrfrStat" parameterType="AiPrfrStatInfo">
+        INSERT INTO AI_PRFR_STAT (
+            TYPE, BDGT_PRFR_YMD, BDGT_PRFR_YM, BDGT_PRFR_Y,
+            HDQR_BOB_DCD, TOTAL, HIT_CNT1, HIT_CNT2, HIT_CNT3, HIT_CNT4, ARIN_USE_CNT
+        ) VALUES (
+             #{type}, #{bdgtPrfrYmd}, SUBSTRING(#{bdgtPrfrYmd},1,6), SUBSTRING(#{bdgtPrfrYmd},1,4),
+             #{hdqrBobDcd}, #{total}, #{hitCnt1}, #{hitCnt2}, #{hitCnt3}, #{hitCnt4}, #{arinUseCnt}
+        )
+    </insert>
+
+</mapper>
