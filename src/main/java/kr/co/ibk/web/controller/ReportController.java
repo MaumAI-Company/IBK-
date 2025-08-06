@@ -208,10 +208,6 @@ public class ReportController extends BaseCont {
     @ResponseBody
     @PostMapping("/soulGod/report/statistic/input")
     public List<StatisticInfo> inferResultStatistic(@RequestBody StatisticInfoForm form) {
-        if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
-            form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-            form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-        }
         return statisticService.inferResultStatistic(form);
     }
 
@@ -221,15 +217,11 @@ public class ReportController extends BaseCont {
     @ResponseBody
     @PostMapping("/soulGod/report/statistic/output")
     public List<StatisticInfo> usageStatistic(@RequestBody StatisticInfoForm form) {
-        if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
-            form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-            form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-        }
         return statisticService.usageStatistic(form);
     }
 
     /**
-     * 기간별 통계 > 사용자 활용 현황(INPUT 데이터 기반 OUTPUT 데이터 생성 개수)
+     * 기간별 통계 > AI 사용 지급결의 사용 개수 (지급결의일자 기준)
      */
     @ResponseBody
     @PostMapping("/soulGod/report/statistic/aiPrfr")

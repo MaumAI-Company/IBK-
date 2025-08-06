@@ -31,6 +31,28 @@ public class StatisticInfo {
     private Double arinUsePer;
     private Integer totalOutCnt;
 
+    // dd만 넣고 나머지는 0으로 초기화하는 생성자
+    public StatisticInfo(String dd) {
+        this.dd = dd;
+        this.total = 0;
+
+        this.outCnt = 0;
+        this.per = 0.0;
+
+        this.hitCnt1 = 0;
+        this.hitCnt2 = 0;
+        this.hitCnt3 = 0;
+        this.hitCnt4 = 0;
+        this.arinUseCnt = 0;
+
+        this.hitCnt1Per = 0.0;
+        this.hitCnt2Per = 0.0;
+        this.hitCnt3Per = 0.0;
+        this.hitCnt4Per = 0.0;
+        this.arinUsePer = 0.0;
+
+        this.totalOutCnt = 0;
+    }
 }
 
 

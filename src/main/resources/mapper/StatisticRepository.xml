@@ -154,7 +154,7 @@
 
         /*일자 검색*/
         <if test="searchStartDate != null and searchEndDate != null">
-            AND ci.RCV_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+            AND ci.RCV_YMD BETWEEN #{searchStartDate} AND #{searchEndDate}
         </if>
     </sql>
 
@@ -168,7 +168,7 @@
 
         /*일자 검색*/
         <if test="searchStartDate != null and searchEndDate != null">
-            AND co.RSRE_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+            AND co.RSRE_YMD BETWEEN #{searchStartDate} AND #{searchEndDate}
         </if>
     </sql>
 
