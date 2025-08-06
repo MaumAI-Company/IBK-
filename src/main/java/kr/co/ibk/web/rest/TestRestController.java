@@ -31,6 +31,12 @@ public class TestRestController {
 
         return new ResponseEntity<>(new ResponseDto<>(ResultCodeType.SUCCESS, "성공", batchList), HttpStatus.OK);
     }
+    @GetMapping("/updateStat")
+    public ResponseEntity<?> updateStat() {
+        userUsageStatService.updateStatistic();
+        aiPrfrStatService.updateStatistic();
+        return new ResponseEntity<>(new ResponseDto<>(ResultCodeType.SUCCESS, "성공", null), HttpStatus.OK);
+    }
 
     @GetMapping("/updateHit")
     public ResponseEntity<?> updateHit() {
@@ -39,10 +45,4 @@ public class TestRestController {
         return new ResponseEntity<>(new ResponseDto<>(ResultCodeType.SUCCESS, "성공", null), HttpStatus.OK);
     }
 
-    @GetMapping("/updateStat")
-    public ResponseEntity<?> updateStat() {
-        userUsageStatService.updateStatistic();
-        aiPrfrStatService.updateStatistic();
-        return new ResponseEntity<>(new ResponseDto<>(ResultCodeType.SUCCESS, "성공", null), HttpStatus.OK);
-    }
 }

@@ -37,6 +37,9 @@ public class BatchSchedule extends BaseCont {
     private final CardOutputService cardOutputService;
     private final BillOutputService billOutputService;
 
+    private final UserUsageStatService userUsageStatService;
+    private final AiPrfrStatService aiPrfrStatService;
+
     // 등록자 설정
     private final String REG_ID = "admin";
 
@@ -45,6 +48,9 @@ public class BatchSchedule extends BaseCont {
 
     @Value("${Globals.check.hit}")
     private Boolean hitCheck;
+
+    @Value("${Globals.check.statistic}")
+    private Boolean statisticCheck;
 
     /**
      * 학습 스케줄러 실행
@@ -104,6 +110,21 @@ public class BatchSchedule extends BaseCont {
                 form.setId(modelForm.getId());
                 learningModelService.learning(form);
             }
+        }
+    }
+
+    /**
+     * - 설정한 스케줄 마다 통계 업데이트
+     * - 해당 작업은 hit 배치보다 최소 1시간 먼저 실행되어야 함
+     * - 속성
+     * *　　　　　　*　　　　　　  *　　　　　　*　　　　　　*
+     * 0      분(0-59)　　시간(0-23)　　일(1-31)　　월(1-12)　　요일(0-7)
+     */
+    @Scheduled(cron = "0 ${Globals.batch.statistic.cron.min} ${Globals.batch.statistic.cron.hour} ${Globals.batch.statistic.cron.day} ${Globals.batch.statistic.cron.mon} ${Globals.batch.statistic.cron.week}")
+    public void statisticBatch() {
+        if (statisticCheck) {
+            userUsageStatService.updateStatistic();
+            aiPrfrStatService.updateStatistic();
         }
     }
 
