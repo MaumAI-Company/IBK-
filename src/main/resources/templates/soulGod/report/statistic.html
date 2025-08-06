@@ -15,6 +15,10 @@
         }
     </style>
     <script type="text/javascript">
+        let inputData = [];
+        let outputData = [];
+        let aiPrfrData = [];
+
         $(function () {
             fn_setDatePicker('#searchStartDate', {
                 onShow: function (ct) {
@@ -32,9 +36,6 @@
             });
 
         });
-
-        let inputData = [];
-        let outputData = [];
 
         async function fn_search() {
             layerShow('loading');
@@ -530,7 +531,7 @@
                         item.dd = fn_dateFormat(strDate);
                     });
 
-                    outputData = data;
+                    aiPrfrData = data;
                     fn_drawChart3(data); // AI 사용 지급결의 사용 개수 render
                 },
                 error: function () {
@@ -1191,6 +1192,45 @@
             });
             tableBody.append(dateOutputRow, totalOutputRow, outputRow, arinUseCntRow, arinUsePerRow, hitCnt1Row, hitCnt1PerRow, hitCnt2Row, hitCnt2PerRow, hitCnt3Row, hitCnt3PerRow, hitCnt4Row, hitCnt4PerRow);
             // 사용자 활용 현황 통계 : e
+
+            // 빈 행 추가
+            let emptyRow2 = $('<tr><td colspan="' + (outputData.length + 1) + '"></td></tr>');
+            tableBody.append(emptyRow2);
+
+            // AI 사용 지급결의 사용 개수 통계 : s
+            let aiTitleRow = $('<tr><th colspan="' + (aiPrfrData.length + 1) + '" class="section-title">AI 사용 통계 : 지급결의 중 AI 사용 데이터 수</th></tr>');
+            tableBody.append(aiTitleRow);
+
+            let aiDateRow = $('<tr><th scope="row">날짜</th></tr>');
+            let aiTotalRow = $('<tr><th scope="row">지급결의 건수</th></tr>');
+            let aiArinUseCntRow = $('<tr><th scope="row">지급결의 중 AI 사용 데이터 수</th></tr>');
+            let aiArinUsePerRow = $('<tr><th scope="row">지급결의 중 AI 사용 데이터 비율</th></tr>');
+            let aiHitCnt1Row = $('<tr><th scope="row">예산비목정보_적중수</th></tr>');
+            let aiHitCnt1PerRow = $('<tr><th scope="row">예산비목정보_적중비율</th></tr>');
+            let aiHitCnt2Row = $('<tr><th scope="row">예산사업ID_적중수</th></tr>');
+            let aiHitCnt2PerRow = $('<tr><th scope="row">예산사업ID_적중비율</th></tr>');
+            let aiHitCnt3Row = $('<tr><th scope="row">비목집행사유_적중수</th></tr>');
+            let aiHitCnt3PerRow = $('<tr><th scope="row">비목집행사유_적중비율</th></tr>');
+            let aiHitCnt4Row = $('<tr><th scope="row">예산비목정보_예산사업ID_적중수</th></tr>');
+            let aiHitCnt4PerRow = $('<tr><th scope="row">예산비목정보_예산사업ID_적중비율</th></tr>');
+
+            $.each(aiPrfrData, function (index, item) {
+                aiDateRow.append(`<td>${item.dd}</td>`);
+                aiTotalRow.append(`<td>${fn_setCommas(item.total)}</td>`);
+                aiArinUseCntRow.append(`<td>${fn_setCommas(item.arinUseCnt) || 0}</td>`);
+                aiArinUsePerRow.append(`<td>${fn_setCommas(item.arinUsePer) || 0}%</td>`);
+                aiHitCnt1Row.append(`<td>${fn_setCommas(item.hitCnt1) || 0}</td>`);
+                aiHitCnt1PerRow.append(`<td>${item.hitCnt1Per || 0}%</td>`);
+                aiHitCnt2Row.append(`<td>${fn_setCommas(item.hitCnt2) || 0}</td>`);
+                aiHitCnt2PerRow.append(`<td>${item.hitCnt2Per || 0}%</td>`);
+                aiHitCnt3Row.append(`<td>${fn_setCommas(item.hitCnt3) || 0}</td>`);
+                aiHitCnt3PerRow.append(`<td>${item.hitCnt3Per || 0}%</td>`);
+                aiHitCnt4Row.append(`<td>${fn_setCommas(item.hitCnt4) || 0}</td>`);
+                aiHitCnt4PerRow.append(`<td>${fn_setCommas(item.hitCnt4Per) || 0}%</td>`);
+            });
+
+            tableBody.append(aiDateRow, aiTotalRow, aiArinUseCntRow, aiArinUsePerRow, aiHitCnt1Row, aiHitCnt1PerRow, aiHitCnt2Row, aiHitCnt2PerRow, aiHitCnt3Row, aiHitCnt3PerRow, aiHitCnt4Row, aiHitCnt4PerRow);
+            // AI 사용 지급결의 사용 개수 통계 : e
         }
 
         /**
