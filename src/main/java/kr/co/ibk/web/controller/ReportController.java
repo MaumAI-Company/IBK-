@@ -1,6 +1,5 @@
 package kr.co.ibk.web.controller;
 
-import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.BillInputForm;
 import kr.co.ibk.model.CardInputForm;
@@ -209,10 +208,6 @@ public class ReportController extends BaseCont {
     @ResponseBody
     @PostMapping("/soulGod/report/statistic/input")
     public List<StatisticInfo> inferResultStatistic(@RequestBody StatisticInfoForm form) {
-        if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
-            form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-            form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-        }
         return statisticService.inferResultStatistic(form);
     }
 
@@ -222,11 +217,16 @@ public class ReportController extends BaseCont {
     @ResponseBody
     @PostMapping("/soulGod/report/statistic/output")
     public List<StatisticInfo> usageStatistic(@RequestBody StatisticInfoForm form) {
-        if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
-            form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-            form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-        }
         return statisticService.usageStatistic(form);
+    }
+
+    /**
+     * 기간별 통계 > AI 사용 지급결의 사용 개수 (지급결의일자 기준)
+     */
+    @ResponseBody
+    @PostMapping("/soulGod/report/statistic/aiPrfr")
+    public List<StatisticInfo> aiPrfrStatistic(@RequestBody StatisticInfoForm form) {
+        return statisticService.aiPrfrStatistic(form);
     }
     // 기간별 통계 : e
 }

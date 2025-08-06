@@ -24,119 +24,28 @@
         ) sub
     </select>
 
-    <select id="cardUsageStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
-        SELECT
-            sub.dd,
-            sub.total,
-            sub.hitCnt1,
-            sub.hitCnt2,
-            sub.hitCnt3,
-            sub.hitCnt4,
-            sub.arinUseCnt,
-            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
-            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
-            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per,
-            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt4 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt4Per,
-            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.arinUseCnt * 100.0) / sub.total ELSE 0 END, 2) AS arinUsePer,
-            totalOutput.totalOutCnt
-        FROM
-            (
-            /* 지급결의된 개수 */
-                SELECT
-                    <include refid="usageDateGrouping"/> AS dd,
-                    COUNT(*) AS total,
-                    SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
-                    SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
-                    SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
-                    SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
-                    SUM(CASE WHEN cd.ARIF_MDL_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
-                FROM
-                    CARD_OUTPUT co
-                        INNER JOIN CARD_LEARNING_DATA cd
-                                   ON co.TSTM_YMD = cd.TSTM_YMD
-                                           AND co.TSTM_NO = cd.TSTM_NO
-                                           AND co.BRCD = cd.BRCD
-                WHERE <include refid="usageWhere"></include>
-                GROUP BY dd
-            ) sub
-            LEFT JOIN (
-            /* 전체 output 개수 */
-            SELECT
-                <include refid="usageDateGrouping"/> AS dd,
-                COUNT(*) AS totalOutCnt
-            FROM CARD_OUTPUT co
-                WHERE <include refid="usageWhere"></include>
-            GROUP BY dd
-            ) totalOutput ON sub.dd = totalOutput.dd
-    </select>
-
-
     <select id="billInferResultStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
         SELECT
-            sub.dd,
-            sub.total,
-            sub.outCnt,
-            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
+        sub.dd,
+        sub.total,
+        sub.outCnt,
+        TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.outCnt * 100.0) / sub.total ELSE 0 END, 2) AS per
         FROM(
-            SELECT
-                <include refid="inferDateGrouping"></include> AS dd,
-                count(*) AS total,
-                sum(CASE WHEN co.BASE_YM IS NOT NULL THEN 1 ELSE 0 END) AS outCnt
-            FROM
-                BILL_INPUT ci
-            LEFT JOIN BILL_OUTPUT co ON
-                ci.TXBL_SRN = co.TXBL_SRN
-                AND ci.BASE_YM = co.BASE_YM
-                AND ci.BRCD = co.BRCD
-            WHERE <include refid="inferWhere"></include>
-            GROUP BY dd
-        ) sub
-    </select>
-
-    <select id="billUsageStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
         SELECT
-            sub.dd,
-            sub.total,
-            sub.hitCnt1,
-            sub.hitCnt2,
-            sub.hitCnt3,
-            sub.hitCnt4,
-            sub.arinUseCnt,
-            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt1 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt1Per,
-            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt2 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt2Per,
-            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt3 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt3Per,
-            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.hitCnt4 * 100.0) / sub.total ELSE 0 END, 2) AS hitCnt4Per,
-            TRUNCATE(CASE WHEN sub.total > 0 THEN (sub.arinUseCnt * 100.0) / sub.total ELSE 0 END, 2) AS arinUsePer,
-            totalOutput.totalOutCnt
+        <include refid="inferDateGrouping"></include>
+        AS dd,
+        count(*) AS total,
+        sum(CASE WHEN co.BASE_YM IS NOT NULL THEN 1 ELSE 0 END) AS outCnt
         FROM
-            (
-            /* 지급결의된 개수 */
-            SELECT
-                <include refid="usageDateGrouping"/> AS dd,
-                COUNT(*) AS total,
-                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
-                SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
-                SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
-                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
-                SUM(CASE WHEN cd.ARIF_MDL_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
-            FROM
-                BILL_OUTPUT co
-                    INNER JOIN BILL_LEARNING_DATA cd
-                        ON co.BASE_YM = cd.BASE_YM
-                        AND co.TXBL_SRN = cd.TXBL_SRN
-                        AND co.BRCD = cd.BRCD
-            WHERE <include refid="usageWhere"></include>
-            GROUP BY dd
-        ) sub
-        LEFT JOIN (
-        /* 전체 output 개수 */
-        SELECT
-            <include refid="usageDateGrouping"/> AS dd,
-            COUNT(*) AS totalOutCnt
-        FROM BILL_OUTPUT co
-        WHERE <include refid="usageWhere"></include>
+        BILL_INPUT ci
+        LEFT JOIN BILL_OUTPUT co ON
+        ci.TXBL_SRN = co.TXBL_SRN
+        AND ci.BASE_YM = co.BASE_YM
+        AND ci.BRCD = co.BRCD
+        WHERE
+        <include refid="inferWhere"></include>
         GROUP BY dd
-        ) totalOutput ON sub.dd = totalOutput.dd
+        ) sub
     </select>
 
     <select id="totalInferResultStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
@@ -178,75 +87,62 @@
             ORDER BY dd
     </select>
 
-    <select id="totalUsageStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
+    <select id="usageStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
         SELECT
-            com.dd,
-            SUM(com.total) AS total,
-            SUM(com.hitCnt1) AS hitCnt1,
-            SUM(com.hitCnt2) AS hitCnt2,
-            SUM(com.hitCnt3) AS hitCnt3,
-            SUM(com.hitCnt4) AS hitCnt4,
-            SUM(com.arinUseCnt) AS arinUseCnt,
-            TRUNCATE(CASE WHEN SUM(com.total) > 0 THEN SUM(com.hitCnt1) * 100.0 / SUM(com.total) ELSE 0 END, 2) AS hitCnt1Per,
-            TRUNCATE(CASE WHEN SUM(com.total) > 0 THEN SUM(com.hitCnt2) * 100.0 / SUM(com.total) ELSE 0 END, 2) AS hitCnt2Per,
-            TRUNCATE(CASE WHEN SUM(com.total) > 0 THEN SUM(com.hitCnt3) * 100.0 / SUM(com.total) ELSE 0 END, 2) AS hitCnt3Per,
-            TRUNCATE(CASE WHEN SUM(com.total) > 0 THEN SUM(com.hitCnt4) * 100.0 / SUM(com.total) ELSE 0 END, 2) AS hitCnt4Per,
-            TRUNCATE(CASE WHEN SUM(com.total) > 0 THEN SUM(com.arinUseCnt) * 100.0 / SUM(com.total) ELSE 0 END, 2) AS arinUsePer,
-            IFNULL(SUM(totalOutput.totalOutCnt), 0) AS totalOutCnt
-        FROM (
-        -- 카드
-            SELECT
-                <include refid="usageDateGrouping"/> AS dd,
-                COUNT(*) AS total,
-                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
-                SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
-                SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
-                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
-                SUM(CASE WHEN cd.ARIF_MDL_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
-            FROM CARD_OUTPUT co
-                INNER JOIN CARD_LEARNING_DATA cd
-                ON co.TSTM_YMD = cd.TSTM_YMD
-                AND co.TSTM_NO = cd.TSTM_NO
-                AND co.BRCD = cd.BRCD
-            WHERE <include refid="usageWhere"/>
-            GROUP BY dd
-
-            UNION ALL
-
-            -- 세금계산서
-            SELECT
-                <include refid="usageDateGrouping"/> AS dd,
-                COUNT(*) AS total,
-                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt1,
-                SUM(CASE WHEN co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt2,
-                SUM(CASE WHEN co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt3,
-                SUM(CASE WHEN co.BDGT_ITEX_FRCS_CON_HIT_YN = 'Y' AND co.BDGT_BSNS_FRCS_CON_HIT_YN = 'Y' THEN 1 ELSE 0 END) AS hitCnt4,
-                SUM(CASE WHEN cd.ARIF_MDL_USE_YN = 'Y' THEN 1 ELSE 0 END) AS arinUseCnt
-            FROM BILL_OUTPUT co
-                INNER JOIN BILL_LEARNING_DATA cd
-                ON co.BASE_YM = cd.BASE_YM
-                AND co.TXBL_SRN = cd.TXBL_SRN
-                AND co.BRCD = cd.BRCD
-            WHERE <include refid="usageWhere"/>
-            GROUP BY dd
-        ) AS com
-        LEFT JOIN (
-            SELECT
-                <include refid="usageDateGrouping"/> AS dd,
-                COUNT(*) AS totalOutCnt
-            FROM (
-                SELECT co.RSRE_YMD, co.RSRE_YM, co.RSRE_Y, co.HDQR_BOB_DCD FROM CARD_OUTPUT co
-                UNION ALL
-                SELECT co.RSRE_YMD, co.RSRE_YM, co.RSRE_Y, co.HDQR_BOB_DCD FROM BILL_OUTPUT co
-            ) co
-            WHERE <include refid="usageWhere"/>
-            GROUP BY dd
-        ) totalOutput ON com.dd = totalOutput.dd
-
-        GROUP BY com.dd
-        ORDER BY com.dd
+            <include refid="usageDateGrouping"/> AS dd,
+            SUM(uus.TOTAL) AS total,
+            SUM(uus.HIT_CNT1) AS hitCnt1,
+            SUM(uus.HIT_CNT2) AS hitCnt2,
+            SUM(uus.HIT_CNT3) AS hitCnt3,
+            SUM(uus.HIT_CNT4) AS hitCnt4,
+            SUM(uus.ARIN_USE_CNT) AS arinUseCnt,
+            uus.TOTAL_OUTPUT_CNT AS totalOutCnt,
+            TRUNCATE((SUM(uus.HIT_CNT1) * 100.0) / NULLIF(SUM(uus.TOTAL), 0), 2) AS hitCnt1Per,
+            TRUNCATE((SUM(uus.HIT_CNT2) * 100.0) / NULLIF(SUM(uus.TOTAL), 0), 2) AS hitCnt2Per,
+            TRUNCATE((SUM(uus.HIT_CNT3) * 100.0) / NULLIF(SUM(uus.TOTAL), 0), 2) AS hitCnt3Per,
+            TRUNCATE((SUM(uus.HIT_CNT4) * 100.0) / NULLIF(SUM(uus.TOTAL), 0), 2) AS hitCnt4Per,
+            TRUNCATE((SUM(uus.ARIN_USE_CNT) * 100.0) / NULLIF(SUM(uus.TOTAL), 0), 2) AS arinUsePer
+        FROM USER_USAGE_STAT uus
+        WHERE 1 = 1
+        <if test="searchLearningType != null and searchLearningType != ''">
+            AND uus.TYPE = #{searchLearningType}
+        </if>
+        <if test="searchTarget != null and searchTarget != ''">
+            AND uus.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+        <if test="searchStartDate != null and searchEndDate != null">
+            AND uus.RSRE_YMD BETWEEN #{searchStartDate} AND #{searchEndDate}
+        </if>
+        GROUP BY dd
     </select>
 
+    <select id="aiPrfrStatistic" resultType="StatisticInfo" parameterType="StatisticInfoForm">
+        SELECT
+        <include refid="aiPrfrDateGrouping"/> AS dd,
+        SUM(aps.TOTAL) AS total,
+        SUM(aps.HIT_CNT1) AS hitCnt1,
+        SUM(aps.HIT_CNT2) AS hitCnt2,
+        SUM(aps.HIT_CNT3) AS hitCnt3,
+        SUM(aps.HIT_CNT4) AS hitCnt4,
+        SUM(aps.ARIN_USE_CNT) AS arinUseCnt,
+        TRUNCATE((SUM(aps.HIT_CNT1) * 100.0) / NULLIF(SUM(aps.TOTAL), 0), 2) AS hitCnt1Per,
+        TRUNCATE((SUM(aps.HIT_CNT2) * 100.0) / NULLIF(SUM(aps.TOTAL), 0), 2) AS hitCnt2Per,
+        TRUNCATE((SUM(aps.HIT_CNT3) * 100.0) / NULLIF(SUM(aps.TOTAL), 0), 2) AS hitCnt3Per,
+        TRUNCATE((SUM(aps.HIT_CNT4) * 100.0) / NULLIF(SUM(aps.TOTAL), 0), 2) AS hitCnt4Per,
+        TRUNCATE((SUM(aps.ARIN_USE_CNT) * 100.0) / NULLIF(SUM(aps.TOTAL), 0), 2) AS arinUsePer
+        FROM AI_PRFR_STAT aps
+        WHERE 1 = 1
+        <if test="searchLearningType != null and searchLearningType != ''">
+            AND aps.TYPE = #{searchLearningType}
+        </if>
+        <if test="searchTarget != null and searchTarget != ''">
+            AND aps.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+        <if test="searchStartDate != null and searchEndDate != null">
+            AND aps.BDGT_PRFR_YMD BETWEEN #{searchStartDate} AND #{searchEndDate}
+        </if>
+        GROUP BY dd
+    </select>
 
     <sql id="inferWhere">
         1=1
@@ -258,7 +154,7 @@
 
         /*일자 검색*/
         <if test="searchStartDate != null and searchEndDate != null">
-            AND ci.RCV_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+            AND ci.RCV_YMD BETWEEN #{searchStartDate} AND #{searchEndDate}
         </if>
     </sql>
 
@@ -272,7 +168,7 @@
 
         /*일자 검색*/
         <if test="searchStartDate != null and searchEndDate != null">
-            AND co.RSRE_YMD BETWEEN REPLACE(#{searchStartDate}, '.', '') AND REPLACE(#{searchEndDate}, '.', '')
+            AND co.RSRE_YMD BETWEEN #{searchStartDate} AND #{searchEndDate}
         </if>
     </sql>
 
@@ -296,16 +192,33 @@
     <sql id="usageDateGrouping">
         <choose>
             <when test="searchCycle == null or searchCycle == '' or searchCycle == 1">
-                co.RSRE_YMD <!-- 일별 -->
+                uus.RSRE_YMD <!-- 일별 -->
             </when>
             <when test="searchCycle == 2">
-                co.RSRE_YM <!-- 월별 -->
+                uus.RSRE_YM <!-- 월별 -->
             </when>
             <when test="searchCycle == 3">
-                co.RSRE_Y <!-- 연도별 -->
+                uus.RSRE_Y <!-- 연도별 -->
             </when>
             <otherwise>
-                co.RSRE_YMD <!-- 기본값: 일별 -->
+                uus.RSRE_YMD <!-- 기본값: 일별 -->
+            </otherwise>
+        </choose>
+    </sql>
+
+    <sql id="aiPrfrDateGrouping">
+        <choose>
+            <when test="searchCycle == null or searchCycle == '' or searchCycle == 1">
+                aps.BDGT_PRFR_YMD <!-- 일별 -->
+            </when>
+            <when test="searchCycle == 2">
+                aps.BDGT_PRFR_YM <!-- 월별 -->
+            </when>
+            <when test="searchCycle == 3">
+                aps.BDGT_PRFR_Y <!-- 연도별 -->
+            </when>
+            <otherwise>
+                aps.BDGT_PRFR_YMD <!-- 기본값: 일별 -->
             </otherwise>
         </choose>
     </sql>

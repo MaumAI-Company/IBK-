@@ -1,6 +1,5 @@
 package kr.co.ibk.model;
 
-import kr.co.ibk.domain.enums.LearningType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +14,7 @@ public class StatisticInfoForm {
     private Integer searchTarget;
     private String searchCycle;
     private String searchLearningType;
+    private String searchType;
 }
 
 

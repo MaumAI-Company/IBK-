@@ -43,6 +43,11 @@ public class CardOutputInfo {
     private Integer nextNo;
 
     private String learnName;
+
+    private String tstmYmd;
+    private String tstmNo;
+    private String rsreYmd;
+    private String hdqrBobDcd;
 }
 
 
