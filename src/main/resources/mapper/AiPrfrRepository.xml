@@ -6,7 +6,7 @@
 
     <sql id="columns">
         cd.BDGT_PRFR_YMD
-        , cd.HDQR_BOB_DCD
+        , co.HDQR_BOB_DCD
         , COUNT(*) AS total
         , SUM(CASE WHEN INSTR(co.BDGT_ITEX_FRCS_CON, cd.BDMN_ITEX_MNGM_NO) > 0 THEN 1 ELSE 0 END) AS hitCnt1
         , SUM(CASE WHEN INSTR(co.BDGT_BSNS_FRCS_CON, CONCAT(cd.BRCD, '-', cd.BDGT_BSNS_FRCS_CON)) > 0 THEN 1 ELSE 0 END) AS hitCnt2
@@ -24,7 +24,7 @@
         ON co.TSTM_YMD = cd.TSTM_YMD
         AND co.TSTM_NO = cd.TSTM_NO
         AND co.BRCD = cd.BRCD
-        GROUP BY cd.BDGT_PRFR_YMD
+        GROUP BY cd.BDGT_PRFR_YMD, co.HDQR_BOB_DCD
     </select>
 
     <select id="getBillStatistic" resultType="AiPrfrStatInfo">
@@ -35,7 +35,7 @@
             ON co.BASE_YM = cd.BASE_YM
             AND co.TXBL_SRN = cd.TXBL_SRN
             AND co.BRCD = cd.BRCD
-        GROUP BY cd.BDGT_PRFR_YMD
+        GROUP BY cd.BDGT_PRFR_YMD, co.HDQR_BOB_DCD
     </select>
 
     <select id="existsAiPrfrStat" parameterType="AiPrfrStatInfo" resultType="int">
