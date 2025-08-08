@@ -52,6 +52,9 @@ public class BatchSchedule extends BaseCont {
     @Value("${Globals.check.statistic}")
     private Boolean statisticCheck;
 
+    private Boolean statisticByRangeCheck;
+    @Value("${Globals.check.statistic.range}")
+
     /**
      * 학습 스케줄러 실행
      * 매 10분 마다 실행
@@ -110,6 +113,21 @@ public class BatchSchedule extends BaseCont {
                 form.setId(modelForm.getId());
                 learningModelService.learning(form);
             }
+        }
+    }
+
+    /**
+     * - 설정한 스케줄 마다 기간으로 통계 업데이트
+     * - hit 배치 스케줄러와 상관 없이 실행 가능
+     * - 속성
+     * *　　　　　　*　　　　　　  *　　　　　　*　　　　　　*
+     * 0      분(0-59)　　시간(0-23)　　일(1-31)　　월(1-12)　　요일(0-7)
+     */
+    @Scheduled(cron = "0 ${Globals.batch.statistic.cron.min} ${Globals.batch.statistic.cron.hour} ${Globals.batch.statistic.cron.day} ${Globals.batch.statistic.cron.mon} ${Globals.batch.statistic.cron.week}")
+    public void statisticByRangeBatch() {
+        if (statisticByRangeCheck) {
+            userUsageStatService.updateStatisticByRange();
+            aiPrfrStatService.updateStatisticByRange();
         }
     }
 

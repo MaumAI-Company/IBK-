@@ -43,4 +43,31 @@ public class AiPrfrStatService extends _BaseService {
         log.info("[AI 사용 지급결의 사용 개수] updateStatistic 실행 - 세금계산서 업데이트된 ROW 수: {}", billStats.size());
     }
 
+    @Transactional
+    public void updateStatisticByRange() {
+        // BC 카드
+        List<AiPrfrStatInfo> cardStats = aiPrfrStatRepository.getCardStatisticByRange();
+        for (AiPrfrStatInfo stat : cardStats) {
+            stat.setType(StatisticTargetType.CARD);
+            if (aiPrfrStatRepository.existsAiPrfrStat(stat) > 0) {
+                aiPrfrStatRepository.updateAiPrfrStat(stat);
+            } else {
+                aiPrfrStatRepository.insertAiPrfrStat(stat);
+            }
+        }
+        log.info("[AI 사용 지급결의 사용 개수] updateStatisticByRange 실행 - 카드 업데이트된 ROW 수: {}", cardStats.size());
+
+        // 세금계산서
+        List<AiPrfrStatInfo> billStats = aiPrfrStatRepository.getBillStatisticByRange();
+        for (AiPrfrStatInfo stat : billStats) {
+            stat.setType(StatisticTargetType.BILL);
+            if (aiPrfrStatRepository.existsAiPrfrStat(stat) > 0) {
+                aiPrfrStatRepository.updateAiPrfrStat(stat);
+            } else {
+                aiPrfrStatRepository.insertAiPrfrStat(stat);
+            }
+        }
+        log.info("[AI 사용 지급결의 사용 개수] updateStatisticByRange 실행 - 세금계산서 업데이트된 ROW 수: {}", billStats.size());
+    }
+
 }

@@ -16,4 +16,8 @@ public interface AiPrfrStatRepository {
     void updateAiPrfrStat(AiPrfrStatInfo info);
 
     void insertAiPrfrStat(AiPrfrStatInfo info);
+
+    List<AiPrfrStatInfo> getCardStatisticByRange();
+
+    List<AiPrfrStatInfo> getBillStatisticByRange();
 }

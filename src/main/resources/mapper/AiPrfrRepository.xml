@@ -24,6 +24,10 @@
         ON co.TSTM_YMD = cd.TSTM_YMD
         AND co.TSTM_NO = cd.TSTM_NO
         AND co.BRCD = cd.BRCD
+        WHERE
+            (co.BDGT_ITEX_FRCS_CON_HIT_YN IS NULL
+            OR co.BDGT_BSNS_FRCS_CON_HIT_YN IS NULL
+            OR co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN IS NULL)
         GROUP BY cd.BDGT_PRFR_YMD, co.HDQR_BOB_DCD
     </select>
 
@@ -35,6 +39,10 @@
             ON co.BASE_YM = cd.BASE_YM
             AND co.TXBL_SRN = cd.TXBL_SRN
             AND co.BRCD = cd.BRCD
+        WHERE
+            (co.BDGT_ITEX_FRCS_CON_HIT_YN IS NULL
+            OR co.BDGT_BSNS_FRCS_CON_HIT_YN IS NULL
+            OR co.BDGT_PRFR_RSN_FRCS_CON_HIT_YN IS NULL)
         GROUP BY cd.BDGT_PRFR_YMD, co.HDQR_BOB_DCD
     </select>
 
@@ -67,5 +75,33 @@
              #{hdqrBobDcd}, #{total}, #{hitCnt1}, #{hitCnt2}, #{hitCnt3}, #{hitCnt4}, #{arinUseCnt}
         )
     </insert>
+
+    <!-- 카드: TSTM_YMD 기준 최근 2개월치 -->
+    <select id="getCardStatisticByRange" resultType="AiPrfrStatInfo">
+        SELECT
+            <include refid="columns"></include>
+        FROM CARD_OUTPUT co
+            INNER JOIN CARD_LEARNING_DATA cd
+            ON co.TSTM_YMD = cd.TSTM_YMD
+            AND co.TSTM_NO  = cd.TSTM_NO
+            AND co.BRCD     = cd.BRCD
+        WHERE
+            co.TSTM_YMD >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m%d')
+        GROUP BY cd.BDGT_PRFR_YMD, co.HDQR_BOB_DCD
+    </select>
+
+    <!-- 세금계산서: BASE_YM 기준 최근 2개월치 -->
+    <select id="getBillStatisticByRange" resultType="AiPrfrStatInfo">
+        SELECT
+            <include refid="columns"></include>
+        FROM BILL_OUTPUT co
+            INNER JOIN BILL_LEARNING_DATA cd
+            ON co.BASE_YM   = cd.BASE_YM
+            AND co.TXBL_SRN  = cd.TXBL_SRN
+            AND co.BRCD      = cd.BRCD
+        WHERE
+            co.BASE_YM >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m')
+        GROUP BY cd.BDGT_PRFR_YMD, co.HDQR_BOB_DCD
+    </select>
 
 </mapper>
