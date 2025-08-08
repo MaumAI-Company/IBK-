@@ -16,4 +16,8 @@ public interface UserUsageStatRepository {
     void updateUserUsageStat(UserStatusStatInfo info);
 
     void insertUserUsageStat(UserStatusStatInfo info);
+
+    List<UserStatusStatInfo> getCardStatisticByRange();
+
+    List<UserStatusStatInfo> getBillStatisticByRange();
 }
