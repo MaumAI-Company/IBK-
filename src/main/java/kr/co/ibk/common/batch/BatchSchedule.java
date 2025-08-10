@@ -52,8 +52,8 @@ public class BatchSchedule extends BaseCont {
     @Value("${Globals.check.statistic}")
     private Boolean statisticCheck;
 
-    private Boolean statisticByRangeCheck;
     @Value("${Globals.check.statistic.range}")
+    private Boolean statisticByRangeCheck;
 
     /**
      * 학습 스케줄러 실행
