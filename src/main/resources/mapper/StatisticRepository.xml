@@ -96,7 +96,7 @@
             SUM(uus.HIT_CNT3) AS hitCnt3,
             SUM(uus.HIT_CNT4) AS hitCnt4,
             SUM(uus.ARIN_USE_CNT) AS arinUseCnt,
-            uus.TOTAL_OUTPUT_CNT AS totalOutCnt,
+            SUM(uus.TOTAL_OUTPUT_CNT) AS totalOutCnt,
             TRUNCATE((SUM(uus.HIT_CNT1) * 100.0) / NULLIF(SUM(uus.TOTAL), 0), 2) AS hitCnt1Per,
             TRUNCATE((SUM(uus.HIT_CNT2) * 100.0) / NULLIF(SUM(uus.TOTAL), 0), 2) AS hitCnt2Per,
             TRUNCATE((SUM(uus.HIT_CNT3) * 100.0) / NULLIF(SUM(uus.TOTAL), 0), 2) AS hitCnt3Per,
