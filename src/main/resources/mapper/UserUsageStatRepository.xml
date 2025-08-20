@@ -102,20 +102,39 @@
         SELECT
             <include refid="columns"></include>
         FROM CARD_OUTPUT co
-            INNER JOIN CARD_LEARNING_DATA cd
+        INNER JOIN (
+            -- CARD_LEARNING_DATA: 최근 2개월 + (TSTM_YMD, TSTM_NO, BRCD)별 최신 1건
+            SELECT *
+            FROM (
+                SELECT
+                    t.*,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY TSTM_YMD, TSTM_NO, BRCD
+                        ORDER BY BDGT_PRFR_YMD DESC, BDGT_PRFR_NO DESC
+                    ) AS rn
+                FROM CARD_LEARNING_DATA t
+                WHERE t.TSTM_YMD >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m%d')
+            ) sub
+            WHERE sub.rn = 1
+        ) cd
             ON co.TSTM_YMD = cd.TSTM_YMD
-            AND co.TSTM_NO = cd.TSTM_NO
-            AND co.BRCD = cd.BRCD
+           AND co.TSTM_NO = cd.TSTM_NO
+           AND co.BRCD = cd.BRCD
         LEFT JOIN (
+            -- totalOut 동일 2개월 범위로 집계
             SELECT
                 co.RSRE_YMD,
+                co.HDQR_BOB_DCD,
                 COUNT(*) AS totalOutCnt
             FROM CARD_OUTPUT co
-            GROUP BY co.RSRE_YMD
-            ) totalOut ON co.RSRE_YMD = totalOut.RSRE_YMD
-        WHERE
-            co.TSTM_YMD >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m%d')
+            WHERE co.TSTM_YMD >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m%d')
+            GROUP BY co.RSRE_YMD, co.HDQR_BOB_DCD
+        ) totalOut
+            ON co.RSRE_YMD = totalOut.RSRE_YMD
+           AND co.HDQR_BOB_DCD = totalOut.HDQR_BOB_DCD
+        WHERE co.TSTM_YMD >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m%d')
         GROUP BY co.RSRE_YMD, co.HDQR_BOB_DCD
+        ORDER BY co.RSRE_YMD DESC, co.HDQR_BOB_DCD ASC
     </select>
 
     <!-- 세금계산서: BASE_YM 기준 최근 2개월치 -->
@@ -123,20 +142,39 @@
         SELECT
             <include refid="columns"></include>
         FROM BILL_OUTPUT co
-            INNER JOIN BILL_LEARNING_DATA cd
+        INNER JOIN (
+            -- BILL_LEARNING_DATA: 최근 2개월 + (BASE_YM, TXBL_SRN, BRCD)별 최신 1건
+            SELECT *
+            FROM (
+                SELECT
+                    t.*,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY BASE_YM, TXBL_SRN, BRCD
+                        ORDER BY BDGT_PRFR_YMD DESC, BDGT_PRFR_NO DESC
+                    ) AS rn
+                FROM BILL_LEARNING_DATA t
+                WHERE t.BASE_YM >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m')
+            ) sub
+            WHERE sub.rn = 1
+        ) cd
             ON co.BASE_YM = cd.BASE_YM
-            AND co.TXBL_SRN = cd.TXBL_SRN
-            AND co.BRCD = cd.BRCD
+           AND co.TXBL_SRN = cd.TXBL_SRN
+           AND co.BRCD = cd.BRCD
         LEFT JOIN (
+            -- totalOut 동일 2개월 범위로 집계
             SELECT
                 co.RSRE_YMD,
+                co.HDQR_BOB_DCD,
                 COUNT(*) AS totalOutCnt
             FROM BILL_OUTPUT co
-            GROUP BY co.RSRE_YMD
-            ) totalOut ON co.RSRE_YMD = totalOut.RSRE_YMD
-        WHERE
-            co.BASE_YM >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m')
+            WHERE co.BASE_YM >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m')
+            GROUP BY co.RSRE_YMD, co.HDQR_BOB_DCD
+        ) totalOut
+          ON co.RSRE_YMD  = totalOut.RSRE_YMD
+         AND co.HDQR_BOB_DCD = totalOut.HDQR_BOB_DCD
+        WHERE co.BASE_YM >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m')
         GROUP BY co.RSRE_YMD, co.HDQR_BOB_DCD
+        ORDER BY co.RSRE_YMD DESC, co.HDQR_BOB_DCD ASC
     </select>
 
 </mapper>
