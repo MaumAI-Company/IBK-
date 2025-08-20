@@ -81,13 +81,27 @@
         SELECT
             <include refid="columns"></include>
         FROM CARD_OUTPUT co
-            INNER JOIN CARD_LEARNING_DATA cd
+        INNER JOIN (
+            -- CARD_LEARNING_DATA: 최근 2개월 + (TSTM_YMD, TSTM_NO, BRCD)별 최신 1건
+            SELECT *
+            FROM (
+                SELECT
+                    t.*,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY TSTM_YMD, TSTM_NO, BRCD
+                        ORDER BY BDGT_PRFR_YMD DESC, BDGT_PRFR_NO DESC
+                    ) AS rn
+                FROM CARD_LEARNING_DATA t
+                WHERE t.TSTM_YMD >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m%d')
+            ) sub
+            WHERE sub.rn = 1
+        ) cd
             ON co.TSTM_YMD = cd.TSTM_YMD
-            AND co.TSTM_NO  = cd.TSTM_NO
-            AND co.BRCD     = cd.BRCD
-        WHERE
-            co.TSTM_YMD >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m%d')
+           AND co.TSTM_NO  = cd.TSTM_NO
+           AND co.BRCD     = cd.BRCD
+        WHERE co.TSTM_YMD >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m%d')
         GROUP BY cd.BDGT_PRFR_YMD, co.HDQR_BOB_DCD
+        ORDER BY cd.BDGT_PRFR_YMD DESC, co.HDQR_BOB_DCD ASC
     </select>
 
     <!-- 세금계산서: BASE_YM 기준 최근 2개월치 -->
@@ -95,13 +109,27 @@
         SELECT
             <include refid="columns"></include>
         FROM BILL_OUTPUT co
-            INNER JOIN BILL_LEARNING_DATA cd
+        INNER JOIN (
+            -- BILL_LEARNING_DATA: 최근 2개월 + (BASE_YM, TXBL_SRN, BRCD)별 최신 1건
+            SELECT *
+            FROM (
+                SELECT
+                    t.*,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY BASE_YM, TXBL_SRN, BRCD
+                        ORDER BY BDGT_PRFR_YMD DESC, BDGT_PRFR_NO DESC
+                    ) AS rn
+                FROM BILL_LEARNING_DATA t
+                WHERE t.BASE_YM >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m')
+            ) sub
+            WHERE sub.rn = 1
+        ) cd
             ON co.BASE_YM   = cd.BASE_YM
-            AND co.TXBL_SRN  = cd.TXBL_SRN
-            AND co.BRCD      = cd.BRCD
-        WHERE
-            co.BASE_YM >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m')
+           AND co.TXBL_SRN = cd.TXBL_SRN
+           AND co.BRCD     = cd.BRCD
+        WHERE co.BASE_YM >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m')
         GROUP BY cd.BDGT_PRFR_YMD, co.HDQR_BOB_DCD
+        ORDER BY cd.BDGT_PRFR_YMD DESC, co.HDQR_BOB_DCD ASC
     </select>
 
 </mapper>
