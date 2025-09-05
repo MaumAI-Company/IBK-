@@ -123,40 +123,11 @@ public class BatchSchedule extends BaseCont {
      * *　　　　　　*　　　　　　  *　　　　　　*　　　　　　*
      * 0      분(0-59)　　시간(0-23)　　일(1-31)　　월(1-12)　　요일(0-7)
      */
-    @Scheduled(cron = "0 ${Globals.batch.statistic.cron.min} ${Globals.batch.statistic.cron.hour} ${Globals.batch.statistic.cron.day} ${Globals.batch.statistic.cron.mon} ${Globals.batch.statistic.cron.week}")
+    @Scheduled(cron = "0 ${Globals.batch.statistic.range.cron.min} ${Globals.batch.statistic.range.cron.hour} ${Globals.batch.statistic.range.cron.day} ${Globals.batch.statistic.range.cron.mon} ${Globals.batch.statistic.range.cron.week}")
     public void statisticByRangeBatch() {
         if (statisticByRangeCheck) {
             userUsageStatService.updateStatisticByRange();
             aiPrfrStatService.updateStatisticByRange();
-        }
-    }
-
-    /**
-     * - 설정한 스케줄 마다 통계 업데이트
-     * - 해당 작업은 hit 배치보다 최소 30분 먼저 실행되어야 함 (적중 수 업데이트 전 NULL 조건으로 통계 업데이트 하기 위함)
-     * - 속성
-     * *　　　　　　*　　　　　　  *　　　　　　*　　　　　　*
-     * 0      분(0-59)　　시간(0-23)　　일(1-31)　　월(1-12)　　요일(0-7)
-     */
-    @Scheduled(cron = "0 ${Globals.batch.statistic.cron.min} ${Globals.batch.statistic.cron.hour} ${Globals.batch.statistic.cron.day} ${Globals.batch.statistic.cron.mon} ${Globals.batch.statistic.cron.week}")
-    public void statisticBatch() {
-        if (statisticCheck) {
-            userUsageStatService.updateStatistic();
-            aiPrfrStatService.updateStatistic();
-        }
-    }
-
-    /**
-     * - 설정한 스케줄 마다 적중수 업데이트
-     * - 속성
-     * *　　　　　　*　　　　　　  *　　　　　　*　　　　　　*
-     * 0      분(0-59)　　시간(0-23)　　일(1-31)　　월(1-12)　　요일(0-7)
-     */
-    @Scheduled(cron = "0 ${Globals.batch.hit.cron.min} ${Globals.batch.hit.cron.hour} ${Globals.batch.hit.cron.day} ${Globals.batch.hit.cron.mon} ${Globals.batch.hit.cron.week}")
-    public void hitBatch() {
-        if (hitCheck) {
-            cardOutputService.updateHitYn();
-            billOutputService.updateHitYn();
         }
     }
 }
