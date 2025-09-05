@@ -123,7 +123,7 @@ public class BatchSchedule extends BaseCont {
      * *　　　　　　*　　　　　　  *　　　　　　*　　　　　　*
      * 0      분(0-59)　　시간(0-23)　　일(1-31)　　월(1-12)　　요일(0-7)
      */
-    @Scheduled(cron = "0 ${Globals.batch.statistic.cron.min} ${Globals.batch.statistic.cron.hour} ${Globals.batch.statistic.cron.day} ${Globals.batch.statistic.cron.mon} ${Globals.batch.statistic.cron.week}")
+    @Scheduled(cron = "0 ${Globals.batch.statistic.range.cron.min} ${Globals.batch.statistic.range.cron.hour} ${Globals.batch.statistic.range.cron.day} ${Globals.batch.statistic.range.cron.mon} ${Globals.batch.statistic.range.cron.week}")
     public void statisticByRangeBatch() {
         if (statisticByRangeCheck) {
             userUsageStatService.updateStatisticByRange();
