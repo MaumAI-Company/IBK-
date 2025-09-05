@@ -46,12 +46,6 @@ public class BatchSchedule extends BaseCont {
     @Value("${Globals.check.scheduler}")
     private Boolean schedulerCheck;
 
-    @Value("${Globals.check.hit}")
-    private Boolean hitCheck;
-
-    @Value("${Globals.check.statistic}")
-    private Boolean statisticCheck;
-
     @Value("${Globals.check.statistic.range}")
     private Boolean statisticByRangeCheck;
 
