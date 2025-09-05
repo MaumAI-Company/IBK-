@@ -16,11 +16,16 @@ public interface UserUsageStatRepository {
 
     List<UserStatusStatInfo> getBillStatisticByRange();
 
+    List<UserStatusStatInfo> getExistingStatsByRange();
+
     int countUserUsageStat(UserStatusStatInfo info);
 
     void update(UserStatusStatInfo info);
 
     void insert(UserStatusStatInfo info);
 
+    void deleteByIds(List<Long> statIds);
+
     int deleteByType(StatisticTargetType type);
+
 }

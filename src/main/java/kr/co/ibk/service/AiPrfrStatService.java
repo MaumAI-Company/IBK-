@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -61,29 +64,54 @@ public class AiPrfrStatService extends _BaseService {
 
     @Transactional
     public void updateStatisticByRange() {
-        // BC 카드
-        List<AiPrfrStatInfo> cardStats = aiPrfrStatRepository.getCardStatisticByRange();
-        for (AiPrfrStatInfo stat : cardStats) {
-            stat.setType(StatisticTargetType.CARD);
-            if (aiPrfrStatRepository.countAiPrfrStat(stat) > 0) { // 존재하면 update, 없으면 insert
-                aiPrfrStatRepository.update(stat);
-            } else {
-                aiPrfrStatRepository.insert(stat);
-            }
-        }
-        log.info("[AI 사용 지급결의 사용 개수] updateStatisticByRange 실행 - 카드 업데이트된 ROW 수: {}", cardStats.size());
+        // 신규 통계 조회
+        List<AiPrfrStatInfo> newCardStats = aiPrfrStatRepository.getCardStatisticByRange();
+        List<AiPrfrStatInfo> newBillStats = aiPrfrStatRepository.getBillStatisticByRange();
 
-        // 세금계산서
-        List<AiPrfrStatInfo> billStats = aiPrfrStatRepository.getBillStatisticByRange();
-        for (AiPrfrStatInfo stat : billStats) {
-            stat.setType(StatisticTargetType.BILL);
-            if (aiPrfrStatRepository.countAiPrfrStat(stat) > 0) { // 존재하면 update, 없으면 insert
+        // 삭제 통합 처리 (기존에 있는데 없어진 경우)
+        Set<AiPrfrStatInfo> newAllKeySet = Stream.concat(newCardStats.stream(), newBillStats.stream())
+                .map(stat -> {
+                    AiPrfrStatInfo key = new AiPrfrStatInfo();
+                    key.setType(stat.getType());
+                    key.setBdgtPrfrYmd(stat.getBdgtPrfrYmd());
+                    key.setHdqrBobDcd(stat.getHdqrBobDcd());
+                    return key;
+                }).collect(Collectors.toSet());
+
+        // 기존 통계 조회에서 없는 키 추출
+        List<AiPrfrStatInfo> existingStats = aiPrfrStatRepository.getExistingStatsByRange();
+        List<Long> statIdsToDelete = existingStats.stream()
+                .filter(existing -> !newAllKeySet.contains(existing))
+                .map(AiPrfrStatInfo::getStatId)
+                .collect(Collectors.toList());
+
+        if (!statIdsToDelete.isEmpty()) { // 삭제할 PK 있는 경우
+            aiPrfrStatRepository.deleteByIds(statIdsToDelete);
+            log.info("[AI사용지급결의사용개수] 삭제 완료 - 총 {}건", statIdsToDelete.size());
+        }
+
+        // BC카드 등록/수정
+        for (AiPrfrStatInfo stat : newCardStats) {
+            stat.setType(StatisticTargetType.CARD);
+            if (aiPrfrStatRepository.countAiPrfrStat(stat) > 0) {
                 aiPrfrStatRepository.update(stat);
             } else {
                 aiPrfrStatRepository.insert(stat);
             }
         }
-        log.info("[AI 사용 지급결의 사용 개수] updateStatisticByRange 실행 - 세금계산서 업데이트된 ROW 수: {}", billStats.size());
+        log.info("[AI사용지급결의사용개수] updateStatisticByRange 실행 - 카드 업데이트된 ROW 수: {}", newCardStats.size());
+
+        // 세금계산서 등록/수정
+        for (AiPrfrStatInfo stat : newBillStats) {
+            stat.setType(StatisticTargetType.BILL);
+            if (aiPrfrStatRepository.countAiPrfrStat(stat) > 0) {
+                aiPrfrStatRepository.update(stat);
+            } else {
+                aiPrfrStatRepository.insert(stat);
+            }
+        }
+        log.info("[AI사용지급결의사용개수] updateStatisticByRange 실행 - 세금계산서 업데이트된 ROW 수: {}", newCardStats.size());
+
     }
 
 }

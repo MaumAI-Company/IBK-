@@ -119,6 +119,16 @@
         ORDER BY cd.BDGT_PRFR_YMD DESC, co.HDQR_BOB_DCD ASC
     </select>
 
+    <select id="getExistingStatsByRange" resultType="AiPrfrStatInfo">
+        SELECT
+            STAT_ID,
+            TYPE,
+            BDGT_PRFR_YMD,
+            HDQR_BOB_DCD
+        FROM AI_PRFR_STAT
+        WHERE BDGT_PRFR_YMD >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m%d')
+    </select>
+
     <select id="countAiPrfrStat" parameterType="AiPrfrStatInfo" resultType="int">
         SELECT COUNT(*) FROM AI_PRFR_STAT
         WHERE TYPE = #{type}
@@ -151,6 +161,14 @@
 
     <delete id="deleteByType">
         DELETE FROM AI_PRFR_STAT WHERE TYPE = #{type}
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+        DELETE FROM AI_PRFR_STAT
+        WHERE STAT_ID IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </delete>
 
 </mapper>
