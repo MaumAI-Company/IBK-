@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AiPrfrStatInfo {
-    private String statId;
+    private Long statId;
     private StatisticTargetType type;
     private String bdgtPrfrYmd;
     private String bdgtPrfrYm;

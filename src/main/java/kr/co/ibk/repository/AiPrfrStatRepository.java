@@ -23,4 +23,8 @@ public interface AiPrfrStatRepository {
     void insert(AiPrfrStatInfo info);
 
     int deleteByType(StatisticTargetType type);
+
+    List<AiPrfrStatInfo> getExistingStatsByRange();
+
+    void deleteByIds(List<Long> statIdsToDelete);
 }

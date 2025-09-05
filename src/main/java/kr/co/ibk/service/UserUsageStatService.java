@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -61,28 +64,52 @@ public class UserUsageStatService extends _BaseService {
 
     @Transactional
     public void updateStatisticByRange() {
-        // BC 카드
-        List<UserStatusStatInfo> cardStats = usageStatRepository.getCardStatisticByRange();
-        for (UserStatusStatInfo stat : cardStats) {
-            stat.setType(StatisticTargetType.CARD);
-            if (usageStatRepository.countUserUsageStat(stat) > 0) { // 존재하면 update, 없으면 insert
-                usageStatRepository.update(stat);
-            } else {
-                usageStatRepository.insert(stat);
-            }
-        }
-        log.info("[사용자활용현황] updateStatisticByRange 실행 - 카드 업데이트된 ROW 수: {}", cardStats.size());
+        // 신규 통계 조회
+        List<UserStatusStatInfo> newCardStats = usageStatRepository.getCardStatisticByRange();
+        List<UserStatusStatInfo> newBillStats = usageStatRepository.getBillStatisticByRange();
 
-        // 세금계산서
-        List<UserStatusStatInfo> billStats = usageStatRepository.getBillStatisticByRange();
-        for (UserStatusStatInfo stat : billStats) {
-            stat.setType(StatisticTargetType.BILL);
-            if (usageStatRepository.countUserUsageStat(stat) > 0) { // 존재하면 update, 없으면 insert
+        // 삭제 통합 처리 (기존에 있는데 없어진 경우)
+        Set<UserStatusStatInfo> newAllKeySet = Stream.concat(newCardStats.stream(), newBillStats.stream())
+                .map(stat -> {
+                    UserStatusStatInfo key = new UserStatusStatInfo();
+                    key.setType(stat.getType());
+                    key.setRsreYmd(stat.getRsreYmd());
+                    key.setHdqrBobDcd(stat.getHdqrBobDcd());
+                    return key;
+                }).collect(Collectors.toSet());
+
+        // 기존 통계 조회에서 없는 키 추출
+        List<UserStatusStatInfo> existingStats = usageStatRepository.getExistingStatsByRange();
+        List<Long> statIdsToDelete = existingStats.stream()
+                .filter(existing -> !newAllKeySet.contains(existing))
+                .map(UserStatusStatInfo::getStatId)
+                .collect(Collectors.toList());
+        if (!statIdsToDelete.isEmpty()) { // 삭제할 PK 있는 경우
+            usageStatRepository.deleteByIds(statIdsToDelete);
+            log.info("[사용자활용현황] 삭제 완료 - 총 {}건", statIdsToDelete.size());
+        }
+
+        // BC카드 등록/수정
+        for (UserStatusStatInfo stat : newCardStats) {
+            stat.setType(StatisticTargetType.CARD);
+            if (usageStatRepository.countUserUsageStat(stat) > 0) {
                 usageStatRepository.update(stat);
             } else {
                 usageStatRepository.insert(stat);
             }
         }
-        log.info("[사용자활용현황] updateStatisticByRange 실행 - 세금계산서 업데이트된 ROW 수: {}", billStats.size());
+        log.info("[사용자활용현황] updateStatisticByRange 실행 - 카드 업데이트된 ROW 수: {}", newCardStats.size());
+
+        // 세금계산서 등록/수정
+        for (UserStatusStatInfo stat : newBillStats) {
+            stat.setType(StatisticTargetType.BILL);
+            if (usageStatRepository.countUserUsageStat(stat) > 0) {
+                usageStatRepository.update(stat);
+            } else {
+                usageStatRepository.insert(stat);
+            }
+        }
+        log.info("[사용자활용현황] updateStatisticByRange 실행 - 세금계산서 업데이트된 ROW 수: {}", newBillStats.size());
     }
+
 }

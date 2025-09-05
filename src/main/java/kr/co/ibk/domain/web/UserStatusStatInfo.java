@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserStatusStatInfo {
-    private String statId;
+    private Long statId;
     private StatisticTargetType type;
     private String rsreYmd;
     private String rsreYm;
@@ -24,6 +26,21 @@ public class UserStatusStatInfo {
     private Integer hitCnt4;
     private Integer arinUseCnt;
     private Integer totalOutputCnt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserStatusStatInfo)) return false;
+        UserStatusStatInfo that = (UserStatusStatInfo) o;
+        return Objects.equals(type, that.type)
+                && Objects.equals(rsreYmd, that.rsreYmd)
+                && Objects.equals(hdqrBobDcd, that.hdqrBobDcd);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, rsreYmd, hdqrBobDcd);
+    }
 }
 
 

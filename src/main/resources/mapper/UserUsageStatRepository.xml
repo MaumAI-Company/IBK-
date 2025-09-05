@@ -19,6 +19,7 @@
     <select id="getCardStatisticByAll" resultType="UserStatusStatInfo">
         SELECT
             <include refid="columns"></include>
+            , 'CARD' as type
         FROM CARD_OUTPUT co
         INNER JOIN (
             SELECT *
@@ -53,6 +54,7 @@
     <select id="getBillStatisticByAll" resultType="UserStatusStatInfo">
         SELECT
             <include refid="columns"></include>
+            , 'BILL' as type
         FROM BILL_OUTPUT co
         INNER JOIN (
             SELECT *
@@ -88,6 +90,7 @@
     <select id="getCardStatisticByRange" resultType="UserStatusStatInfo">
         SELECT
             <include refid="columns"></include>
+            , 'CARD' as type
         FROM CARD_OUTPUT co
         INNER JOIN (
             -- CARD_LEARNING_DATA: 최근 2개월 + (TSTM_YMD, TSTM_NO, BRCD)별 최신 1건
@@ -128,6 +131,7 @@
     <select id="getBillStatisticByRange" resultType="UserStatusStatInfo">
         SELECT
             <include refid="columns"></include>
+            , 'BILL' as type
         FROM BILL_OUTPUT co
         INNER JOIN (
             -- BILL_LEARNING_DATA: 최근 2개월 + (BASE_YM, TXBL_SRN, BRCD)별 최신 1건
@@ -162,6 +166,16 @@
         WHERE co.BASE_YM >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m')
         GROUP BY co.RSRE_YMD, co.HDQR_BOB_DCD
         ORDER BY co.RSRE_YMD DESC, co.HDQR_BOB_DCD ASC
+    </select>
+
+    <select id="getExistingStatsByRange" resultType="UserStatusStatInfo">
+        SELECT
+            STAT_ID,
+            TYPE,
+            RSRE_YMD,
+            HDQR_BOB_DCD
+        FROM USER_USAGE_STAT
+        WHERE RSRE_YMD >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y%m%d')
     </select>
 
     <select id="countUserUsageStat" parameterType="UserStatusStatInfo" resultType="int">
@@ -199,4 +213,11 @@
         DELETE FROM USER_USAGE_STAT WHERE TYPE = #{type}
     </delete>
 
+    <delete id="deleteByIds" parameterType="list">
+        DELETE FROM USER_USAGE_STAT
+        WHERE STAT_ID IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>
