@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,6 +25,21 @@ public class AiPrfrStatInfo {
     private Integer hitCnt3;
     private Integer hitCnt4;
     private Integer arinUseCnt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AiPrfrStatInfo)) return false;
+        AiPrfrStatInfo that = (AiPrfrStatInfo) o;
+        return type == that.type &&
+                Objects.equals(bdgtPrfrYmd, that.bdgtPrfrYmd) &&
+                Objects.equals(hdqrBobDcd, that.hdqrBobDcd);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, bdgtPrfrYmd, hdqrBobDcd);
+    }
 }
 
 
