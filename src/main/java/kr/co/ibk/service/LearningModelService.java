@@ -172,7 +172,15 @@ public class LearningModelService extends BaseCont {
                 learningModelRepository.updateFile(update);
 
                 // 2-2. 모델 학습 API를 호출
-                mccService.trainModel(form.getId());
+                boolean result = mccService.trainModel(form.getId());
+                if (!result) { // 실패한 경우, 학습 모델의 상태를 "학습 오류"로 업데이트
+                    try {
+                        form.setDeployStatus(DeployStatusType.LEARN_ERROR.getCode().toString());
+                        learningModelRepository.updateStatus(form);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             } catch (Exception e) {
                 try {
                     // 2번 과정 중 오류가 발생할 경우, 학습 모델의 상태를 "학습 데이터 생성 오류"로 업데이트
