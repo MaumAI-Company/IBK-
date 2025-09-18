@@ -49,12 +49,13 @@ public class MccService {
      *
      * @param modelId 모델 ID
      */
-    public void trainModel(Integer modelId) {
+    public boolean trainModel(Integer modelId) {
         LearningModelInfo info = learningModelRepository.getLoad(modelId);
         if (info == null) {
-            return;
+            return false;
         }
 
+        boolean result;
         try {
             JSONObject params = new JSONObject();
             params.put("model_id", modelId);
@@ -65,10 +66,12 @@ public class MccService {
             params.put("model_cfg", modelCfg);
             params.put("file_name", info.getFileName());
 
-            sendPost("/train-model/", params, info.getLearningType());
+            result = sendPost("/train-model/", params, info.getLearningType());
         } catch (Exception e) {
-            return;
+            result = false;
         }
+
+        return result;
     }
 
     /**
@@ -170,26 +173,30 @@ public class MccService {
                 os.write(input, 0, input.length);
             }
 
-            in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-            int codeValue;
+            int responseCode = connection.getResponseCode();
+            int codeValue = 0;
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
 
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
 
-            try {
-                JSONObject jsonObj = new JSONObject(response.toString());
-                codeValue = jsonObj.getInt("code");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return false;
+                try {
+                    JSONObject jsonObj = new JSONObject(response.toString());
+                    codeValue = jsonObj.getInt("code");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return false;
+                }
             }
             log.info("API response code: {}", codeValue);
-            return codeValue == HttpURLConnection.HTTP_OK;
+            return responseCode == HttpURLConnection.HTTP_OK && codeValue == HttpURLConnection.HTTP_OK;
         } catch (IOException e) {
-            return null;
+            e.printStackTrace();
+            return false;
         } finally {
             try {
                 if (in != null) in.close();
