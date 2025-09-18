@@ -64,6 +64,8 @@ public class AiPrfrStatService extends _BaseService {
 
     @Transactional
     public void updateStatisticByRange() {
+        log.info("[AI사용지급결의사용개수] 기간 통계 배치 시작");
+
         // 신규 통계 조회
         List<AiPrfrStatInfo> newCardStats = aiPrfrStatRepository.getCardStatisticByRange();
         List<AiPrfrStatInfo> newBillStats = aiPrfrStatRepository.getBillStatisticByRange();

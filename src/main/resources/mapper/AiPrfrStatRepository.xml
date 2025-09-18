@@ -67,6 +67,7 @@
     <select id="getCardStatisticByRange" resultType="AiPrfrStatInfo">
         SELECT
             <include refid="columns"></include>
+            , 'CARD' as type
         FROM CARD_OUTPUT co
         INNER JOIN (
             -- CARD_LEARNING_DATA: 최근 2개월 + (TSTM_YMD, TSTM_NO, BRCD)별 최신 1건
@@ -95,6 +96,7 @@
     <select id="getBillStatisticByRange" resultType="AiPrfrStatInfo">
         SELECT
             <include refid="columns"></include>
+            , 'BILL' as type
         FROM BILL_OUTPUT co
         INNER JOIN (
             -- BILL_LEARNING_DATA: 최근 2개월 + (BASE_YM, TXBL_SRN, BRCD)별 최신 1건

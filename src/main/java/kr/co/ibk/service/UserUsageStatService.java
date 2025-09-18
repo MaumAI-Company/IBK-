@@ -64,6 +64,8 @@ public class UserUsageStatService extends _BaseService {
 
     @Transactional
     public void updateStatisticByRange() {
+        log.info("[사용자활용현황] 기간 통계 배치 시작");
+
         // 신규 통계 조회
         List<UserStatusStatInfo> newCardStats = usageStatRepository.getCardStatisticByRange();
         List<UserStatusStatInfo> newBillStats = usageStatRepository.getBillStatisticByRange();
