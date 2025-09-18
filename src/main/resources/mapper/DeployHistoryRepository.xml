@@ -71,18 +71,8 @@
         /*검색어 검색*/
         <if test="searchKeyword != null  and searchKeyword != ''">
             AND (
-            lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
-            OR (
-            <choose>
-                <!-- 이름 검색어가 batch 또는 BATCH인 경우 EXEC_ID 비교 -->
-                <when test="searchKeyword == 'batch' or searchKeyword == 'BATCH'">
-                    dh.EXEC_ID = #{searchKeyword}
-                </when>
-                <otherwise>
-                    hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
-                </otherwise>
-            </choose>
-            )
+                lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                OR COALESCE(hm.MEM_NAME, dh.EXEC_ID) LIKE CONCAT('%', #{searchKeyword}, '%')
             )
         </if>
 
