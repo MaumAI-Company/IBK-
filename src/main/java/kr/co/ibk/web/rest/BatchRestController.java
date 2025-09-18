@@ -37,6 +37,15 @@ public class BatchRestController {
         return new ResponseEntity<>(new ResponseDto<>(ResultCodeType.SUCCESS, "성공", batchList), HttpStatus.OK);
     }
 
+    /*@GetMapping("/_call/updateStatisticByRange")
+    public ResponseEntity<?> updateStatisticByRange(@RequestParam(value = "type", required = false) StatisticTargetType type) {
+        // 수동 배치
+        userUsageStatService.updateStatisticByRange();
+        aiPrfrStatService.updateStatisticByRange();
+
+        return ResponseEntity.ok(new ResponseDto<>(ResultCodeType.SUCCESS, "통계 수동 배치 성공", null));
+    }*/
+
     @GetMapping("/_call/updateStatisticByAll")
     public ResponseEntity<?> updateStat(@RequestParam(value = "type", required = false) StatisticTargetType type) {
         // 수동 배치

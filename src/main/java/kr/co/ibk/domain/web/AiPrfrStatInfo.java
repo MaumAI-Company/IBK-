@@ -26,14 +26,15 @@ public class AiPrfrStatInfo {
     private Integer hitCnt4;
     private Integer arinUseCnt;
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof AiPrfrStatInfo)) return false;
         AiPrfrStatInfo that = (AiPrfrStatInfo) o;
-        return type == that.type &&
-                Objects.equals(bdgtPrfrYmd, that.bdgtPrfrYmd) &&
-                Objects.equals(hdqrBobDcd, that.hdqrBobDcd);
+        return Objects.equals(type, that.type)
+                && Objects.equals(bdgtPrfrYmd, that.bdgtPrfrYmd)
+                && Objects.equals(hdqrBobDcd, that.hdqrBobDcd);
     }
 
     @Override
