@@ -9,7 +9,7 @@
         from
         DEPLOY_HISTORY dh
         inner join LEARNING_MODEL lm on dh.MODEL_ID = lm.ID
-        inner join HC_MEMBER hm on dh.EXEC_ID = hm.MEM_ID
+        left join HC_MEMBER hm on dh.EXEC_ID = hm.MEM_ID
         where
         <include refid="where"></include>
     </select>
@@ -20,7 +20,7 @@
         from
         DEPLOY_HISTORY dh
         inner join LEARNING_MODEL lm on dh.MODEL_ID = lm.ID
-        inner join HC_MEMBER hm on dh.EXEC_ID = hm.MEM_ID
+        left join HC_MEMBER hm on dh.EXEC_ID = hm.MEM_ID
         where
         <include refid="where"></include>
         order by
@@ -39,10 +39,7 @@
     </select>
 
     <sql id="columns">
-        dh
-        .
-        ID
-        ,
+        dh.ID,
         dh.MODEL_ID,
         dh.EXEC_ID,
         dh.EXEC_DT,
@@ -50,7 +47,7 @@
         lm.LEARN_NAME,
         lm.HDQR_BOB_DCD,
         lm.LEARNING_TYPE,
-        hm.MEM_NAME as execName
+        COALESCE(hm.MEM_NAME, dh.EXEC_ID) as execName
     </sql>
 
     <sql id="where">
@@ -73,8 +70,10 @@
 
         /*검색어 검색*/
         <if test="searchKeyword != null  and searchKeyword != ''">
-            AND (lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
-            OR hm.MEM_NAME LIKE CONCAT('%', #{searchKeyword}, '%'))
+            AND (
+                lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                OR COALESCE(hm.MEM_NAME, dh.EXEC_ID) LIKE CONCAT('%', #{searchKeyword}, '%')
+            )
         </if>
 
         /*일자 검색*/
