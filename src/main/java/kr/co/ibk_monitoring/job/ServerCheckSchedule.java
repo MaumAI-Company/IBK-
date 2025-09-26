@@ -1,6 +1,7 @@
 package kr.co.ibk_monitoring.job;
 
 import kr.co.ibk_monitoring.service.ApiService;
+import kr.co.ibk_monitoring.service.DataMatchService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ public class ServerCheckSchedule {
 
     private static final Logger log = LoggerFactory.getLogger(ServerCheckSchedule.class);
     private final ApiService apiService;
+    private final DataMatchService dataMatchService;
 
     /* 속성
 	*           *　　　　　　*　　　　　　*　　　　　　*　　　　　　*
@@ -34,5 +36,15 @@ public class ServerCheckSchedule {
     public void serverCheck() {
         log.debug("### MCC, Web 서버 모니터링 시작");
         apiService.serverCheck();
+    }
+
+    /**
+     * 데이터 일치 여부 체크
+     *  프로퍼티로 스케줄 설정
+     */
+    @Scheduled(cron = "0 ${Globals.batch.statistic.range.cron.min} ${Globals.batch.statistic.range.cron.hour} ${Globals.batch.statistic.range.cron.day} ${Globals.batch.statistic.range.cron.mon} ${Globals.batch.statistic.range.cron.week}")
+    public void dataMatchCheck() {
+        log.debug("### 데이터 일치 여부 점검 시작");
+        dataMatchService.dataMatchCheck();
     }
 }
