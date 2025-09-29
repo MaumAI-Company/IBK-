@@ -42,7 +42,7 @@ public class ServerCheckSchedule {
      * 데이터 일치 여부 체크
      *  프로퍼티로 스케줄 설정
      */
-    @Scheduled(cron = "0 ${Globals.batch.statistic.range.cron.min} ${Globals.batch.statistic.range.cron.hour} ${Globals.batch.statistic.range.cron.day} ${Globals.batch.statistic.range.cron.mon} ${Globals.batch.statistic.range.cron.week}")
+    @Scheduled(cron = "0 ${Globals.batch.dataMatch.cron.min} ${Globals.batch.dataMatch.cron.hour} ${Globals.batch.dataMatch.cron.day} ${Globals.batch.dataMatch.cron.mon} ${Globals.batch.dataMatch.cron.week}")
     public void dataMatchCheck() {
         log.debug("### 데이터 일치 여부 점검 시작");
         dataMatchService.dataMatchCheck();
