@@ -30,8 +30,8 @@ public class DataMatchService {
     private final DataMatchRepository dataMatchRepository;
     private final AdminMemberRepository adminMemberRepository;
 
-    private final String TITLE_MAIL = "IBK 예산관리시스템 자동지급결의 AI 시스템 장애감지 알림";
-    private final String BODY_MAIL = "IBK 예산관리시스템 자동지급결의 AI 시스템 장애감지 알림<br/>" +
+    private final String TITLE_MAIL = "[자동지급결의AI시스템] AI 배치 추론(##TARGET##) 과정에 장애가 발생했습니다.";
+    private final String BODY_MAIL = "[IBK 예산관리시스템 자동지급결의 AI 시스템 장애감지 알림]<br/>" +
             "1. 발생시간 : ##DATETIME##<br/>" +
             "2. 등급 : CRITICAL<br/>" +
             "3. 호스트명 : pmvscbl3<br/>" +
@@ -60,38 +60,26 @@ public class DataMatchService {
      */
     public void dataMatchCheck() {
         if (dataMatchCheck) {
-            boolean isCardMatch = dataMatchRepository.cardCheck();
-            boolean isBillMatch = dataMatchRepository.billCheck();
+            Map<String, Boolean> checks = Map.of(
+                    "BC카드", dataMatchRepository.cardCheck(),
+                    "세금계산서", dataMatchRepository.billCheck()
+            );
 
             String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss"));
 
-            // 카드 체크 (BC카드)
-            if (!isCardMatch) {
-                String target = "BC카드";
-                String titleMail = TITLE_MAIL.replace("##TARGET##", target);
-                String bodyMail = BODY_MAIL
-                        .replace("##DATETIME##", now)
-                        .replace("##TARGET##", "BC카드");
+            checks.forEach((target, isMatch) -> {
+                if (!isMatch) {
+                    String titleMail = TITLE_MAIL.replace("##TARGET##", target);
+                    String bodyMail = BODY_MAIL
+                            .replace("##DATETIME##", now)
+                            .replace("##TARGET##", target);
 
-                String titleMessenger = TITLE_MESSENGER.replace("##TARGET##", target);
-                String bodyMessenger = BODY_MESSENGER.replace("##TARGET##", target);
+                    String titleMessenger = TITLE_MESSENGER.replace("##TARGET##", target);
+                    String bodyMessenger = BODY_MESSENGER.replace("##TARGET##", target);
 
-                callAlarm(titleMail, bodyMail, titleMessenger, bodyMessenger);
-            }
-
-            // 세금계산서 체크
-            if (!isBillMatch) {
-                String target = "세금계산서";
-                String titleMail = TITLE_MAIL.replace("##TARGET##", target);
-                String bodyMail = BODY_MAIL
-                        .replace("##DATETIME##", now)
-                        .replace("##TARGET##", "세금계산서");
-
-                String titleMessenger = TITLE_MESSENGER.replace("##TARGET##", target);
-                String bodyMessenger = BODY_MESSENGER.replace("##TARGET##", target);
-
-                callAlarm(titleMail, bodyMail, titleMessenger, bodyMessenger);
-            }
+                    callAlarm(titleMail, bodyMail, titleMessenger, bodyMessenger);
+                }
+            });
         }
     }
 
