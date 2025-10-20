@@ -36,10 +36,10 @@ public class DataMatchService {
             "2. 등급 : CRITICAL<br/>" +
             "3. 호스트명 : pmvscbl3<br/>" +
             "4. 메시지그룹 : AI<br/>" +
-            "5. 이벤트 내용 : ##TARGET## AI 배치 추론 장애 발생으로, AI 엔진 및 API 컨테이너를 확인해주세요.";
+            "5. 이벤트 내용 : ##TARGET## AI 배치 추론 장애 발생으로, 금일 input/output 개수 불일치가 감지되었습니다. AI 엔진 및 API 컨테이너를 확인해주세요.";
 
     private final String TITLE_MESSENGER = " [자동지급결의AI시스템] AI 배치 추론(##TARGET##) 과정에서 장애가 발생했습니다.";
-    private final String BODY_MESSENGER = "##TARGET## AI 배치 추론이 정상적으로 작동하지 못했습니다.";
+    private final String BODY_MESSENGER = "금일 ##TARGET## input/output 개수 불일치가 감지되었습니다.";
 
     @Value("${Globals.check.dataMatch}")
     private Boolean dataMatchCheck;
@@ -69,6 +69,7 @@ public class DataMatchService {
 
             checks.forEach((target, isMatch) -> {
                 if (!isMatch) {
+                    log.debug("인아웃풋 데이터 개수 불일치 감지: " + target);
                     String titleMail = TITLE_MAIL.replace("##TARGET##", target);
                     String bodyMail = BODY_MAIL
                             .replace("##DATETIME##", now)
@@ -78,6 +79,8 @@ public class DataMatchService {
                     String bodyMessenger = BODY_MESSENGER.replace("##TARGET##", target);
 
                     callAlarm(titleMail, bodyMail, titleMessenger, bodyMessenger);
+                }else {
+                    log.debug("인아웃풋 데이터 개수 일치: " + target);
                 }
             });
         }
@@ -94,8 +97,10 @@ public class DataMatchService {
             recipient = recipient.substring(1);
         }
 
-        System.out.println("fromId#="+sender.getMemSno());
-        System.out.println("toId="+recipient);
+        log.debug("fromId= "+sender.getMemSno());
+        log.debug("toId= "+recipient);
+        log.debug("title= "+title);
+        log.debug("body= "+body);
 
         Map<String, String> params = new HashMap<>();
         params.put("SRV_CODE", messengerSrvCode);
@@ -151,6 +156,8 @@ public class DataMatchService {
             System.out.println("POST 요청 실패!");
         }
         System.out.println("응답값 : " + response.toString());
+
+
     }
 
     private void callAlarm(String titleMail, String bodyMail, String titleMessenger, String bodyMessenger) {
@@ -159,6 +166,7 @@ public class DataMatchService {
             List<MemberInfo> receiverList = adminMemberRepository.getReceiverList();
 
             if (mailCheck) {
+                log.debug("메일 발송 시도");
                 for (MemberInfo memberInfo : receiverList) {
                     try {
                         ibkMailSender.sendMail(sender.getMemSno(), memberInfo.getMemSno(), sender.getMemName(), memberInfo.getMemName(), titleMail, bodyMail);
@@ -168,6 +176,7 @@ public class DataMatchService {
                 }
             }
             if (messengerCheck) {
+                log.debug("메신저 발송 시도");
                 try {
                     sendMessenger(sender, receiverList, titleMessenger, bodyMessenger);
                 } catch (Exception e) {

@@ -220,8 +220,10 @@ public class ApiService {
             recipient = recipient.substring(1);
         }
 
-        System.out.println("fromId#="+sender.getMemSno());
-        System.out.println("toId="+recipient);
+        log.debug("fromId= "+sender.getMemSno());
+        log.debug("toId= "+recipient);
+        log.debug("title= "+title);
+        log.debug("body= "+body);
 
         Map<String, String> params = new HashMap<>();
         params.put("SRV_CODE", messengerSrvCode);
@@ -331,7 +333,7 @@ public class ApiService {
             List<MemberInfo> receiverList = adminMemberRepository.getReceiverList();
 
             if (mailCheck) {
-//            System.out.println("메일 발송");
+                log.debug("메일 발송 시도");
                 for (MemberInfo memberInfo : receiverList) {
                     try {
                         ibkMailSender.sendMail(sender.getMemSno(), memberInfo.getMemSno(), sender.getMemName(), memberInfo.getMemName(), title, bodyMail);
@@ -341,7 +343,7 @@ public class ApiService {
                 }
             }
             if (messengerCheck) {
-//            System.out.println("메신저 발송");
+                log.debug("메신저 발송 시도");
                 try {
                     sendMessenger(sender, receiverList, title, bodyMessenger);
                 } catch (Exception e) {
