@@ -222,8 +222,6 @@ public class ApiService {
 
         log.debug("fromId= "+sender.getMemSno());
         log.debug("toId= "+recipient);
-        log.debug("title= "+title);
-        log.debug("body= "+body);
 
         Map<String, String> params = new HashMap<>();
         params.put("SRV_CODE", messengerSrvCode);
@@ -332,8 +330,15 @@ public class ApiService {
             MemberInfo sender = adminMemberRepository.getSender();
             List<MemberInfo> receiverList = adminMemberRepository.getReceiverList();
 
+            log.debug("fromId= "+sender.getMemSno());
+            for (MemberInfo member : receiverList) {
+                log.debug("toId= "+member.getMemSno());
+            }
+
             if (mailCheck) {
                 log.debug("메일 발송 시도");
+                log.debug("titleMail= "+title);
+                log.debug("bodyMail= "+bodyMail);
                 for (MemberInfo memberInfo : receiverList) {
                     try {
                         ibkMailSender.sendMail(sender.getMemSno(), memberInfo.getMemSno(), sender.getMemName(), memberInfo.getMemName(), title, bodyMail);
@@ -344,6 +349,8 @@ public class ApiService {
             }
             if (messengerCheck) {
                 log.debug("메신저 발송 시도");
+                log.debug("titleMessenger= "+title);
+                log.debug("bodyMessenger= "+bodyMessenger);
                 try {
                     sendMessenger(sender, receiverList, title, bodyMessenger);
                 } catch (Exception e) {
