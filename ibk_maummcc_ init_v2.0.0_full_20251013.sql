@@ -28,7 +28,7 @@ GRANT ALL PRIVILEGES ON `maummcc`.* TO 'maummcc'@'%';
 FLUSH PRIVILEGES;
 
 -- 4. 사용할 스키마 선택
-USE `maummcc_test`;
+USE `maummcc`;
 
 -- -----------------------------
 -- 기존 mysqldump 내용 시작
