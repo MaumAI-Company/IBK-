@@ -24,7 +24,7 @@ COLLATE utf8mb4_general_ci;
 CREATE USER IF NOT EXISTS 'maummcc'@'%' IDENTIFIED BY 'maum!2024!';
 
 -- 3️. 스키마 권한 부여
-GRANT ALL PRIVILEGES ON `maummcc_test`.* TO 'maummcc'@'%';
+GRANT ALL PRIVILEGES ON `maummcc`.* TO 'maummcc'@'%';
 FLUSH PRIVILEGES;
 
 -- 4. 사용할 스키마 선택
