@@ -1,6 +1,8 @@
 # ibk
 
 # 재구축 및 배포가이드
+DB > WEB > MONITORING 순서로 진행
+
 # 1. ibk_mcc_web
 
 ## 🧩 1️⃣ Docker 이미지 등록 (load)
@@ -328,3 +330,9 @@ docker run -d \
 ---
 
 https://github.com/IBK-Cash-Disbursement-Voucher-AI-System/ibk_AI_cash_disbursement_voucher/blob/develop/ibk_maummcc_%20init_v2.0.0_full_20251013.sql
+
+
+
+
+---
+admin/admin
