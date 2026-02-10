@@ -1,6 +1,7 @@
 package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
+import kr.co.ibk.common.annotation.MenuAuthBase;
 import kr.co.ibk.domain.enums.DeployStatusType;
 import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.*;
@@ -38,6 +39,7 @@ public class LearnController extends BaseCont {
     /**
      * BC카드 학습 데이터 등록
      */
+    @MenuAuthBase("/soulGod/learn/cardManage")
     @RequestMapping("/soulGod/learn/cardManage")
     public String dataManage(Model model,
                              @ModelAttribute CardLearningDataForm params) {
@@ -62,6 +64,7 @@ public class LearnController extends BaseCont {
     /**
      * BC카드 학습 데이터 등록 > 목록
      */
+    @MenuAuthBase("/soulGod/learn/cardManage")
     @ResponseBody
     @PostMapping("/soulGod/learn/cardManage/list")
     public Map<String, Object> learnDataList(@RequestBody CardLearningDataForm params) {
@@ -85,6 +88,7 @@ public class LearnController extends BaseCont {
     /**
      * BC카드 학습 데이터 조회
      */
+    @MenuAuthBase("/soulGod/learn/templateManage")
     @RequestMapping("/soulGod/learn/cardManageView")
     public String cardManageView(Model model,
                                  @ModelAttribute CardLearningDataForm params) {
@@ -99,6 +103,7 @@ public class LearnController extends BaseCont {
     /**
      * BC카드 학습 데이터 조회 > 목록
      */
+    @MenuAuthBase("/soulGod/learn/templateManage")
     @ResponseBody
     @PostMapping("/soulGod/learn/cardManageView/list")
     public Map<String, Object> learnDataListView(@RequestBody CardLearningDataForm params) {
@@ -119,6 +124,7 @@ public class LearnController extends BaseCont {
     /**
      * 세금계산서 학습 데이터 등록
      */
+    @MenuAuthBase("/soulGod/learn/billManage")
     @GetMapping("/soulGod/learn/billManage")
     public String billManage(Model model,
                              @ModelAttribute BillLearningDataForm params) {
@@ -144,6 +150,7 @@ public class LearnController extends BaseCont {
     /**
      * 세금계산서 학습 데이터 등록 > 목록
      */
+    @MenuAuthBase("/soulGod/learn/billManage")
     @ResponseBody
     @PostMapping("/soulGod/learn/billManage/list")
     public Map<String, Object> billLearnDataList(@RequestBody BillLearningDataForm params) {
@@ -167,6 +174,7 @@ public class LearnController extends BaseCont {
     /**
      * 세금계산서 학습 데이터 조회
      */
+    @MenuAuthBase("/soulGod/learn/templateManage")
     @RequestMapping("/soulGod/learn/billManageView")
     public String billManageView(Model model,
                                  @ModelAttribute BillLearningDataForm params) {
@@ -181,6 +189,7 @@ public class LearnController extends BaseCont {
     /**
      * 세금계산서 학습 데이터 조회 > 목록
      */
+    @MenuAuthBase("/soulGod/learn/templateManage")
     @ResponseBody
     @PostMapping("/soulGod/learn/billManageView/list")
     public Map<String, Object> billLearnDataListView(@RequestBody BillLearningDataForm params) {
@@ -201,6 +210,11 @@ public class LearnController extends BaseCont {
     /**
      * 학습데이터명 중복 체크
      */
+    @MenuAuthBase({
+            "/soulGod/learn/templateManage",
+            "/soulGod/learn/cardManage",
+            "/soulGod/learn/billManage"
+    })
     @ResponseBody
     @PostMapping(value = {"/soulGod/learnData/nmCount"})
     public int learnDataNmCount(@RequestBody LearningDataForm form) {
@@ -210,6 +224,11 @@ public class LearnController extends BaseCont {
     /**
      * 학습데이터 등록
      */
+    @MenuAuthBase({
+            "/soulGod/learn/templateManage",
+            "/soulGod/learn/cardManage",
+            "/soulGod/learn/billManage"
+    })
     @ResponseBody
     @PostMapping(value = {"/soulGod/learnData/save"})
     public HashMap<String, Object> learnDataSave(@RequestBody LearningDataForm form, @CurrentUser MemberInfo memberInfo) {
@@ -219,6 +238,7 @@ public class LearnController extends BaseCont {
     // 학습 데이터 등록 : e
 
     //학습템플릿관리 : s
+    @MenuAuthBase("/soulGod/learn/templateManage")
     @RequestMapping("/soulGod/learn/templateManage")
     public String templateManage(Model model,
                                  @ModelAttribute TemplateForm params) {
@@ -234,6 +254,7 @@ public class LearnController extends BaseCont {
         return "/soulGod/learn/templateManage";
     }
 
+    @MenuAuthBase("/soulGod/learn/templateManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/template/detail"})
     public HashMap<String, Object> templateDetail(@RequestBody TemplateForm form) {
@@ -242,12 +263,17 @@ public class LearnController extends BaseCont {
         return returnMap;
     }
 
+    @MenuAuthBase("/soulGod/learn/templateManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/template/delete"})
     public HashMap<String, Object> templateDelete(@RequestBody TemplateForm form, @CurrentUser MemberInfo memberInfo) {
         return templateService.delete(form, memberInfo);
     }
 
+    @MenuAuthBase({
+            "/soulGod/learn/cardManage",
+            "/soulGod/learn/billManage"
+    })
     @ResponseBody
     @PostMapping(value = {"/soulGod/template/nmCount"})
     public int templateNmCount(@RequestBody TemplateForm form) {
@@ -257,6 +283,7 @@ public class LearnController extends BaseCont {
 
 
     //학습데이터관리 : s
+    @MenuAuthBase("/soulGod/learn/learningDataManage")
     @RequestMapping("/soulGod/learn/learningDataManage")
     public String learningDataManage(Model model,
                                      @ModelAttribute LearningDataForm params) {
@@ -271,6 +298,7 @@ public class LearnController extends BaseCont {
         return "/soulGod/learn/learningDataManage";
     }
 
+    @MenuAuthBase("/soulGod/learn/learningDataManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/learningDataManage/detail"})
     public HashMap<String, Object> learningDataManageDetail(@RequestBody TemplateForm form) {
@@ -279,6 +307,7 @@ public class LearnController extends BaseCont {
         return returnMap;
     }
 
+    @MenuAuthBase("/soulGod/learn/learningDataManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/learningDataManage/save"})
     public HashMap<String, Object> learningDataManageSave(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
@@ -286,12 +315,14 @@ public class LearnController extends BaseCont {
         return learningModelService.save(form, memberInfo);
     }
 
+    @MenuAuthBase("/soulGod/learn/learningDataManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/learningDataManage/delete"})
     public HashMap<String, Object> learningDataManageDelete(@RequestBody LearningModelForm form) {
         return learningDataService.delete(form);
     }
 
+    @MenuAuthBase("/soulGod/learn/learningDataManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/learningDataManage/nmCount"})
     public int learningDataManageNmCount(@RequestBody LearningModelForm form) {
@@ -301,6 +332,7 @@ public class LearnController extends BaseCont {
 
 
     //모델관리 : s
+    @MenuAuthBase("/soulGod/learn/modelManage")
     @RequestMapping("/soulGod/learn/modelManage")
     public String modelManage(Model model,
                               @ModelAttribute LearningModelForm params) {
@@ -319,6 +351,7 @@ public class LearnController extends BaseCont {
     /**
      * 학습 실행
      */
+    @MenuAuthBase("/soulGod/learn/modelManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/learning"})
     public List<HashMap<String, Object>> dataLearning(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
@@ -334,6 +367,7 @@ public class LearnController extends BaseCont {
         return rtnList;
     }
 
+    @MenuAuthBase("/soulGod/learn/modelManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/detail"})
     public HashMap<String, Object> learnDataDetail(@RequestBody LearningModelForm form) {
@@ -342,6 +376,7 @@ public class LearnController extends BaseCont {
         return returnMap;
     }
 
+    @MenuAuthBase("/soulGod/learn/modelManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/delete"})
     public HashMap<String, Object> modelDelete(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
@@ -353,6 +388,7 @@ public class LearnController extends BaseCont {
      *
      * @return 모델 중지 성공 여부를 나타내는 Boolean 값
      */
+    @MenuAuthBase("/soulGod/learn/modelManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/stopModel"})
     public Boolean stopModel(@RequestBody LearningModelForm form) {
@@ -361,6 +397,7 @@ public class LearnController extends BaseCont {
     //모델관리 : e
 
     // 배포관리 : s
+    @MenuAuthBase("/soulGod/learn/deployManage")
     @RequestMapping("/soulGod/learn/deployManage")
     public String deployManage(Model model,
                                @ModelAttribute LearningModelForm params) {
@@ -390,6 +427,7 @@ public class LearnController extends BaseCont {
      *
      * @return 모델 배포 성공 여부를 나타내는 Boolean 값
      */
+    @MenuAuthBase("/soulGod/learn/deployManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/model/replaceModel"})
     public Boolean replaceModel(@RequestBody LearningModelForm form, @CurrentUser MemberInfo memberInfo) {
@@ -399,6 +437,7 @@ public class LearnController extends BaseCont {
     /**
      * 배치 추론 모델 지정 > 저장
      */
+    @MenuAuthBase("/soulGod/learn/deployManage")
     @ResponseBody
     @PostMapping(value = {"/soulGod/batchInfer/save"})
     public HashMap<String, Object> saveBatchInferenceModel(@RequestBody BatchInferenceModelForm.RegisterForm form, @CurrentUser MemberInfo memberInfo) {
@@ -408,6 +447,7 @@ public class LearnController extends BaseCont {
     /**
      * 배치 추론 모델 지정 > 조회
      */
+    @MenuAuthBase("/soulGod/learn/deployManage")
     @ResponseBody
     @GetMapping(value = {"/soulGod/batchInfer/detail"})
     public HashMap<String, Object> getBatchInferenceModel() {
@@ -417,6 +457,7 @@ public class LearnController extends BaseCont {
     // 배포관리 : e
 
     // 배포이력 : s
+    @MenuAuthBase("/soulGod/learn/deployHis")
     @RequestMapping("/soulGod/learn/deployHis")
     public String getDeployHis(Model model,
                                @ModelAttribute DeployHistoryForm params) {

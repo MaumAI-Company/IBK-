@@ -86,9 +86,13 @@
                             });
                         }
                     },
-                    error: function () {
+                    error: function (error) {
                         layerHide('deployAlert');
-                        showAlert('warning', '실패하였습니다.', () => {
+                        let msg = '실패하였습니다.';
+                        if (error.status === 401 || error.status === 403) {
+                            msg = '접근권한이 없습니다.';
+                        }
+                        showAlert('warning', msg, () => {
                             location.reload();
                         });
                     }
@@ -114,8 +118,14 @@
                     }
                     layerShow('popRegister');
                 },
-                error: function () {
-                    showAlert('warning', '배치 추론 모델 정보를 불러오는데 실패했습니다.');
+                error: function (error) {
+                    let msg = '배치 추론 모델 정보를 불러오는데 실패했습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
+                        location.reload();
+                    });
                 }
             });
         }
@@ -160,8 +170,14 @@
                         showAlert('warning', '저장에 실패했습니다.');
                     }
                 },
-                error: function () {
-                    showAlert('warning', '저장 처리 중 오류가 발생했습니다.');
+                error: function (error) {
+                    let msg = '저장 처리 중 오류가 발생했습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
+                        location.reload();
+                    });
                 }
             });
         }

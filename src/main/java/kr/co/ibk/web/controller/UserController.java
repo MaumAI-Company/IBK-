@@ -1,6 +1,7 @@
 package kr.co.ibk.web.controller;
 
 import kr.co.ibk.common.annotation.CurrentUser;
+import kr.co.ibk.common.annotation.MenuAuthBase;
 import kr.co.ibk.common.utils.RSAEncryptor;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.service.UserService;

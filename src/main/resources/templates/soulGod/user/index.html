@@ -211,7 +211,7 @@
         };
 
         // 기존 비밀번호와 사용자 입력 기존 비밀번호 일치 여부 check
-        if(!confirmOldPassword(jsonData)) {
+        if (!confirmOldPassword(jsonData)) {
             showAlert('warning', '기존 비밀번호가 일치하지 않습니다.');
             return;
         }
@@ -236,7 +236,7 @@
         }
 
         // 기존 비밀번호와 새 비밀번호 일치 여부 check
-        if(!fn_confirmNewPassword(jsonData)) {
+        if (!fn_confirmNewPassword(jsonData)) {
             showAlert('warning', '기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.');
             return;
         }
@@ -259,8 +259,12 @@
             success: function (data) {
                 result = data;
             },
-            error: function () {
-                showAlert('warning', '실패하였습니다.', () => {
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
                     location.reload();
                 });
             }
@@ -281,8 +285,12 @@
             success: function (data) {
                 result = data;
             },
-            error: function () {
-                showAlert('warning', '실패하였습니다.', () => {
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
                     location.reload();
                 });
             }
@@ -314,8 +322,12 @@
                     });
                 }
             },
-            error: function () {
-                showAlert('warning', '실패하였습니다.', () => {
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
                     location.reload();
                 });
             }

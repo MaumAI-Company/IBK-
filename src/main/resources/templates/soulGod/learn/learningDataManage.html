@@ -94,10 +94,14 @@
                 success: function (data) {
                     modelNmCount = data;
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
-                    })
+                    });
                 }
             });
         }
@@ -184,8 +188,14 @@
                         showAlert('warning', '학습 데이터가 존재하지 않습니다.');
                     }
                 },
-                error: function () {
-                    console.log("error");
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
+                        location.reload();
+                    });
                 }
             });
         }
@@ -291,10 +301,14 @@
                         })
                     }
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
-                    })
+                    });
                 }
             });
         }
@@ -333,10 +347,14 @@
                             })
                         }
                     },
-                    error: function () {
-                        showAlert('warning', '실패하였습니다.', () => {
+                    error: function (error) {
+                        let msg = '실패하였습니다.';
+                        if (error.status === 401 || error.status === 403) {
+                            msg = '접근권한이 없습니다.';
+                        }
+                        showAlert('warning', msg, () => {
                             location.reload();
-                        })
+                        });
                     }
                 });
             });

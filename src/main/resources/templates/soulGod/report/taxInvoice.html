@@ -213,7 +213,11 @@
                     $('#loading').removeClass('active');
                 },
                 error: function (error) {
-                    showAlert('warning', '실패하였습니다.', () => {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
                     });
                 }
@@ -340,10 +344,14 @@
 
                     layerShow('popDetail');
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
-                    })
+                    });
                 }
             });
         }

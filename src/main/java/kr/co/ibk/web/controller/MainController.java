@@ -48,4 +48,10 @@ public class MainController {
 //        return "/soulGod/main";
         return "redirect:/soulGod/report/card";
     }
+
+    @GetMapping("/nonAuth")
+    public String nonAuth(Model model) {
+        model.addAttribute("pageTitle", "Error");
+        return "/nonAuth";
+    }
 }
