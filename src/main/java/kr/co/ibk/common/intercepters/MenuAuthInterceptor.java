@@ -2,6 +2,7 @@ package kr.co.ibk.common.intercepters;
 
 import kr.co.ibk.common.annotation.MenuAuthBase;
 import kr.co.ibk.common.utils.CustomMap;
+import kr.co.ibk.common.utils.StringHelper;
 import kr.co.ibk.config.security.direct.UserDetails;
 import kr.co.ibk.domain.web.MemberInfo;
 import kr.co.ibk.service.CommonService;
@@ -26,6 +27,12 @@ public class MenuAuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        // 허용 IP 검증
+        if (!isAllowedIp(request)) {
+            denyRequest(request, response, HttpServletResponse.SC_FORBIDDEN, "/nonAuth");
+            return false;
+        }
 
         // 요청(핸들러)에 선언된 권한 기준 경로(@MenuAuthBase) 목록 조회
         String[] authPaths = getAuthPaths(handler);
@@ -74,6 +81,40 @@ public class MenuAuthInterceptor implements HandlerInterceptor {
 
         // 매칭 실패 시 권한 없음(403)
         denyRequest(request, response, HttpServletResponse.SC_FORBIDDEN, "/nonAuth");
+        return false;
+    }
+
+    private boolean isAllowedIp(HttpServletRequest request) {
+        MemberInfo memberInfo = getMemberInfo();
+        if (memberInfo == null) {
+            return false;
+        }
+
+        String ipCheckYn = memberInfo.getMemColumn2(); // IP 검증 사용여부
+        String allowedIps = memberInfo.getMemColumn1(); // 허용 IP
+
+        if (!"Y".equalsIgnoreCase(ipCheckYn)) {
+            return true;
+        }
+
+        // TODO :: 정책 결정 후 수정 필요
+         if (allowedIps == null || allowedIps.trim().isEmpty()) {
+            return true;
+        }
+
+        String clientIp = StringHelper.getClientIP(request);
+        if (clientIp != null && clientIp.contains(",")) {
+            clientIp = clientIp.split(",")[0].trim();
+        }
+        if (clientIp == null || clientIp.isEmpty()) {
+            return false;
+        }
+
+        for (String allowedIp : allowedIps.split(",")) {
+            if (clientIp.equals(allowedIp.trim())) {
+                return true;
+            }
+        }
         return false;
     }
 
