@@ -3,6 +3,7 @@ package kr.co.ibk.web.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.ibk.common.annotation.CurrentUser;
+import kr.co.ibk.common.annotation.MenuAuthBase;
 import kr.co.ibk.common.utils.CustomMap;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.DeptForm;
@@ -39,6 +40,7 @@ public class AdminController extends BaseCont {
     private final LearningSchedulerService learningSchedulerService;
     private final TemplateService templateService;
 
+    @MenuAuthBase("/soulGod/admin/department")
     @RequestMapping("/soulGod/admin/department")
     public String department(Model model,
                              @CurrentUser MemberInfo memberInfo) {
@@ -63,6 +65,7 @@ public class AdminController extends BaseCont {
 
     }
 
+    @MenuAuthBase("/soulGod/admin/user")
     @RequestMapping("/soulGod/admin/user")
     public String user(Model model,
                        @CurrentUser MemberInfo memberInfo, MemberInfo nowMember) {
@@ -90,6 +93,7 @@ public class AdminController extends BaseCont {
 
     }
 
+    @MenuAuthBase("/soulGod/admin/auth")
     @RequestMapping("/soulGod/admin/auth")
     public String auth(Model model,
                        @CurrentUser MemberInfo memberInfo, MenuAuthMember param) {
@@ -122,6 +126,7 @@ public class AdminController extends BaseCont {
 
     }
 
+    @MenuAuthBase("/soulGod/admin/menu")
     @RequestMapping("/soulGod/admin/menu")
     public String menu(Model model,
                        @CurrentUser MemberInfo memberInfo) {
@@ -156,6 +161,7 @@ public class AdminController extends BaseCont {
 
     }
 
+    @MenuAuthBase("/soulGod/admin/commonCode")
     @RequestMapping("/soulGod/admin/commonCode")
     public String commonCode(Model model,
                              @CurrentUser MemberInfo memberInfo) {
@@ -167,6 +173,10 @@ public class AdminController extends BaseCont {
 
     }
 
+    @MenuAuthBase({
+            "/soulGod/admin/department",
+            "/soulGod/admin/user"
+    })
     @ResponseBody
     @RequestMapping("/soulGod/admin/user/getDeptList")
     public HashMap<String, Object> userGetDeptList(DeptForm params) {
@@ -207,6 +217,7 @@ public class AdminController extends BaseCont {
         return map;
     }
 
+    @MenuAuthBase("/soulGod/admin/department")
     @PostMapping(value = {"/soulGod/admin/department/add"})
     @ResponseBody
     public HashMap<String, Object> departmentAdd(DeptForm params) {
@@ -219,6 +230,7 @@ public class AdminController extends BaseCont {
         return map;
     }
 
+    @MenuAuthBase("/soulGod/admin/department")
     @PostMapping(value = {"/soulGod/admin/department/delete"})
     @ResponseBody
     public HashMap<String, Object> departmentDelete(DeptForm params) {
@@ -231,6 +243,7 @@ public class AdminController extends BaseCont {
         return map;
     }
 
+    @MenuAuthBase("/soulGod/admin/department")
     @PostMapping(value = {"/soulGod/admin/department/mod"})
     @ResponseBody
     public HashMap<String, Object> departmentMod(DeptForm params) {
@@ -243,6 +256,7 @@ public class AdminController extends BaseCont {
         return map;
     }
 
+    @MenuAuthBase("/soulGod/admin/user")
     @PostMapping(value = {"/soulGod/admin/user/getUserInfo"})
     @ResponseBody
     public HashMap<String, Object> userGetUserInfo(String userId) {
@@ -256,6 +270,7 @@ public class AdminController extends BaseCont {
         return map;
     }
 
+    @MenuAuthBase("/soulGod/admin/user")
     @PostMapping(value = {"/soulGod/admin/user/checkUserId"})
     @ResponseBody
     public HashMap<String, Object> userCheckUserId(String userId) {
@@ -272,6 +287,7 @@ public class AdminController extends BaseCont {
     /**
      * 사번 중복확인 (true=중복)
      */
+    @MenuAuthBase("/soulGod/admin/user")
     @PostMapping(value = {"/soulGod/admin/user/confirmMemSno"})
     @ResponseBody
     public Boolean confirmMemSno(@RequestBody MemberForm form) {
@@ -290,6 +306,7 @@ public class AdminController extends BaseCont {
         return map;
     }
 
+    @MenuAuthBase("/soulGod/admin/user")
     @PostMapping(value = {"/soulGod/admin/user/mod"})
     @ResponseBody
     public HashMap<String, Object> userMod(MemberInfo params) {
@@ -302,7 +319,7 @@ public class AdminController extends BaseCont {
         return map;
     }
 
-
+    @MenuAuthBase("/soulGod/admin/user")
     @PostMapping(value = {"/soulGod/admin/user/resetPassword"})
     @ResponseBody
     public HashMap<String, Object> userResetPassword(MemberInfo params) {
@@ -315,6 +332,7 @@ public class AdminController extends BaseCont {
         return map;
     }
 
+    @MenuAuthBase("/soulGod/admin/user")
     @PostMapping(value = {"/soulGod/admin/user/setSuperAdmin"})
     @ResponseBody
     public Map<String, String> setSuperAdmin(@CurrentUser MemberInfo memberInfo, String memId, String auth) {
@@ -341,6 +359,7 @@ public class AdminController extends BaseCont {
         return map;
     }
 
+    @MenuAuthBase("/soulGod/admin/user")
     @PostMapping(value = {"/soulGod/admin/user/delete"})
     @ResponseBody
     public HashMap<String, Object> userDelete(MemberInfo params) {
@@ -361,6 +380,7 @@ public class AdminController extends BaseCont {
      * @param requestParamMap
      * @return
      */
+    @MenuAuthBase("/soulGod/admin/auth")
     @ResponseBody
     @RequestMapping(value = {"/soulGod/admin/auth/memberMenu"}, method = RequestMethod.POST)
     public HashMap<String, Object> authManagementMemberMenu(@CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {
@@ -380,6 +400,7 @@ public class AdminController extends BaseCont {
         return result;
     }
 
+    @MenuAuthBase("/soulGod/admin/auth")
     @ResponseBody
     @RequestMapping(value = {"/soulGod/admin/auth/insertMemberMenu"}, method = RequestMethod.POST)
     public HashMap<String, Object> authManagementInsertMemberMenu(@CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {
@@ -411,6 +432,7 @@ public class AdminController extends BaseCont {
      * @param requestParamMap
      * @return
      */
+    @MenuAuthBase("/soulGod/admin/menu")
     @ResponseBody
     @RequestMapping(value = {"/soulGod/admin/menu/addMenu"}, method = RequestMethod.POST)
     public HashMap<String, Object> manuManagementAddMenu(HttpServletRequest req, @CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {
@@ -446,6 +468,7 @@ public class AdminController extends BaseCont {
      * @param requestParamMap
      * @return
      */
+    @MenuAuthBase("/soulGod/admin/menu")
     @ResponseBody
     @RequestMapping(value = {"/soulGod/admin/menu/updateMenu"}, method = RequestMethod.POST)
     public HashMap<String, Object> manuManagementUpdateMenu(HttpServletRequest req, @CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {
@@ -480,6 +503,7 @@ public class AdminController extends BaseCont {
      * @param requestParamMap
      * @return
      */
+    @MenuAuthBase("/soulGod/admin/menu")
     @ResponseBody
     @RequestMapping(value = {"/soulGod/admin/menu/deleteMenu"}, method = RequestMethod.POST)
     public HashMap<String, Object> manuManagementDeleteMenu(HttpServletRequest req, @CurrentUser MemberInfo memberInfo, @RequestBody HashMap<String, Object> requestParamMap) {
@@ -508,6 +532,7 @@ public class AdminController extends BaseCont {
         return result;
     }
 
+    @MenuAuthBase("/soulGod/admin/scheduler")
     @RequestMapping("/soulGod/admin/scheduler")
     public String getScheduler(Model model,
                                @ModelAttribute LearningSchedulerForm params) {
@@ -532,18 +557,21 @@ public class AdminController extends BaseCont {
         return "/soulGod/admin/scheduler";
     }
 
+    @MenuAuthBase("/soulGod/admin/scheduler")
     @ResponseBody
     @PostMapping(value = {"/soulGod/admin/scheduler/detail"})
     public LearningSchedulerInfo schedulerDetail(@RequestBody LearningSchedulerForm params) {
         return learningSchedulerService.getDetail(params.getSchedId());
     }
 
+    @MenuAuthBase("/soulGod/admin/scheduler")
     @ResponseBody
     @PostMapping(value = {"/soulGod/admin/scheduler/save"})
     public HashMap<String, Object> schedulerSave(@RequestBody LearningSchedulerForm form, @CurrentUser MemberInfo memberInfo) {
         return learningSchedulerService.save(form, memberInfo);
     }
 
+    @MenuAuthBase("/soulGod/admin/scheduler")
     @ResponseBody
     @PostMapping(value = {"/soulGod/admin/scheduler/delete"})
     public HashMap<String, Object> schedulerDelete(@RequestBody LearningSchedulerForm form, @CurrentUser MemberInfo memberInfo) {

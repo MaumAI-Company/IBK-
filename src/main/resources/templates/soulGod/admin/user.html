@@ -1125,8 +1125,14 @@
                     addUserClose();// 사용자 관리 추가 모달 CLOSE
                 }
             },
-            error: function () {
-                console.log("error");
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
+                    location.reload();
+                });
             }
         });
     }
@@ -1160,8 +1166,14 @@
                     showAlert('warning', '실패하였습니다.');
                 }
             },
-            error: function () {
-                console.log("error");
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
+                    location.reload();
+                });
             }
         });
     }
@@ -1195,8 +1207,14 @@
                     showAlert('warning', '실패하였습니다.');
                 }
             },
-            error: function () {
-                console.log("error");
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
+                    location.reload();
+                });
             }
         });
     }
@@ -1231,8 +1249,14 @@
                     showAlert('warning', '실패하였습니다.');
                 }
             },
-            error: function () {
-                console.log("error");
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
+                    location.reload();
+                });
             }
         });
     }
@@ -1400,8 +1424,14 @@
                     modUserClose();// 사용자 관리 추가 모달 CLOSE
                 }
             },
-            error: function () {
-                console.log("error");
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
+                    location.reload();
+                });
             }
         });
     }
@@ -1511,8 +1541,14 @@
                 //modalOpenClose("id_chk","open");
                 layerShow('alertComplete');
             },
-            error: function () {
-                console.log("error");
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
+                    location.reload();
+                });
             }
         });
         return result;
@@ -1618,8 +1654,14 @@
                 dupMemSno = true;
 
             },
-            error: function () {
-                console.log("error");
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
+                    location.reload();
+                });
             }
         });
         return result;
@@ -1774,8 +1816,14 @@
                 }
                 htmlPagination += '</div>';
             },
-            error: function () {
-                console.log("error");
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
+                    location.reload();
+                });
             }
         });
         $("#srch_dptmt_tbody").html(htmlDeptList);
@@ -1925,8 +1973,14 @@
                     dupMemSno = true;
                 }
             },
-            error: function () {
-                //console.log("error");
+            error: function (error) {
+                let msg = '실패하였습니다.';
+                if (error.status === 401 || error.status === 403) {
+                    msg = '접근권한이 없습니다.';
+                }
+                showAlert('warning', msg, () => {
+                    location.reload();
+                });
             }
         });
     }

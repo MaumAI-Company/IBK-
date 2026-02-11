@@ -157,8 +157,12 @@
 
                     fn_drawChart1(data); // 추론 결과 수 차트 그리기
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
                     });
                 }
@@ -505,8 +509,12 @@
                         }];*/
                     fn_drawChart2(data); // 사용자 활용 현황 차트 그리기
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
                     });
                 }
@@ -542,8 +550,12 @@
                     aiPrfrData = data;
                     fn_drawChart3(data); // AI 사용 지급결의 사용 개수 render
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
                     });
                 }
