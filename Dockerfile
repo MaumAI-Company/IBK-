@@ -1,3 +1,5 @@
+# 최초 배포 컨테이너 생성시 사용 - 재가동시 참고 X
+
 # Use the official Tomcat image from the Docker Hub
 FROM tomcat:8.5.59-jdk11
 

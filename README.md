@@ -1,7 +1,10 @@
 # ibk
 
-# 재구축 및 배포가이드
+# 재구축 및 배포
+---
 DB > WEB > MONITORING 순서로 진행
+
+---
 
 # 1. ibk_mcc_web
 
