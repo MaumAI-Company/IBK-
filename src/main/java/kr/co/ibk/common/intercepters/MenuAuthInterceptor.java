@@ -97,9 +97,9 @@ public class MenuAuthInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        // TODO :: 정책 결정 후 수정 필요
+        // 정책: IP 검증 사용여부 Y이면 IP 필수
          if (allowedIps == null || allowedIps.trim().isEmpty()) {
-            return true;
+            return false;
         }
 
         String clientIp = StringHelper.getClientIP(request);
