@@ -21,8 +21,26 @@
                 chkMemSno = false;
                 dupMemSno = false;
             });
+
+            // IP 체크여부에 따른 IP 주소 필수 여부 토글
+            $("input[name='addMemColumn2'], input[name='modMemColumn2']").on('change', function () {
+                fn_toggleIpRequired('add');
+                fn_toggleIpRequired('mod');
+            });
         });
 
+        function fn_toggleIpRequired(prefix) {
+            const $label = $("label[for='" + prefix + "MemColumn1']");
+            const checkVal = $("input[name='" + prefix + "MemColumn2']:checked").val();
+            const isRequired = checkVal === 'Y';
+
+            const $aster = $label.find('.aster');
+            if (isRequired) {
+                $aster.show();
+            } else {
+                $aster.hide();
+            }
+        }
 
     </script>
 </head>
@@ -380,21 +398,12 @@
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="modMemColumn1">IP 주소</label>
+                        <label for="modMemColumn2_Y">
+                            IP 체크여부
+                            <span class="aster"></span>
+                        </label>
                     </th>
-                    <td>
-                        <div class="input">
-                            <input type="text" id="modMemColumn1" name="modMemColumn1"
-                                   placeholder="xxx.xxx.xxx.xxx, ..." onKeyUp="javascript:noEnKo(this)">
-                            <button type="button" class="btn_del" tabindex="-1">
-                                <span class="blind">삭제</span>
-                            </button>
-                        </div>
-                    </td>
-                    <th scope="row">
-                        <label for="modMemColumn2">IP 체크여부</label>
-                    </th>
-                    <td>
+                    <td colspan="3">
                         <div class="df">
                             <div class="radio txt">
                                 <input type="radio" name="modMemColumn2" id="modMemColumn2_Y" value="Y">
@@ -404,6 +413,23 @@
                                 <input type="radio" name="modMemColumn2" id="modMemColumn2_N" value="N" checked>
                                 <label for="modMemColumn2_N">미사용</label>
                             </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="modMemColumn1">
+                            IP 주소
+                            <span class="aster"></span>
+                        </label>
+                    </th>
+                    <td colspan="3">
+                        <div class="input">
+                            <input type="text" id="modMemColumn1" name="modMemColumn1"
+                                   placeholder="xxx.xxx.xxx.xxx, ..." onKeyUp="javascript:noEnKo(this)">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -666,19 +692,8 @@
                     </td>
                 <tr>
                     <th scope="row">
-                        <label for="addMemColumn1">IP 주소</label>
-                    </th>
-                    <td>
-                        <div class="input">
-                            <input type="text" id="addMemColumn1" name="addMemColumn1"
-                                   placeholder="xxx.xxx.xxx.xxx, ..." onKeyUp="javascript:noEnKo(this)">
-                            <button type="button" class="btn_del" tabindex="-1">
-                                <span class="blind">삭제</span>
-                            </button>
-                        </div>
-                    </td>
-                    <th scope="row">
                         IP 체크여부
+                        <span class="aster"></span>
                     </th>
                     <td colspan="3">
                         <div class="df">
@@ -690,6 +705,23 @@
                                 <input type="radio" name="addMemColumn2" id="addMemColumn2_N" value="N">
                                 <label for="addMemColumn2_N">미사용</label>
                             </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="addMemColumn1">
+                            IP 주소
+                            <span class="aster"></span>
+                        </label>
+                    </th>
+                    <td colspan="3">
+                        <div class="input">
+                            <input type="text" id="addMemColumn1" name="addMemColumn1"
+                                   placeholder="xxx.xxx.xxx.xxx, ..." onKeyUp="javascript:noEnKo(this)">
+                            <button type="button" class="btn_del" tabindex="-1">
+                                <span class="blind">삭제</span>
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -923,6 +955,7 @@
         // 등록 버튼누르면 기존 입력된 데이터 초기화 진행
         addUserClear();
         $('#srch_dptmt_type').val('add');
+        fn_toggleIpRequired('add');
         //modalOpenClose("add_user","open");
         layerShow('popRegister')
     }
@@ -941,6 +974,7 @@
         modUserClear();
         $('#srch_dptmt_type').val('mod');
         ajaxGetUserInfo(memId);
+        fn_toggleIpRequired('mod');
         //modalOpenClose("mod_user","open");
         layerShow('popModify');
     }
@@ -1060,20 +1094,27 @@
         if ($addMemPhone.length > 0) {
             if ($addMemPhone.length !== 11) {
                 showAlert('warning', "휴대폰 번호를 다시 확인해 주세요.");
-                $('#modMemPhone').focus();
+                $('#addMemPhone').focus();
                 return;
             }
         }
         if ($addMemBirthday.length > 0) {
             if ($addMemBirthday.length !== 8) {
                 showAlert('warning', "생년월일을 다시 확인해 주세요.");
-                $('#modMemPhone').focus();
+                $('#addMemPhone').focus();
                 return;
             }
         }
 
-        const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        if ($addMemColumn1.length > 0 && !ipv4Pattern.test($addMemColumn1)) {
+        if ($addMemColumn2 === 'Y' && $addMemColumn1.length < 1) {
+            showAlert('warning', "IP 체크여부가 사용인 경우 IP 주소는 필수입니다.");
+            $('#addMemColumn1').focus();
+            return;
+        }
+
+        // 콤마(,)로 구분된 IPv4
+        const ipv4ListPattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(\s*,\s*(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})*$/;
+        if ($addMemColumn1.length > 0 && !ipv4ListPattern.test($addMemColumn1)) {
             showAlert('warning', "유효하지 않은 IP 주소입니다.");
             return;
         }
@@ -1372,10 +1413,16 @@
                 return;
             }
         }
+        if ($modMemColumn2 === 'Y' && $modMemColumn1.length < 1) {
+            showAlert('warning', "IP 체크여부가 사용인 경우 IP 주소는 필수입니다.");
+            $('#modMemColumn1').focus();
+            return;
+        }
 
-        const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        if ($modMemColumn1.length > 0 && !ipv4Pattern.test($modMemColumn1)) {
-            showAlert("warning", "유효하지 않은 IP 주소입니다.");
+        // 콤마(,)로 구분된 IPv4
+        const ipv4ListPattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(\s*,\s*(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})*$/;
+        if ($modMemColumn1.length > 0 && !ipv4ListPattern.test($modMemColumn1)) {
+            showAlert('warning', "유효하지 않은 IP 주소입니다.");
             return;
         }
 
@@ -1908,23 +1955,19 @@
 
     // IP 주소 입력..
     function noEnKo(obj) {
-        console.log(obj);
-
         let id = obj.id;
         let val = obj.value;
 
-        let str = val.split(".");
-        str[0] = str[0].replace(/[^-\.0-9]/g, '').replace(/(.)(?=(\d{3})+$)/g, '$1,');
-        let fmStr = str.join('.');
+        // 허용: 숫자, 점, 콤마, 공백
+        let result = val.replace(/[^0-9.,\s]/g, '');
 
-        let result = fmStr.replace(/[`~!@#$%^&*()_|+\-=?;:'"<>\{\}\[\]\\\|ㄱ-ㅎ|ㅏ-ㅣ-ㅢ|가-힣|a-z|A-Z]/g, '');
+        // 연속된 공백 정리
+        result = result.replace(/\s+/g, ' ');
 
-        if (result.length > 15) {
-            result = result.substring(0, 15);
-        }
+        // 임의 길이 제한 제거(필요하면 숫자 조정)
+        // if (result.length > 100) result = result.substring(0, 100);
 
         $('#' + id).val(result);
-        //return result
     }
 
     function searchKeywordInit() {
