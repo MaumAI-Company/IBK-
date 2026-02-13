@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class StringHelper {
 
-   /* public static String getClientIP(HttpServletRequest request) {
+    /*public static String getClientIP(HttpServletRequest request) {
 
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
@@ -36,32 +36,30 @@ public class StringHelper {
     }*/
 
     public static String getClientIP(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        log.debug("> X-FORWARDED-FOR : " + ip);
-
-        if (ip == null) {
-            ip = request.getHeader("Proxy-Client-IP");
-            log.debug("> Proxy-Client-IP : " + ip);
-        }
-        if (ip == null) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-            log.debug(">  WL-Proxy-Client-IP : " + ip);
-        }
-        if (ip == null) {
-            ip = request.getHeader("HTTP_CLIENT_IP");
-            log.debug("> HTTP_CLIENT_IP : " + ip);
-        }
-        if (ip == null) {
-            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-            log.debug("> HTTP_X_FORWARDED_FOR : " + ip);
-        }
-        if (ip == null) {
-            ip = request.getRemoteAddr();
-            log.debug("> getRemoteAddr : " + ip);
-        }
-        log.debug("> Result : IP Address : " + ip);
-
+        String ip = getHeaderIp(request, "X-Forwarded-For");
+        if (ip == null) ip = getHeaderIp(request, "Proxy-Client-IP");
+        if (ip == null) ip = getHeaderIp(request, "WL-Proxy-Client-IP");
+        if (ip == null) ip = getHeaderIp(request, "HTTP_CLIENT_IP");
+        if (ip == null) ip = getHeaderIp(request, "HTTP_X_FORWARDED_FOR");
+        if (ip == null) ip = request.getRemoteAddr();
         return ip;
+    }
+
+    public static String getHeaderIp(HttpServletRequest request, String header) {
+        String value = request.getHeader(header);
+        if (value == null) return null;
+        value = value.trim();
+        if (value.isEmpty() || "unknown".equalsIgnoreCase(value)) return null;
+
+        // "client, proxy1, proxy2" -> 첫 번째
+        String first = value.split(",")[0].trim();
+
+        // IPv4:port 제거
+        int colon = first.indexOf(':');
+        if (colon > -1 && first.indexOf(']') == -1) {
+            first = first.substring(0, colon);
+        }
+        return first;
     }
 
     @Deprecated
