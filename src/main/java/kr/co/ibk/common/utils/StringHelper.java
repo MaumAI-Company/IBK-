@@ -14,53 +14,24 @@ import java.util.regex.Pattern;
 @Slf4j
 public class StringHelper {
 
-   /* public static String getClientIP(HttpServletRequest request) {
-
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_CLIENT_IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-        return ip;
-    }*/
-
     public static String getClientIP(HttpServletRequest request) {
+
         String ip = request.getHeader("X-Forwarded-For");
-        log.debug("> X-FORWARDED-FOR : " + ip);
-
-        if (ip == null) {
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
-            log.debug("> Proxy-Client-IP : " + ip);
         }
-        if (ip == null) {
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("WL-Proxy-Client-IP");
-            log.debug(">  WL-Proxy-Client-IP : " + ip);
         }
-        if (ip == null) {
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("HTTP_CLIENT_IP");
-            log.debug("> HTTP_CLIENT_IP : " + ip);
         }
-        if (ip == null) {
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-            log.debug("> HTTP_X_FORWARDED_FOR : " + ip);
         }
-        if (ip == null) {
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
-            log.debug("> getRemoteAddr : " + ip);
         }
-        log.debug("> Result : IP Address : " + ip);
-
         return ip;
     }
 
