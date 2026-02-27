@@ -1,5 +1,6 @@
 package kr.co.ibk.service;
 
+import kr.co.ibk.common.utils.MaskHelper;
 import kr.co.ibk.domain.web.BillInputInfo;
 import kr.co.ibk.model.BillInputForm;
 import kr.co.ibk.model.paging.PaginationInfo;
@@ -90,7 +91,7 @@ public class BillInputService extends _BaseService {
                     for (int i = 0; i < strArr.length; i++) {
                         strBuilder.append(i + 1).append("순위 ").append(strArr[i]).append("\r\n");
                     }
-                    item.setAcimCon(strBuilder.toString());
+                    item.setAcimCon(MaskHelper.accountNumber(strBuilder.toString()));
                 }
             });
         }
@@ -131,7 +132,7 @@ public class BillInputService extends _BaseService {
 
                 String[] colNames1 = {
                         "No", "대상", "세금계산서구분코드", "공급자사업자번호", "공급자상호명", "공급자업태명", "공급자종목명",
-                        "발행금액", "세금계산서품목명", "예산관리비목관리번호", "예산집행사유코드", "사업세부사업" , "예산경비지급방법코드", "계좌정보내용", "결과등록년월일"
+                        "발행금액", "세금계산서품목명", "예산관리비목관리번호", "예산집행사유코드", "사업세부사업", "예산경비지급방법코드", "계좌정보내용", "결과등록년월일"
                 };
 
                 CellStyle headerCellStyle = workbook.createCellStyle();
@@ -172,7 +173,7 @@ public class BillInputService extends _BaseService {
                     row.createCell(cellCnt++).setCellValue(item.getBdgtBsnsFrcsCon() == null ? "-" : item.getBdgtBsnsFrcsCon());
                     row.createCell(cellCnt++).setCellValue(item.getBdgtPrfrRsnFrcsCon() == null ? "-" : item.getBdgtPrfrRsnFrcsCon());
                     row.createCell(cellCnt++).setCellValue(item.getBdgtExnsPamtMcd() == null ? "-" : item.getBdgtExnsPamtMcd());
-                    row.createCell(cellCnt++).setCellValue(item.getAcimCon() == null ? "-" : item.getAcimCon());
+                    row.createCell(cellCnt++).setCellValue(item.getAcimCon() == null ? "-" : MaskHelper.accountNumber(item.getAcimCon()));
                     row.createCell(cellCnt++).setCellValue(item.getRsreYmd() == null ? "-" : item.getRsreYmd());
 
                     if (rowCnt % 100 == 0) {
