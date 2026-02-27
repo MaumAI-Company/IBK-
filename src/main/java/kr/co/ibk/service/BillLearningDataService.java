@@ -1,5 +1,6 @@
 package kr.co.ibk.service;
 
+import kr.co.ibk.common.utils.MaskHelper;
 import kr.co.ibk.domain.web.BillLearningDataInfo;
 import kr.co.ibk.model.BillLearningDataForm;
 import kr.co.ibk.model.paging.PaginationInfo;
@@ -69,7 +70,9 @@ public class BillLearningDataService extends _BaseService {
             form.setSearchTarget(null);
         }
 
-        return billLearningDataRepository.getList(form);
+        List<BillLearningDataInfo> list = billLearningDataRepository.getList(form);
+        list.forEach(item -> item.setAcimCon(MaskHelper.accountNumber(item.getAcimCon())));
+        return list;
     }
 
     public int getTotalCount(BillLearningDataForm form) {

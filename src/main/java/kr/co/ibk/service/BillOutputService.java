@@ -1,15 +1,14 @@
 package kr.co.ibk.service;
 
+import kr.co.ibk.common.utils.MaskHelper;
 import kr.co.ibk.domain.enums.InOutGbnType;
 import kr.co.ibk.domain.enums.InputColumnBillType;
 import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.BillOutputInfo;
 import kr.co.ibk.domain.web.LearningModelInputInfo;
 import kr.co.ibk.model.BillInputForm;
-import kr.co.ibk.repository.AiPrfrStatRepository;
 import kr.co.ibk.repository.BillOutputRepository;
 import kr.co.ibk.repository.LearningModelInputRepository;
-import kr.co.ibk.repository.UserUsageStatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +30,10 @@ public class BillOutputService extends _BaseService {
 
     public BillOutputInfo detail(BillInputForm params) {
         BillOutputInfo info = billOutputRepository.getDetail(params);
+        if (!ObjectUtils.isEmpty(info)) {
+            info.setAcimCon(MaskHelper.accountNumber(info.getAcimCon()));
+            info.setAcimPrbCon(MaskHelper.accountNumber(info.getAcimPrbCon()));
+        }
         List<LearningModelInputInfo> inputInfos = new ArrayList<>();
         if (!ObjectUtils.isEmpty(info.getLearningModelId())) {
             inputInfos = learningModelInputRepository.getPartList(info.getLearningModelId(), InOutGbnType.INPUT.name(), LearningType.BILL.name());
