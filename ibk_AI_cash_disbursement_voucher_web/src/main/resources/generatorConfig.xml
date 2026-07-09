@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!--Import property configuration-->
+    <properties resource="application-local.properties"></properties>
+    <context id="default" targetRuntime="MyBatis3" defaultModelType="flat">
+
+        <!-- 생성된 Java 파일의 인코딩-->
+        <property name="javaFileEncoding" value="UTF-8"/>
+
+        <!-- 자바 코드 형식화-->
+        <property name="javaFormatter" value="org.mybatis.generator.api.dom.DefaultJavaFormatter"/>
+        <!-- XML 코드 형식화-->
+        <property name="xmlFormatter" value="org.mybatis.generator.api.dom.DefaultXmlFormatter"/>
+
+        <!--<property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>-->
+
+        <!--<plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="tk.mybatis.mapper.common.Mapper"/>
+            &lt;!&ndash;caseSensitive default false, 데이터베이스 테이블이 name 대소문자를 구분하는 경우 이 속성을 true로 설정&ndash;&gt;
+            <property name="caseSensitive" value="false"/>
+        </plugin>-->
+
+        <!-- include the plugin -->
+        <plugin type="com.softwareloop.mybatis.generator.plugins.LombokPlugin">
+
+            <!-- enable annotations -->
+            <property name="allArgsConstructor" value="true"/>
+            <property name="noArgsConstructor" value="true"/>
+
+            <!-- disable annotations -->
+            <property name="accessors" value="false"/>
+            <!-- annotation's option(array of String) -->
+            <!--<property name="accessors.prefix" value="m_, _"/>-->
+
+            <property name="builder" value="false"/>
+            <!-- annotation's option(boolean) -->
+            <property name="builder.fluent" value="false"/>
+            <!-- annotation's option(String) -->
+<!--            <property name="builder.builderMethodName" value="myBuilder"/>-->
+        </plugin>
+
+
+        <!-- Serializable 클래스를 상속할 JavaBean 객체 생성-->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+
+        <!-- 자동 주석 생성 방지-->
+        <!-- optional，Aimed at creating class Control comments when -->
+        <commentGenerator>
+            <property name="javaFileEncoding" value="UTF-8"/>
+            <property name="suppressDate" value="true"/>
+            <!-- Remove automatically generated comments or not true: Yes, false:no -->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <!--jdbc Database connection for -->
+        <jdbcConnection
+                driverClass="${spring.datasource.web.driverClassName}"
+                connectionURL="${spring.datasource.web.jdbcUrl}"
+                userId="${spring.datasource.web.username}"
+                password="${spring.datasource.web.password}">
+        </jdbcConnection>
+
+
+        <!-- Not required, type processor, in database type and java Conversion control between types-->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="true"/>
+            <property name="useJSR310Types" value="false"/>
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="kr.co.ibk.domain.web" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+
+<!--            <property name="rootClass" value="kr.co.ibk.domain.BaseEntity"/>-->
+            <!-- Whether subpackages are allowed, i.e targetPackage.schemaName.tableName -->
+<!--            <property name="enableSubPackages" value="false"/>-->
+            <!-- Is it right? model Add constructor -->
+<!--            <property name="constructorBased" value="true"/>-->
+            <!-- Are classes right? CHAR Type of column trim operation -->
+<!--            <property name="trimStrings" value="true"/>-->
+            <!-- Established Model Whether the object is immutable or not Model Object will not have setter Method, only construction method -->
+<!--            <property name="immutable" value="false"/>-->
+        </javaModelGenerator>
+
+        <!--Mapper The directory where the mapping file is generated generates the corresponding SqlMap file -->
+        <sqlMapGenerator targetPackage="mapper"  targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+
+        <!-- Client code, easy to use for Model Object and XML Code for profile
+        type="ANNOTATEDMAPPER",generate Java Model And annotation based Mapper object
+        type="MIXEDMAPPER",Generate annotation based Java Model And corresponding Mapper object
+        type="XMLMAPPER",generate SQLMap XML Documentation and independent Mapper Interface -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="kr.co.ibk.repository"  targetProject="src/main/java">
+            <!-- enableSubPackages:Whether to let schema As suffix of package -->
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+    </context>
+</generatorConfiguration>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.LearningDataInputRepository">
+    <insert id="insertList" parameterType="map">
+        INSERT INTO LEARNING_DATA_INPUT
+        (
+        COL_NAME,
+        DATA_ID,
+        INOUT_GBN,
+        SNO
+        )
+        VALUES
+        <foreach collection="dataArr" item="item" separator=",">
+            (
+            #{item.name},
+            #{id},
+            #{gbn},
+            #{item.sno}
+            )
+        </foreach>
+    </insert>
+
+    <select id="getPartList" resultType="LearningDataInputInfo" parameterType="map">
+        select
+        ldi.COL_NAME
+        ,ldi.DATA_ID
+        ,ldi.INOUT_GBN
+        <if test="gbn != null and gbn != '' and gbn == 'INPUT'">
+            ,ldi.COL_NAME as inputColumnType
+        </if>
+        <if test="gbn != null and gbn != '' and gbn == 'OUTPUT'">
+            ,ldi.COL_NAME as outputColumnType
+        </if>
+        from LEARNING_DATA_INPUT ldi
+        where ldi.DATA_ID = #{id}
+        <if test="gbn != null and gbn != ''">
+            and ldi.INOUT_GBN = #{gbn}
+        </if>
+        order by ldi.INOUT_GBN asc
+    </select>
+
+    <delete id="deleteAllByDataId">
+        DELETE FROM LEARNING_DATA_INPUT WHERE DATA_ID IN
+        <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

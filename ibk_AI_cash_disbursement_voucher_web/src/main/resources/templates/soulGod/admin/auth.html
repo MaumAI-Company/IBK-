@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <script type="text/javascript">
+        $(function () {
+        });
+    </script>
+    <script type="text/javascript">
+        function fnMakeMemberMenuTree(seq, memId, roleId) {
+            let data = new Object();
+            data.seq = seq;
+            data.memId = memId;
+            data.roleId = roleId;
+
+            restCall('soulGod/admin/auth/memberMenu'
+                , {
+                    method: 'post',
+                    data: data,
+                    async: false,
+                }
+                , function (resp) {
+                    fnGetMemberMenuSuccessHandler(resp.menuTree);
+                }
+                , function (jqXHR, textStatus, errorThrown) {//실패
+                    console.log('restCall fail' + '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
+                    showAlert('warning', '메뉴 추가처리에 실패하였습니다.\n관리자에게 문의하세요.');
+                }
+            );
+        }
+
+        function fnGetMemberMenuSuccessHandler(menuTree) {
+            treeList = menuTree;
+
+            //초기 root data 생성
+            let data = new Array();
+            let tree = new Array();
+            //meta data 생성
+            treeList.forEach(function (obj, idx) {
+                let menuObj = new Object();
+                //반복처리 하나의 겟을 만든다.
+                if (obj.parId === 'system') {
+                    menuObj.id = obj.menuId;
+                    menuObj.name = obj.menuName;
+                    tree.push(menuObj);
+                }
+            });
+
+            $.each(tree, function (idx, obj) {
+                let menuObj = new Object();
+                menuObj = fnMakeMenuTreeJson(treeList, obj.id);
+                data.push(menuObj);
+            });
+            $("#menuList").tree("loadData", data);
+        }
+
+        //메뉴 목록 and 상세데이터 로딩처리 Start
+        //메뉴 트리를 object로 return 
+        function fnMakeMenuTreeJson(treeList, id) {
+            let menuChildrenArr = new Array();
+            let menuChildrenObj = new Object();
+            let obj = new Object();
+            if (treeList.LookUp('parId', id, 'menuId') == '') {
+                obj.id = treeList.LookUp('menuId', id, 'menuId');
+                obj.name = treeList.LookUp('menuId', id, 'menuName');
+                return obj;
+            } else {
+                obj.id = treeList.LookUp('menuId', id, 'menuId');
+                obj.name = treeList.LookUp('menuId', id, 'menuName');
+                obj.children = fnMakeMenuTreeChildren(treeList, id);
+                return obj;
+            }
+        }
+
+        //상위 메뉴트리가 메타 데이터에서 존재하면, 재귀처리
+        function fnMakeMenuTreeChildren(treeList, id) {
+            let arr = new Array();
+            treeList.forEach(function (obj, idx) {
+                if (obj.parId == id) {
+                    let menu = new Object();
+                    menu.id = obj.menuId;
+                    menu.name = obj.menuName;
+                    if (treeList.LookUp('parId', obj.menuId, 'menuId') != '') {
+                        menu.children = fnMakeMenuTreeChildren(treeList, obj.menuId);
+                    }
+                    arr.push(menu);
+                }
+            });
+            return arr;
+        }
+
+        function fnSaveAuthMenuTree() {
+            let el = $('#menuList').find('input[type="checkbox"]');
+            let arr = new Array();
+            $.each(el, function (idx, obj) {
+                let data = new Object();
+                let memSeq = $('#seq').val();
+                let memId = $('#memId').val();
+                let menuId = $(obj).attr('id').replaceAll('chk_', '');
+                let roleId = treeList.LookUp('menuId', menuId, 'roleId');
+                let menuUse = $(obj).is(':checked') ? 'Y' : 'N';
+                data.memSeq = memSeq;
+                data.memId = memId;
+                data.menuId = menuId;
+                data.roleId = roleId;
+                data.menuUse = menuUse;
+                arr.push(data);
+            });
+            console.log(arr);
+            if (arr.length > 0) {
+                let jsonData = new Object();
+                let seq = nvl($('#seq').val(), '');
+                let memId = nvl($('#memId').val(), '');
+                let roleId = nvl($('#roleId').val(), '');
+                jsonData.memberMenuList = arr;
+                jsonData.seq = seq;
+                jsonData.memId = memId;
+                jsonData.roleId = roleId;
+
+                restCall('soulGod/admin/auth/insertMemberMenu'
+                    , {
+                        method: 'post',
+                        data: jsonData,
+                        async: false,
+                    }
+                    , function (resp) {
+                        showAlert('complete', '저장되었습니다.', () => {
+                            location.reload();
+                        })
+                        fnGetMemberMenuSuccessHandler(resp.menuTree);
+                    }
+                    , function (jqXHR, textStatus, errorThrown) {//실패
+                        console.log('restCall fail' + '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
+                        showAlert('warning', '메뉴 추가처리에 실패하였습니다.\n관리자에게 문의하세요.');
+                    }
+                );
+            }
+        }
+
+
+    </script>
+
+    <script type="text/javascript">
+
+        function fnOpenModal(seq, memId, roleId) {
+            fnClearOpenModal();
+            $('#seq').val(seq);
+            $('#memId').val(memId);
+            $('#roleId').val(roleId);
+            fnMakeMemberMenuTree(seq, memId, roleId);
+            //modal 데이터 초기화    
+            //$('#auth_set').css('display', 'block');
+            layerShow('popModify');
+
+            //$('#auth_set').prepend('<div class="lyr_bg"></div>');			
+        }
+
+        function fnCloseModal(obj) {
+            fnClearOpenModal();
+            //$('#auth_set').css('display', 'none');
+            layerHide('popModify');
+            //$('#auth_set').find('.lyr_bg').remove(); 
+        }
+
+        //페이지 이동
+        function movePage(url, pageNo) {
+            $('#currentPageNo').val(pageNo);
+            $('#aform').attr({action: '/soulGod/admin/auth', method: 'post'}).unbind('submit').submit();
+        }
+
+        //검색결과 조회
+        function fnSearchMovePage(obj) {
+            let schAuthType = $('input:radio[name="schAuthType"]:checked').val();
+            let schCrtr = $('#schCrtr').val();
+            let schText = nvl($('#schText').val());
+            $('#currentPageNo').val('1');
+            $('#searchAuthType').val(schAuthType);
+            $('#searchCriteria').val(schCrtr);
+            $('#searchKeyword').val(schText);
+            $('#aform').attr({action: '/soulGod/admin/auth', method: 'post'}).unbind('submit').submit();
+        }
+
+        //초기화
+        function fnSearchEmpty(obj) {
+            //사용자 권한 초기화
+            $('input:radio[name="schAuthType"][value="all"]').prop('checked', true);
+            //조건선택 초기화
+            $('#schCrtr').attr('selected', true).val('all');
+            $('#schCrtr').niceSelect('update');
+            //검색어 초기화
+            $('#schText').val('');
+        }
+
+        //modal 초기화
+        function fnClearOpenModal() {
+            let data = [];
+            $("#menuList").tree("loadData", data);
+            $('#seq').val('');
+            $('#memId').val('');
+            $('#roleId').val('');
+        }
+
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <th:block th:insert="~{soulGod/fragments/header}"></th:block>
+
+    <div id="container">
+        <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">Admin</h2>
+                    <h3 class="page_tit">권한 관리</h3>
+                </div>
+                <input type="hidden" id="seq" name="seq" value=""/>
+                <input type="hidden" id="memId" name="memId" value=""/>
+                <input type="hidden" id="roleId" name="roleId" value=""/>
+                <form role="form" id="aform" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <!-- 신규 검색시 1 페이지로 이동 -->
+                    <input type="hidden" id="currentPageNo" name="currentPageNo" value="1"/>
+                    <!-- org 검색시 1 페이지로 이동 -->
+                    <input type="hidden" id="currentPageNo" name="currentPageNo" th:value="${params.currentPageNo}"/>
+                    <!-- org 페이지에 보여질 수 -->
+                    <input type="hidden" id="recordsPerPage" name="recordsPerPage" th:value="${params.recordsPerPage}"/>
+                    <!-- org 페이지 블럭의 수 -->
+                    <input type="hidden" id="pageSize" name="pageSize" th:value="${params.pageSize}"/>
+                    <!-- org 검색 종류 -->
+                    <input type="hidden" id="searchType" name="searchType" th:value="${params.searchType}"/>
+                    <!-- org 검색 값 -->
+                    <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${params.searchKeyword}"/>
+                    <!-- 추가 조회 컬럼 -->
+                    <input type="hidden" id="searchAuthType" name="searchAuthType" th:value="${params.searchAuthType}"/>
+                    <input type="hidden" id="searchCriteria" name="searchCriteria" th:value="${params.searchCriteria}"/>
+
+                </form>
+            </div>
+
+            <div class="board_top">
+                <div>
+                    <div class="total_num"><b>[[${totalRecordCount}]]</b> 명의 사용자가 있습니다.</div>
+                </div>
+                <div class="mla">
+                    <!-- label for="recordsPerPage" class="blind">게시글 페이지 수</label>
+                    <select name="recordsPerPage" id="recordsPerPage" class="sel_board sel_visibility">
+                        <option value="10" selected>10개</option>
+                        <option value="20">20개</option>
+                        <option value="30">30개</option>
+                        <option value="40">40개</option>
+                        <option value="50">50개</option>
+                    </select-->
+                    <div class="filter_area">
+                        <button type="button" class="btn btn_text btn_filter">
+                            <i class="ico_filter"></i>
+                            <span>검색</span>
+                        </button>
+
+                        <div class="filter">
+                            <div class="inner">
+                                <dl>
+                                    <dt>사용자 권한</dt>
+                                    <dd>
+                                        <div class="df">
+                                            <div class="radio txt">
+                                                <input type="radio" name="schAuthType" id="radioAll" value="all"
+                                                       th:checked="${params.searchAuthType == 'all'}">
+                                                <label for="radioAll">모두</label>
+                                            </div>
+                                            <div class="radio txt">
+                                                <input type="radio" name="schAuthType" id="schUser" value="user"
+                                                       th:checked="${params.searchAuthType == 'user'}">
+                                                <label for="schUser">사용자</label>
+                                            </div>
+                                            <div class="radio txt">
+                                                <input type="radio" name="schAuthType" id="schAdmin" value="admin"
+                                                       th:checked="${params.searchAuthType == 'admin'}">
+                                                <label for="schAdmin">관리자</label>
+                                            </div>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        <label for="searchKeyword">검색어</label>
+                                    </dt>
+                                    <dd>
+                                        <div class="search_form">
+                                            <label for="searchType" class="blind">검색어 타입</label>
+                                            <select name="searchType" id="schCrtr">
+                                                <option value="all" th:selected="${params.searchCriteria == 'all'}">전체
+                                                </option>
+                                                <option value="memId" th:selected="${params.searchCriteria == 'memId'}">
+                                                    사용자ID
+                                                </option>
+                                                <option value="memName"
+                                                        th:selected="${params.searchCriteria == 'memName'}">사용자명
+                                                </option>
+                                                <option value="deptName"
+                                                        th:selected="${params.searchCriteria == 'deptName'}">부서명
+                                                </option>
+                                                <option value="memPhone"
+                                                        th:selected="${params.searchCriteria == 'memPhone'}">연락처
+                                                </option>
+                                            </select>
+                                            <div class="search">
+                                                <input type="search" id="schText" th:value="${params.searchKeyword}"
+                                                       placeholder="검색어를 입력하세요.">
+                                                <button type="button" class="btn_del" tabindex="-1">
+                                                    <span class="blind">삭제</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <div class="btn_area">
+                                    <button type="button" class="btn line_cool_grey30"
+                                            onclick="fnSearchEmpty(this); return false;">
+                                        <span>초기화</span>
+                                    </button>
+                                    <button type="button" class="btn fill"
+                                            onclick="fnSearchMovePage(this); return false;">
+                                        <span>검색</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="selected_filter"></div>
+
+            <!--TODO : 데이터가 없을 때 (아래 table 태그 자체가 노출되면 안됨) : s-->
+            <!--<div class="nodata">
+				<p>검색 결과가 없습니다.</p>
+			</div>-->
+            <!--데이터가 없을 때 : e-->
+
+            <table class="tbl_list">
+                <caption>권한 관리 : No, 부서ID, 부서명, 부서명(영문), 연락처, 시스템 사용여부, 등록일, 권한관리로 구성</caption>
+                <colgroup>
+                    <col style="width: 3.5%;min-width: 44px;">
+                    <col style="width: 7%;">
+                    <col style="width: 10%;">
+                    <col style="width: 10%;">
+                    <col style="width: 11%;">
+                    <col style="width: 15%;min-width: 160px;">
+                    <col style="width:auto;">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">No.</th>
+                    <th scope="col">이름</th>
+                    <th scope="col">사용자ID</th>
+                    <th scope="col">부서명</th>
+                    <th scope="col">연락처</th>
+                    <th scope="col">등록일</th>
+                    <th scope="col">권한관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${totalRecordCount} == 0">
+                    <td colspan="8">데이터가 없습니다.</td>
+                </tr>
+                <tr th:each="list, status : ${userList}">
+                    <td th:text="${((params.currentPageNo-1)*params.recordsPerPage) + status.count}">10</td>
+                    <td th:text="${list.memName }">001</td>
+                    <td th:text="${list.memId }">system</td>
+                    <td th:text="${list.deptName }">system</td>
+                    <td th:text="${list.memPhone }">-</td>
+                    <td th:text="${#dates.format(list.memRegDt, 'yyyy-MM-dd HH:mm:ss')}">
+                    <td>
+                        <button type="button" class="badge"
+                                th:onclick="fnOpenModal([[${list.memSeq}]],[[${list.memId}]],[[${list.roleId}]]); return false;">
+                            <i class="ico_plus"></i>
+                            <span>권한관리</span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <th:block th:insert="~{soulGod/fragments/paging}"></th:block>
+        </div>
+    </div>
+</div>
+
+<!--권한관리 팝업 : s-->
+<div id="popModify" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_head">
+            <strong class="pop_tit">권한관리 수정</strong>
+            <button type="button" class="btn_close" onclick="fnCloseModal(this); return false;">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <!-- div class="checkbox txt">
+                <input type="checkbox" name="chk_" id="popAllChk" class="all_chk">
+                <label for="popAllChk">전체선택</label>
+            </div-->
+            <div>사용할 시스템(메뉴)를 선택하세요.</div>
+            <div id="menuList" class="tree_area" style="height:400px;margin-top:16px;"></div>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="fnCloseModal(this); return false;">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill" onclick="fnSaveAuthMenuTree(); return false;">
+                <span>저장</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--권한관리 수정 : e-->
+
+<!--얼럿 : s-->
+<div id="alertWarning" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_warning"></i>
+            <strong class="pop_tit">삭제하시겠습니까?</strong>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('alertWarning')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill" onclick="layerHide('alertWarning')">
+                <span>확인</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--얼럿 : e-->
+
+<!--얼럿 : s-->
+<div id="alertComplete" class="system_alert">
+    <div class="dim"></div>
+    <div class="popup">
+        <div class="pop_cont">
+            <i class="ico ico_complete"></i>
+            <strong class="pop_tit">사용 가능한 아이디입니다.</strong>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn fill" onclick="layerHide('alertComplete')">
+                <span>확인</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--얼럿 : e-->
+</body>
+<script type="text/javascript">
+    let treeList;
+
+    function fnMenuChecked(obj) {
+
+        let chkId = $(obj).attr('id');
+        let topMenuId = fnGetTopMenuId(chkId.replaceAll('chk_', ''), chkId);
+        let el = $('#chk_' + topMenuId).parent().parent().find('input[type="checkbox"]');
+        let checkedCnt = 0;
+
+        $.each(el, function (idx, obj) {
+            let id = 'chk_' + topMenuId;
+            if ($(obj).attr('id') != id && $(obj).is(':checked')) {
+                checkedCnt++;
+            }
+        });
+
+        if (checkedCnt == 0) {
+            if (el.length > 1) {
+                $('#chk_' + topMenuId).parent().parent().find('input[type="checkbox"]').prop('checked', false);
+            }
+        } else {
+            $('#chk_' + topMenuId).prop('checked', true);
+        }
+    }
+
+    function fnGetTopMenuId(id, orgId) {
+        let topId = id;
+        let orgChecked = $('#' + orgId).is(':checked');
+
+        let subEl = $('#' + orgId).parent().parent().find('input[type="checkbox"]');
+        if (subEl.length > 1) {
+            $(subEl).prop('checked', orgChecked);
+        }
+
+        treeList.forEach(function (obj, idx) {
+            if (obj.menuId == id) {
+                if (treeList.LookUp('menuId', id, 'parId') != 'system') {
+                    $('#chk_' + id).prop('checked', orgChecked);
+                    topId = fnGetTopMenuId(treeList.LookUp('menuId', obj.menuId, 'parId'), orgId);
+                    fnSubMenuChecked(treeList.LookUp('menuId', obj.menuId, 'parId'));
+                } else {
+                    if (treeList.LookUp('menuId', id, 'parId') != 'system') {
+                        $('#chk_' + obj.menuId).prop('checked', orgChecked);
+                        fnSubMenuChecked(treeList.LookUp('menuId', id, 'parId'));
+                    }
+                    topId = obj.menuId;
+                }
+            }
+        });
+        return topId;
+    }
+
+    function fnSubMenuChecked(menuId) {
+        let checkedCnt = 0;
+        let el = $('#chk_' + menuId).parent().parent().find('input[type="checkbox"]');
+        $.each(el, function (idx, obj) {
+            let id = 'chk_' + menuId;
+            if ($(obj).attr('id') != id && $(obj).is(':checked')) {
+                checkedCnt++;
+            }
+        });
+        if (checkedCnt == 0) {
+            $('#chk_' + menuId).parent().parent().find('input[type="checkbox"]').prop('checked', false);
+        } else {
+            $('#chk_' + menuId).prop('checked', true);
+        }
+        console.log('checkedCnt :: ', checkedCnt);
+    }
+
+
+    $(document).ready(function () {
+        let data = [];
+        let $jqtree = $("#menuList");
+
+        $jqtree.tree({
+            data: data,
+            onCreateLi: function (node, li) {
+                if (treeList != undefined && treeList.length > 0) {
+                    let menuId = node.id
+                    let keys = Object.keys(treeList[0]);
+                    $.each(keys, function (idx, key) {
+                        let elId = 'li_' + key;
+                        let elHtml = '<input type="hidden" id="" name="" value="">';
+                        elHtml = $(elHtml).attr('id', elId);
+                        elHtml = $(elHtml).attr('name', elId);
+                        elHtml = $(elHtml).attr('value', treeList.LookUp('menuId', menuId, key));
+                        li.find('.jqtree-title').after(elHtml);
+                    });
+                    let elChkId = 'chk_' + menuId;
+                    let authMenuUse = treeList.LookUp('menuId', menuId, 'authMenuUse');
+                    let elChk = '';
+                    if (authMenuUse == 'N') {
+                        elChk = '<div class="checkbox"><input type="checkbox" id="' + elChkId + '" onchange="fnMenuChecked(this); return false;"><label for="' + elChkId + '"></label></div>';
+                    } else {
+                        elChk = '<div class="checkbox"><input type="checkbox" id="' + elChkId + '" onchange="fnMenuChecked(this); return false;" checked><label for="' + elChkId + '"></label></div>';
+                    }
+                    li.find('.jqtree-title').before(elChk);
+                    // ie 호환 체크박스
+                    /*
+                    $('.jqtree-tree input[type=checkbox]').each(function(i){
+                        $(this).attr('id', 'chk_'+menuId);
+                        $(this).siblings('label').attr('for', 'chk_'+menuId);
+                    });
+                    */
+                }
+            },
+            autoOpen: true,
+            usecontextmenu: true,
+            selectable: true,
+            onCanSelectNode: function (node) {
+
+            }
+        });
+    });
+</script>
+</html>

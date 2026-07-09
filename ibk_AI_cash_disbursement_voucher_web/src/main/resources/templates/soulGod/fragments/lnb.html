@@ -1,0 +1,31 @@
+<aside id="aside">
+    <nav>
+        <ul class="nav">
+            <li th:each="item: ${leftMenuList}"
+                th:class="${item.menuColumn1}"
+                th:classappend="${mc == item.menuColumn1 ? 'active' : ''}"
+                th:with="children=${item.children}">
+                <a href="javascript:void(0);" th:text="${item.menuName}"></a>
+
+                <ul class="depth">
+                    <li th:if="${children ne null}"
+                        th:each="child: ${children}"
+                        th:with="subChild=${child.children}"
+                        th:classappend="${pageTitle == child.menuName ? 'active' : ''}">
+                        <a th:href="${subChild eq null or subChild.size() eq 0 ? child.menuUrl : 'javascript:void(0);'}" th:text="${child.menuName}"></a>
+
+                        <ul th:if="${subChild ne null and subChild.size() > 0}">
+                            <li th:each="sub: ${subChild}"
+                                th:classappend="${pageTitle == sub.menuName ? 'active' : ''}">
+                                <a th:href="${sub.menuUrl}" th:text="${sub.menuName}"></a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <a href="javascript:;" class="btn_toggle_aside">
+        <span class="blind">메뉴 접기</span>
+    </a>
+</aside>
