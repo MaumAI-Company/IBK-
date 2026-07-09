@@ -1,0 +1,227 @@
+package kr.co.ibk.service;
+
+import kr.co.ibk.common.utils.MaskHelper;
+import kr.co.ibk.domain.web.BillInputInfo;
+import kr.co.ibk.model.BillInputForm;
+import kr.co.ibk.model.paging.PaginationInfo;
+import kr.co.ibk.repository.BillInputRepository;
+import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class BillInputService extends _BaseService {
+
+    private final BillInputRepository billInputRepository;
+
+    @Value("${excel.data.partition.count}")
+    private int partitionCount;
+
+    public List<BillInputInfo> page(BillInputForm params) {
+        int totalCount = billInputRepository.getTotalCount(params);
+
+        PaginationInfo paginationInfo = new PaginationInfo(params);
+        paginationInfo.setTotalRecordCount(totalCount);
+        params.setPaginationInfo(paginationInfo);
+
+        List<BillInputInfo> list = new ArrayList<>();
+        if (totalCount > 0) {
+            if (ObjectUtils.isEmpty(params.getSorting())) {
+                params.setSorting("desc");
+            }
+            params.setPagingAt("Y");
+            list = list(params);
+
+            list.forEach(item -> {
+                String[] strArr;
+                String str;
+                if (!ObjectUtils.isEmpty(item.getBdgtItexFrcsCon())) {
+                    str = "";
+                    strArr = item.getBdgtItexFrcsCon().split("\\|");
+                    for (int i = 0; i < strArr.length; i++) {
+                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
+                    }
+                    item.setBdgtItexFrcsCon(str);
+                }
+                if (!ObjectUtils.isEmpty(item.getBdgtBsnsFrcsCon())) {
+                    str = "";
+                    strArr = item.getBdgtBsnsFrcsCon().split("\\|");
+                    for (int i = 0; i < strArr.length; i++) {
+                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
+                    }
+                    item.setBdgtBsnsFrcsCon(str);
+                }
+                if (!ObjectUtils.isEmpty(item.getBdgtPrfrRsnFrcsCon())) {
+                    str = "";
+                    strArr = item.getBdgtPrfrRsnFrcsCon().split("\\|");
+                    for (int i = 0; i < strArr.length; i++) {
+                        str += (i + 1) + "순위 " + strArr[i] + "\r\n";
+                    }
+                    item.setBdgtPrfrRsnFrcsCon(str);
+                }
+                if (!ObjectUtils.isEmpty(item.getBdgtExnsPamtMcd())) {
+                    strArr = item.getBdgtExnsPamtMcd().split("\\|");
+                    StringBuilder strBuilder = new StringBuilder();
+                    for (int i = 0; i < strArr.length; i++) {
+                        strBuilder.append(i + 1).append("순위 ").append(strArr[i]).append("\r\n");
+                    }
+                    item.setBdgtExnsPamtMcd(strBuilder.toString());
+                }
+                if (!ObjectUtils.isEmpty(item.getAcimCon())) {
+                    strArr = item.getAcimCon().split("\\|");
+                    StringBuilder strBuilder = new StringBuilder();
+                    for (int i = 0; i < strArr.length; i++) {
+                        strBuilder.append(i + 1).append("순위 ").append(strArr[i]).append("\r\n");
+                    }
+                    item.setAcimCon(MaskHelper.accountNumber(strBuilder.toString()));
+                }
+            });
+        }
+
+        return list;
+    }
+
+    public List<BillInputInfo> list(BillInputForm params) {
+        if (!ObjectUtils.isEmpty(params.getPagingAt()) && "Y".equals(params.getPagingAt())) {
+            return billInputRepository.getList(params);
+        }
+        return billInputRepository.getAllList(params);
+    }
+
+    public BillInputInfo detail(BillInputForm params) {
+        return billInputRepository.getDetail(params);
+    }
+
+    public void reportBillExcelDown(HttpServletResponse response, List<BillInputInfo> excelList) throws IOException {
+        int batchSize = partitionCount;
+        int totalRecords = excelList.size();
+        int fileIndex = 1;
+        int processedRecords = 0;
+        String zipFileName = "세금계산서_지급결의_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".zip";
+        String tempDir = System.getProperty("java.io.tmpdir");  // OS별 임시 폴더 사용
+        List<File> generatedFiles = new java.util.ArrayList<>();
+
+        while (processedRecords < totalRecords) {
+            String fileName = "세금계산서_지급결의_" + fileIndex + "_" +
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".xlsx";
+            File excelFile = new File(tempDir, fileName);
+            generatedFiles.add(excelFile);
+
+            try (SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+                 FileOutputStream fileOutputStream = new FileOutputStream(excelFile)) {
+
+                Sheet sheet = workbook.createSheet("세금계산서 지급결의 내역");
+
+                String[] colNames1 = {
+                        "No", "대상", "세금계산서구분코드", "공급자사업자번호", "공급자상호명", "공급자업태명", "공급자종목명",
+                        "발행금액", "세금계산서품목명", "예산관리비목관리번호", "예산집행사유코드", "사업세부사업", "예산경비지급방법코드", "계좌정보내용", "결과등록년월일"
+                };
+
+                CellStyle headerCellStyle = workbook.createCellStyle();
+                headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+                headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
+                headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerCellStyle.setBorderBottom(BorderStyle.THIN);
+                headerCellStyle.setBorderLeft(BorderStyle.THIN);
+                headerCellStyle.setBorderRight(BorderStyle.THIN);
+                headerCellStyle.setBorderTop(BorderStyle.THIN);
+
+                Row row = sheet.createRow(0);
+                for (int i = 0; i < colNames1.length; i++) {
+                    Cell cell = row.createCell(i);
+                    cell.setCellValue(colNames1[i]);
+                    cell.setCellStyle(headerCellStyle);
+                }
+
+                int rowCnt = 1;
+                int batchEnd = Math.min(processedRecords + batchSize, totalRecords); // 2만 건씩 처리
+
+                for (int i = processedRecords; i < batchEnd; i++) {
+                    BillInputInfo item = excelList.get(i);
+                    row = sheet.createRow(rowCnt++);
+                    int cellCnt = 0;
+
+                    row.createCell(cellCnt++).setCellValue(totalRecords - i); // No
+                    row.createCell(cellCnt++).setCellValue(item.getHdqrBobDcd() == null ? "-" : ("1".equals(item.getHdqrBobDcd()) ? "본부" : "영업점"));
+                    row.createCell(cellCnt++).setCellValue(item.getTxblDcd() == null ? "-" : item.getTxblDcd());
+                    row.createCell(cellCnt++).setCellValue(item.getSplrBsnnNo() == null ? "-" : item.getSplrBsnnNo());
+                    row.createCell(cellCnt++).setCellValue(item.getSplrFrm() == null ? "-" : item.getSplrFrm());
+                    row.createCell(cellCnt++).setCellValue(item.getSplrBzstNm() == null ? "-" : item.getSplrBzstNm());
+                    row.createCell(cellCnt++).setCellValue(item.getSplrItmsNm() == null ? "-" : item.getSplrItmsNm());
+                    row.createCell(cellCnt++).setCellValue(item.getIssAmt() == null ? "-" : item.getIssAmt().toString());
+                    row.createCell(cellCnt++).setCellValue(item.getTxblLsarNm() == null ? "-" : item.getTxblLsarNm());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtItexFrcsCon() == null ? "-" : item.getBdgtItexFrcsCon());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtBsnsFrcsCon() == null ? "-" : item.getBdgtBsnsFrcsCon());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtPrfrRsnFrcsCon() == null ? "-" : item.getBdgtPrfrRsnFrcsCon());
+                    row.createCell(cellCnt++).setCellValue(item.getBdgtExnsPamtMcd() == null ? "-" : item.getBdgtExnsPamtMcd());
+                    row.createCell(cellCnt++).setCellValue(item.getAcimCon() == null ? "-" : MaskHelper.accountNumber(item.getAcimCon()));
+                    row.createCell(cellCnt++).setCellValue(item.getRsreYmd() == null ? "-" : item.getRsreYmd());
+
+                    if (rowCnt % 100 == 0) {
+                        ((SXSSFSheet) sheet).flushRows(100);
+                    }
+                }
+
+                workbook.write(fileOutputStream);
+                workbook.dispose();
+            }
+
+            processedRecords += batchSize;
+            fileIndex++;
+        }
+
+        File zipFile = new File(System.getProperty("java.io.tmpdir"), zipFileName);
+
+        try (FileOutputStream fos = new FileOutputStream(zipFile);
+             ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+            for (File file : generatedFiles) {
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    ZipEntry zipEntry = new ZipEntry(file.getName());
+                    zipOut.putNextEntry(zipEntry);
+                    byte[] bytes = new byte[1024];
+                    int length;
+                    while ((length = fis.read(bytes)) >= 0) {
+                        zipOut.write(bytes, 0, length);
+                    }
+                }
+            }
+        }
+
+        response.setContentType("application/zip");
+        response.setHeader("Content-Disposition", "attachment;filename=" + new String(zipFileName.getBytes("UTF-8"), "8859_1"));
+
+        try (InputStream inputStream = Files.newInputStream(Paths.get(zipFile.getAbsolutePath()));
+             OutputStream outputStream = response.getOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+        }
+
+        for (File file : generatedFiles) {
+            file.delete();
+        }
+        zipFile.delete();
+
+    }
+}

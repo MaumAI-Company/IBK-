@@ -1,0 +1,35 @@
+@charset "UTF-8";
+
+#wrap{min-width:1250px;background-color:#fff}
+#container{display:flex;min-height:760px}
+.left_cont{flex-shrink:0;position:relative;width:35.5%;max-width:680px;min-height:100vh;background:linear-gradient(164deg, #30b4f2 3.81%, #005dbf 94.68%)}
+.left_cont:after{content:'';position:absolute;bottom:80px;left:0;width:100%;height:357px;background:url(../images/contents/bg_login.png) no-repeat 50% 100% / 70.588%}
+.right_cont{flex:1;display:flex;align-items:center;justify-content:center;padding-bottom:170px}
+
+.intro_txt{padding-top:160px;padding-left:14.7%;color:#fff;font-size:32px}
+
+.login_form{width:360px;text-align:center}
+.login_form .login_txt{margin-top:32px;padding-bottom:20px;color:#252729;font-size:18px;line-height:1}
+.login_form .input{margin-top:12px}
+.login_form .input input{height:52px;padding:0 15px;font-size:16px}
+.login_form .input .btn_del{width:50px;background-size: 20px;}
+.login_form .input.active input{padding-right: 50px;}
+.login_form .btn_login{width:100%;height:52px;margin-top:24px;color:#fff;font-size:16px;font-weight:600;border:0;background-color:#004c9d}
+.login_form .chk_area{display:flex;align-items:center;justify-content:space-between;margin-top:20px}
+.login_form .find_area{display:flex;align-items:center}
+.login_form .find_area li:not(:last-child):after{content:'';display:inline-block;width:1px;height:16px;margin:6px 4px 0;vertical-align:top;background-color:#ccd4d8}
+.login_form .find_area li button{}
+
+@media screen and (max-width:1920px) {
+    .intro_txt{font-size:1.6667vw}
+
+    @media screen and (max-width:1250px) {
+        .intro_txt{font-size:20px}
+    }
+}
+@media screen and (max-height:960px) {
+    .intro_txt{padding-top:16.6667vh}
+}
+@media screen and (max-height:760px) {
+    .intro_txt{padding-top:126px}
+}

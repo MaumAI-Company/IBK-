@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk.repository.DeployHistoryRepository">
+    <select id="getTotalCount" resultType="int">
+        select
+        count(*)
+        from
+        DEPLOY_HISTORY dh
+        inner join LEARNING_MODEL lm on dh.MODEL_ID = lm.ID
+        left join HC_MEMBER hm on dh.EXEC_ID = hm.MEM_ID
+        where
+        <include refid="where"></include>
+    </select>
+
+    <select id="getList" resultType="DeployHistoryInfo" parameterType="DeployHistoryForm">
+        select
+        <include refid="columns"></include>
+        from
+        DEPLOY_HISTORY dh
+        inner join LEARNING_MODEL lm on dh.MODEL_ID = lm.ID
+        left join HC_MEMBER hm on dh.EXEC_ID = hm.MEM_ID
+        where
+        <include refid="where"></include>
+        order by
+        dh.EXEC_DT
+        <choose>
+            <when test="sorting != null and sorting == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
+        <if test="pagingAt != null and pagingAt == 'Y'.toString()">
+            <include refid="kr.co.ibk.repository.CommonRepository.paging"/>
+        </if>
+    </select>
+
+    <sql id="columns">
+        dh.ID,
+        dh.MODEL_ID,
+        dh.EXEC_ID,
+        dh.EXEC_DT,
+        dh.RESULT,
+        lm.LEARN_NAME,
+        lm.HDQR_BOB_DCD,
+        lm.LEARNING_TYPE,
+        COALESCE(hm.MEM_NAME, dh.EXEC_ID) as execName
+    </sql>
+
+    <sql id="where">
+        1=1
+
+        /*대상 검색*/
+        <if test="searchTarget != null and searchTarget != ''">
+            AND lm.HDQR_BOB_DCD = #{searchTarget}
+        </if>
+
+        /*구분 검색*/
+        <if test="searchLearningType != null and searchLearningType != ''">
+            AND lm.LEARNING_TYPE = #{searchLearningType}
+        </if>
+
+        /*상태 검색*/
+        <if test="searchResultStatusType != null and searchResultStatusType.toString != ''">
+            AND dh.RESULT = #{searchResultStatusType}
+        </if>
+
+        /*검색어 검색*/
+        <if test="searchKeyword != null  and searchKeyword != ''">
+            AND (
+                lm.LEARN_NAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                OR COALESCE(hm.MEM_NAME, dh.EXEC_ID) LIKE CONCAT('%', #{searchKeyword}, '%')
+            )
+        </if>
+
+        /*일자 검색*/
+        <if test="searchStartDate != null and searchStartDate != '' and searchEndDate != null and searchEndDate != '' ">
+            AND dh.EXEC_DT BETWEEN CONCAT(REPLACE(#{searchStartDate}, '-', ''), ' 00:00:00') AND
+            CONCAT(REPLACE(#{searchEndDate}, '-', ''), ' 23:59:59')
+        </if>
+    </sql>
+</mapper>

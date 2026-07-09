@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+</head>
+
+<style>
+    #wrap iframe {width:100%;min-height:calc(100vh - 58px);}
+</style>
+<body>
+<div id="wrap">
+    <th:block th:insert="~{soulGod/fragments/header}"></th:block>
+
+    <div id="container">
+        <th:block th:insert="~{soulGod/fragments/lnb}"></th:block>
+
+        <iframe th:src="${statusDomain}"></iframe>
+    </div>
+</div>
+</body>
+</html>

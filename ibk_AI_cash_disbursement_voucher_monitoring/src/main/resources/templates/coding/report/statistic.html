@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>기간별 통계 | IBK 예산관리시스템 자동지급결의 AI 시스템</title>
+    <meta property="og:keywords" content="IBK 예산관리시스템 자동지급결의 AI 시스템" />
+    <meta property="og:description" content="IBK 예산관리시스템 자동지급결의 AI 시스템" />
+    <meta property="og:image" content="../../../static/ClientUI/user/images/common/meta_logo.png" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../static/ClientUI/images/icon/favicon.ico" />
+
+    <link rel="stylesheet" href="../../../static/ClientUI/plugins/datetimepicker/jquery.datetimepicker.min.css"/>
+
+    <link rel="stylesheet" href="../../../static/ClientUI/css/common.css"/>
+    <link rel="stylesheet" href="../../../static/ClientUI/css/style.css"/>
+
+    <script type="text/javascript" src="../../../static/ClientUI/plugins/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="../../../static/ClientUI/plugins/datetimepicker/jquery.datetimepicker.full.js"></script>
+    <script type="text/javascript" src="../../../static/ClientUI/plugins/jquery.nice-select.min.js"></script>
+
+    <script type="text/javascript" src="../../../static/ClientUI/js/file.js"></script>
+    <script type="text/javascript" src="../../../static/ClientUI/js/style.js"></script>
+    <script type="text/javascript" src="../../../static/ClientUI/js/common.js"></script>
+    <style>
+        .nodata {
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.06) !important;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function(){
+            fn_setDatePicker('#stDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        maxDate: $('#edDt').val() ? $('#edDt').val() : false
+                    })
+                }
+            });
+            fn_setDatePicker('#edDt', {
+                onShow: function (ct) {
+                    this.setOptions({
+                        minDate: $('#stDt').val() ? $('#stDt').val() : false
+                    })
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <header id="header">
+        <div class="contents">
+            <h1 class="logo">
+                <a href="../index.html">
+                    <img src="../../../static/ClientUI/images/common/logo.svg" alt="maum MCC">
+                </a>
+            </h1>
+            <div class="user_info">
+                <a href="../user/index.html" class="user">
+                    <span class="first">m</span> <!--TODO : 아이디 첫 글자 노출-->
+                    <span>maummcc</span>
+                </a>
+                <a href="javascript:void(0);" class="btn_logout">
+                    <span class="blind">로그아웃</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div id="container">
+        <aside id="aside">
+            <nav>
+                <ul class="nav">
+                    <li class="ico_chart active">
+                        <a href="javascript:void(0);">지급결의 AI 적용 결과 조회</a>
+                        <ul class="depth" style="display:block">
+                            <li>
+                                <a href="../report/card.html">BC카드 지급결의 내역 조회</a>
+                            </li>
+                            <li>
+                                <a href="../report/taxInvoice.html">세금계산서 지급결의 내역 조회</a>
+                            </li>
+                            <li class="active">
+                                <a href="../report/statistic.html">기간별 통계</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="ico_database">
+                        <a href="javascript:void(0);">학습 관리</a>
+                        <ul class="depth">
+                            <li>
+                                <a href="../learn/cardManage.html">BC카드 학습 데이터 등록</a>
+                            </li>
+                            <li>
+                                <a href="../learn/billManage.html">세금계산서 학습 데이터 등록</a>
+                            </li>
+                            <li>
+                                <a href="../learn/templateManage.html">학습 템플릿 관리</a>
+                            </li>
+                            <li>
+                                <a href="../learn/learningDataManage.html">학습 데이터 관리</a>
+                            </li>
+                            <li>
+                                <a href="../learn/modelManage.html">모델 관리</a>
+                            </li>
+                            <li>
+                                <a href="../learn/deployManage.html">배포 관리</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="ico_dns">
+                        <a href="javascript:void(0);">시스템 상태</a>
+                        <ul class="depth">
+                            <li>
+                                <a href="../system/monitoring.html">모니터링</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="ico_manage">
+                        <a href="javascript:void(0);">Admin</a>
+                        <ul class="depth">
+                            <li>
+                                <a href="javascript:void(0);">조직 관리</a>
+                                <ul>
+                                    <li>
+                                        <a href="../admin/department.html">부서 관리</a>
+                                    </li>
+                                    <li>
+                                        <a href="../admin/user.html">사용자 관리</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="../admin/menu.html">메뉴 관리</a>
+                            </li>
+                            <li>
+                                <a href="../admin/auth.html">권한 관리</a>
+                            </li>
+                            <li>
+                                <a href="../admin/scheduler.html">학습 스케줄러 관리</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <a href="javascript:;" class="btn_toggle_aside">
+                <span class="blind">메뉴 접기</span>
+            </a>
+        </aside>
+
+        <div class="contents">
+            <div class="page_top">
+                <div class="tit_area">
+                    <h2 class="one_depth">지급결의 AI 적용 결과 조회</h2>
+                    <h3 class="page_tit">기간별 통계</h3>
+                </div>
+                <div class="btn_area">
+                    <button type="button" class="btn line_cool_grey30">
+                        <span>통계정보 다운로드</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="board_top">
+                <div class="mla">
+                    <div class="filter_area">
+                        <button type="button" class="btn btn_text btn_filter">
+                            <i class="ico_filter"></i>
+                            <span>필터</span>
+                        </button>
+
+                        <div class="filter">
+                            <div class="inner">
+                                <dl>
+                                    <dt>조회기간</dt>
+                                    <dd>
+                                        <div class="term_form">
+                                            <label for="stDt" class="blind">조회 시작 날짜</label>
+                                            <input type="text" id="stDt" class="datepicker" value="2024.08.01" readonly>
+                                            <div class="swung"></div>
+                                            <label for="edDt" class="blind">조회 종료 날짜</label>
+                                            <input type="text" id="edDt" class="datepicker" value="2024.08.31" readonly>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        <label for="searchLearningType">구분</label>
+                                    </dt>
+                                    <dd>
+                                        <select name="searchLearningType" id="searchLearningType">
+                                            <option class="CARD" value="CARD">BC카드</option>
+                                            <option class="BILL" value="BILL">세금계산서</option>
+                                        </select>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        <label for="searchTarget">대상</label>
+                                    </dt>
+                                    <dd>
+                                        <select name="searchTarget" id="searchTarget">
+                                            <option value="" selected>전체</option>
+                                            <option value="1">본부</option>
+                                            <option value="2">영업점</option>
+                                        </select>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        <label for="cycle">주기</label>
+                                    </dt>
+                                    <dd>
+                                        <select name="cycle" id="cycle">
+                                            <option value="" selected>일별</option>
+                                            <option value="">월별</option>
+                                            <option value="">연도별</option>
+                                        </select>
+                                    </dd>
+                                </dl>
+                                <div class="btn_area">
+                                    <button type="button" class="btn line_cool_grey30">
+                                        <span>초기화</span>
+                                    </button>
+                                    <button type="button" class="btn fill">
+                                        <span>검색</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="selected_filter"></div>
+
+            <div class="graph_area">
+                <div class="graph">
+                    <div>추론 결과 수 : INPUT 데이터 기반 OUTPUT 데이터 생성 개수</div>
+                    <div id="chartdiv">
+                        <img src="../../../static/ClientUI/images/contents/graph01.png" alt="" style="max-width: 100%">
+                    </div> <!--TODO : 임의 높이값-->
+                </div>
+            </div>
+
+            <div class="graph_area">
+                <div class="graph">
+                    <div>사용자 활용 현황 : 추론된 OUTPUT 데이터의 실제 사용 개수</div>
+                    <div id="chartdiv2" style="height:366px"> <!--TODO : 임의 높이값-->
+                        <div class="nodata"><p>검색 결과가 없습니다.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
