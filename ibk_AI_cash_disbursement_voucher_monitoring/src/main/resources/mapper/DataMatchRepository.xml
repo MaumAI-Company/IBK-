@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk_monitoring.repository.DataMatchRepository">
+
+	<select id="cardCheck" resultType="boolean">
+		SELECT
+			CASE
+				WHEN (SELECT COUNT(*) FROM CARD_INPUT ci WHERE ci.RCV_YMD = CURRENT_DATE)
+					= (SELECT COUNT(*) FROM CARD_OUTPUT co WHERE co.RSRE_YMD = CURRENT_DATE)
+					THEN 1
+				ELSE 0
+				END AS isEqual
+	</select>
+
+	<select id="billCheck" resultType="boolean">
+		SELECT
+			CASE
+				WHEN (SELECT COUNT(*) FROM BILL_INPUT bi WHERE bi.RCV_YMD = CURRENT_DATE - INTERVAL 1 DAY)
+					= (SELECT COUNT(*) FROM BILL_OUTPUT bo WHERE bo.RSRE_YMD = CURRENT_DATE - INTERVAL 1 DAY)
+					THEN 1
+				ELSE 0
+				END AS isEqual
+	</select>
+
+</mapper>

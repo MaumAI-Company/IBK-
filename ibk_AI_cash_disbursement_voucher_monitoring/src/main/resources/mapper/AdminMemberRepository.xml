@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.ibk_monitoring.repository.AdminMemberRepository">
+	<select id="getSender" resultType="MemberInfo">
+		SELECT
+			*
+		FROM
+			HC_MEMBER AS hm
+		WHERE hm.MEM_STAT != 'delete' and hm.SND_YN = 'Y'
+	</select>
+
+	<select id="getReceiverList" resultType="MemberInfo">
+		SELECT
+			*
+		FROM
+			HC_MEMBER AS hm
+		WHERE hm.MEM_STAT != 'delete' and hm.RECV_YN = 'Y'
+	</select>
+</mapper>
