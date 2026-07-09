@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Thymeleaf 예제</title>
+  </head>
+  <body>
+    <h1>Thymeleaf 예제</h1>
+    <!-- 없을 경우 : ??hello2_ko?? 와 같이 나옴 -->
+    <h1
+      style="color: red"
+      th:text="${#messages.msg('com.mindslab.hello')}"
+    ></h1>
+    <h1
+      style="color: red"
+      th:text="${#messages.msgOrNull('com.mindslab.hello')}"
+    ></h1>
+    <!-- 없을 경우 : 아무것도 안찍힘 -->
+    <span th:text="${user.userId}"></span><br />
+    <span th:text="${user.name}"></span><br />
+    <span th:text="${user.authType}"></span><br />
+  </body>
+</html>
