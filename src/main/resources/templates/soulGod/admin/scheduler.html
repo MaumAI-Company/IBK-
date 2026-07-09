@@ -101,10 +101,14 @@
                     $('#des').val(data.des);
                     layerShow('popRegister');
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
-                    })
+                    });
                 }
             });
 
@@ -211,10 +215,14 @@
                             })
                         }
                     },
-                    error: function () {
-                        showAlert('warning', '실패하였습니다.', () => {
+                    error: function (error) {
+                        let msg = '실패하였습니다.';
+                        if (error.status === 401 || error.status === 403) {
+                            msg = '접근권한이 없습니다.';
+                        }
+                        showAlert('warning', msg, () => {
                             location.reload();
-                        })
+                        });
                     }
                 });
             });
@@ -254,10 +262,14 @@
                             })
                         }
                     },
-                    error: function () {
-                        showAlert('warning', '실패하였습니다.', () => {
+                    error: function (error) {
+                        let msg = '실패하였습니다.';
+                        if (error.status === 401 || error.status === 403) {
+                            msg = '접근권한이 없습니다.';
+                        }
+                        showAlert('warning', msg, () => {
                             location.reload();
-                        })
+                        });
                     }
                 });
             });
@@ -343,6 +355,8 @@
                                                 <option value="1" th:selected="${params.searchTarget == '1'}">본부
                                                 </option>
                                                 <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
+                                                <option value="3" th:selected="${params.searchTarget == '3'}">통합
                                                 </option>
                                             </select>
                                         </dd>
@@ -437,9 +451,8 @@
                         <a th:onclick="fn_schedulerDetail([[${item.schedId}]])" th:text="${item.schedNm}"
                            th:value="${item.schedId}">영업점_카드지급결의 학습모델 생성_Job</a>
                     </td>
-                    <td th:text="${item.hdqrBobDcd != null ? (item.hdqrBobDcd == '1' ? '본부' : '영업점') : '-'}">BC카드
-                    </td>
-                    <td th:text="${item.learningType != null ? item.learningType.getName() : '-'}">대상</td>
+                    <td th:text="${item.learningType != null ? item.learningType.getName() : '-'}">BC카드</td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : (item.hdqrBobDcd == '2' ? '영업점' : '통합'))}"></td>
                     <td th:text="${item.templateName}">사용</td>
                     <td th:text="${item.regNm}">사용</td>
                     <td th:text="${item.useAt != null && item.useAt == 'Y' ? '사용' : '미사용'}">사용</td>
@@ -508,7 +521,7 @@
                             <span>최근 </span>
                             <select id="searchMm">
                                 <option value="" disabled selected>선택</option>
-                                <option th:each="month : ${#numbers.sequence(1, 48)}"
+                                <option th:each="month : ${#numbers.sequence(1, 60)}"
                                         th:value="${month}"
                                         th:text="${month}">
                                 </option>

@@ -209,10 +209,14 @@
                             })
                         }
                     },
-                    error: function () {
-                        showAlert('warning', '실패하였습니다.', () => {
+                    error: function (error) {
+                        let msg = '실패하였습니다.';
+                        if (error.status === 401 || error.status === 403) {
+                            msg = '접근권한이 없습니다.';
+                        }
+                        showAlert('warning', msg, () => {
                             location.reload();
-                        })
+                        });
                     }
                 });
             });
@@ -301,8 +305,14 @@
                         showAlert('warning', '학습 데이터가 존재하지 않습니다.');
                     }
                 },
-                error: function () {
-                    console.log("error");
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
+                        location.reload();
+                    });
                 }
             });
         }
@@ -330,8 +340,14 @@
                             });
                         }
                     },
-                    error: function () {
-                        showAlert('warning', '실패하였습니다.');
+                    error: function (error) {
+                        let msg = '실패하였습니다.';
+                        if (error.status === 401 || error.status === 403) {
+                            msg = '접근권한이 없습니다.';
+                        }
+                        showAlert('warning', msg, () => {
+                            location.reload();
+                        });
                     }
                 });
             });
@@ -359,8 +375,12 @@
                             });
                         }
                     },
-                    error: function () {
-                        showAlert('warning', '실패하였습니다.', () => {
+                    error: function (error) {
+                        let msg = '실패하였습니다.';
+                        if (error.status === 401 || error.status === 403) {
+                            msg = '접근권한이 없습니다.';
+                        }
+                        showAlert('warning', msg, () => {
                             location.reload();
                         });
                     }
@@ -372,6 +392,16 @@
          * 결과보기 팝업 open
          */
         function fn_result(el) {
+
+            // 카드인 경우 예산경비지급코드, 계좌정보내용 미노출
+            let isBill = $(el).data('is-bill');
+            if (isBill) {
+                $('.billCon').show();
+            } else {
+                $('.billCon').hide();
+            }
+
+            // 평가지표, 정밀도, 재현율 세팅
             let itexPrecision = $(el).data('itex-precision');
             let itexRecall = $(el).data('itex-recall');
             let itexF1Score = $(el).data('itex-f1-score');
@@ -381,6 +411,12 @@
             let prfrPrecision = $(el).data('prfr-precision');
             let prfrRecall = $(el).data('prfr-recall');
             let prfrF1Score = $(el).data('prfr-f1-score');
+            let exnsPrecision = $(el).data('exns-precision');
+            let exnsRecall = $(el).data('exns-recall');
+            let exnsF1Score = $(el).data('exns-f1-score');
+            let acimPrecision = $(el).data('acim-precision');
+            let acimRecall = $(el).data('acim-recall');
+            let acimF1Score = $(el).data('acim-f1-score');
 
             $('#itexPrecision').text(itexPrecision != null ? itexPrecision : '-');
             $('#itexRecall').text(itexRecall != null ? itexRecall : '-');
@@ -391,6 +427,12 @@
             $('#prfrPrecision').text(prfrPrecision != null ? prfrPrecision : '-');
             $('#prfrRecall').text(prfrRecall != null ? prfrRecall : '-');
             $('#prfrF1Score').text(prfrF1Score != null ? prfrF1Score : '-');
+            $('#exnsPrecision').text(exnsPrecision != null ? exnsPrecision : '-');
+            $('#exnsRecall').text(exnsRecall != null ? exnsRecall : '-');
+            $('#exnsF1Score').text(exnsF1Score != null ? exnsF1Score : '-');
+            $('#acimPrecision').text(acimPrecision != null ? acimPrecision : '-');
+            $('#acimRecall').text(acimRecall != null ? acimRecall : '-');
+            $('#acimF1Score').text(acimF1Score != null ? acimF1Score : '-');
 
             layerShow('popResult');
         }
@@ -474,6 +516,8 @@
                                                 <option value="1" th:selected="${params.searchTarget == '1'}">본부
                                                 </option>
                                                 <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
+                                                <option value="3" th:selected="${params.searchTarget == '3'}">통합
                                                 </option>
                                             </select>
                                         </dd>
@@ -602,7 +646,7 @@
                            onclick="fn_learningDataOpen(this)">admin</a>
                     </td>
                     <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}">BC카드</td>
-                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : (item.hdqrBobDcd == '2' ? '영업점' : '통합'))}"></td>
                     <td th:text="${item.regName}">홍길녀</td>
                     <td>
                         <!--0: 등록 완료, 1: 학습 데이터 생성 오류, 2: 학습 중, 3: 학습 완료 4: 학습 오류 -->
@@ -624,6 +668,7 @@
                     <td th:text="${#temporals.format(item.createDtm, 'yyyy-MM-dd HH:mm:ss')}">2022.07.30</td>
                     <td>
                         <button type="button" class="badge" onclick="fn_result(this)"
+                                th:data-is-bill="${item.learningType eq T(kr.co.ibk.domain.enums.LearningType).BILL}"
                                 th:data-itex-precision="${item.bdgtItexFrcsConPrecision}"
                                 th:data-itex-recall="${item.bdgtItexFrcsConRecall}"
                                 th:data-itex-f1-score="${item.bdgtItexFrcsConF1Score}"
@@ -632,7 +677,13 @@
                                 th:data-bsns-f1-score="${item.bdgtBsnsFrcsConF1Score}"
                                 th:data-prfr-precision="${item.bdgtPrfrRsnFrcsConPrecision}"
                                 th:data-prfr-recall="${item.bdgtPrfrRsnFrcsConRecall}"
-                                th:data-prfr-f1-score="${item.bdgtPrfrRsnFrcsConF1Score}">
+                                th:data-prfr-f1-score="${item.bdgtPrfrRsnFrcsConF1Score}"
+                                th:data-exns-precision="${item.bdgtExnsPamtMcdPrecision}"
+                                th:data-exns-recall="${item.bdgtExnsPamtMcdRecall}"
+                                th:data-exns-f1-score="${item.bdgtExnsPamtMcdF1Score}"
+                                th:data-acim-precision="${item.acimConPrecision}"
+                                th:data-acim-recall="${item.acimConRecall}"
+                                th:data-acim-f1-score="${item.acimConF1Score}">
                             <input type="hidden" id="0_1" value="first">
                             <i class="ico_plus"></i>
                             <span>결과보기</span>
@@ -901,7 +952,6 @@
                                             </tbody>
                                         </table>
                                     </div>
-
                                 </td>
                             </tr>
                             </tbody>
@@ -937,7 +987,6 @@
                                             </tbody>
                                         </table>
                                     </div>
-
                                 </td>
                             </tr>
                             </tbody>
@@ -973,7 +1022,76 @@
                                             </tbody>
                                         </table>
                                     </div>
-
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr class="billCon">
+                    <th scope="row">예산경비지급방법코드</th>
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>Precision</td>
+                                                <td id="exnsPrecision"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>recall</td>
+                                                <td id="exnsRecall"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>F1Score</td>
+                                                <td id="exnsF1Score"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr class="billCon">
+                    <th scope="row">계좌정보내용</th>
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <table class="in_table">
+                                            <colgroup>
+                                                <col style="width:25%">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>Precision</td>
+                                                <td id="acimPrecision"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>recall</td>
+                                                <td id="acimRecall"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>F1Score</td>
+                                                <td id="acimF1Score"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </td>
                             </tr>
                             </tbody>

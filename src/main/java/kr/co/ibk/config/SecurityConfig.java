@@ -68,6 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/api/v1/o/**").permitAll()
 //                .mvcMatchers("/api/v1/**").hasAnyRole("USER, ADMIN")
 //                .mvcMatchers("/pages/**").hasAnyRole("USER, ADMIN")
+                .mvcMatchers("/soulGod/admin/**").hasAnyRole("ADMIN")
                 .mvcMatchers("/soulGod/**").authenticated()
                 .mvcMatchers("/**").permitAll() //개발 중 임시 오픈
                 .anyRequest().authenticated()
@@ -107,6 +108,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .maximumSessions(100)
                 .maxSessionsPreventsLogin(true) //false : 이전세션아웃, true : 이전세션점유
         ;
+
+        http.exceptionHandling()
+                .accessDeniedPage("/nonAuth");
 
         //<input type="checkbo" name="remember-me" />Remember Me
         /*http.rememberMe()

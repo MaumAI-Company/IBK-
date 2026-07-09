@@ -205,10 +205,14 @@
                         })
                     }
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
-                    })
+                    });
                 }
             });
         }
@@ -227,10 +231,14 @@
                 success: function (data) {
                     learnDataNmCount = data;
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
-                    })
+                    });
                 }
             });
         }
@@ -249,10 +257,14 @@
                 success: function (data) {
                     templateNmCount = data;
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
-                    })
+                    });
                 }
             });
         }
@@ -345,7 +357,7 @@
                     }
                     $('#contents').html(contents);
                     $('.totalCnt').text(fn_setCommas(data.totalCount));
-                    fn_settingChip($('#searchJson').val(), true);
+                    fn_settingChip($('#searchJson').val(), {isRadio: true});
 
                     // 검색 조건 있는 경우 등록버튼 활성화
                     $('#saveBtn').attr('disabled', !$('#searchJson').val());
@@ -353,7 +365,14 @@
 
                 },
                 error: function (error) {
-                    console.log(error);
+                    layerHide('loading');
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
+                        location.reload();
+                    });
                 },
                 complete: function () {
                     layerHide('loading');

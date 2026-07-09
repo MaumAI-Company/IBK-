@@ -185,7 +185,7 @@
 
         function modDept() {
 
-            if(!$.trim($('#detail_deptId').val())){
+            if (!$.trim($('#detail_deptId').val())) {
                 showAlert('warning', '부서를 먼저 선택해 주세요.');
                 return false;
             }
@@ -246,13 +246,17 @@
                     } else if ("EXIST" == data.status) {
                         showAlert('warning', data.msg);
                     } else if ("FAIL" == data.status) {
-                        showAlert('warning',data.msg);
+                        showAlert('warning', data.msg);
                     } else {
-                        showAlert('warning','실패하였습니다.');
+                        showAlert('warning', '실패하였습니다.');
                     }
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
                     });
                 }
@@ -301,8 +305,12 @@
                         showAlert('warning', '실패하였습니다.');
                     }
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
                     });
                 }
@@ -422,8 +430,12 @@
                         showAlert('warning', '실패하였습니다.');
                     }*/
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
                     });
                 }
@@ -583,8 +595,12 @@
                     }
                     htmlPagination += '</div>';
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
                     });
                 }
@@ -779,7 +795,8 @@
                         </tbody>
                     </table>
                     <div class="btn_area">
-                        <button type="button" class="btn line_cool_grey30 modBtn" onclick="fnGetRevertDetailLayoutData();">
+                        <button type="button" class="btn line_cool_grey30 modBtn"
+                                onclick="fnGetRevertDetailLayoutData();">
                             <span>되돌리기</span>
                         </button>
                         <button type="button" class="btn fill modBtn" onclick="modDept();">

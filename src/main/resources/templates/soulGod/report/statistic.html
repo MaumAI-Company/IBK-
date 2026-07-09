@@ -6,6 +6,14 @@
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/xy.js"></script>
     <script type="text/javascript" src="/ClientUI/plugins/amcharts5/Animated.js"></script>
     <style>
+        .chart {
+            height: 366px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
         .nodata {
             padding: 40px;
             text-align: center;
@@ -15,6 +23,10 @@
         }
     </style>
     <script type="text/javascript">
+        let inputData = [];
+        let outputData = [];
+        let aiPrfrData = [];
+
         $(function () {
             fn_setDatePicker('#searchStartDate', {
                 onShow: function (ct) {
@@ -33,16 +45,13 @@
 
         });
 
-        let inputData = [];
-        let outputData = [];
-
         async function fn_search() {
             layerShow('loading');
 
             await new Promise(resolve => setTimeout(resolve, 100)); // 로딩 UI 업데이트 대기
 
             try {
-                await Promise.all([fn_getStatisticInput(), fn_getStatisticOutput(), fn_createTable()]);
+                await Promise.all([fn_getStatisticInput(), fn_getStatisticOutput(), fn_getAiPrfrStatistic(), fn_createTable()]);
             } catch (error) {
                 showAlert('warning', '실패하였습니다.');
             } finally {
@@ -148,8 +157,12 @@
 
                     fn_drawChart1(data); // 추론 결과 수 차트 그리기
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
                     });
                 }
@@ -496,13 +509,59 @@
                         }];*/
                     fn_drawChart2(data); // 사용자 활용 현황 차트 그리기
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
                     });
                 }
             });
         }
+
+        /**
+         * 사용자 활용 현황 차트 데이터 get/set
+         */
+        function fn_getAiPrfrStatistic() {
+            let jsonData = {
+                "searchLearningType": $('#searchLearningType').val(),
+                "searchTarget": $('#searchTarget').val(),
+                "searchStartDate": $('#searchStartDate').val(),
+                "searchEndDate": $('#searchEndDate').val(),
+                "searchCycle": $('#searchCycle').val(),
+            }
+
+            $.ajax({
+                url: "/soulGod/report/statistic/aiPrfr",
+                type: "post",
+                async: false,
+                data: JSON.stringify(jsonData),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    // 검색조건 주기(일별,월별,연도별)에 따라 X축 날짜 포맷 적용
+                    data.forEach(item => {
+                        let strDate = item.dd.toString();
+                        item.dd = fn_dateFormat(strDate);
+                    });
+
+                    aiPrfrData = data;
+                    fn_drawChart3(data); // AI 사용 지급결의 사용 개수 render
+                },
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
+                        location.reload();
+                    });
+                }
+            });
+        }
+
 
         am5.ready(function () {
             fn_search();
@@ -564,6 +623,7 @@
 
             let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
                 renderer: am5xy.AxisRendererY.new(root, {
+                    min: 0,
                     strokeOpacity: 0.1
                 })
             }));
@@ -714,6 +774,7 @@
             xAxis.data.setAll(data);
 
             let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                min: 0,
                 renderer: am5xy.AxisRendererY.new(root, {
                     strokeOpacity: 0.1
                 })
@@ -721,7 +782,7 @@
 
             function makeSeries2(name, fieldName, per, color) {
                 let series;
-                if (fieldName != 'total' && fieldName != 'totalOutCnt') {
+                if (fieldName != 'total' && fieldName != 'totalOutCnt' && fieldName != 'arinUseCnt') {
                     series = chart.series.push(am5xy.ColumnSeries.new(root, {
                         name: name,
                         xAxis: xAxis,
@@ -842,6 +903,41 @@
             });
             legend.data.push(series3);
 
+            let series4 = chart.series.push(
+                am5xy.LineSeries.new(root, {
+                    name: "AI 사용 데이터수",
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "arinUseCnt",
+                    categoryXField: "dd",
+                    tooltip: am5.Tooltip.new(root, {
+                        pointerOrientation: "horizontal",
+                        labelText: "{valueY}개 / {arinUsePer}%"
+                    }),
+                    stroke: am5.color(0xD7263D)
+                })
+            );
+
+            series4.strokes.template.setAll({
+                strokeWidth: 3,
+                templateField: "strokeSettings"
+            });
+
+            series4.data.setAll(data);
+
+            series4.bullets.push(function () {
+                return am5.Bullet.new(root, {
+                    sprite: am5.Circle.new(root, {
+                        strokeWidth: 3,
+                        stroke: am5.color(0xD7263D),
+                        radius: 5,
+                        fill: root.interfaceColors.get("background")
+                    })
+                });
+            });
+
+            legend.data.push(series4);
+
             chart.set("cursor", am5xy.XYCursor.new(root, {}));
 
             // 004C9D / 6D7175 / F69192 / 74C8E6 /7AE674 /9854C6
@@ -851,9 +947,207 @@
             makeSeries2("예산비목정보_예산사업ID_적중수", "hitCnt4", "hitCnt4Per", 0x7AE674);
             makeSeries2("전체", "total");
             makeSeries2("추론데이터 수", "totalOutCnt");
+            makeSeries2("AI사용_데이터수", "arinUseCnt", "arinUsePer");
 
             chart.appear(1000, 100);
         }
+
+        function fn_drawChart3(data) {
+            $("#chartdiv3").html("");
+            if (!data || data.length === 0) {
+                $("#chartdiv3").html('<div class="nodata"><p>검색 결과가 없습니다.</p></div>');
+                return;
+            }
+            am5.array.each(am5.registry.rootElements, function (root) {
+                if (root !== null && root != undefined) {
+                    if (root.dom.id === 'chartdiv3')
+                        root.dispose();
+                }
+                ;
+            });
+            let root = am5.Root.new("chartdiv3");
+
+            root.setThemes([
+                am5themes_Animated.new(root)
+            ]);
+
+            let chart = root.container.children.push(am5xy.XYChart.new(root, {
+                panX: false,
+                panY: false,
+                paddingLeft: 0,
+                wheelX: "panX",
+                wheelY: "zoomX",
+                layout: root.verticalLayout
+            }));
+
+            let legend = chart.children.push(
+                am5.Legend.new(root, {
+                    centerX: am5.p50,
+                    x: am5.p50
+                })
+            );
+
+            let xRenderer = am5xy.AxisRendererX.new(root, {
+                cellStartLocation: 0.1,
+                cellEndLocation: 0.9,
+                minorGridEnabled: true
+            })
+
+            let xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+                categoryField: "dd",
+                renderer: xRenderer,
+                tooltip: am5.Tooltip.new(root, {})
+            }));
+
+            xRenderer.grid.template.setAll({
+                location: 1
+            })
+
+            xAxis.data.setAll(data);
+
+            let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                min: 0,
+                renderer: am5xy.AxisRendererY.new(root, {
+                    strokeOpacity: 0.1
+                })
+            }));
+
+            function makeSeries3(name, fieldName, per, color) {
+                let series;
+                if (fieldName != 'total' && fieldName != 'arinUseCnt') {
+                    series = chart.series.push(am5xy.ColumnSeries.new(root, {
+                        name: name,
+                        xAxis: xAxis,
+                        yAxis: yAxis,
+                        valueYField: fieldName,
+                        categoryXField: "dd"
+                    }));
+                }
+
+                let tooltipText = "{valueY}개 / {" + per + "}%";
+
+                if (series) {
+                    series.columns.template.setAll({
+                        tooltipText: tooltipText,
+                        width: am5.percent(90),
+                        tooltipY: 0,
+                        strokeOpacity: 0,
+                        fill: am5.color(color)
+                    });
+
+                    series.columns.template.adapters.add("fill", function (fill, target) {
+                        return color ? am5.color(color) : fill;
+                    });
+
+                    series.columns.template.adapters.add("stroke", function (stroke, target) {
+                        return color ? am5.color(color) : stroke;
+                    });
+
+                    series.data.setAll(data);
+
+                    series.appear();
+
+                    series.bullets.push(function () {
+                        return am5.Bullet.new(root, {
+                            locationY: 0,
+                            sprite: am5.Label.new(root, {
+                                text: "{valueY}",
+                                fill: root.interfaceColors.get("alternativeText"),
+                                centerY: 0,
+                                centerX: am5.p50,
+                                populateText: true
+                            }),
+                        });
+                    });
+
+                    legend.data.push(series);
+                }
+            }
+
+            let series2 = chart.series.push(
+                am5xy.LineSeries.new(root, {
+                    name: "지급결의 건수",
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "total",
+                    categoryXField: "dd",
+                    tooltip: am5.Tooltip.new(root, {
+                        pointerOrientation: "horizontal",
+                        labelText: "{valueY}개"
+                    }),
+                    stroke: am5.color(0x004C9D)
+                })
+            );
+
+            series2.strokes.template.setAll({
+                strokeWidth: 3,
+                templateField: "strokeSettings"
+            });
+
+
+            series2.data.setAll(data);
+
+            series2.bullets.push(function () {
+                return am5.Bullet.new(root, {
+                    sprite: am5.Circle.new(root, {
+                        strokeWidth: 3,
+                        stroke: am5.color(0x004C9D),
+                        radius: 5,
+                        fill: root.interfaceColors.get("background")
+                    })
+                });
+            });
+
+            legend.data.push(series2);
+
+            let series4 = chart.series.push(
+                am5xy.LineSeries.new(root, {
+                    name: "지급결의 중 AI 사용 데이터 수",
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "arinUseCnt",
+                    categoryXField: "dd",
+                    tooltip: am5.Tooltip.new(root, {
+                        pointerOrientation: "horizontal",
+                        labelText: "{valueY}개 / {arinUsePer}%"
+                    }),
+                    stroke: am5.color(0xD7263D)
+                })
+            );
+
+            series4.strokes.template.setAll({
+                strokeWidth: 3,
+                templateField: "strokeSettings"
+            });
+
+            series4.data.setAll(data);
+
+            series4.bullets.push(function () {
+                return am5.Bullet.new(root, {
+                    sprite: am5.Circle.new(root, {
+                        strokeWidth: 3,
+                        stroke: am5.color(0xD7263D),
+                        radius: 5,
+                        fill: root.interfaceColors.get("background")
+                    })
+                });
+            });
+
+            legend.data.push(series4);
+
+            chart.set("cursor", am5xy.XYCursor.new(root, {}));
+
+            // 004C9D / 6D7175 / F69192 / 74C8E6 /7AE674 /9854C6
+            makeSeries3("예산비목정보_적중수", "hitCnt1", "hitCnt1Per", 0xF69192);
+            makeSeries3("예산사업ID_적중수", "hitCnt2", "hitCnt2Per", 0x74C8E6);
+            makeSeries3("비목집행사유_적중수", "hitCnt3", "hitCnt3Per", 0x9854C6);
+            makeSeries3("예산비목정보_예산사업ID_적중수", "hitCnt4", "hitCnt4Per", 0x7AE674);
+            makeSeries3("지급결의 건수", "total");
+            makeSeries3("지급결의 중 AI 사용 데이터 수", "arinUseCnt", "arinUsePer");
+
+            chart.appear(1000, 100);
+        }
+
 
         /**
          * 통계 정보를 엑셀 파일로 다운로드하기 위해 HTML 테이블을 동적으로 생성 (table2excel 라이브러리 사용)
@@ -878,7 +1172,7 @@
                 dateRow.append(`<td>${item.dd}</td>`);
                 totalRow.append(`<td>${fn_setCommas(item.total)}</td>`);
                 outCntRow.append(`<td>${fn_setCommas(item.outCnt)}</td>`);
-                perRow.append(`<td>${item.per}%</td>`);
+                perRow.append(`<td>${item.per || 0}%</td>`);
             });
             tableBody.append(dateRow, totalRow, outCntRow, perRow);
             // 추론 결과 수 : e
@@ -894,6 +1188,8 @@
             let dateOutputRow = $('<tr><th scope="row">날짜</th></tr>');
             let totalOutputRow = $('<tr><th scope="row">추론데이터 수</th></tr>');
             let outputRow = $('<tr><th scope="row">지급결의된 추론데이터 수</th></tr>');
+            let arinUseCntRow = $('<tr><th scope="row">AI 활용 데이터 수</th></tr>');
+            let arinUsePerRow = $('<tr><th scope="row">AI 활용 데이터 비율</th></tr>');
             let hitCnt1Row = $('<tr><th scope="row">예산비목정보_적중수</th></tr>');
             let hitCnt1PerRow = $('<tr><th scope="row">예산비목정보_적중비율</th></tr>');
             let hitCnt2Row = $('<tr><th scope="row">예산사업ID_적중수</th></tr>');
@@ -907,6 +1203,8 @@
                 dateOutputRow.append(`<td>${item.dd}</td>`);
                 totalOutputRow.append(`<td>${fn_setCommas(item.totalOutCnt)}</td>`);
                 outputRow.append(`<td>${fn_setCommas(item.total)}</td>`);
+                arinUseCntRow.append(`<td>${fn_setCommas(item.arinUseCnt) || 0}</td>`);
+                arinUsePerRow.append(`<td>${fn_setCommas(item.arinUsePer) || 0}%</td>`);
                 hitCnt1Row.append(`<td>${fn_setCommas(item.hitCnt1) || 0}</td>`);
                 hitCnt1PerRow.append(`<td>${item.hitCnt1Per || 0}%</td>`);
                 hitCnt2Row.append(`<td>${fn_setCommas(item.hitCnt2) || 0}</td>`);
@@ -914,10 +1212,49 @@
                 hitCnt3Row.append(`<td>${fn_setCommas(item.hitCnt3) || 0}</td>`);
                 hitCnt3PerRow.append(`<td>${item.hitCnt3Per || 0}%</td>`);
                 hitCnt4Row.append(`<td>${fn_setCommas(item.hitCnt4) || 0}</td>`);
-                hitCnt4PerRow.append(`<td>${fn_setCommas(item.hitCnt4Per) || 0}</td>`);
+                hitCnt4PerRow.append(`<td>${fn_setCommas(item.hitCnt4Per) || 0}%</td>`);
             });
-            tableBody.append(dateOutputRow, totalOutputRow, outputRow, hitCnt1Row, hitCnt1PerRow, hitCnt2Row, hitCnt2PerRow, hitCnt3Row, hitCnt3PerRow, hitCnt4Row, hitCnt4PerRow);
+            tableBody.append(dateOutputRow, totalOutputRow, outputRow, arinUseCntRow, arinUsePerRow, hitCnt1Row, hitCnt1PerRow, hitCnt2Row, hitCnt2PerRow, hitCnt3Row, hitCnt3PerRow, hitCnt4Row, hitCnt4PerRow);
             // 사용자 활용 현황 통계 : e
+
+            // 빈 행 추가
+            let emptyRow2 = $('<tr><td colspan="' + (outputData.length + 1) + '"></td></tr>');
+            tableBody.append(emptyRow2);
+
+            // AI 사용 지급결의 사용 개수 통계 : s
+            let aiTitleRow = $('<tr><th colspan="' + (aiPrfrData.length + 1) + '" class="section-title">AI 사용 통계 : 지급결의 중 AI 사용 데이터 수</th></tr>');
+            tableBody.append(aiTitleRow);
+
+            let aiDateRow = $('<tr><th scope="row">날짜</th></tr>');
+            let aiTotalRow = $('<tr><th scope="row">지급결의 건수</th></tr>');
+            let aiArinUseCntRow = $('<tr><th scope="row">지급결의 중 AI 사용 데이터 수</th></tr>');
+            let aiArinUsePerRow = $('<tr><th scope="row">지급결의 중 AI 사용 데이터 비율</th></tr>');
+            let aiHitCnt1Row = $('<tr><th scope="row">예산비목정보_적중수</th></tr>');
+            let aiHitCnt1PerRow = $('<tr><th scope="row">예산비목정보_적중비율</th></tr>');
+            let aiHitCnt2Row = $('<tr><th scope="row">예산사업ID_적중수</th></tr>');
+            let aiHitCnt2PerRow = $('<tr><th scope="row">예산사업ID_적중비율</th></tr>');
+            let aiHitCnt3Row = $('<tr><th scope="row">비목집행사유_적중수</th></tr>');
+            let aiHitCnt3PerRow = $('<tr><th scope="row">비목집행사유_적중비율</th></tr>');
+            let aiHitCnt4Row = $('<tr><th scope="row">예산비목정보_예산사업ID_적중수</th></tr>');
+            let aiHitCnt4PerRow = $('<tr><th scope="row">예산비목정보_예산사업ID_적중비율</th></tr>');
+
+            $.each(aiPrfrData, function (index, item) {
+                aiDateRow.append(`<td>${item.dd}</td>`);
+                aiTotalRow.append(`<td>${fn_setCommas(item.total)}</td>`);
+                aiArinUseCntRow.append(`<td>${fn_setCommas(item.arinUseCnt) || 0}</td>`);
+                aiArinUsePerRow.append(`<td>${fn_setCommas(item.arinUsePer) || 0}%</td>`);
+                aiHitCnt1Row.append(`<td>${fn_setCommas(item.hitCnt1) || 0}</td>`);
+                aiHitCnt1PerRow.append(`<td>${item.hitCnt1Per || 0}%</td>`);
+                aiHitCnt2Row.append(`<td>${fn_setCommas(item.hitCnt2) || 0}</td>`);
+                aiHitCnt2PerRow.append(`<td>${item.hitCnt2Per || 0}%</td>`);
+                aiHitCnt3Row.append(`<td>${fn_setCommas(item.hitCnt3) || 0}</td>`);
+                aiHitCnt3PerRow.append(`<td>${item.hitCnt3Per || 0}%</td>`);
+                aiHitCnt4Row.append(`<td>${fn_setCommas(item.hitCnt4) || 0}</td>`);
+                aiHitCnt4PerRow.append(`<td>${fn_setCommas(item.hitCnt4Per) || 0}%</td>`);
+            });
+
+            tableBody.append(aiDateRow, aiTotalRow, aiArinUseCntRow, aiArinUsePerRow, aiHitCnt1Row, aiHitCnt1PerRow, aiHitCnt2Row, aiHitCnt2PerRow, aiHitCnt3Row, aiHitCnt3PerRow, aiHitCnt4Row, aiHitCnt4PerRow);
+            // AI 사용 지급결의 사용 개수 통계 : e
         }
 
         /**
@@ -999,6 +1336,8 @@
                                         </dt>
                                         <dd>
                                             <select name="searchLearningType" id="searchLearningType">
+                                                <option value="" th:selected="${params.searchLearningType eq null}">전체
+                                                </option>
                                                 <option th:each="item :${T(kr.co.ibk.domain.enums.LearningType).values()}"
                                                         th:class="${item}" th:text="${item.name}" th:value="${item}"
                                                         th:selected="${item.name() eq params.searchLearningType}"></option>
@@ -1052,14 +1391,21 @@
             <div class="graph_area">
                 <div class="graph">
                     <div>추론 결과 수 : INPUT 데이터 기반 OUTPUT 데이터 생성 개수</div>
-                    <div id="chartdiv1" style="height:366px"></div> <!--TODO : 임의 높이값-->
+                    <div class="chart" id="chartdiv1"></div>
                 </div>
             </div>
 
             <div class="graph_area">
                 <div class="graph">
                     <div>사용자 활용 현황 : 추론된 OUTPUT 데이터의 실제 사용 개수</div>
-                    <div id="chartdiv2" style="height:366px"></div> <!--TODO : 임의 높이값-->
+                    <div class="chart" id="chartdiv2"></div>
+                </div>
+            </div>
+
+            <div class="graph_area">
+                <div class="graph">
+                    <div>AI 사용 지급결의 사용 개수 (지급결의일자 기준)</div>
+                    <div class="chart" id="chartdiv3"></div>
                 </div>
             </div>
 
@@ -1083,6 +1429,7 @@
             <div class="circle"></div>
         </div>
     </div>
+    +
 </div>
 <!--로딩중 : e-->
 </body>

@@ -6,7 +6,6 @@ import kr.co.ibk.domain.enums.LearningType;
 import kr.co.ibk.domain.web.CardOutputInfo;
 import kr.co.ibk.domain.web.LearningModelInputInfo;
 import kr.co.ibk.model.CardInputForm;
-import kr.co.ibk.repository.CardInputRepository;
 import kr.co.ibk.repository.CardOutputRepository;
 import kr.co.ibk.repository.LearningModelInputRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CardOutputService extends _BaseService {
 
-    private final CardInputRepository cardInputRepository;
     private final CardOutputRepository cardOutputRepository;
     private final LearningModelInputRepository learningModelInputRepository;
 
@@ -103,7 +101,9 @@ public class CardOutputService extends _BaseService {
 
     @Transactional
     public void updateHitYn() {
-        cardOutputRepository.updateHitYn();
+        // 적중수 Y/N 업데이트
+        int updatedHitYnRows = cardOutputRepository.updateHitYn();
+        log.info("[CardOutputService] 카드 updateHitYn 실행 - 업데이트된 ROW 수: {}", updatedHitYnRows);
     }
 
 }

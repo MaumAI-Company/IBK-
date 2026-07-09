@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.ibk.repository.LearningModelRepository">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="LearningModelForm">
-        INSERT INTO maummcc.LEARNING_MODEL
+        INSERT INTO LEARNING_MODEL
         (LEARNING_ID, REG_ID, REG_DT, MOD_ID, MOD_DT, LEARN_NAME, RESULT_CODE, RESULT_MSG, CREATE_DTM, HDQR_BOB_DCD,
          EPOCH, LEARNING_RATE, BATCH_SIZE, LEARNING_TYPE)
         VALUES (#{dataId}, #{regId}, current_timestamp(), #{modId}, current_timestamp(), #{learnName}, '0',
@@ -39,13 +39,13 @@
         WHERE lm.ID = #{id}
     </select>
     <update id="updateFile" parameterType="LearningModelForm">
-        UPDATE maummcc.LEARNING_MODEL
-        SET FILE_PATH     = #{filePath},
-            FILE_NAME     = #{fileName}
+        UPDATE LEARNING_MODEL
+        SET FILE_PATH = #{filePath},
+            FILE_NAME = #{fileName}
         WHERE ID = #{id}
     </update>
     <update id="updateStatus" parameterType="LearningModelForm">
-        UPDATE maummcc.LEARNING_MODEL
+        UPDATE LEARNING_MODEL
         SET DEPLOY_STATUS = #{deployStatus}
         WHERE ID = #{id}
     </update>
@@ -111,6 +111,12 @@
         lm.BDGT_PRFR_RSN_FRCS_CON_PRECISION,
         lm.BDGT_PRFR_RSN_FRCS_CON_RECALL,
         lm.BDGT_PRFR_RSN_FRCS_CON_F1_SCORE,
+        lm.BDGT_EXNS_PAMT_MCD_PRECISION,
+        lm.BDGT_EXNS_PAMT_MCD_RECALL,
+        lm.BDGT_EXNS_PAMT_MCD_F1_SCORE,
+        lm.ACIM_CON_PRECISION,
+        lm.ACIM_CON_RECALL,
+        lm.ACIM_CON_F1_SCORE,
         hm.MEM_NAME as REG_NAME
         from LEARNING_MODEL lm
         inner join HC_MEMBER hm on lm.REG_ID = hm.MEM_ID
@@ -129,39 +135,37 @@
 
     <select id="getTotalCount" resultType="int" parameterType="LearningModelForm">
         SELECT
-            COUNT(*)
+        COUNT(*)
         from LEARNING_MODEL lm
         inner join HC_MEMBER hm on lm.REG_ID = hm.MEM_ID
         <include refid="where"></include>
     </select>
 
     <update id="update" parameterType="LearningModelForm">
-        update maummcc.LEARNING_MODEL
-        set MOD_ID = #{modId},
-            MOD_DT = current_timestamp(),
-            LEARN_NAME = #{learnName},
+        update LEARNING_MODEL
+        set MOD_ID       = #{modId},
+            MOD_DT       = current_timestamp(),
+            LEARN_NAME   = #{learnName},
             HDQR_BOB_DCD = #{hdqrBobDcd}
         where ID = #{id}
     </update>
 
     <select id="countByInLearningId" resultType="int">
         select
-            count(*)
+        count(*)
         from
-            LEARNING_MODEL lm
+        LEARNING_MODEL lm
         where
-            lm.DELETE_YN = 'N' and
-            lm.LEARNING_ID in
+        lm.DELETE_YN = 'N' and
+        lm.LEARNING_ID in
         <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
     </select>
 
     <select id="modelNmCount" resultType="int">
-        select
-            count(*)
-        from
-            LEARNING_MODEL lm
+        select count(*)
+        from LEARNING_MODEL lm
         where lm.LEARN_NAME = #{learnName}
     </select>
 
@@ -191,7 +195,7 @@
 
     <select id="countByInIDAndDeployArr" resultType="int">
         select
-            count(*)
+        count(*)
         from
         LEARNING_MODEL lm
         where
@@ -204,5 +208,18 @@
         <foreach collection="idArr" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
+    </select>
+
+    <select id="getTargetList" resultType="LearningModelInfo">
+        SELECT ID, LEARN_NAME
+        FROM LEARNING_MODEL
+        WHERE DELETE_YN = 'N'
+        AND LEARNING_TYPE = #{learningType}
+        AND HDQR_BOB_DCD = #{hdqrBobDcd}
+        AND DEPLOY_STATUS in
+        <foreach collection="deployArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY ID DESC
     </select>
 </mapper>

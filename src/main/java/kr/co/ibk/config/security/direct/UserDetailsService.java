@@ -45,6 +45,8 @@ public class UserDetailsService implements org.springframework.security.core.use
                 .memPwd(userInfo.getMemPwd())
                 .roleId(userInfo.getRoleId())
                 .deptName(userInfo.getDeptName())
+                .memColumn1(userInfo.getMemColumn1())
+                .memColumn2(userInfo.getMemColumn2())
                 .memColumn3(userInfo.getMemColumn3())
                 .build();
 

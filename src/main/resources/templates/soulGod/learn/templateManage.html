@@ -119,10 +119,14 @@
                             })
                         }
                     },
-                    error: function () {
-                        showAlert('warning', '실패하였습니다.', () => {
+                    error: function (error) {
+                        let msg = '실패하였습니다.';
+                        if (error.status === 401 || error.status === 403) {
+                            msg = '접근권한이 없습니다.';
+                        }
+                        showAlert('warning', msg, () => {
                             location.reload();
-                        })
+                        });
                     }
                 });
             });
@@ -201,8 +205,14 @@
                         showAlert('warning', '학습 데이터가 존재하지 않습니다.');
                     }
                 },
-                error: function () {
-                    console.log("error");
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
+                        location.reload();
+                    });
                 }
             });
         }
@@ -296,10 +306,14 @@
                         })
                     }
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
-                    })
+                    });
                 }
             });
         }
@@ -318,10 +332,14 @@
                 success: function (data) {
                     learnDataNmCount = data;
                 },
-                error: function () {
-                    showAlert('warning', '실패하였습니다.', () => {
+                error: function (error) {
+                    let msg = '실패하였습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
                         location.reload();
-                    })
+                    });
                 }
             });
         }
@@ -442,6 +460,8 @@
                                                 </option>
                                                 <option value="2" th:selected="${params.searchTarget == '2'}">영업점
                                                 </option>
+                                                <option value="3" th:selected="${params.searchTarget == '3'}">통합
+                                                </option>
                                             </select>
                                         </dd>
                                     </dl>
@@ -525,7 +545,7 @@
                     </td>
                     <td th:text="${(pagingInfo.totalRecordCount - ((params.currentPageNo - 1) * params.recordsPerPage + idx.index))}"></td>
                     <td th:text="${item.learningType == null ? '-' : item.learningType.getName()}"></td>
-                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : (item.hdqrBobDcd == '2' ? '영업점' : '통합'))}"></td>
                     <td>
                         <a href="javascript:" th:class="${'link templateName' + item.id}"
                            th:text="${item.templateName}"

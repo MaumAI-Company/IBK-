@@ -1,5 +1,6 @@
 package kr.co.ibk.service;
 
+import kr.co.ibk.common.utils.MaskHelper;
 import kr.co.ibk.domain.enums.InOutGbnType;
 import kr.co.ibk.domain.enums.InputColumnBillType;
 import kr.co.ibk.domain.enums.LearningType;
@@ -29,6 +30,10 @@ public class BillOutputService extends _BaseService {
 
     public BillOutputInfo detail(BillInputForm params) {
         BillOutputInfo info = billOutputRepository.getDetail(params);
+        if (!ObjectUtils.isEmpty(info)) {
+            info.setAcimCon(MaskHelper.accountNumber(info.getAcimCon()));
+            info.setAcimPrbCon(MaskHelper.accountNumber(info.getAcimPrbCon()));
+        }
         List<LearningModelInputInfo> inputInfos = new ArrayList<>();
         if (!ObjectUtils.isEmpty(info.getLearningModelId())) {
             inputInfos = learningModelInputRepository.getPartList(info.getLearningModelId(), InOutGbnType.INPUT.name(), LearningType.BILL.name());
@@ -76,7 +81,8 @@ public class BillOutputService extends _BaseService {
 
     @Transactional
     public void updateHitYn() {
-        billOutputRepository.updateHitYn();
+        int updatedRows = billOutputRepository.updateHitYn();
+        log.info("[BillOutputService] 세금계산서 updateHitYn 실행 - 업데이트된 ROW 수: {}", updatedRows);
     }
 
 }

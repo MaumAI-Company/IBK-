@@ -1,6 +1,6 @@
 package kr.co.ibk.web.controller;
 
-import kr.co.ibk.domain.enums.LearningType;
+import kr.co.ibk.common.annotation.MenuAuthBase;
 import kr.co.ibk.domain.web.*;
 import kr.co.ibk.model.BillInputForm;
 import kr.co.ibk.model.CardInputForm;
@@ -32,6 +32,7 @@ public class ReportController extends BaseCont {
     private final StatisticService statisticService;
 
     // BC카드 지급결의 내역 조회 : s
+    @MenuAuthBase("/soulGod/report/card")
     @RequestMapping("/soulGod/report/card")
     public String card(Model model,
                        @ModelAttribute CardInputForm params) {
@@ -53,6 +54,7 @@ public class ReportController extends BaseCont {
 
     }
 
+    @MenuAuthBase("/soulGod/report/card")
     @ResponseBody
     @PostMapping("/soulGod/report/card/list")
     public Map<String, Object> getCardList(@RequestBody CardInputForm params) {
@@ -71,6 +73,7 @@ public class ReportController extends BaseCont {
         );
     }
 
+    @MenuAuthBase("/soulGod/report/card")
     @GetMapping("/soulGod/report/card/xlsDown")
     public void reportCardExcelDown(@RequestParam(name = "searchStartDate", required = false) String searchStartDate,
                                     @RequestParam(name = "searchEndDate", required = false) String searchEndDate,
@@ -96,6 +99,7 @@ public class ReportController extends BaseCont {
         cardInputService.reportCardExcelDown(response, excelList);
     }
 
+    @MenuAuthBase("/soulGod/report/card")
     @ResponseBody
     @PostMapping(value = {"/soulGod/report/card/detail"})
     public CardOutputInfo cardDtail(@RequestBody CardInputForm params) {
@@ -107,6 +111,7 @@ public class ReportController extends BaseCont {
     // BC카드 지급결의 내역 조회 : e
 
     // 세금계산서 지급결의 내역 조회 : s
+    @MenuAuthBase("/soulGod/report/taxInvoice")
     @RequestMapping("/soulGod/report/taxInvoice")
     public String taxInvoice(Model model,
                              @ModelAttribute BillInputForm params) {
@@ -128,6 +133,7 @@ public class ReportController extends BaseCont {
         return "/soulGod/report/taxInvoice";
     }
 
+    @MenuAuthBase("/soulGod/report/taxInvoice")
     @ResponseBody
     @PostMapping("/soulGod/report/bill/list")
     public Map<String, Object> getBillList(@RequestBody BillInputForm params) {
@@ -146,6 +152,7 @@ public class ReportController extends BaseCont {
         );
     }
 
+    @MenuAuthBase("/soulGod/report/taxInvoice")
     @ResponseBody
     @PostMapping(value = {"/soulGod/report/bill/detail"})
     public BillOutputInfo billDetail(@RequestBody BillInputForm params) {
@@ -155,6 +162,7 @@ public class ReportController extends BaseCont {
         return billOutputService.detail(params);
     }
 
+    @MenuAuthBase("/soulGod/report/taxInvoice")
     @GetMapping("/soulGod/report/bill/xlsDown")
     public void reportBillExcelDown(@RequestParam(name = "searchStartDate", required = false) String searchStartDate,
                                     @RequestParam(name = "searchEndDate", required = false) String searchEndDate,
@@ -182,6 +190,7 @@ public class ReportController extends BaseCont {
     // 세금계산서 지급결의 내역 조회 : e
 
     // 기간별 통계 : s
+    @MenuAuthBase("/soulGod/report/statistic")
     @RequestMapping("/soulGod/report/statistic")
     public String statistic(Model model,
                             @ModelAttribute StatisticInfoForm params) {
@@ -191,9 +200,9 @@ public class ReportController extends BaseCont {
             params.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
         }
 
-        if (ObjectUtils.isEmpty(params.getSearchLearningType())) {
-            params.setSearchLearningType(LearningType.CARD);
-        }
+        /*if (ObjectUtils.isEmpty(params.getSearchLearningType())) {
+            params.setSearchLearningType("CARD");
+        }*/
 
         model.addAttribute("mc", "ico_chart");
         model.addAttribute("params", params);
@@ -206,27 +215,31 @@ public class ReportController extends BaseCont {
     /**
      * 기간별 통계 > 추론 결과 수(INPUT 데이터 기반 OUTPUT 데이터 생성 개수)
      */
+    @MenuAuthBase("/soulGod/report/statistic")
     @ResponseBody
     @PostMapping("/soulGod/report/statistic/input")
     public List<StatisticInfo> inferResultStatistic(@RequestBody StatisticInfoForm form) {
-        if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
-            form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-            form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-        }
         return statisticService.inferResultStatistic(form);
     }
 
     /**
      * 기간별 통계 > 사용자 활용 현황(INPUT 데이터 기반 OUTPUT 데이터 생성 개수)
      */
+    @MenuAuthBase("/soulGod/report/statistic")
     @ResponseBody
     @PostMapping("/soulGod/report/statistic/output")
     public List<StatisticInfo> usageStatistic(@RequestBody StatisticInfoForm form) {
-        if (ObjectUtils.isEmpty(form.getSearchStartDate()) || ObjectUtils.isEmpty(form.getSearchEndDate())) {
-            form.setSearchStartDate(LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-            form.setSearchEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-        }
         return statisticService.usageStatistic(form);
+    }
+
+    /**
+     * 기간별 통계 > AI 사용 지급결의 사용 개수 (지급결의일자 기준)
+     */
+    @MenuAuthBase("/soulGod/report/statistic")
+    @ResponseBody
+    @PostMapping("/soulGod/report/statistic/aiPrfr")
+    public List<StatisticInfo> aiPrfrStatistic(@RequestBody StatisticInfoForm form) {
+        return statisticService.aiPrfrStatistic(form);
     }
     // 기간별 통계 : e
 }

@@ -2,6 +2,20 @@
 <html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{soulGod/fragments/head}"></th:block>
+    <style>
+        #popRegister .popup.lg {
+            width: 500px;
+        }
+
+        #popRegister .tbl_write > tbody > tr > td {
+            height: 100px;
+        }
+
+        #popRegister .popup .pop_cont {
+            overflow-y: visible !important;
+        }
+
+    </style>
     <script type="text/javascript">
         $(function () {
             fn_setDatePicker('#stDt', {
@@ -72,15 +86,102 @@
                             });
                         }
                     },
-                    error: function () {
+                    error: function (error) {
                         layerHide('deployAlert');
-                        showAlert('warning', '실패하였습니다.', () => {
+                        let msg = '실패하였습니다.';
+                        if (error.status === 401 || error.status === 403) {
+                            msg = '접근권한이 없습니다.';
+                        }
+                        showAlert('warning', msg, () => {
                             location.reload();
                         });
                     }
                 });
             });
         }
+
+        function fn_initBatchInferPop() {
+            $.ajax({
+                url: "/soulGod/batchInfer/detail",
+                type: "get",
+                success: function (data) {
+                    if (data) {
+                        if (data.cardHqModelId) {
+                            $('#cardHqModelId').val(data.cardHqModelId).niceSelect('update');
+                        }
+                        if (data.cardBrModelId) {
+                            $('#cardBrModelId').val(data.cardBrModelId).niceSelect('update');
+                        }
+                        if (data.billModelId) {
+                            $('#billModelId').val(data.billModelId).niceSelect('update');
+                        }
+                    }
+                    layerShow('popRegister');
+                },
+                error: function (error) {
+                    let msg = '배치 추론 모델 정보를 불러오는데 실패했습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
+                        location.reload();
+                    });
+                }
+            });
+        }
+
+        function fn_batchInferSave() {
+            let targets = [];
+
+            let hasEmpty = false;
+
+            ['cardHqModelId', 'cardBrModelId', 'billModelId'].forEach(id => {
+                let $select = $("#" + id);
+                let val = $select.val();
+                if (!val) {
+                    hasEmpty = true;
+                }
+                targets.push({
+                    target: $select.data('target'),
+                    modelId: parseInt(val)
+                });
+            });
+
+            if (hasEmpty) {
+                showAlert('warning', '배치 추론 모델을 지정해주세요.');
+                return;
+            }
+
+            let jsonData = {
+                targets: targets
+            }
+
+            $.ajax({
+                url: "/soulGod/batchInfer/save",
+                type: "post",
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    if (data.status === 'SUCCESS') {
+                        showAlert('complete', '배치 추론 모델이 저장되었습니다.', () => {
+                            location.reload();
+                        });
+                    } else {
+                        showAlert('warning', '저장에 실패했습니다.');
+                    }
+                },
+                error: function (error) {
+                    let msg = '저장 처리 중 오류가 발생했습니다.';
+                    if (error.status === 401 || error.status === 403) {
+                        msg = '접근권한이 없습니다.';
+                    }
+                    showAlert('warning', msg, () => {
+                        location.reload();
+                    });
+                }
+            });
+        }
+
     </script>
 </head>
 <body>
@@ -99,6 +200,9 @@
                 <div class="btn_area">
                     <button type="button" class="btn line_cool_grey30" onclick="fn_deploy()">
                         <span>배포</span>
+                    </button>
+                    <button type="button" class="btn line_cool_grey30" onclick="fn_initBatchInferPop()">
+                        <span>배치 추론 모델 지정</span>
                     </button>
                 </div>
             </div>
@@ -158,6 +262,8 @@
                                                 <option value="1" th:selected="${params.searchTarget == '1'}">본부
                                                 </option>
                                                 <option value="2" th:selected="${params.searchTarget == '2'}">영업점
+                                                </option>
+                                                <option value="3" th:selected="${params.searchTarget == '3'}">통합
                                                 </option>
                                             </select>
                                         </dd>
@@ -259,7 +365,7 @@
                     <td th:text="${item.id}"></td>
                     <td th:text="${item.learnName}" th:onclick="|fn_learningDataOpen(${item.id})|">카드지급결의 통합모델_A</td>
                     <td th:text="${item.learningType != null ? item.learningType?.getName() : '-'}">BC카드</td>
-                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : '영업점')}"></td>
+                    <td th:text="${item.hdqrBobDcd.isEmpty() ? '-' : (item.hdqrBobDcd == '1' ? '본부' : (item.hdqrBobDcd == '2' ? '영업점' : '통합'))}"></td>
                     <td th:text="${item.regName}">홍길녀</td>
                     <td>
                         <!--3:학습 완료,  5: 배포 중, 6: 배포 완료, 7: 배포 중지, 8: 배포 실패 -->
@@ -283,6 +389,89 @@
         </div>
     </div>
 </div>
+
+<!--배치 추론 모델 지정 등록 팝업 : s-->
+<div id="popRegister" class="pop_layer">
+    <div class="dim"></div>
+    <div class="popup lg">
+        <div class="pop_head">
+            <strong class="pop_tit">배치 추론 모델 지정</strong>
+            <button type="button" class="btn_close" onclick="layerHide('popRegister')">
+                <span class="blind">닫기</span>
+            </button>
+        </div>
+        <div class="pop_cont">
+            <table class="tbl_write">
+                <caption>배치 추론 모델 지정</caption>
+                <colgroup>
+                    <col style="width:160px">
+                    <col style="width:auto">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">
+                        <label for="cardHqModelId">BC카드 본부</label>
+                        <span class="aster"></span>
+                    </th>
+                    <td>
+                        <select id="cardHqModelId"
+                                th:data-target="${T(kr.co.ibk.domain.enums.BatchTargetType).CARD_HQ.name()}">
+                            <option value="" disabled selected>선택</option>
+                            <option th:each="item : ${cardHqList}"
+                                    th:value="${item.id}"
+                                    th:text="${item.learnName}">
+                            </option>
+                        </select>
+                    </td>
+
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="cardBrModelId">BC카드 영업점</label>
+                        <span class="aster"></span>
+                    </th>
+                    <td>
+                        <select id="cardBrModelId"
+                                th:data-target="${T(kr.co.ibk.domain.enums.BatchTargetType).CARD_BR.name()}">
+                            <option value="" disabled selected>선택</option>
+                            <option th:each="item : ${cardBrList}"
+                                    th:value="${item.id}"
+                                    th:text="${item.learnName}">
+                            </option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="billModelId">세금계산서 통합</label>
+                        <span class="aster"></span>
+                    </th>
+                    <td>
+                        <select id="billModelId"
+                                th:data-target="${T(kr.co.ibk.domain.enums.BatchTargetType).BILL_INTEGRATED.name()}">
+                            <option value="" disabled selected>선택</option>
+                            <option th:each="item : ${billList}"
+                                    th:value="${item.id}"
+                                    th:text="${item.learnName}">
+                            </option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pop_foot">
+            <button type="button" class="btn line_cool_grey30" onclick="layerHide('popRegister')">
+                <span>취소</span>
+            </button>
+            <button type="button" class="btn fill" onclick="fn_batchInferSave()">
+                <span>저장</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!--배치 추론 모델 등록 지정 팝업 : e-->
+
 <!--얼럿 : s-->
 <div id="deployAlert" class="system_alert">
     <div class="dim"></div>

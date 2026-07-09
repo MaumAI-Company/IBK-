@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
-	
-	private Logger log = LoggerFactory.getLogger(getClass()); 
+
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
     MessageSource messageSource;
@@ -41,7 +41,7 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
         String username = request.getParameter(loginidname);
         String password = request.getParameter(loginpwdname);
         String errormsg = null;
-        
+
         log.debug("로그인실패 후처리  username:{}", username);
         
         /*
@@ -69,7 +69,7 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
         if (exception instanceof BadCredentialsException) {
             errormsg = messageSource.getMessage("error.BadCredentials", null, LocaleContextHolder.getLocale());
         } else if (exception instanceof InternalAuthenticationServiceException) {
-            errormsg = messageSource.getMessage("error.InternalAuthenticationService", null, LocaleContextHolder.getLocale());
+            errormsg = messageSource.getMessage("error.BadCredentials", null, LocaleContextHolder.getLocale());
         } else {
             errormsg = messageSource.getMessage(exception.getMessage(), null, LocaleContextHolder.getLocale());
             request.setAttribute("mailAuthBool", false);

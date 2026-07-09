@@ -648,11 +648,14 @@ function fn_escapeHTML(input) {
  * 역할: 검색 조건을 기반으로 Chip UI를 생성하여 `.selected_filter` 영역에 추가
  *
  * @param {Object} searchJson - 검색 조건을 포함한 JSON 데이터
- * @param {boolean} isRadio - 대상 선택이 라디오 버튼 방식인지 여부 (true: 라디오 버튼, false: 셀렉트 박스)
+ * @param {Object} options - 추가 옵션
+ * @param {boolean} options.isRadio - 대상 선택이 라디오 버튼 방식인지 여부 (true: 라디오 버튼, false: 셀렉트 박스)
+ * @param {boolean} options.isBillSearch - 세금계산서 검색인지 여부 (true: 대상 chip 생성을 스킵)
  */
-function fn_settingChip(searchJson, isRadio) {
+function fn_settingChip(searchJson, options = {}) {
     let tags = '';
     let searchTypeTags = '';
+    let {isRadio = false, isBillSearch = false} = options;
 
     let allDateAt = $('#searchAllDateAt').is(':checked');
     let startDate = $('#searchStartDate').val();
@@ -704,11 +707,11 @@ function fn_settingChip(searchJson, isRadio) {
     }
 
     // 대상 칩 생성
-    if (target !== '') {
+    if (target !== '' && !isBillSearch) {
         if (isRadio) { // 대상 검색필터 > 라디오 사용하는 경우
             tags += `
                 <div class="chip">
-                    <div>대상 : ${target === '1' ? '본부' : '영업점'}</div>
+                     <div>대상 : ${target === '1' ? '본부' : (target === '2' ? '영업점' : '통합')}</div>
                     <button type="button" class="btn_del" onclick="fn_removeChip(this, 'target')">
                         <span class="blind">삭제</span>
                     </button>
@@ -717,7 +720,7 @@ function fn_settingChip(searchJson, isRadio) {
         } else { // 대상 검색필터 > 셀렉트 박스를 사용하는 경우
             tags += `
                 <div class="chip">
-                    <div>대상 : ${target === '1' ? '본부' : '영업점'}</div>
+                     <div>대상 : ${target === '1' ? '본부' : (target === '2' ? '영업점' : '통합')}</div>
                     <button type="button" class="btn_del" onclick="fn_selectBoxReset('searchTarget'), fn_removeChip(this, 'target')">
                         <span class="blind">삭제</span>
                     </button>

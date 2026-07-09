@@ -37,14 +37,17 @@ public class BatchSchedule extends BaseCont {
     private final CardOutputService cardOutputService;
     private final BillOutputService billOutputService;
 
+    private final UserUsageStatService userUsageStatService;
+    private final AiPrfrStatService aiPrfrStatService;
+
     // 등록자 설정
     private final String REG_ID = "admin";
 
     @Value("${Globals.check.scheduler}")
     private Boolean schedulerCheck;
 
-    @Value("${Globals.check.hit}")
-    private Boolean hitCheck;
+    @Value("${Globals.check.statistic.range}")
+    private Boolean statisticByRangeCheck;
 
     /**
      * 학습 스케줄러 실행
@@ -67,7 +70,7 @@ public class BatchSchedule extends BaseCont {
                 dataForm.setMemId(REG_ID);
                 dataForm.setSchedId(info.getSchedId());
                 int runCnt = info.getRunCnt() + 1;
-                dataForm.setDataName("[배치] " + info.getSchedNm()+ "_" + String.format("%03d", runCnt));
+                dataForm.setDataName("[배치] " + info.getSchedNm() + "_" + String.format("%03d", runCnt));
                 dataForm.setLearningType(templateInfo.getLearningType());
                 dataForm.setSelectCon(templateInfo.getSelectCon());
                 dataForm.setHdqrBobDcd(templateInfo.getHdqrBobDcd());
@@ -89,7 +92,7 @@ public class BatchSchedule extends BaseCont {
                 modelForm.setModId(REG_ID);
                 modelForm.setRegId(REG_ID);
                 modelForm.setDataId(dataForm.getId());
-                modelForm.setLearnName("[배치] " + info.getSchedNm()+ "_" + String.format("%03d", runCnt));
+                modelForm.setLearnName("[배치] " + info.getSchedNm() + "_" + String.format("%03d", runCnt));
                 modelForm.setBatchSize(info.getBatchSize());
                 modelForm.setEpoch(info.getEpoch());
                 modelForm.setLearningRate(info.getLearningRate());
@@ -108,16 +111,17 @@ public class BatchSchedule extends BaseCont {
     }
 
     /**
-     * - 설정한 스케줄 마다 적중수 업데이트
+     * - 설정한 스케줄 마다 기간으로 통계 업데이트
+     * - hit 배치 스케줄러와 상관 없이 실행 가능
      * - 속성
      * *　　　　　　*　　　　　　  *　　　　　　*　　　　　　*
      * 0      분(0-59)　　시간(0-23)　　일(1-31)　　월(1-12)　　요일(0-7)
      */
-    @Scheduled(cron = "0 ${Globals.batch.hit.cron.min} ${Globals.batch.hit.cron.hour} ${Globals.batch.hit.cron.day} ${Globals.batch.hit.cron.mon} ${Globals.batch.hit.cron.week}")
-    public void hitBatch() {
-        if (hitCheck) {
-            cardOutputService.updateHitYn();
-            billOutputService.updateHitYn();
+    @Scheduled(cron = "0 ${Globals.batch.statistic.range.cron.min} ${Globals.batch.statistic.range.cron.hour} ${Globals.batch.statistic.range.cron.day} ${Globals.batch.statistic.range.cron.mon} ${Globals.batch.statistic.range.cron.week}")
+    public void statisticByRangeBatch() {
+        if (statisticByRangeCheck) {
+            userUsageStatService.updateStatisticByRange();
+            aiPrfrStatService.updateStatisticByRange();
         }
     }
 }

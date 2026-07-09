@@ -1,5 +1,6 @@
 package kr.co.ibk.service;
 
+import kr.co.ibk.common.utils.MaskHelper;
 import kr.co.ibk.domain.web.BillLearningDataInfo;
 import kr.co.ibk.model.BillLearningDataForm;
 import kr.co.ibk.model.paging.PaginationInfo;
@@ -29,9 +30,6 @@ public class BillLearningDataService extends _BaseService {
         /*
         default search condition
          */
-        if (ObjectUtils.isEmpty(params.getSearchTarget())) {
-            params.setSearchTarget("1");
-        }
 
         if (ObjectUtils.isEmpty(params.getSearchStartDate()) || ObjectUtils.isEmpty(params.getSearchEndDate())) {
             params.setSearchStartDate(String.valueOf(LocalDate.now().minusYears(2)).substring(0, 10));
@@ -66,7 +64,15 @@ public class BillLearningDataService extends _BaseService {
      * @return
      */
     public List<BillLearningDataInfo> getList(BillLearningDataForm form) {
-        return billLearningDataRepository.getList(form);
+
+        // 통합인 경우 target 검색조건 제거
+        if (!ObjectUtils.isEmpty(form.getSearchTarget()) && form.getSearchTarget().equals("3")) {
+            form.setSearchTarget(null);
+        }
+
+        List<BillLearningDataInfo> list = billLearningDataRepository.getList(form);
+        list.forEach(item -> item.setAcimCon(MaskHelper.accountNumber(item.getAcimCon())));
+        return list;
     }
 
     public int getTotalCount(BillLearningDataForm form) {

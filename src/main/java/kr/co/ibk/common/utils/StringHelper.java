@@ -1,5 +1,7 @@
 package kr.co.ibk.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.servlet.http.HttpServletRequest;
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -9,9 +11,10 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class StringHelper {
 
-    public static String getClientIP(HttpServletRequest request) {
+    /*public static String getClientIP(HttpServletRequest request) {
 
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
@@ -30,6 +33,33 @@ public class StringHelper {
             ip = request.getRemoteAddr();
         }
         return ip;
+    }*/
+
+    public static String getClientIP(HttpServletRequest request) {
+        String ip = getHeaderIp(request, "X-Forwarded-For");
+        if (ip == null) ip = getHeaderIp(request, "Proxy-Client-IP");
+        if (ip == null) ip = getHeaderIp(request, "WL-Proxy-Client-IP");
+        if (ip == null) ip = getHeaderIp(request, "HTTP_CLIENT_IP");
+        if (ip == null) ip = getHeaderIp(request, "HTTP_X_FORWARDED_FOR");
+        if (ip == null) ip = request.getRemoteAddr();
+        return ip;
+    }
+
+    public static String getHeaderIp(HttpServletRequest request, String header) {
+        String value = request.getHeader(header);
+        if (value == null) return null;
+        value = value.trim();
+        if (value.isEmpty() || "unknown".equalsIgnoreCase(value)) return null;
+
+        // "client, proxy1, proxy2" -> 첫 번째
+        String first = value.split(",")[0].trim();
+
+        // IPv4:port 제거
+        int colon = first.indexOf(':');
+        if (colon > -1 && first.indexOf(']') == -1) {
+            first = first.substring(0, colon);
+        }
+        return first;
     }
 
     @Deprecated
