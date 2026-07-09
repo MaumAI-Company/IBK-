@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mindslab.web.mapper.maria.MariaMsgMatchStatisticMapper">
+   
+    <select id="getStatisticDateExcelDown" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT 
+			tb1.DATE
+			, IFNULL(tb2.NOTFIT, 0) AS 'NOTFIT'
+			, IFNULL(tb2.FIT, 0) AS 'FIT'
+		FROM
+		    ( 
+		        WITH RECURSIVE CTE AS (
+		            SELECT 
+		                1 AS ORD
+		                , DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d') AS DATE  
+		            UNION ALL
+		            SELECT 
+		                c.ORD + 1
+	                    <choose>
+	                        <when test="searchType != null and searchType != ''">
+	                            <choose>
+	                                <when test="'month'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </when>
+	                                <when test="'day'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 DAY)) AS DATE  
+	                                </when>
+	                                <otherwise>
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </otherwise>
+	                            </choose>
+	                        </when>
+	                        <otherwise>
+	                            , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                        </otherwise>
+	                    </choose>
+		            FROM 
+		            	CTE c
+		            WHERE 
+		            	1=1
+	                    <![CDATA[ 
+		            	AND c.ORD < ${diff} + 1
+		            	]]>
+		        ) 
+		        SELECT
+                    <choose>
+                        <when test="searchType != null and searchType != ''">
+                            <choose>
+                                <when test="'month'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                                </when>
+                                <when test="'day'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m-%d') AS DATE  
+                                </when>
+                                <otherwise>
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE    
+                                </otherwise>
+                            </choose>
+                        </when>
+                        <otherwise>
+                            DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                        </otherwise>
+                    </choose>
+		        FROM 
+		            CTE
+		    ) AS tb1 
+		    LEFT OUTER JOIN 
+		    (
+		        SELECT
+		                T.DATE
+				        , NVL(MAX(CASE WHEN IS_MATCH = '0' THEN cnt END), 0) AS 'NOTFIT'
+				        , NVL(MAX(CASE WHEN IS_MATCH = '1' THEN cnt END), 0) AS 'FIT'
+		            FROM ( 
+		                SELECT 
+		                    mr.IS_MATCH
+		                    <choose>
+		                        <when test="searchType != null and searchType != ''">
+		                            <choose>
+		                                <when test="'month'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </when>
+		                                <when test="'day'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') AS DATE  
+		                                </when>
+		                                <otherwise>
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </otherwise>
+		                            </choose>
+		                        </when>
+		                        <otherwise>
+		                            , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                        </otherwise>
+		                    </choose>
+		                    , count(1) AS CNT
+		                FROM 
+		                    MSG_RESULT AS mr
+		                WHERE 
+		                    1=1
+		                    <![CDATA[ 
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') >= DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d')
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') <= DATE_FORMAT(#{searchEndDate}, '%Y-%m-%d')
+		                    ]]>
+		                GROUP BY DATE, mr.IS_MATCH 
+		                ORDER BY DATE ASC
+		                ) T
+		            WHERE 
+		                1=1
+		            GROUP BY T.DATE
+		    ) AS tb2
+		    ON tb1.DATE = tb2.DATE
+		WHERE
+		    1=1
+		ORDER BY DATE ASC
+    </select>
+    
+    <select id="getStatisticDate" parameterType="java.util.HashMap" resultType="cMap">
+		SELECT 
+			tb1.DATE
+			, IFNULL(tb2.NOTFIT, 0) AS 'NOTFIT'
+			, IFNULL(tb2.FIT, 0) AS 'FIT'
+		FROM
+		    ( 
+		        WITH RECURSIVE CTE AS (
+		            SELECT 
+		                1 AS ORD
+		                , DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d') AS DATE  
+		            UNION ALL
+		            SELECT 
+		                c.ORD + 1
+	                    <choose>
+	                        <when test="searchType != null and searchType != ''">
+	                            <choose>
+	                                <when test="'month'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </when>
+	                                <when test="'day'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 DAY)) AS DATE  
+	                                </when>
+	                                <otherwise>
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </otherwise>
+	                            </choose>
+	                        </when>
+	                        <otherwise>
+	                            , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                        </otherwise>
+	                    </choose>
+		            FROM 
+		            	CTE c
+		            WHERE 
+		            	1=1
+	                    <![CDATA[ 
+		            	AND c.ORD < ${diff} + 1
+		            	]]>
+		        ) 
+		        SELECT
+                    <choose>
+                        <when test="searchType != null and searchType != ''">
+                            <choose>
+                                <when test="'month'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                                </when>
+                                <when test="'day'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m-%d') AS DATE  
+                                </when>
+                                <otherwise>
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE    
+                                </otherwise>
+                            </choose>
+                        </when>
+                        <otherwise>
+                            DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                        </otherwise>
+                    </choose>
+		        FROM 
+		            CTE
+		    ) AS tb1 
+		    LEFT OUTER JOIN 
+		    (
+		        SELECT
+		                T.DATE
+				        , NVL(MAX(CASE WHEN IS_MATCH = '0' THEN cnt END), 0) AS 'NOTFIT'
+				        , NVL(MAX(CASE WHEN IS_MATCH = '1' THEN cnt END), 0) AS 'FIT'
+		            FROM ( 
+		                SELECT 
+		                    mr.IS_MATCH
+		                    <choose>
+		                        <when test="searchType != null and searchType != ''">
+		                            <choose>
+		                                <when test="'month'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </when>
+		                                <when test="'day'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') AS DATE  
+		                                </when>
+		                                <otherwise>
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </otherwise>
+		                            </choose>
+		                        </when>
+		                        <otherwise>
+		                            , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                        </otherwise>
+		                    </choose>
+		                    , count(1) AS CNT
+		                FROM 
+		                    MSG_RESULT AS mr
+		                WHERE 
+		                    1=1
+		                    <![CDATA[ 
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') >= DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d')
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') <= DATE_FORMAT(#{searchEndDate}, '%Y-%m-%d')
+		                    ]]>
+		                GROUP BY DATE, mr.IS_MATCH 
+		                ORDER BY DATE ASC
+		                ) T
+		            WHERE 
+		                1=1
+		            GROUP BY T.DATE
+		    ) AS tb2
+		    ON tb1.DATE = tb2.DATE
+		WHERE
+		    1=1
+		ORDER BY DATE ASC
+    </select>
+    
+    <select id="getStatisticBrExcelDown" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT
+			T.BR_CODE
+	        , NVL(MAX(CASE WHEN IS_MATCH = '0' THEN cnt END), 0) AS 'NOTFIT'
+	        , NVL(MAX(CASE WHEN IS_MATCH = '1' THEN cnt END), 0) AS 'FIT'
+        FROM ( 
+            SELECT 
+            	mr.BR_CODE
+                , mr.IS_MATCH
+                , count(1) AS CNT
+            FROM 
+                MSG_RESULT AS mr
+            WHERE 
+                1=1
+                <![CDATA[ 
+                AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') >= DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d')
+                AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') <= DATE_FORMAT(#{searchEndDate}, '%Y-%m-%d')
+                ]]>
+            GROUP BY BR_CODE, mr.IS_MATCH 
+            ORDER BY BR_CODE ASC
+            ) T
+		WHERE 
+			1=1
+        GROUP BY T.BR_CODE
+    </select>
+    <select id="getStatisticBr" parameterType="java.util.HashMap" resultType="cMap">
+		SELECT
+			T.BR_CODE
+	        , NVL(MAX(CASE WHEN IS_MATCH = '0' THEN cnt END), 0) AS 'NOTFIT'
+	        , NVL(MAX(CASE WHEN IS_MATCH = '1' THEN cnt END), 0) AS 'FIT'
+        FROM ( 
+            SELECT 
+            	mr.BR_CODE
+                , mr.IS_MATCH
+                , count(1) AS CNT
+            FROM 
+                MSG_RESULT AS mr
+            WHERE 
+                1=1
+                <![CDATA[ 
+                AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') >= DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d')
+                AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') <= DATE_FORMAT(#{searchEndDate}, '%Y-%m-%d')
+                ]]>
+            GROUP BY BR_CODE, mr.IS_MATCH 
+            ORDER BY BR_CODE ASC
+            ) T
+		WHERE 
+			1=1
+        GROUP BY T.BR_CODE
+    </select>
+    
+    <select id="getStatisticResultExcelDown" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT 
+			tb1.DATE
+			, IFNULL(tb2.SELECT1, 0) AS 'SELECT1'
+			, IFNULL(tb2.SELECT2, 0) AS 'SELECT2'
+			, IFNULL(tb2.SELECT3, 0) AS 'SELECT3'
+			, IFNULL(tb2.SELECT4, 0) AS 'SELECT4'
+		FROM
+		    ( 
+		        WITH RECURSIVE CTE AS (
+		            SELECT 
+		                1 AS ORD
+		                , DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d') AS DATE  
+		            UNION ALL
+		            SELECT 
+		                c.ORD + 1
+	                    <choose>
+	                        <when test="searchType != null and searchType != ''">
+	                            <choose>
+	                                <when test="'month'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </when>
+	                                <when test="'day'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 DAY)) AS DATE  
+	                                </when>
+	                                <otherwise>
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </otherwise>
+	                            </choose>
+	                        </when>
+	                        <otherwise>
+	                            , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                        </otherwise>
+	                    </choose>
+		            FROM 
+		            	CTE c
+		            WHERE 
+		            	1=1
+	                    <![CDATA[ 
+		            	AND c.ORD < ${diff} + 1
+		            	]]>
+		        ) 
+		        SELECT
+                    <choose>
+                        <when test="searchType != null and searchType != ''">
+                            <choose>
+                                <when test="'month'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                                </when>
+                                <when test="'day'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m-%d') AS DATE  
+                                </when>
+                                <otherwise>
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE    
+                                </otherwise>
+                            </choose>
+                        </when>
+                        <otherwise>
+                            DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                        </otherwise>
+                    </choose>
+		        FROM 
+		            CTE
+		    ) AS tb1 
+		    LEFT OUTER JOIN 
+		    (
+		        SELECT
+		                T.DATE
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%기존계약%' THEN cnt END), 0) AS 'select1'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%고객관리%' THEN cnt END), 0) AS 'select2'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%심의필%' THEN cnt END), 0) AS 'select3'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%미심의%' THEN cnt END), 0) AS 'select4'
+		            FROM ( 
+		                SELECT 
+		                    mr.RESULT_LABEL
+		                    <choose>
+		                        <when test="searchType != null and searchType != ''">
+		                            <choose>
+		                                <when test="'month'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </when>
+		                                <when test="'day'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') AS DATE  
+		                                </when>
+		                                <otherwise>
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </otherwise>
+		                            </choose>
+		                        </when>
+		                        <otherwise>
+		                            , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                        </otherwise>
+		                    </choose>
+		                    , count(1) AS CNT
+		                FROM 
+		                    MSG_RESULT AS mr
+		                WHERE 
+		                    1=1
+		                    <![CDATA[ 
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') >= DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d')
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') <= DATE_FORMAT(#{searchEndDate}, '%Y-%m-%d')
+		                    ]]>
+		                GROUP BY DATE, mr.RESULT_LABEL 
+		                ORDER BY DATE ASC
+		                ) T
+		            WHERE 
+		                1=1
+		            GROUP BY T.DATE
+		    ) AS tb2
+		    ON tb1.DATE = tb2.DATE
+		WHERE
+		    1=1
+		ORDER BY DATE ASC
+    </select>
+    
+    <select id="getStatisticResult" parameterType="java.util.HashMap" resultType="cMap">
+		SELECT 
+			tb1.DATE
+			, IFNULL(tb2.SELECT1, 0) AS 'SELECT1'
+			, IFNULL(tb2.SELECT2, 0) AS 'SELECT2'
+			, IFNULL(tb2.SELECT3, 0) AS 'SELECT3'
+			, IFNULL(tb2.SELECT4, 0) AS 'SELECT4'
+		FROM
+		    ( 
+		        WITH RECURSIVE CTE AS (
+		            SELECT 
+		                1 AS ORD
+		                , DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d') AS DATE  
+		            UNION ALL
+		            SELECT 
+		                c.ORD + 1
+	                    <choose>
+	                        <when test="searchType != null and searchType != ''">
+	                            <choose>
+	                                <when test="'month'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </when>
+	                                <when test="'day'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 DAY)) AS DATE  
+	                                </when>
+	                                <otherwise>
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </otherwise>
+	                            </choose>
+	                        </when>
+	                        <otherwise>
+	                            , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                        </otherwise>
+	                    </choose>
+		            FROM 
+		            	CTE c
+		            WHERE 
+		            	1=1
+	                    <![CDATA[ 
+		            	AND c.ORD < ${diff} + 1
+		            	]]>
+		        ) 
+		        SELECT
+                    <choose>
+                        <when test="searchType != null and searchType != ''">
+                            <choose>
+                                <when test="'month'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                                </when>
+                                <when test="'day'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m-%d') AS DATE  
+                                </when>
+                                <otherwise>
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE    
+                                </otherwise>
+                            </choose>
+                        </when>
+                        <otherwise>
+                            DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                        </otherwise>
+                    </choose>
+		        FROM 
+		            CTE
+		    ) AS tb1 
+		    LEFT OUTER JOIN 
+		    (
+		        SELECT
+		                T.DATE
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%기존계약%' THEN cnt END), 0) AS 'select1'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%고객관리%' THEN cnt END), 0) AS 'select2'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%심의필%' THEN cnt END), 0) AS 'select3'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%미심의%' THEN cnt END), 0) AS 'select4'
+		            FROM ( 
+		                SELECT 
+		                    mr.RESULT_LABEL
+		                    <choose>
+		                        <when test="searchType != null and searchType != ''">
+		                            <choose>
+		                                <when test="'month'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </when>
+		                                <when test="'day'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') AS DATE  
+		                                </when>
+		                                <otherwise>
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </otherwise>
+		                            </choose>
+		                        </when>
+		                        <otherwise>
+		                            , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                        </otherwise>
+		                    </choose>
+		                    , count(1) AS CNT
+		                FROM 
+		                    MSG_RESULT AS mr
+		                WHERE 
+		                    1=1
+		                    <![CDATA[ 
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') >= DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d')
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') <= DATE_FORMAT(#{searchEndDate}, '%Y-%m-%d')
+		                    ]]>
+		                GROUP BY DATE, mr.RESULT_LABEL 
+		                ORDER BY DATE ASC
+		                ) T
+		            WHERE 
+		                1=1
+		            GROUP BY T.DATE
+		    ) AS tb2
+		    ON tb1.DATE = tb2.DATE
+		WHERE
+		    1=1
+		ORDER BY DATE ASC
+    </select>
+    
+    <select id="getStatisticBrResultExcelDown" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT 
+			tb1.DATE
+			, IFNULL(tb2.SELECT1, 0) AS 'SELECT1'
+			, IFNULL(tb2.SELECT2, 0) AS 'SELECT2'
+			, IFNULL(tb2.SELECT3, 0) AS 'SELECT3'
+			, IFNULL(tb2.SELECT4, 0) AS 'SELECT4'
+		FROM
+		    ( 
+		        WITH RECURSIVE CTE AS (
+		            SELECT 
+		                1 AS ORD
+		                , DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d') AS DATE  
+		            UNION ALL
+		            SELECT 
+		                c.ORD + 1
+	                    <choose>
+	                        <when test="searchType != null and searchType != ''">
+	                            <choose>
+	                                <when test="'month'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </when>
+	                                <when test="'day'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 DAY)) AS DATE  
+	                                </when>
+	                                <otherwise>
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </otherwise>
+	                            </choose>
+	                        </when>
+	                        <otherwise>
+	                            , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                        </otherwise>
+	                    </choose>
+		            FROM 
+		            	CTE c
+		            WHERE 
+		            	1=1
+	                    <![CDATA[ 
+		            	AND c.ORD < ${diff} + 1
+		            	]]>
+		        ) 
+		        SELECT
+                    <choose>
+                        <when test="searchType != null and searchType != ''">
+                            <choose>
+                                <when test="'month'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                                </when>
+                                <when test="'day'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m-%d') AS DATE  
+                                </when>
+                                <otherwise>
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE    
+                                </otherwise>
+                            </choose>
+                        </when>
+                        <otherwise>
+                            DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                        </otherwise>
+                    </choose>
+		        FROM 
+		            CTE
+		    ) AS tb1 
+		    LEFT OUTER JOIN 
+		    (
+		        SELECT
+		                T.DATE
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%기존계약%' THEN cnt END), 0) AS 'select1'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%고객관리%' THEN cnt END), 0) AS 'select2'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%심의필%' THEN cnt END), 0) AS 'select3'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%미심의%' THEN cnt END), 0) AS 'select4'
+		            FROM ( 
+		                SELECT 
+		                    mr.RESULT_LABEL
+		                    <choose>
+		                        <when test="searchType != null and searchType != ''">
+		                            <choose>
+		                                <when test="'month'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </when>
+		                                <when test="'day'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') AS DATE  
+		                                </when>
+		                                <otherwise>
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </otherwise>
+		                            </choose>
+		                        </when>
+		                        <otherwise>
+		                            , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                        </otherwise>
+		                    </choose>
+		                    , count(1) AS CNT
+		                FROM 
+		                    MSG_RESULT AS mr
+		                WHERE 
+		                    1=1
+		                    <if test="searchBr != null and searchBr != '' and searchBr != 'undefined'">
+		                    	AND BR_CODE = #{searchBr}
+							</if>
+		                    <![CDATA[ 
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') >= DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d')
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') <= DATE_FORMAT(#{searchEndDate}, '%Y-%m-%d')
+		                    ]]>
+		                GROUP BY DATE, mr.RESULT_LABEL 
+		                ORDER BY DATE ASC
+		                ) T
+		            WHERE 
+		                1=1
+		            GROUP BY T.DATE
+		    ) AS tb2
+		    ON tb1.DATE = tb2.DATE
+		WHERE
+		    1=1
+		ORDER BY DATE ASC
+    </select>
+    
+    <select id="getStatisticBrResult" parameterType="java.util.HashMap" resultType="cMap">
+		SELECT 
+			tb1.DATE
+			, IFNULL(tb2.SELECT1, 0) AS 'SELECT1'
+			, IFNULL(tb2.SELECT2, 0) AS 'SELECT2'
+			, IFNULL(tb2.SELECT3, 0) AS 'SELECT3'
+			, IFNULL(tb2.SELECT4, 0) AS 'SELECT4'
+		FROM
+		    ( 
+		        WITH RECURSIVE CTE AS (
+		            SELECT 
+		                1 AS ORD
+		                , DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d') AS DATE  
+		            UNION ALL
+		            SELECT 
+		                c.ORD + 1
+	                    <choose>
+	                        <when test="searchType != null and searchType != ''">
+	                            <choose>
+	                                <when test="'month'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </when>
+	                                <when test="'day'.equals(searchType)">
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 DAY)) AS DATE  
+	                                </when>
+	                                <otherwise>
+	                                    , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                                </otherwise>
+	                            </choose>
+	                        </when>
+	                        <otherwise>
+	                            , DATE(ADDDATE(c.DATE, INTERVAL 1 MONTH)) AS DATE  
+	                        </otherwise>
+	                    </choose>
+		            FROM 
+		            	CTE c
+		            WHERE 
+		            	1=1
+	                    <![CDATA[ 
+		            	AND c.ORD < ${diff} + 1
+		            	]]>
+		        ) 
+		        SELECT
+                    <choose>
+                        <when test="searchType != null and searchType != ''">
+                            <choose>
+                                <when test="'month'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                                </when>
+                                <when test="'day'.equals(searchType)">
+                                    DATE_FORMAT(DATE, '%Y-%m-%d') AS DATE  
+                                </when>
+                                <otherwise>
+                                    DATE_FORMAT(DATE, '%Y-%m') AS DATE    
+                                </otherwise>
+                            </choose>
+                        </when>
+                        <otherwise>
+                            DATE_FORMAT(DATE, '%Y-%m') AS DATE  
+                        </otherwise>
+                    </choose>
+		        FROM 
+		            CTE
+		    ) AS tb1 
+		    LEFT OUTER JOIN 
+		    (
+		        SELECT
+		                T.DATE
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%기존계약%' THEN cnt END), 0) AS 'select1'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%고객관리%' THEN cnt END), 0) AS 'select2'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%심의필%' THEN cnt END), 0) AS 'select3'
+						, NVL(MAX(CASE WHEN RESULT_LABEL like '%미심의%' THEN cnt END), 0) AS 'select4'
+		            FROM ( 
+		                SELECT 
+		                    mr.RESULT_LABEL
+		                    <choose>
+		                        <when test="searchType != null and searchType != ''">
+		                            <choose>
+		                                <when test="'month'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </when>
+		                                <when test="'day'.equals(searchType)">
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') AS DATE  
+		                                </when>
+		                                <otherwise>
+		                                    , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                                </otherwise>
+		                            </choose>
+		                        </when>
+		                        <otherwise>
+		                            , DATE_FORMAT(CREATE_DTM, '%Y-%m') AS DATE  
+		                        </otherwise>
+		                    </choose>
+		                    , count(1) AS CNT
+		                FROM 
+		                    MSG_RESULT AS mr
+		                WHERE 
+		                    1=1
+		                    <if test="searchBr != null and searchBr != '' and searchBr != 'undefined'">
+		                    	AND BR_CODE = #{searchBr}
+							</if>
+		                    <![CDATA[ 
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') >= DATE_FORMAT(#{searchStartDate}, '%Y-%m-%d')
+		                    AND DATE_FORMAT(CREATE_DTM, '%Y-%m-%d') <= DATE_FORMAT(#{searchEndDate}, '%Y-%m-%d')
+		                    ]]>
+		                GROUP BY DATE, mr.RESULT_LABEL 
+		                ORDER BY DATE ASC
+		                ) T
+		            WHERE 
+		                1=1
+		            GROUP BY T.DATE
+		    ) AS tb2
+		    ON tb1.DATE = tb2.DATE
+		WHERE
+		    1=1
+		ORDER BY DATE ASC
+    </select>
+</mapper>
+
+
+	
+

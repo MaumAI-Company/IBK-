@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mindslab.web.mapper.maria.MariaMsgMapper">
+   
+    <select id="getMsgTotalCount" parameterType="com.mindslab.web.vo.MsgVO" resultType="int">
+        SELECT 
+            COUNT(1)
+        FROM 
+	       ( SELECT 
+	            <include refid="msg_columns"><property name="alias" value="mr."/></include>
+	        FROM 
+	        	MSG_RESULT AS mr
+	        WHERE 
+	        	1=1 ) mr
+        WHERE 
+        	1=1
+        	<include refid="searchMsg" />
+    </select>
+
+    <select id="getMsgList" parameterType="com.mindslab.web.vo.MsgVO" resultType="com.mindslab.web.vo.MsgVO">
+        SELECT 
+			*
+        FROM 
+	       ( SELECT 
+	            <include refid="msg_columns"><property name="alias" value="mr."/></include>
+	        FROM 
+	        	MSG_RESULT AS mr
+	        WHERE 
+	        	1=1 ) mr
+        WHERE 
+        	1=1
+        	<include refid="searchMsg" />
+        <if test="createDtmOrd != null and (createDtmOrd == 'asc' or createDtmOrd == 'desc')">
+        ORDER BY 
+        	ID ${createDtmOrd}
+       	</if>
+    	    <include refid="com.mindslab.web.mapper.maria.MariaCommonMapper.paging" />
+    </select>
+    
+    <select id="getMsgListExcelDown" resultType="java.util.HashMap">
+        SELECT 
+			*
+        FROM 
+	       ( SELECT 
+	            <include refid="msg_columns"><property name="alias" value="mr."/></include>
+				, CONCAT(nvl(mr.IS_MATCH,''), '') as IS_MATCH_STR
+	        FROM 
+	        	MSG_RESULT AS mr
+	        WHERE 
+	        	1=1 ) mr
+        WHERE 
+        	1=1
+        	<include refid="searchMsg" />
+        <if test="createDtmOrd != null and (createDtmOrd == 'asc' or createDtmOrd == 'desc')">
+        ORDER BY 
+        	ID ${createDtmOrd}
+       	</if>
+    </select>
+    <select id="getMsgNextInfo" parameterType="com.mindslab.web.vo.MsgVO" resultType="com.mindslab.web.vo.MsgVO">
+    	SELECT 
+    		*
+    	FROM 
+    		MSG_RESULT
+	    WHERE
+	    	1=1
+	    	AND ID = ( 
+		    	SELECT MIN(mr.ID)
+		    	FROM (
+				        SELECT 
+							<include refid="msg_columns"><property name="alias" value="mr."/></include>
+				        FROM 
+				        	MSG_RESULT mr
+				        WHERE 
+				        	1=1
+				        	<include refid="searchMsg" />
+				        <if test="createDtmOrd != null and (createDtmOrd == 'asc' or createDtmOrd == 'desc')">
+				        ORDER BY 
+				        	ID ${createDtmOrd}
+				       	</if>
+			       	) mr
+	       		<![CDATA[
+		       WHERE ID > #{id}
+		       ]]>
+	       )
+    </select>
+    
+    <select id="getMsgPrevInfo" parameterType="com.mindslab.web.vo.MsgVO" resultType="com.mindslab.web.vo.MsgVO">
+    	SELECT 
+    		*
+    	FROM 
+    		MSG_RESULT
+	    WHERE
+	    	1=1
+	    	AND ID = ( 
+		    	SELECT MAX(mr.ID)
+		    	FROM (
+				        SELECT 
+							<include refid="msg_columns"><property name="alias" value="mr."/></include>
+				        FROM 
+				        	MSG_RESULT mr
+				        WHERE 
+				        	1=1
+				        	<include refid="searchMsg" />
+				        <if test="createDtmOrd != null and (createDtmOrd == 'asc' or createDtmOrd == 'desc')">
+				        ORDER BY 
+				        	ID ${createDtmOrd} 
+				       	</if>
+			       	) mr
+	       		<![CDATA[
+		       WHERE ID < #{id}
+		       ]]>
+	       )
+    </select>
+    
+    <sql id="msg_columns">
+		${alias}ID
+		, ${alias}CHANNEL
+		, ${alias}BR_CODE
+		, ${alias}EM_CODE
+		, ${alias}MSG_TITLE
+		, ${alias}MSG_CONTEXT
+		, ${alias}KEY_TEXT
+		, ${alias}KEY_START_INDEX
+		, ${alias}KEY_END_INDEX
+		, ${alias}SELECT_LABEL
+		, ${alias}RESULT_LABEL
+		, ${alias}IS_MATCH
+		, ${alias}PERCENTAGE	
+		, ${alias}URL
+		, ${alias}CREATE_DTM
+    </sql>
+    
+	
+	<!-- MariaDB MSG_RESULT 테이블 검색 -->
+	<sql id="searchMsg">
+		<!-- 대상 검색 키워드가 있을 때 -->
+		<if test="searchKeyword != null and searchKeyword != '' and searchKeyword != 'undefined' ">
+			<choose>
+				<!-- 대상 검색 유형이 있을 때 -->
+				<when test="searchType != null and searchType != ''">
+					<choose>
+						<when test="'all'.equals(searchType)">
+						AND
+						(
+							BR_CODE LIKE CONCAT('%', #{searchKeyword}, '%')
+							OR EM_CODE LIKE CONCAT('%', #{searchKeyword}, '%')
+							OR MSG_TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+						)
+						</when>
+						<when test="'br'.equals(searchType)">
+							AND BR_CODE LIKE CONCAT('%', #{searchKeyword}, '%')
+						</when>
+						<when test="'em'.equals(searchType)">
+							AND EM_CODE LIKE CONCAT('%', #{searchKeyword}, '%')
+						</when>
+						<when test="'title'.equals(searchType)">
+							AND MSG_TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+						</when>
+					</choose>
+				</when>
+				<!-- 검색 유형이 없을 때 -->
+				<otherwise>
+						AND
+							1 = 1
+				</otherwise>
+			</choose>
+		</if>
+		
+		<!-- 채널 -->
+		<if test="searchChannel != null and searchChannel != '' and searchChannel != 'undefined'">
+			<choose>
+				<when test="'all'.equals(searchChannel)">
+				AND
+				(
+					upper(CHANNEL) LIKE CONCAT('%', 'CRM', '%')
+					OR upper(CHANNEL) LIKE CONCAT('%', 'CENTER', '%')
+				)
+				</when>
+				<when test="'crm'.equals(searchChannel)">
+					AND upper(CHANNEL) LIKE CONCAT('%', 'CRM', '%')
+				</when>
+				<when test="'center'.equals(searchChannel)">
+					AND upper(CHANNEL) LIKE CONCAT('%', 'CENTER', '%')
+				</when>
+				<when test="'test'.equals(searchChannel)">
+					AND upper(CHANNEL) LIKE CONCAT('%', 'TEST', '%')
+				</when>
+				<!-- 검색 유형이 없을 때 -->
+				<otherwise>
+				</otherwise>
+			</choose>
+		</if>
+		
+		<!-- 발송목적 -->
+		<if test="searchSelect != null and searchSelect != '' and searchSelect != 'undefined'">
+			<choose>
+				<when test="'all'.equals(searchSelect)">
+				AND
+				(
+					upper(SELECT_LABEL) LIKE CONCAT('%', '기존계약', '%')
+					OR upper(SELECT_LABEL) LIKE CONCAT('%', '고객관리', '%')
+					OR upper(SELECT_LABEL) LIKE CONCAT('%', '심의필', '%')
+					OR upper(SELECT_LABEL) LIKE CONCAT('%', '미심의', '%')
+					OR upper(SELECT_LABEL) LIKE CONCAT('%', '테스트', '%')
+				)
+				</when>
+				<when test="'select1'.equals(searchSelect)">
+					AND upper(SELECT_LABEL) LIKE CONCAT('%', '기존계약', '%')
+				</when>
+				<when test="'select2'.equals(searchSelect)">
+					AND upper(SELECT_LABEL) LIKE CONCAT('%', '고객관리', '%')
+				</when>
+				<when test="'select3'.equals(searchSelect)">
+					AND upper(SELECT_LABEL) LIKE CONCAT('%', '심의필', '%')
+				</when>
+				<when test="'select4'.equals(searchSelect)">
+					AND upper(SELECT_LABEL) LIKE CONCAT('%', '미심의', '%')
+				</when>
+				<when test="'test'.equals(searchSelect)">
+					AND upper(SELECT_LABEL) LIKE CONCAT('%', '테스트', '%')
+				</when>
+				<!-- 검색 유형이 없을 때 -->
+				<otherwise>
+				</otherwise>
+			</choose>
+		</if>
+		
+		<!-- 검증 결과 -->
+		<if test="searchResult != null and searchResult != '' and searchResult != 'undefined'">
+			<choose>
+				<when test="'all'.equals(searchResult)">
+				AND
+				(
+					upper(RESULT_LABEL) LIKE CONCAT('%', '기존계약', '%')
+					OR upper(RESULT_LABEL) LIKE CONCAT('%', '고객관리', '%')
+					OR upper(RESULT_LABEL) LIKE CONCAT('%', '심의필', '%')
+					OR upper(RESULT_LABEL) LIKE CONCAT('%', '미심의', '%')
+					OR upper(RESULT_LABEL) LIKE CONCAT('%', '테스트', '%')
+				)
+				</when>
+				<when test="'select1'.equals(searchResult)">
+					AND upper(RESULT_LABEL) LIKE CONCAT('%', '기존계약', '%')
+				</when>
+				<when test="'select2'.equals(searchResult)">
+					AND upper(RESULT_LABEL) LIKE CONCAT('%', '고객관리', '%')
+				</when>
+				<when test="'select3'.equals(searchResult)">
+					AND upper(RESULT_LABEL) LIKE CONCAT('%', '심의필', '%')
+				</when>
+				<when test="'select4'.equals(searchResult)">
+					AND upper(RESULT_LABEL) LIKE CONCAT('%', '미심의', '%')
+				</when>
+				<when test="'test'.equals(searchResult)">
+					AND upper(RESULT_LABEL) LIKE CONCAT('%', '테스트', '%')
+				</when>
+				<!-- 검색 유형이 없을 때 -->
+				<otherwise>
+				</otherwise>
+			</choose>
+		</if>
+		<!-- 일치 여부 -->
+		<if test="searchFit != null and searchFit != '' and searchFit != 'undefined'">
+			<choose>
+				<when test="'all'.equals(searchFit)">
+				AND
+				(
+					1=1
+				)
+				</when>
+				<when test="'fit'.equals(searchFit)">
+					AND IS_MATCH = 1
+				</when>
+				<when test="'notfit'.equals(searchFit)">
+					AND IS_MATCH = 0
+				</when>
+				<!-- 검색 유형이 없을 때 -->
+				<otherwise>
+				</otherwise>
+			</choose>
+		</if>
+		
+		<!-- 날짜 검색 유형이 있을 때 -->
+		<if test="searchStartDate != null and searchStartDate != ''">
+			<![CDATA[ 
+				AND DATE_FORMAT( CREATE_DTM, '%Y-%m-%d') >= #{searchStartDate}
+			 ]]>
+		</if>
+		<if test="searchEndDate != null and searchEndDate != ''">
+			<![CDATA[ 
+				AND DATE_FORMAT( CREATE_DTM, '%Y-%m-%d') <= #{searchEndDate}
+			 ]]>
+		</if>
+	</sql>
+</mapper>
