@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package maum.brain.mcc;
+
+service MultiCategoryTextClassifier {
+    rpc GetMultiCategoryClassLabel(TextClassificationRequest) returns (MultiCategoryLabelResponse);
+}
+
+/* Request-related */
+message TextClassificationRequest {
+    string text = 1;
+    int32 top_k = 2;
+    repeated float floats = 3;
+}
+
+
+/* Response-related */
+// Label messages
+message MultiCategoryLabelResponse {
+    repeated CategoryLabelPrediction category_label_predictions = 1;
+}
+message CategoryLabelPrediction {
+    string category = 1;
+    repeated LabelPrediction label_predictions = 2;
+}
+message LabelPrediction {
+    string label = 1;
+    float probability = 2;
+}

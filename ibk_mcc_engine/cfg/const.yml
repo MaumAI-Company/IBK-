@@ -1,0 +1,19 @@
+# these configurations are most likely to stay unchanged
+models_dir: /home/minds/ibk/mcc/ibk_file/models
+log_dir: log
+serving_model_dir: serving_model
+default_model_name: default_model
+
+tfrecord: tfrecord
+label2idx: label2idx.json
+input_floats_stat: input_floats_stat.json
+prediction: prediction.txt
+vocab_file: vocab.txt
+run_cfg: run_config.yml
+model_cfg: model_config.yml
+
+model_status: model_status.yml
+test_result: test_result.yml
+
+category_order: "##CATEGORY_ORDER##"
+input_separator: "<<|SEP|>>"

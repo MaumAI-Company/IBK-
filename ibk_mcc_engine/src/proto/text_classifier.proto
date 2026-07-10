@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package maum.brain.text.v1.classifier;
+
+service TextClassifier {
+    rpc GetClassLabel(TextClassificationRequest) returns (LabelResponse);
+}
+
+service MultiCategoryTextClassifier {
+    rpc GetMultiCategoryClassLabel(TextClassificationRequest) returns (MultiCategoryLabelResponse);
+}
+
+/* Request-related */
+message TextClassificationRequest {
+    string text = 1;
+    int32 top_k = 2;
+    enum RequestType {
+        SIMPLE = 0;
+        TEXT_CONDITIONED = 1;
+        VECTOR_CONDITIONED = 2;
+    }
+    RequestType request_type = 3;
+    repeated string text_conditions = 4;
+    repeated Vector vector_conditions = 5;
+}
+
+/* Response-related */
+// Label messages
+message LabelResponse {
+    repeated LabelResult category_label_results = 1;
+}
+message LabelResult {
+    string label = 1;
+    float probability = 2;
+}
+
+message MultiCategoryLabelResponse {
+    repeated CategoryLabelResult category_label_results = 1;
+}
+message CategoryLabelResult {
+    string category = 1;
+    repeated LabelResult label_results = 2;
+}
+
+/* Primitive messages */
+message Vector {
+    repeated float elements = 1;
+}
+

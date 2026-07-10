@@ -1,0 +1,471 @@
+import argparse
+import time
+import logging
+import importlib
+import multiprocessing as mp
+import shutil
+from concurrent import futures
+from datetime import datetime
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
+
+import grpc
+from omegaconf import OmegaConf
+
+import client
+import runner
+import server
+import proto.ibk_mcc_engine_control_pb2 as EC_proto
+import proto.ibk_mcc_engine_control_pb2_grpc as EC_grpc
+import proto.mcc_pb2 as MCC_proto
+import proto.mcc_pb2_grpc as MCC_grpc
+
+_ONE_DAY_IN_SECONDS = 60 * 60 * 24
+
+const = runner.const
+
+class MccEngineController(EC_grpc.MccEngineControllerServicer):
+    def __init__(self, port, inner_port):
+        self.port = port
+        self.engine_status = EC_proto.IDLE
+        self.child_train_process = None
+        self.child_infer_process = None
+        self.inner_port = inner_port
+        self.infer_endpoint = f'localhost:{self.inner_port}'
+
+        self.reset()
+
+    def reset(self):
+        self._reset_training()
+        self._reset_inference()
+
+    def _reset_training(self):
+        if self.child_train_process:
+            self.child_train_process.terminate()
+            time.sleep(0.1)
+            self.engine_status = EC_proto.IDLE
+        self.cur_train_model_name = None
+        self.child_train_process = None
+        logging.info('RESET_TRAIN. Done resetting training')
+
+    def _reset_inference(self):
+        if self.child_infer_process:
+            self.child_infer_kill_event.set()
+            self.child_infer_killed_event.wait()
+            self.child_infer_process.terminate()
+            self.child_infer_process.join()
+            self.engine_status = EC_proto.IDLE
+        self.last_infer_model_name = None
+        logging.info('RESET_INFER. Done resetting inference')
+
+    def CheckEngineStatus(self, request, context):
+        logging.info('CHK_ENGINE-1. CheckEngineStatus is requested')
+
+        if self.engine_status == EC_proto.IDLE:
+            msg = "Engine has no training process nor inference process"
+        elif self.engine_status == EC_proto.INFERENCE_READY:
+            msg = "Engine is ready for inference with the model: {}".format(self.last_infer_model_name)
+        elif self.engine_status == EC_proto.TRAINING:
+            msg = "Engine is on training: {}".format(self.cur_train_model_name)
+        elif self.engine_status == EC_proto.REPLACING:
+            msg = "Engine is on replacing its inference model: {}".format(self.last_infer_model_name)
+        else:
+            raise ValueError('Undefined engine status')
+
+        logging.info('CHK_ENGINE-SUCCESS. %s', msg)
+        return EC_proto.ControlResponse(result_code=EC_proto.SUCCESS,
+                                        engine_status=self.engine_status, msg=msg)
+
+    def StartTraining(self, request, context):
+        logging.info('START_TRAIN-1. StartTraining is requested')
+        prev_infer_model_name = self.last_infer_model_name
+        if self.engine_status == EC_proto.INFERENCE_READY:
+            self._reset_inference()
+
+        if self.engine_status == EC_proto.IDLE:
+            model_name = request.model_name
+
+            msg = f'Start training. model_name: {model_name}'
+
+            update_cfg = OmegaConf.create()
+            update_cfg.model_name = request.model_name
+            update_cfg.train = {}
+            update_cfg.train.batch_size = request.train_batch_size
+            update_cfg.train.learning_rate = request.learning_rate
+            update_cfg.train.epochs = request.num_train_epochs
+            update_cfg.train.data = request.train_file
+            update_cfg.infer = {}
+            update_cfg.infer.data = request.dev_file
+
+            if request.sep_document or request.sep_sentence:
+                update_cfg.seperator = {}
+                update_cfg.seperator.document = request.sep_document
+                update_cfg.seperator.sentence = request.sep_sentence
+
+            args = runner.parse_args(['--run', 'train'])
+            cfg = runner.setup_config(args, update_cfg)
+
+            logging.info('START_TRAIN-2. Creating & starting a child process for training')
+            wrapup_info = (self.port, prev_infer_model_name)
+            self.child_train_process = mp.Process(target=train_process, args=(cfg, wrapup_info, ))
+            self.child_train_process.start()
+
+            self.cur_train_model_name = model_name
+            self.engine_status = EC_proto.TRAINING
+
+            logging.info('START_TRAIN-SUCCESS. Training is started for %s', model_name)
+            return EC_proto.ControlResponse(result_code=EC_proto.SUCCESS,
+                                            engine_status=self.engine_status, msg=msg)
+        else:
+            if self.engine_status == EC_proto.TRAINING:
+                msg = f'Invalid request. Engine is already operating on `{self.cur_train_model_name}`'
+            else:
+                msg = f'Invalid request. Engine is replacing its inference model'
+
+            logging.info('START_TRAIN-FAIL. %s', msg)
+            return EC_proto.ControlResponse(result_code=EC_proto.FAIL,
+                                            engine_status=self.engine_status, msg=msg)
+
+    def StopTraining(self, request, context):
+        logging.info('STOP_TRAIN-1. StopTraining is requested')
+        
+        if self.engine_status != EC_proto.TRAINING:
+            msg = 'There is nothing to stop.'
+            logging.info('STOP_TRAIN-FAIL. %s', msg)
+
+            return EC_proto.ControlResponse(result_code=EC_proto.FAIL, 
+                                            engine_status=self.engine_status, msg=msg)
+        else:
+            self._reset_training()
+            msg = 'Previous training is terminated.'
+            logging.info('STOP_TRAIN-SUCCESS. %s', msg)
+            if self.last_infer_model_name:
+                logging.info('STOP_TRAIN-REPLACE. Requesting to restore to the previous inference model')
+                wrapup_info = (self.port, self.last_infer_model_name)
+                child_replace_process = mp.Process(target=replace_process, args=(wrapup_info, ))
+                child_replace_process.start()
+            else:
+                logging.info('STOP_TRAIN-REPLACE-FAIL. No model was being served previously.')
+
+
+            return EC_proto.ControlResponse(result_code=EC_proto.SUCCESS,
+                                            engine_status=self.engine_status, msg=msg)
+
+    def CheckModelStatus(self, request, context):
+        logging.info('CHK_MODEL-1. CheckModelStatus is requested')
+        model_name = request.model_name
+
+        model_status_path = Path(const.models_dir, model_name).joinpath(const.model_status)
+        test_result_path = Path(const.models_dir, model_name).joinpath(const.test_result)
+
+        # if training was stopped after started, but not after completed
+        if self.engine_status != EC_proto.TRAINING and (model_status_path.exists() and not test_result_path.exists()):
+            logging.info('CHK_MODEL_FAIL. Not on training. Training is ended somehow.')
+            context.abort(code=grpc.StatusCode.UNAVAILABLE, details='Not on training. Training is ended somehow.')
+            return EC_proto.ModelStats()
+
+        if model_status_path.exists():
+            model_status = OmegaConf.load(str(model_status_path))
+            total_steps = model_status.total_steps
+            cur_step = model_status.cur_step
+            msg = f'model_name: {model_name}. total_steps: {total_steps}, cur_step: {cur_step}'
+            logging.info('CHK_MODEL-SUCCESS. %s', msg)
+        else:
+            total_steps, cur_step = -1, 0
+            logging.info('CHK_MODEL-FAIL. Given model does not exist')
+
+        test_results = None
+
+        # 디버깅을 위한 로그 추가
+        logging.info(f'Model status path exists: {model_status_path.exists()}')
+        logging.info(f'Test result path exists: {test_result_path.exists()}')
+        if test_result_path.exists():
+            logging.info(f'Test results content: {OmegaConf.load(str(test_result_path))}')
+
+        #if test_result_path.exists():
+            test_results = [EC_proto.TestResult(category=result.category,
+                                                score_f1=result.f1, 
+                                                score_precision=result.precision,
+                                                score_recall=result.recall)
+                            for result in OmegaConf.load(str(test_result_path)).results]
+
+        return EC_proto.ModelStatus(total_steps=total_steps, cur_step=cur_step, test_results=test_results)
+
+    def ReplaceModel(self, request, context):
+        model_name = request.model_name
+        logging.info('REPLACE-1. ReplaceModel is requested: %s', model_name)
+
+        next_model_dir_path = Path(const.models_dir, model_name)
+        if not next_model_dir_path.exists():
+            msg = f'Given model "{model_name}" does not exist!'
+            logging.info('REPLACE-FAIL. %s', msg)
+            return EC_proto.ControlResponse(result_code=EC_proto.INVALID_REQUEST, 
+                                            engine_status=self.engine_status, msg=msg)
+
+        if self.engine_status == EC_proto.TRAINING:
+            self._reset_training()
+
+        serving_model_dir_path = Path(const.serving_model_dir, model_name)
+        if self.engine_status != EC_proto.INFERENCE_READY or model_name != self.last_infer_model_name:
+            self._replace_model_files(model_name)
+
+            args = runner.parse_args(['--run', 'serve', '--model_path', str(serving_model_dir_path)])
+            cfg = runner.setup_config(args)
+
+            self._reset_inference()
+            self.start_infer_server(cfg)
+            self.engine_status = EC_proto.INFERENCE_READY
+
+            msg = f'Successfully replaced inference model to {model_name}'
+            logging.info('REPLACE-SUCCESS. %s', msg)
+            return EC_proto.ControlResponse(result_code=EC_proto.SUCCESS, 
+                                            engine_status=self.engine_status, msg=msg)
+        else:
+            msg = "The model is already loaded for inference"
+            logging.info('REPLACE-FAIL. %s', msg)
+            return EC_proto.ControlResponse(result_code=EC_proto.FAIL, 
+                                            engine_status=self.engine_status, msg=msg)
+
+    def _replace_model_files_old(self, model_name):
+        next_model_dir_path = Path(const.models_dir, model_name)
+        next_serving_dir_path = Path(const.serving_model_dir, model_name)
+        if len(list(next_model_dir_path.glob('model.ckpt-*'))) > 3:
+            [ckpt0.unlink() for ckpt0 in next_model_dir_path.glob('model.ckpt-0.*')]
+        shutil.copytree(next_model_dir_path, next_serving_dir_path)
+
+        prev_serving_dir_path = Path(const.serving_model_dir, self.last_infer_model_name)
+        if prev_serving_dir_path.exists():
+            try:
+                shutil.rmtree(prev_serving_dir_path)
+            except Exception as e:
+                print('Something went wrong while rmtree ', prev_serving_dir_path, repr(e))
+        else:
+            remain_dirs = [x for x in prev_serving_dir_path.parent.iterdir() if x.is_dir()]
+            for remain_dir in remain_dirs:
+                shutil.rmtree(remain_dir)
+
+    def _replace_model_files(self, model_name):
+        next_model_dir_path = Path(const.models_dir, model_name)
+        if len(list(next_model_dir_path.glob('model.ckpt-*'))) > 3:
+            [ckpt0.unlink() for ckpt0 in next_model_dir_path.glob('model.ckpt-0.*')]
+        
+        if self.last_infer_model_name:
+            prev_serving_dir_path = Path(const.serving_model_dir, self.last_infer_model_name)
+            if prev_serving_dir_path.exists():
+                try:
+                    shutil.rmtree(prev_serving_dir_path)
+                except Exception as e:
+                    print('Something went wrong while rmtree', str(prev_serving_dir_path), repr(e))
+            else:
+                remain_dirs = [x for x in prev_serving_dir_path.parent.iterdir() if x.is_dir()]
+                try:
+                    for remain_dir in remain_dirs:
+                        shutil.rmtree(remain_dir)
+                except Exception as e:
+                    print('Something went wrong while rmtree', str(remain_dir), repr(e))
+                        
+            next_serving_dir_path = Path(const.serving_model_dir, model_name)
+            print(next_model_dir_path, next_serving_dir_path)
+            if next_serving_dir_path.exists():
+                try:
+                    shutil.rmtree(next_serving_dir_path)
+                except Exception as e:
+                    print('Something went wrong while rmtree', str(next_serving_dir_path), repr(e))
+            try:
+                shutil.copytree(next_model_dir_path, next_serving_dir_path)
+            except Exception as e:
+                print('Something went wrong while copytree', str(next_model_dir_path), str(next_serving_dir_path), repr(e))
+
+
+    def WrappedInference(self, request, context):
+        logging.info('ANS-1. Mcc GetMultiCategoryClassLabel is requested')
+        logging.debug('ANS-2. %s', str(request))
+
+        if self.engine_status != EC_proto.INFERENCE_READY or self.child_infer_process is None:
+            logging.info('ANS-FAIL. inference model is not setup')
+            _dummy = MCC_proto.CategoryLabelPrediction(
+                        category='dummy',
+                        label_predictions=[MCC_proto.LabelPrediction(label=None, probability=0.0)])
+            dummy = MCC_proto.MultiCategoryLabelResponse(category_label_predictions=[_dummy])
+            return EC_proto.InferenceResponse(result_code=EC_proto.FAIL, outputs=dummy)
+
+        try: 
+            outputs = self.request_answer(request.text, request.floats)
+            logging.debug('ANS-3. %s', str(outputs))
+            logging.info('ANS-SUCCESS. inference is finished. Returning the response')
+            return EC_proto.InferenceResponse(result_code=EC_proto.SUCCESS, outputs=outputs)
+        except Exception as err:
+            logging.info('ANS-FAIL. Something went wrong.')
+            logging.debug(err)
+            _dummy = MCC_proto.CategoryLabelPrediction(
+                        category='dummy',
+                        label_predictions=[MCC_proto.LabelPrediction(label=None, probability=0.0)])
+            dummy = MCC_proto.MultiCategoryLabelResponse(category_label_predictions=[_dummy])
+            return EC_proto.InferenceResponse(result_code=EC_proto.FAIL, outputs=dummy)
+
+    def start_infer_server(self, cfg):
+        logging.info('START_INFER-1. Loading the model %s', cfg.model_name)
+
+        self.child_infer_kill_event = mp.Event()
+        self.child_infer_killed_event = mp.Event()
+        self.child_infer_process = mp.Process(target=server.main_process, 
+                args=(cfg, self.inner_port, self.child_infer_kill_event, self.child_infer_killed_event))
+        self.child_infer_process.start()
+
+        logging.info('START_INFER-2. Checking whether inference server is on')
+        ready = False
+        while not ready:
+            try:
+                time.sleep(3)
+                self.request_answer('Dummy text for check')
+                ready = True
+            except Exception as err:
+                if err.code() == grpc.StatusCode.UNAVAILABLE:
+                    logging.warning('Inference server is now starting. Wait for seconds..')
+                    continue
+                else:
+                    raise err
+        logging.info('START_INFER-SUCCESS. Inference server is now on')
+
+        self.last_infer_model_name = cfg.model_name
+        self.engine_status = EC_proto.INFERENCE_READY
+
+    def request_answer(self, context, floats=None):
+        with grpc.insecure_channel(self.infer_endpoint) as channel:
+            stub = MCC_grpc.MultiCategoryTextClassifierStub(channel)
+            outputs = stub.GetMultiCategoryClassLabel(MCC_proto.TextClassificationRequest(text=context, top_k=3, floats=floats))
+        return outputs
+
+
+def train_process(cfg, wrapup_info):
+    _runner = runner.MccRunner(cfg)
+    print('TRAIN-1. MccRunner is initialized.')
+    print('TRAIN-1-debug. Training configuration, wrapup_info:', str(cfg), str(wrapup_info))
+    error = False
+    try:
+        _runner.train()
+        print('TRAIN-2. Done training. Start testing by threshold.')
+        _runner.test_batch()
+        print('TRAIN-3. Done testing')
+    except Exception as e:
+        print('TRAIN-FAIL. Something went wrong. Check the message and try again.', repr(e))
+        error = True
+
+    port, prev_infer_model = wrapup_info
+    endpoint = 'localhost:{}'.format(port)
+    print('TRAIN-4. Now resetting the EngineControl server to its previous status.', prev_infer_model)
+    print('TRAIN-4-debug. prev_infer_model | error:', str(prev_infer_model), str(error))
+
+    if prev_infer_model in (None, 'None'):
+        print('TRAIN-FAIL. Something went wrong. Stop training.')
+        client.request_stop_training(endpoint)
+    elif error:
+        print('TRAIN-FAIL. Something went wrong. Return to the previous model.')
+        client.request_replace_model(endpoint, model_name=prev_infer_model)
+    else:
+        print('TRAIN-SUCCESS. Now loading the previous model.')
+        client.request_replace_model(endpoint, model_name=prev_infer_model)
+
+
+def replace_process(wrapup_info):
+    port, prev_infer_model = wrapup_info
+    endpoint = 'localhost:{}'.format(port)
+    client.request_replace_model(endpoint, model_name=prev_infer_model) 
+    print('REPLACE-Process', str(port), str(prev_infer_model))
+
+
+def setup_logger(const_cfg):
+    now = datetime.now().strftime('%y%m%d_%H%M%S')
+    log_file_name = f'server_{now}.log'
+    log_file_path = Path(const_cfg.log_dir, log_file_name)
+    log_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    logging.basicConfig(level=logging.INFO)
+    formatter = logging.Formatter('[%(levelname)s|%(asctime)s] %(message)s')
+
+    # create file handler
+    fh = RotatingFileHandler(str(log_file_path), maxBytes=1024*1024*1024, backupCount=20)
+    fh.setLevel(logging.INFO)
+    fh.setFormatter(formatter)
+
+    # create stderr handler
+    ch = logging.StreamHandler()    # stderr by default
+    ch.setLevel(logging.INFO)
+    ch.setFormatter(formatter)
+
+    handlers = [fh, ch]
+    logging.getLogger('').handlers = handlers
+
+
+def main_engine_control():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--port", type=int, default=36000)
+    parser.add_argument("--inner_port", type=int, default=36001)
+    #parser.add_argument("--model_path", type=str, default='models/default_model')
+    parser.add_argument("--model_path",type=str,default='/home/minds/ibk/mcc/ibk_file/models/0117_original')
+    parser.add_argument("--log_level", type=str, default="INFO")
+    args = parser.parse_args()
+
+    setup_logger(const)
+    logging.info('MAIN-1. Start initializing EngineController')
+
+    engine_controller = MccEngineController(args.port, args.inner_port)
+    logging.info('MAIN-2. EngineController is initialized')
+
+    args.run = 'engine_control'
+
+    # Guarantee the to-be-served model be under `const.serving_model_dir` to standardize the setup
+    serving_model_dir = Path(const.serving_model_dir)
+    serving_model_path = serving_model_dir.joinpath(Path(args.model_path).name)
+
+    if not serving_model_path.exists():
+        given_model_path = Path(args.model_path)
+        default_model_path = Path(const.models_dir, const.default_model_name)
+        serving_models = list(serving_model_dir.rglob('run_config.yml'))
+        model_path = None
+        print(f'given_model_path: {given_model_path}')
+        print(f'given_model_path: {given_model_path}')
+        print(f'given_model_path: {given_model_path}')
+        print(f'given_model_path: {given_model_path}')
+        if given_model_path.exists():
+            print('given_model_check')
+            model_path = given_model_path
+        elif default_model_path.exists():
+            model_path = default_model_path
+            serving_model_path = serving_model_dir.joinpath(const.default_model_name)
+        else:
+            logging.warning("MAIN-3-Warning. The given nor default model path does not exist.")
+
+        if model_path:
+            print('check')
+            print(model_path,serving_model_path)
+            logging.info("MAIN-3. Copying the target model %s to %s", str(model_path), str(serving_model_path))
+            shutil.copytree(str(model_path), str(serving_model_path))
+
+    args.model_path = str(serving_model_path)
+    if Path(args.model_path).exists():
+        cfg = runner.setup_config(args)
+        engine_controller.start_infer_server(cfg)
+        logging.info('MAIN-3. Initial model is loaded: %s', args.model_path)
+    else:
+        logging.info('MAIN-3-FAIL. Initial model is not loaded. %s does not exist.', args.model_path)
+
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=1), )
+    EC_grpc.add_MccEngineControllerServicer_to_server(engine_controller, server)
+
+    server.add_insecure_port(f'[::]:{args.port}')
+    server.start()
+
+    logging.info('MAIN-4. EngineController server starting at localhost:%d', args.port)
+    try:
+        while True:
+            # Sleep forever, since `start` doesn't block
+            time.sleep(_ONE_DAY_IN_SECONDS)
+    except KeyboardInterrupt:
+        logging.info('MAIN-5. Shutting down EngineController server', args.port)
+        engine_controller.reset()
+        server.stop(None).wait()
+
+if __name__ == '__main__':
+    mp.set_start_method('spawn')
+    main_engine_control()

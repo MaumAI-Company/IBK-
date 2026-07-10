@@ -1,0 +1,14 @@
+serving_model/
+models/
+data/
+__pycache__/
+*.pyc
+*.pyo
+nohup.out
+*.log
+bacth_input.txt
+*.tar
+*.ckpt
+*.index
+*.meta
+*.data-*

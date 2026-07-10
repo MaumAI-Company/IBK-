@@ -1,0 +1,29 @@
+model_name: sample
+
+# Configure below when you train a model
+train:
+    pretrained_ckpt: /pretrained/bert_kor_mecab/bert_model.ckpt
+    vocab_file: /pretrained/bert_kor_mecab/vocab.txt
+
+    data: data/sample/train_data.txt
+
+    epochs: 1
+    learning_rate: 3e-5
+    warmup: 0.1
+    batch_size: 4
+    eval_batch_size: 1
+
+    save_checkpoints_steps: 1e4
+    save_summary_steps: 1e2
+    log_step_count_steps: 1e2
+    iterations_per_loop: 1e3
+
+
+# Inference with a trained model
+infer:
+    batch_size: 1
+    num_top_label: 3
+    data: data/sample/valid_data.txt     # for the test(batch inference)
+
+num_process: 1     # > 1: CPU multi process  #TODO
+seed_bucket: 100
